@@ -374,7 +374,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                   <button
                     disabled={newUsername === user?.username}
                     onClick={handleChangeName}
-                    className="bg-white disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-1 px-2 md:px-4 rounded-[6px]"
+                    className="bg-white disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-1 md:py-2 px-2 md:px-4 rounded-[6px]"
                   >
                     Change Name
                   </button>

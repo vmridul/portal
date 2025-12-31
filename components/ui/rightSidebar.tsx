@@ -300,7 +300,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
               <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
                 {roomName?.charAt(0).toUpperCase()}
               </div>
-              <div className="flex flex-col rounded-[8px] cursor-pointer">
+              <div className="flex flex-col rounded-[8px]">
                 {roomName}
                 <span className="text-white/40 text-xs">ID: {room_id}</span>
               </div>
