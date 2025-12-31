@@ -19,33 +19,14 @@ export function useGlobalPresence() {
     })
   }
 
-  // Helper function to update state from channel
-  const updatePresenceState = (channel: any) => {
-    const state = channel.presenceState()
-    const online = new Set<string>()
-    const away = new Set<string>()
-
-    Object.values(state).forEach((list) => {
-      const presenceList = list as any[]
-      presenceList.forEach((p) => {
-        if (!p.user_id) return
-        p.status === "away"
-          ? away.add(p.user_id)
-          : online.add(p.user_id)
-      })
-    })
-    
-    setOnlineUsers(online)
-    setAwayUsers(away)
-  }
-
   useEffect(() => {
     let active = true
 
     const setup = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user || !active) return
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user || !active) return
 
+      const user = session.user
       userIdRef.current = user.id
 
       const channel = supabase.channel("global-presence", {
@@ -55,7 +36,20 @@ export function useGlobalPresence() {
       channelRef.current = channel
 
       channel.on("presence", { event: "sync" }, () => {
-        updatePresenceState(channel)
+        const state = channel.presenceState()
+        const online = new Set<string>()
+       const away = new Set<string>();
+
+        (Object.values(state) as any[][]).forEach((list:any) => {
+          list.forEach((p:any) => {
+            if (!p.user_id) return
+            p.status === "away"
+              ? away.add(p.user_id)
+              : online.add(p.user_id)
+          })
+        })
+        setOnlineUsers(online)
+        setAwayUsers(away)
       })
 
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
@@ -94,13 +88,6 @@ export function useGlobalPresence() {
             user_id: user.id,
             status: "online",
           })
-          
-          // Force state update after tracking completes
-          setTimeout(() => {
-            if (active) {
-              updatePresenceState(channel)
-            }
-          }, 100)
         }
       })
     }
