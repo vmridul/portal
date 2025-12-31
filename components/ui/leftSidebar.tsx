@@ -54,8 +54,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [newUsername, setNewUsername] = useState(user?.username || "");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [presenceMenu, setPresenceMenu] = useState(false);
-  const { setStatus } = useGlobalPresence();
-  const { onlineUsers, awayUsers } = usePresence();
+  const { onlineUsers, awayUsers, setStatus } = usePresence();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleChangeAvatar = async (file: File | null) => {
