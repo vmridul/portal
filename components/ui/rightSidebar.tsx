@@ -399,17 +399,15 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                           unoptimized
                           className="border w-8 h-8 border-[#313131] rounded-[10px]"
                         />
-                        {member.user_id &&
-                        awayUsers.has(member.user_id.toString()) ? (
+                        {isUserOnline ? (
+                          <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
+                        ) : isUserAway ? (
                           <Moon
                             fill="yellow"
                             className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
                           />
                         ) : (
-                          <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 opacity-90 bg-green-500 border border-[#59ab44] rounded-full"></div>
-                        )}
-                        {!isUserOnline && !isUserAway && (
-                          <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 opacity-100 bg-gray-500 border border-[#858585] rounded-full"></div>
+                          <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />
                         )}
                       </div>
                       <div className="flex flex-col">
