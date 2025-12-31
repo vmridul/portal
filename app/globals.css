@@ -87,16 +87,6 @@ html, body {
   }
 }
 
-.pixel-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(#8b5cf6 1.5px, transparent 1.5px),
-    radial-gradient(#22d3ee 1.5px, transparent 1.5px);
-  background-size: 18px 18px;
-  animation: pixelDrift 12s linear infinite;
-}
 
 .portal-btn {
   position: relative;
@@ -139,20 +129,4 @@ html, body {
 /* active */
 .portal-btn:active {
   transform: translateY(0);
-}
-
-
-@keyframes verticalRoll {
-  from {
-    top: 0;
-  }
-  to {
-    top: -50%;
-  }
-}
-
-.roll-wrapper {
-  position: absolute;
-  height: 200%;
-  animation: verticalRoll 18s linear infinite;
 }

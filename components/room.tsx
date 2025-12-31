@@ -431,10 +431,9 @@ export default function Room({ room_id }: { room_id: string }) {
           </div>
         </div>
       )}
-      <div className="flex h-[95dvh] md:h-[92vh] flex-col relative">
-        x
+      <div className="flex h-[100dvh] md:h-[92vh] flex-col relative overflow-hidden">
         {!user?.user_id || !messages ? (
-          <Skeleton className="h-[780px] ml-2 w-[884px] bg-[#313131] absolute -top-[40px] rounded-[4px]" />
+          <Skeleton className="h-[780px] mt-2 ml-2 w-[884px] bg-[#313131] absolute -top-[40px] rounded-[6px]" />
         ) : (
           <div
             ref={containerRef}
@@ -443,7 +442,7 @@ export default function Room({ room_id }: { room_id: string }) {
                 loadOlderMessages();
               }
             }}
-            className="absolute top-0 flex-1 w-full px-3 md:px-10 md:h-[82vh] overflow-y-auto pb-24 md:pb-28 flex flex-col gap-2"
+            className="flex-1 w-full px-3 md:px-10 overscroll-contain overflow-y-auto pb-24 md:pb-28 flex flex-col gap-2"
           >
             {loadingOlder && (
               <div className="flex justify-center py-2">

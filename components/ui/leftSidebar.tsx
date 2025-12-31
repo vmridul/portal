@@ -55,7 +55,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [presenceMenu, setPresenceMenu] = useState(false);
   const { setStatus } = useGlobalPresence();
-
   const { onlineUsers, awayUsers } = usePresence();
   const fileRef = useRef<HTMLInputElement>(null);
 

@@ -14,7 +14,7 @@ export function useGlobalPresence() {
     if (!channelRef.current || !userIdRef.current) return
 
     await channelRef.current.track({
-      user_id: userIdRef.current, // ✅ ALWAYS defined
+      user_id: userIdRef.current,
       status,
     })
   }
@@ -41,7 +41,7 @@ export function useGlobalPresence() {
 
         Object.values(state).forEach((list: any[]) => {
           list.forEach((p) => {
-            if (!p.user_id) return // safety
+            if (!p.user_id) return;
             p.status === "away"
               ? away.add(p.user_id)
               : online.add(p.user_id)

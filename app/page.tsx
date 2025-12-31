@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Press_Start_2P } from "next/font/google";
-import { PixelSpeechBubble } from "@/components/ui/pixelBubble";
 
 export const pixelFont = Press_Start_2P({
   weight: "400",
