@@ -6,13 +6,11 @@ import { usePathname } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import LeftSidebar from "@/components/ui/leftSidebar";
 import { useColor } from "@/contexts/colorContext";
-import { useRooms } from "@/contexts/roomContext";
 
 export default function Page() {
   const router = useRouter();
   const setUser = useUserStore((s) => s.setUser);
   const pathname = usePathname();
-  const { rooms, membersCount } = useRooms();
   const user = useUserStore((s) => s.user);
   const color = useColor().color;
 

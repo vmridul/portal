@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { pixelFont } from "./page";
+import { PresenceProvider } from "@/contexts/presenceContext";
 
 export const metadata: Metadata = {
   title: "Portal",
@@ -30,8 +31,10 @@ export default function RootLayout({
       <body className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <Suspense>
-            <main className="flex-1 font-sans">{children}</main>
-            <Toaster theme="dark" position="top-center" />
+            <PresenceProvider>
+              <main className="flex-1 font-sans">{children}</main>
+              <Toaster theme="dark" position="top-center" />
+            </PresenceProvider>
           </Suspense>
         </div>
       </body>
