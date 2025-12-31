@@ -17,7 +17,7 @@ import { formatToIST } from "@/app/actions/formatToIST";
 import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
-import { useGlobalPresence } from "@/hooks/useGlobalPresence";
+import { usePresence } from "@/contexts/presenceContext";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
   const [ownerName, setOwnerName] = useState("");
   const user = useUserStore((s) => s.user);
   const [rightMobileMenu, setRightMobileMenu] = useState(false);
-  const { onlineUsers, awayUsers } = useGlobalPresence();
+  const { onlineUsers, awayUsers } = usePresence();
 
   useEffect(() => {
     if (!owner) return;

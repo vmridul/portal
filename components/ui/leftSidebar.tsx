@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { useColor } from "@/contexts/colorContext";
 import { formatToIST } from "@/app/actions/formatToIST";
 import { useGlobalPresence } from "@/hooks/useGlobalPresence";
+import { usePresence } from "@/contexts/presenceContext";
 
 type LeftSidebarProps = {
   className?: string;
@@ -53,7 +54,9 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [newUsername, setNewUsername] = useState(user?.username || "");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [presenceMenu, setPresenceMenu] = useState(false);
-  const { onlineUsers, awayUsers, setStatus } = useGlobalPresence();
+  const { setStatus } = useGlobalPresence();
+
+  const { onlineUsers, awayUsers } = usePresence();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleChangeAvatar = async (file: File | null) => {
@@ -306,21 +309,21 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                         className={`flex select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
                       >
                         {user?.user_id &&
-                        onlineUsers.has(user?.user_id.toString()) ? (
-                          <div className="flex gap-1 items-center text-green-400 bg-[#1b3b12] border px-3 rounded-full border-green-900">
-                            <Circle
-                              fill="green"
-                              className="w-3 h-3 border-none"
-                            />
-                            <span className={``}>Online</span>
-                          </div>
-                        ) : (
+                        awayUsers.has(user?.user_id.toString()) ? (
                           <div className="flex gap-1 items-center text-yellow-400 bg-[#3b3a12] border px-3 rounded-full border-yellow-600 border-opacity-30">
                             <Moon
                               fill="yellow"
                               className="w-3 h-3 border-none"
                             />
                             <span className={``}>Away</span>
+                          </div>
+                        ) : (
+                          <div className="flex gap-1 items-center text-green-400 bg-[#1b3b12] border px-3 rounded-full border-green-900">
+                            <Circle
+                              fill="green"
+                              className="w-3 h-3 border-none"
+                            />
+                            <span className={``}>Online</span>
                           </div>
                         )}
                         {presenceMenu && (
@@ -513,7 +516,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
               </button>
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
                   handleSignOut();
                 }}
                 className="bg-white ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-6 rounded-xl"
@@ -579,7 +581,10 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                 </div>
               </div>
               <LogOut
-                onClick={() => setLogoutDialog(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLogoutDialog(true);
+                }}
                 className="w-4 h-4 mr-1 text-white hover:text-gray-200 cursor-pointer"
               />
             </div>
