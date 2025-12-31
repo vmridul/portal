@@ -305,7 +305,8 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                         }}
                         className={`flex select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
                       >
-                        {onlineUsers.has(user?.user_id.toString()) ? (
+                        {user?.user_id &&
+                        onlineUsers.has(user?.user_id.toString()) ? (
                           <div className="flex gap-1 items-center text-green-400 bg-[#1b3b12] border px-3 rounded-full border-green-900">
                             <Circle
                               fill="green"
