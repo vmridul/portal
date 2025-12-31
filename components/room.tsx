@@ -407,9 +407,9 @@ export default function Room({ room_id }: { room_id: string }) {
     <>
       {deleteDialogOpen && (
         <div
-          className={`fixed inset-0 bg-black bg-opacity-35 md:scale-100 scale-[80%] z-50 flex items-center justify-center transition-all duration-300`}
+          className={`fixed inset-0 bg-black bg-opacity-35 z-[9999] flex items-center justify-center transition-all duration-300`}
         >
-          <div className="w-96 rounded-xl text-lg font-regular bg-[#111111] border-[#313131] border p-6 text-white">
+          <div className="md:scale-100 scale-[80%] w-96 rounded-xl text-lg font-regular bg-[#111111] border-[#313131] border p-6 text-white">
             Are you sure you want to Delete this message?
             <div className="text-[#676767] mt-2 text-sm">
               You won't be able to revert this action.
