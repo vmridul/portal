@@ -19,6 +19,26 @@ export function useGlobalPresence() {
     })
   }
 
+  // Helper function to update state from channel
+  const updatePresenceState = (channel: any) => {
+    const state = channel.presenceState()
+    const online = new Set<string>()
+    const away = new Set<string>()
+
+    Object.values(state).forEach((list) => {
+      const presenceList = list as any[]
+      presenceList.forEach((p) => {
+        if (!p.user_id) return
+        p.status === "away"
+          ? away.add(p.user_id)
+          : online.add(p.user_id)
+      })
+    })
+    
+    setOnlineUsers(online)
+    setAwayUsers(away)
+  }
+
   useEffect(() => {
     let active = true
 
@@ -35,20 +55,7 @@ export function useGlobalPresence() {
       channelRef.current = channel
 
       channel.on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState()
-        const online = new Set<string>()
-        const away = new Set<string>()
-
-        Object.values(state).forEach((list: any[]) => {
-          list.forEach((p) => {
-            if (!p.user_id) return;
-            p.status === "away"
-              ? away.add(p.user_id)
-              : online.add(p.user_id)
-          })
-        })
-        setOnlineUsers(online)
-        setAwayUsers(away)
+        updatePresenceState(channel)
       })
 
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
@@ -68,7 +75,7 @@ export function useGlobalPresence() {
         })
       })
 
-channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
+      channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
         setOnlineUsers((prev) => {
           const next = new Set(prev)
           leftPresences.forEach((p: any) => next.delete(p.user_id))
@@ -81,13 +88,19 @@ channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
         })
       })
 
-
       await channel.subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
           await channel.track({
             user_id: user.id,
             status: "online",
           })
+          
+          // Force state update after tracking completes
+          setTimeout(() => {
+            if (active) {
+              updatePresenceState(channel)
+            }
+          }, 100)
         }
       })
     }
