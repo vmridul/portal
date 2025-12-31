@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.body {background-color: #0a0a0a;}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; 
+  scrollbar-width: none;   
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;        
+}
+
+
+@layer utilities {
+  .bg-pattern {
+    background: 
+      linear-gradient(135deg,#0000 20.5%,#0f1320 0 29.5%,#0000 0) 0 12px,
+      linear-gradient( 45deg,#0000 8%,#0f1320 0 17%, #0000 0 58%) 24px 0,
+      linear-gradient(135deg,#0000 8%,#0f1320 0 17%, #0000 0 58%,#0f1320 0 67%,#0000 0),        
+      linear-gradient( 45deg,#0000 8%,#0f1320 0 17%, #0000 0 58%,#0f1320 0 67%,#0000 0 83%,#0f1320 0 92%,#0000 0),
+      #070a12;
+background-size: 48px 48px;
+  }
+}
+
+.h-screen-mobile {
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+html, body {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+#__next {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes pixelFloat {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 0.2;
+  }
+  to {
+    transform: translateY(-120px) scale(0.6);
+    opacity: 0;
+  }
+}
+
+.pixel-particles::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(#dedede 1px, transparent 1px),
+    radial-gradient(#22d3ee 1px, transparent 1px);
+  background-size: 16px 16px;
+  animation: pixelFloat 10s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes pixelDrift {
+  from {
+    transform: translateY(0);
+    opacity: 0.25;
+  }
+  to {
+    transform: translateY(-140px);
+    opacity: 0;
+  }
+}
+
+.pixel-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(#8b5cf6 1.5px, transparent 1.5px),
+    radial-gradient(#22d3ee 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+  animation: pixelDrift 12s linear infinite;
+}
+
+.portal-btn {
+  position: relative;
+  padding: 0.7rem 1.6rem;
+  border-radius: 12px;
+
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
+
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 18px rgba(0, 0, 0, 0.35);
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* hover: temperature shift, NOT glow */
+.portal-btn:hover {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 22px rgba(0, 0, 0, 0.4);
+
+  transform: translateY(-0.5px);
+}
+
+/* active */
+.portal-btn:active {
+  transform: translateY(0);
+}
+
+
+@keyframes verticalRoll {
+  from {
+    top: 0;
+  }
+  to {
+    top: -50%;
+  }
+}
+
+.roll-wrapper {
+  position: absolute;
+  height: 200%;
+  animation: verticalRoll 18s linear infinite;
+}
