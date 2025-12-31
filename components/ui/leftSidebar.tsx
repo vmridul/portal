@@ -512,7 +512,10 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                 Cancel
               </button>
               <button
-                onClick={handleSignOut}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSignOut();
+                }}
                 className="bg-white ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-6 rounded-xl"
               >
                 Log Out
@@ -557,13 +560,13 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
                     className="rounded-xl w-10 h-10 border border-[#313131]"
                   />
 
-                  {onlineUsers.has(user?.user_id.toString()) ? (
-                    <div className="z-[9999] absolute right-0 bottom-0 w-[10px] h-[10px] opacity-90 bg-green-500 border border-[#59ab44] rounded-full"></div>
-                  ) : (
+                  {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
                     <Moon
                       fill="yellow"
                       className="absolute text-yellow-400 right-0 bottom-0 w-[12px] h-[12px] opacity-90"
                     />
+                  ) : (
+                    <div className="z-[9999] absolute right-0 bottom-0 w-[10px] h-[10px] opacity-90 bg-green-500 border border-[#59ab44] rounded-full"></div>
                   )}
                 </div>
                 <div className="flex flex-col text-sm">
