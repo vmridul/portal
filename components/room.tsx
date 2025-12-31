@@ -433,7 +433,7 @@ export default function Room({ room_id }: { room_id: string }) {
       )}
       <div className="flex h-[100dvh] md:h-[92vh] flex-col relative overflow-hidden">
         {!user?.user_id || !messages ? (
-          <Skeleton className="h-[780px] mt-2 ml-2 w-[884px] bg-[#313131] absolute -top-[40px] rounded-[6px]" />
+          <Skeleton className="h-[780px] ml-2 w-[884px] bg-[#313131] absolute -top-[40px] rounded-[6px]" />
         ) : (
           <div
             ref={containerRef}

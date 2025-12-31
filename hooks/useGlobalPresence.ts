@@ -52,25 +52,42 @@ export function useGlobalPresence() {
       })
 
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
-  setOnlineUsers((prev) => {
-    const next = new Set(prev)
-    newPresences.forEach((p: any) => next.add(p.user_id))
-    return next
-  })
-})
+        setOnlineUsers((prev) => {
+          const next = new Set(prev)
+          newPresences.forEach((p: any) => {
+            if (p.status !== "away") next.add(p.user_id)
+          })
+          return next
+        })
+        setAwayUsers((prev) => {
+          const next = new Set(prev)
+          newPresences.forEach((p: any) => {
+            if (p.status === "away") next.add(p.user_id)
+          })
+          return next
+        })
+      })
 
 channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
-  setOnlineUsers((prev) => {
-    const next = new Set(prev)
-    leftPresences.forEach((p: any) => next.delete(p.user_id))
-    return next
-  })
-})
+        setOnlineUsers((prev) => {
+          const next = new Set(prev)
+          leftPresences.forEach((p: any) => next.delete(p.user_id))
+          return next
+        })
+        setAwayUsers((prev) => {
+          const next = new Set(prev)
+          leftPresences.forEach((p: any) => next.delete(p.user_id))
+          return next
+        })
+      })
 
 
-      channel.subscribe(async (status) => {
+      await channel.subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await setStatus("online")
+          await channel.track({
+            user_id: user.id,
+            status: "online",
+          })
         }
       })
     }
