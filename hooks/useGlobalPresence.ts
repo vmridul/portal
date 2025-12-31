@@ -47,10 +47,26 @@ export function useGlobalPresence() {
               : online.add(p.user_id)
           })
         })
-
         setOnlineUsers(online)
         setAwayUsers(away)
       })
+
+      channel.on("presence", { event: "join" }, ({ newPresences }) => {
+  setOnlineUsers((prev) => {
+    const next = new Set(prev)
+    newPresences.forEach((p: any) => next.add(p.user_id))
+    return next
+  })
+})
+
+channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
+  setOnlineUsers((prev) => {
+    const next = new Set(prev)
+    leftPresences.forEach((p: any) => next.delete(p.user_id))
+    return next
+  })
+})
+
 
       channel.subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
