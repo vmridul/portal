@@ -58,7 +58,7 @@ export const ProfileDialog = ({
           />
         </div>
         <div className=" mt-3 flex flex-col gap-3 text-sm">
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-1 md:gap-4 items-center">
             <div className="cursor-pointer group relative ">
               <Image
                 src={user?.avatar || "/assets/default-avatar.png"}
@@ -163,7 +163,7 @@ export const ProfileDialog = ({
                     setNewUsername,
                   })
                 }
-                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-8 md:px-4 rounded-[6px]"
+                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-10 md:px-4 rounded-[6px]"
               >
                 Change Name
               </button>
@@ -171,12 +171,12 @@ export const ProfileDialog = ({
           </div>
           <div className="relative flex flex-col gap-2">
             <span className="text-xs text-white/60">User ID</span>
-            <div className="relative border-[#313131] rounded-[8px] text-[#e3e3e3] bg-[#1b1b1b] py-2 px-3 w-full border flex justify-between items-center">
+            <div className="relative border-[#313131] bg-opacity-70 border-opacity-70 rounded-[8px] text-[#e3e3e3] bg-[#1b1b1b] py-1 px-3 w-full border flex justify-between items-center">
               <input
                 className="outline-none truncate
-    overflow-hidden
+    overflow-hidden w-full
     whitespace-nowrap
-    text-ellipsis disabled:opacity-70 placeholder-[#c7c7c7]"
+    text-ellipsis bg-transparent placeholder-[#c7c7c7]"
                 type="text"
                 disabled
                 value={user?.user_id}
