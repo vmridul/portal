@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pixelify_Sans } from "next/font/google";
 import ChatBubbles from "@/components/ui/chatBubbles";
+import { App as CapApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
 export const pixelFont = Pixelify_Sans({
   weight: "400",
@@ -32,6 +34,36 @@ export default function Page() {
     };
 
     checkAuth();
+
+    // Setup Capacitor deep link listener for OAuth callback
+    if (Capacitor.isNativePlatform()) {
+      const listener = CapApp.addListener('appUrlOpen', async (event: any) => {
+        console.log('App opened with URL:', event.url);
+
+        // Handle Supabase OAuth callback
+        if (event.url.includes('access_token') || event.url.includes('portal://auth/callback')) {
+          const fragment = event.url.split('#')[1];
+
+          if (fragment) {
+            // Set the hash so Supabase can process the tokens
+            window.location.hash = fragment;
+
+            // Wait a bit for Supabase to process, then check session
+            setTimeout(async () => {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (session) {
+                router.replace("/portal");
+              }
+            }, 1000);
+          }
+        }
+      });
+
+      // Cleanup listener
+      return () => {
+        listener.then((l: any) => l.remove());
+      };
+    }
   }, [router]);
 
   return (
@@ -48,7 +80,6 @@ export default function Page() {
           </div>
         </div>
         <Login redirect={redirectParms ?? "/portal"} />
-        <button onClick={() => router.push("/portal")}>Chats</button>
       </div>
     </div>
   );

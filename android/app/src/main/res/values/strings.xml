@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">portal</string>
-    <string name="title_activity_main">portal</string>
+    <string name="app_name">Portal</string>
+    <string name="title_activity_main">Portal</string>
     <string name="package_name">com.mridul.portal</string>
     <string name="custom_url_scheme">com.mridul.portal</string>
 </resources>
