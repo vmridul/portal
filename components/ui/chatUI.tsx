@@ -309,7 +309,7 @@ export const ChatUI = ({
   });
 
   return (
-    <div className={`flex flex-col ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
+    <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
       <div
         ref={containerRef}
         onScroll={(e) => {
@@ -495,10 +495,13 @@ export const ChatUI = ({
       {/* Input area */}
       <div
         {...getRootProps()}
-        className="flex items-center gap-2 absolute bottom-4 left-1/2 -translate-x-1/2 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
+        className="flex items-center gap-2 absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
         style={
           isMobile
-            ? { transform: "translateY(calc(-1 * var(--keyboard-offset)))" }
+            ? {
+              transform: "translateY(calc(-1 * var(--keyboard-offset)))",
+              transition: "transform 0.2s ease-out"
+            }
             : undefined
         }
       >

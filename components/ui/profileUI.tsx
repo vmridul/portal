@@ -17,7 +17,7 @@ export const ProfileUI = ({
   return (
     <div
       onClick={() => setProfileDialog(true)}
-      className={`flex justify-between absolute bottom-12 md:bottom-2 items-center cursor-pointer hover:bg-[#211f31] ease-in-out rounded-xl w-60 px-2 py-2`}
+      className={`flex justify-between absolute bottom-2 items-center cursor-pointer hover:bg-[#211f31] ease-in-out rounded-xl w-60 px-2 py-2`}
     >
       <div className="flex gap-4 items-center">
         <div className="relative">
