@@ -2,7 +2,7 @@
   "name": "Portal",
   "short_name": "Portal",
   "description": "Realtime chat application",
-  "start_url": "/",
+  "start_url": "/portal",
   "scope": "/",
   "display": "standalone",
   "background_color": "#000000",
