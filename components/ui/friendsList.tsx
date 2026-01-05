@@ -40,7 +40,7 @@ export default function FriendsList({ friends }: { friends: any[] }) {
                 }
               }}
               onClick={(e) => e.stopPropagation()}
-              className=" flex text-sm px-3 items-center md:w-fit w-[100px] text-white/60 rounded-[6px] bg-[#211f31]"
+              className=" flex text-sm px-3 items-center text-white/60 rounded-[6px] bg-[#211f31]"
             >
               <Search className="w-4 h-4 text-white/40" />
               <input
@@ -54,7 +54,7 @@ export default function FriendsList({ friends }: { friends: any[] }) {
               onClick={(e) => {
                 setAddFriendDialog(!addFriendDialog);
               }}
-              className="flex text-white/80 text-sm items-center gap-1 bg-[#211f31] hover:bg-opacity-90 hover:text-white/90 px-3 py-0 md:py-1 rounded-[8px]"
+              className="flex text-white/80 text-sm items-center gap-1 bg-[#211f31] hover:bg-opacity-90 hover:text-white/90 px-4 py-1 rounded-[8px]"
             >
               <UserPlus className="w-4 h-4" />
               <span>Add friend</span>

@@ -15,7 +15,7 @@ import { RoomList } from "./roomsList";
 import { ProfileUI } from "./profileUI";
 import { ProfileDialog } from "./profileDialog";
 import { Press_Start_2P } from "next/font/google";
-import { useUIStore } from "@/store/uiStore";
+import { ListSkeleton } from "./listSkeleton";
 
 export const pixelFont = Press_Start_2P({
   weight: "400",
@@ -44,7 +44,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [profileDialog, setProfileDialog] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const { awayUsers, setStatus } = usePresence();
-  const { activeFriendPage, setActiveFriendPage } = useUIStore();
 
   //get current room from pathname
   useEffect(() => {
@@ -205,7 +204,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
           className="z-[2000] w-6 h-6 absolute top-2 left-2 text-white md:hidden"
         >
           <Menu
-            className={`${activeFriendPage ? "opacity-0 pointer-events-none" : "pointer-events-auto opacity-100"} ${mobileMenu ? "rotate-180" : ""
+            className={`${mobileMenu ? "rotate-180" : ""
               } text-white/60 ease-in-out hover:text-white/80 duration-200 w-5 h-5`}
           />
         </button>

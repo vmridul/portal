@@ -87,7 +87,7 @@ export default function FriendsTab() {
         ) : activeFriendPage ? (
           <div
             className={`
- flex items-center py-3 pr-5 md:p-3  w-full gap-4 border-b border-[#322b45] bg-[#211f31] bg-opacity-100`}
+ flex items-center p-3  w-full gap-4 border-b border-[#322b45] bg-[#211f31] bg-opacity-100`}
           >
             <ArrowLeft
               onClick={() => {
