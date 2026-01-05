@@ -28,6 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <Suspense>
