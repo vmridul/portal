@@ -1,105 +1,105 @@
-import { useEffect, useRef, useState } from "react"
-import { supabase } from "@/lib/supabase/client"
+import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 
-type Status = "online" | "away"
+type Status = "online" | "away";
 
 export function useGlobalPresence() {
-  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set())
-  const [awayUsers, setAwayUsers] = useState<Set<string>>(new Set())
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [awayUsers, setAwayUsers] = useState<Set<string>>(new Set());
 
-  const channelRef = useRef<any>(null)
-  const userIdRef = useRef<string | null>(null)
+  const channelRef = useRef<any>(null);
+  const userIdRef = useRef<string | null>(null);
 
   const setStatus = async (status: Status) => {
-    if (!channelRef.current || !userIdRef.current) return
+    if (!channelRef.current || !userIdRef.current) return;
 
     await channelRef.current.track({
       user_id: userIdRef.current,
       status,
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-    let active = true
+    let active = true;
 
     const setup = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.user || !active) return
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.user || !active) return;
 
-      const user = session.user
-      userIdRef.current = user.id
+      const user = session.user;
+      userIdRef.current = user.id;
 
       const channel = supabase.channel("global-presence", {
         config: { presence: { key: user.id } },
-      })
+      });
 
-      channelRef.current = channel
+      channelRef.current = channel;
 
       channel.on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState()
-        const online = new Set<string>()
-       const away = new Set<string>();
+        const state = channel.presenceState();
+        const online = new Set<string>();
+        const away = new Set<string>();
 
-        (Object.values(state) as any[][]).forEach((list:any) => {
-          list.forEach((p:any) => {
-            if (!p.user_id) return
-            p.status === "away"
-              ? away.add(p.user_id)
-              : online.add(p.user_id)
-          })
-        })
-        setOnlineUsers(online)
-        setAwayUsers(away)
-      })
+        (Object.values(state) as any[][]).forEach((list: any) => {
+          list.forEach((p: any) => {
+            if (!p.user_id) return;
+            p.status === "away" ? away.add(p.user_id) : online.add(p.user_id);
+          });
+        });
+        setOnlineUsers(online);
+        setAwayUsers(away);
+      });
 
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
         setOnlineUsers((prev) => {
-          const next = new Set(prev)
+          const next = new Set(prev);
           newPresences.forEach((p: any) => {
-            if (p.status !== "away") next.add(p.user_id)
-          })
-          return next
-        })
+            if (p.status !== "away") next.add(p.user_id);
+          });
+          return next;
+        });
         setAwayUsers((prev) => {
-          const next = new Set(prev)
+          const next = new Set(prev);
           newPresences.forEach((p: any) => {
-            if (p.status === "away") next.add(p.user_id)
-          })
-          return next
-        })
-      })
+            if (p.status === "away") next.add(p.user_id);
+          });
+          return next;
+        });
+      });
 
       channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
         setOnlineUsers((prev) => {
-          const next = new Set(prev)
-          leftPresences.forEach((p: any) => next.delete(p.user_id))
-          return next
-        })
+          const next = new Set(prev);
+          leftPresences.forEach((p: any) => next.delete(p.user_id));
+          return next;
+        });
         setAwayUsers((prev) => {
-          const next = new Set(prev)
-          leftPresences.forEach((p: any) => next.delete(p.user_id))
-          return next
-        })
-      })
+          const next = new Set(prev);
+          leftPresences.forEach((p: any) => next.delete(p.user_id));
+          return next;
+        });
+      });
 
       await channel.subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
           await channel.track({
             user_id: user.id,
             status: "online",
-          })
+          });
         }
-      })
-    }
+      });
+    };
 
-    setup()
+    setup();
 
     return () => {
-      active = false
-      channelRef.current?.untrack()
-      channelRef.current?.unsubscribe()
-    }
-  }, [])
+      active = false;
+      channelRef.current?.untrack();
+      channelRef.current?.unsubscribe();
+    };
+  }, []);
 
-  return { onlineUsers, awayUsers, setStatus }
+  return { onlineUsers, awayUsers, setStatus };
 }

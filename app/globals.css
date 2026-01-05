@@ -24,18 +24,6 @@ input[type="number"] {
 }
 
 
-@layer utilities {
-  .bg-pattern {
-    background: 
-      linear-gradient(135deg,#0000 20.5%,#0f1320 0 29.5%,#0000 0) 0 12px,
-      linear-gradient( 45deg,#0000 8%,#0f1320 0 17%, #0000 0 58%) 24px 0,
-      linear-gradient(135deg,#0000 8%,#0f1320 0 17%, #0000 0 58%,#0f1320 0 67%,#0000 0),        
-      linear-gradient( 45deg,#0000 8%,#0f1320 0 17%, #0000 0 58%,#0f1320 0 67%,#0000 0 83%,#0f1320 0 92%,#0000 0),
-      #070a12;
-background-size: 48px 48px;
-  }
-}
-
 .h-screen-mobile {
   height: calc(var(--vh, 1vh) * 100);
 }
@@ -53,80 +41,119 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-@keyframes pixelFloat {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 0.2;
-  }
-  to {
-    transform: translateY(-120px) scale(0.6);
-    opacity: 0;
-  }
+.animated-btn {
+  font-weight: bold;
+  color: #4a3086;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  width: 130.02px;
+  height: 42.66px;
+  border: none;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.pixel-particles::before {
-  content: "";
+.animated-btn .span-mother {
+  display: flex;
+  overflow: hidden;
+}
+
+.animated-btn:hover .span-mother {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(#dedede 1px, transparent 1px),
-    radial-gradient(#22d3ee 1px, transparent 1px);
-  background-size: 16px 16px;
-  animation: pixelFloat 10s linear infinite;
-  pointer-events: none;
 }
 
-@keyframes pixelDrift {
-  from {
-    transform: translateY(0);
-    opacity: 0.25;
-  }
-  to {
-    transform: translateY(-140px);
-    opacity: 0;
-  }
+.animated-btn:hover .span-mother span {
+  transform: translateY(1.2em);
 }
 
-
-.portal-btn {
-  position: relative;
-  padding: 0.7rem 1.6rem;
-  border-radius: 12px;
-
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.85);
-
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border: 1px solid rgba(255, 255, 255, 0.14);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 6px 18px rgba(0, 0, 0, 0.35);
-
-  transition:
-    background 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s ease;
+.animated-btn .span-mother span:nth-child(1) {
+  transition: 0.2s;
+}
+.animated-btn .span-mother span:nth-child(2) {
+  transition: 0.3s;
+}
+.animated-btn .span-mother span:nth-child(3) {
+  transition: 0.4s;
+}
+.animated-btn .span-mother span:nth-child(4) {
+  transition: 0.5s;
+}
+.animated-btn .span-mother span:nth-child(5) {
+  transition: 0.6s;
+}
+.animated-btn .span-mother span:nth-child(6) {
+  transition: 0.7s;
 }
 
-/* hover: temperature shift, NOT glow */
-.portal-btn:hover {
-  background: rgba(168, 85, 247, 0.12);
-  border-color: rgba(168, 85, 247, 0.35);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 8px 22px rgba(0, 0, 0, 0.4);
-
-  transform: translateY(-0.5px);
+.animated-btn .span-mother2 {
+  display: flex;
+  position: absolute;
+  overflow: hidden;
 }
 
-/* active */
-.portal-btn:active {
+.animated-btn .span-mother2 span {
+  transform: translateY(-1.2em);
+}
+
+.animated-btn:hover .span-mother2 span {
   transform: translateY(0);
+}
+
+.animated-btn .span-mother2 span {
+  transition: 0.2s;
+}
+.animated-btn .span-mother2 span:nth-child(2) {
+  transition: 0.3s;
+}
+.animated-btn .span-mother2 span:nth-child(3) {
+  transition: 0.4s;
+}
+.animated-btn .span-mother2 span:nth-child(4) {
+  transition: 0.5s;
+}
+.animated-btn .span-mother2 span:nth-child(5) {
+  transition: 0.6s;
+}
+.animated-btn .span-mother2 span:nth-child(6) {
+  transition: 0.7s;
+}
+
+.bg-pattern {
+  --s: 119px; 
+  --c1: #8b5cf6;
+  --c2: #2a1c55;
+
+  --_g: #0000 52%, var(--c1) 54% 57%, #0000 59%; 
+
+  background: 
+    radial-gradient(farthest-side at -33.33% 50%, var(--_g)) 0 calc(var(--s)/2),
+    radial-gradient(farthest-side at 50% 133.33%, var(--_g)) calc(var(--s)/2) 0,
+    radial-gradient(farthest-side at 133.33% 50%, var(--_g)),
+    radial-gradient(farthest-side at 50% -33.33%, var(--_g)),
+    var(--c2);
+
+  background-size: calc(var(--s)/4.667) var(--s),
+                   var(--s) calc(var(--s)/4.667);
+
+  /* fade left → right */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 40%,
+    rgba(0,0,0,0) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 40%,
+    rgba(0,0,0,0) 100%
+  );
+}
+
+
+.dots {
+  background-image: radial-gradient(circle at 1px 1px, rgb(197, 197, 197) 1px, transparent 0);
+  background-size: 4px 4px;
 }

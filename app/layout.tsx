@@ -4,7 +4,6 @@ import { DM_Sans } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import { pixelFont } from "./page";
 import { PresenceProvider } from "@/contexts/presenceContext";
 
 export const metadata: Metadata = {
@@ -27,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={pixelFont.variable}>
+    <html lang="en">
       <body className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <Suspense>
