@@ -44,8 +44,37 @@ export const ChatUI = ({
   const channelRef = useRef<any>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   const PAGE_SIZE = 200;
+
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+
+    const viewport = window.visualViewport;
+
+    const handleResize = () => {
+      const keyboardHeight =
+        window.innerHeight - viewport.height - viewport.offsetTop;
+
+      document.documentElement.style.setProperty(
+        "--keyboard-offset",
+        `${Math.max(keyboardHeight, 0)}px`
+      );
+    };
+
+    viewport.addEventListener("resize", handleResize);
+    viewport.addEventListener("scroll", handleResize);
+
+    handleResize();
+
+    return () => {
+      viewport.removeEventListener("resize", handleResize);
+      viewport.removeEventListener("scroll", handleResize);
+    };
+  }, []);
 
   //jump for search
   useEffect(() => {
@@ -280,7 +309,7 @@ export const ChatUI = ({
   });
 
   return (
-    <div className={`flex flex-col ${type === "friend" ? "h-[calc(100vh-55px)]" : "h-[calc(100vh-40px)]"} relative overflow-hidden`}>
+    <div className={`flex flex-col ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
       <div
         ref={containerRef}
         onScroll={(e) => {
@@ -466,7 +495,12 @@ export const ChatUI = ({
       {/* Input area */}
       <div
         {...getRootProps()}
-        className="flex  items-center gap-2 absolute bottom-4 left-1/2 -translate-x-1/2 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
+        className="flex items-center gap-2 absolute bottom-4 left-1/2 -translate-x-1/2 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
+        style={
+          isMobile
+            ? { transform: "translateY(calc(-1 * var(--keyboard-offset)))" }
+            : undefined
+        }
       >
         {/* File preview */}
         {selectedFile && (

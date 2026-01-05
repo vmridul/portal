@@ -36,7 +36,7 @@ export default function Page() {
     <div className="min-h-screen overflow-hidden flex items-center bg-[#2a1c55]">
       <div className="z-[400] absolute inset-0 bg-pattern opacity-5" />
       <ChatBubbles />
-      <div className="z-[9999] mb-[140px] ml-20 gap-6 flex md:items-start flex-col">
+      <div className="z-[9999] mb-[140px] ml-20 gap-6 flex items-center md:items-start flex-col">
         <div className="">
           <div className={`${pixelFont.className} text-white text-8xl`}>
             Portal
