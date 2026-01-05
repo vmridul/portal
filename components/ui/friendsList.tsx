@@ -47,7 +47,7 @@ export default function FriendsList({ friends }: { friends: any[] }) {
                 type="text"
                 placeholder="Search friend"
                 onChange={(e) => setSearch(e.target.value)}
-                className="px-2 py-1 w-[160px] md:w-72 bg-transparent outline-none placeholder-white/40"
+                className="px-2 py-1 w-[170px] md:w-72 bg-transparent outline-none placeholder-white/40"
               />
             </div>
             <button

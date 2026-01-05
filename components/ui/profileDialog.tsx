@@ -84,7 +84,7 @@ export const ProfileDialog = ({
               />
             </div>
 
-            <div className="flex md:flex-row gap-1 flex-col flex-1 items-center md:gap-3">
+            <div className="flex md:flex-row gap-0 flex-col flex-1 items-center md:gap-3">
               <div className="flex flex-1 flex-col gap-2">
                 <div className="flex justify-between gap-4 items-center ">
                   <span className="text-xs text-white/60">Username</span>
@@ -163,7 +163,7 @@ export const ProfileDialog = ({
                     setNewUsername,
                   })
                 }
-                className="bg-white w-full disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-2 md:px-4 rounded-[6px]"
+                className="bg-white disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-2 md:px-4 rounded-[6px]"
               >
                 Change Name
               </button>
@@ -171,7 +171,7 @@ export const ProfileDialog = ({
           </div>
           <div className="relative flex flex-col gap-2">
             <span className="text-xs text-white/60">User ID</span>
-            <div className="relative flex items-center">
+            <div className="relative flex justify-between items-center">
               <input
                 className="outline-none truncate
     overflow-hidden
@@ -189,7 +189,7 @@ export const ProfileDialog = ({
                   toast.success("User ID copied to clipboard");
                   navigator.clipboard.writeText(user?.user_id || "");
                 }}
-                className="absolute cursor-pointer flex items-center justify-center right-2 w-7 h-7 rounded-[8px] hover:bg-[#313131]"
+                className="cursor-pointer flex items-center justify-center w-7 h-7 rounded-[8px] hover:bg-[#313131]"
               >
                 <Copy className="w-4 h-4 text-white/60" />
               </div>
