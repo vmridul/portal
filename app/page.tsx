@@ -48,6 +48,7 @@ export default function Page() {
           </div>
         </div>
         <Login redirect={redirectParms ?? "/portal"} />
+        <button onClick={() => router.push("/portal")}>Chats</button>
       </div>
     </div>
   );
