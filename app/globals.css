@@ -151,6 +151,13 @@ html, body {
     rgba(0,0,0,0) 100%
   );
 }
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.navbar {
+  padding-top: env(safe-area-inset-top);
+}
 
 
 .dots {
