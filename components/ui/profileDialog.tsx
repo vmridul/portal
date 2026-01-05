@@ -84,7 +84,7 @@ export const ProfileDialog = ({
               />
             </div>
 
-            <div className="flex md:flex-row flex-col flex-1 items-center gap-3">
+            <div className="flex md:flex-row gap-1 flex-col flex-1 items-center md:gap-3">
               <div className="flex flex-1 flex-col gap-2">
                 <div className="flex justify-between gap-4 items-center ">
                   <span className="text-xs text-white/60">Username</span>
@@ -163,7 +163,7 @@ export const ProfileDialog = ({
                     setNewUsername,
                   })
                 }
-                className="bg-white disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-2 md:px-4 rounded-[6px]"
+                className="bg-white w-full disabled:opacity-50 mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-2 md:px-4 rounded-[6px]"
               >
                 Change Name
               </button>
@@ -173,7 +173,11 @@ export const ProfileDialog = ({
             <span className="text-xs text-white/60">User ID</span>
             <div className="relative flex items-center">
               <input
-                className="outline-none border disabled:opacity-70 placeholder-[#c7c7c7] border-[#313131] rounded-[8px] text-[#e3e3e3] bg-[#1b1b1b] py-2 px-3 w-full"
+                className="outline-none truncate
+    overflow-hidden
+    whitespace-nowrap
+    text-ellipsis
+     border disabled:opacity-70 placeholder-[#c7c7c7] border-[#313131] rounded-[8px] text-[#e3e3e3] bg-[#1b1b1b] py-2 px-3 w-full"
                 type="text"
                 disabled
                 value={user?.user_id}
