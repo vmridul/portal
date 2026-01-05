@@ -33,15 +33,15 @@ export default function Page() {
   }, [router]);
 
   return (
-    <div className="min-h-screen overflow-hidden flex items-center bg-[#2a1c55]">
+    <div className="min-h-screen overflow-hidden flex items-center justify-center md:justify-normal bg-[#2a1c55]">
       <div className="z-[400] absolute inset-0 bg-pattern opacity-5" />
       <ChatBubbles />
-      <div className="z-[9999] mb-[140px] ml-20 gap-6 flex items-center md:items-start flex-col">
+      <div className="z-[9999] mb-[140px] ml-0 md:ml-20 gap-6 flex items-center md:items-start flex-col">
         <div className="">
-          <div className={`${pixelFont.className} text-white text-8xl`}>
+          <div className={`${pixelFont.className} text-white text-7xl md:text-8xl`}>
             Portal
           </div>
-          <div className="ml-1 text-[#dacdfb] text-lg font-sans">
+          <div className="ml-1 text-[#dacdfb] text-sm md:text-lg font-sans">
             Realtime conversation without friction
           </div>
         </div>

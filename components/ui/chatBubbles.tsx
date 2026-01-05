@@ -73,7 +73,6 @@ const ChatBubbles = () => {
     "Ready to scale.",
   ];
 
-  // Array of purple shades
   const colors = ["#8B5CF6", "#8B5CF66A"];
   const dotIndices = [3, 12, 25, 38, 51, 60];
 
@@ -85,7 +84,6 @@ const ChatBubbles = () => {
     rows.push(messages.slice(i, i + 3));
   }
 
-  // ✅ MOBILE LIMITS
   const MOBILE_TOP_ROWS = 2;
   const MOBILE_BOTTOM_ROWS = 5;
 
@@ -127,14 +125,13 @@ const ChatBubbles = () => {
 
   return (
     <div className="absolute inset-0 z-[9999] pointer-events-none select-none">
-      {/* 📱 MOBILE — TOP (2 rows only) */}
       <div className="md:hidden absolute top-4 right-2 flex flex-col gap-2">
+
         {topRows.map((row, i) => (
           <BubbleRow key={i} row={row} baseIndex={i * 3} />
         ))}
       </div>
 
-      {/* 📱 MOBILE — BOTTOM (4–5 rows only) */}
       <div className="md:hidden absolute bottom-4 right-2 flex flex-col gap-2">
         {bottomRows.map((row, i) => (
           <BubbleRow
@@ -145,7 +142,6 @@ const ChatBubbles = () => {
         ))}
       </div>
 
-      {/* 💻 DESKTOP — FULL WALL */}
       <div className="hidden md:flex absolute right-2 top-0 flex-col gap-2">
         {rows.map((row, i) => (
           <BubbleRow key={i} row={row} baseIndex={i * 3} />
