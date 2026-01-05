@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { PresenceProvider } from "@/contexts/presenceContext";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Portal",
@@ -27,15 +28,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-      </head>
       <body className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <Suspense>
             <PresenceProvider>
-              <main className="flex-1 font-sans">{children}</main>
-              <Toaster theme="dark" position="top-center" />
+              <Providers>
+                <main className="flex-1 font-sans">{children}</main>
+                <Toaster theme="dark" position="top-center" />
+              </Providers>
             </PresenceProvider>
           </Suspense>
         </div>

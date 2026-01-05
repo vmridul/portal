@@ -23,12 +23,14 @@ export default function Page() {
   useEffect(() => {
     const checkAuth = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
         router.replace("/portal");
       }
     };
+
     checkAuth();
   }, [router]);
 
@@ -45,7 +47,7 @@ export default function Page() {
             Realtime conversation without friction
           </div>
         </div>
-        <Login redirect={redirectParms ?? ""} />
+        <Login redirect={redirectParms ?? "/portal"} />
       </div>
     </div>
   );
