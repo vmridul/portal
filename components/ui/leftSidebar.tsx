@@ -15,7 +15,7 @@ import { RoomList } from "./roomsList";
 import { ProfileUI } from "./profileUI";
 import { ProfileDialog } from "./profileDialog";
 import { Press_Start_2P } from "next/font/google";
-import { ListSkeleton } from "./listSkeleton";
+import { useUIStore } from "@/store/uiStore";
 
 export const pixelFont = Press_Start_2P({
   weight: "400",
@@ -44,6 +44,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [profileDialog, setProfileDialog] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const { awayUsers, setStatus } = usePresence();
+  const { activeFriendPage } = useUIStore();
 
   //get current room from pathname
   useEffect(() => {
@@ -201,7 +202,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
       <div>
         <button
           onClick={() => setMobileMenu(!mobileMenu)}
-          className="z-[2000] w-6 h-6 absolute top-2 left-2 text-white md:hidden"
+          className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-2 left-2 text-white md:hidden`}
         >
           <Menu
             className={`${mobileMenu ? "rotate-180" : ""
@@ -211,7 +212,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
         <div
           className={`bg-[#080f17] ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 h-screen 
     border-[#322b45] border-r select-none transition-transform duration-300
-    flex flex-col p-2 text-white items-center font-sans z-[1500]
+    flex flex-col py-2 px-4 md:p-2 text-white items-center font-sans z-[1500]
     ${mobileMenu ? "translate-x-0" : "-translate-x-full"}
     md:translate-x-0`}
         >

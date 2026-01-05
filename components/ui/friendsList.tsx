@@ -26,7 +26,7 @@ export default function FriendsList({ friends }: { friends: any[] }) {
         <Skeleton className="h-screen mt-2 w-full" />
       ) : (
         <div className="h-screen">
-          <div className="flex mt-3 ml-3 mr-3 items-center justify-between">
+          <div className="flex mt-3 ml-3 mr-3 gap-2 items-center justify-between">
             <div
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                 if (e.key === "ArrowDown") {

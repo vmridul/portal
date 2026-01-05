@@ -280,7 +280,7 @@ export const ChatUI = ({
   });
 
   return (
-    <div className="flex h-[94dvh] md:h-[92vh] flex-col relative overflow-hidden">
+    <div className={`flex flex-col ${type === "friend" ? "h-[calc(100vh-55px)]" : "h-[calc(100vh-40px)]"} relative overflow-hidden`}>
       <div
         ref={containerRef}
         onScroll={(e) => {
@@ -299,7 +299,8 @@ export const ChatUI = ({
             });
           }
         }}
-        className="flex-1 w-full px-3 md:px-10 overscroll-contain overflow-y-auto pb-24 md:pb-28 flex flex-col gap-2"
+        className="flex-1 w-full px-3 md:px-10 overscroll-contain overflow-y-auto flex flex-col gap-2"
+        style={{ paddingBottom: '100px' }}
       >
         {loadingOlder && (
           <div className="flex justify-center py-2">
@@ -465,12 +466,12 @@ export const ChatUI = ({
       {/* Input area */}
       <div
         {...getRootProps()}
-        className="flex md:scale-100 scale-[70%] items-center gap-2 absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 px-3 py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
+        className="flex  items-center gap-2 absolute bottom-4 left-1/2 -translate-x-1/2 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-[#080f17] focus-within:border-[#393939] bg-opacity-90 border border-[#313131] border-opacity-90 backdrop-blur-md"
       >
         {/* File preview */}
         {selectedFile && (
           <div
-            className={`absolute bottom-full w-[450px] left-1/2 -translate-x-1/2 mb-2 bg-[#171717] px-3 py-2 rounded text-white/80 text-xs ${typingUsers.size > 0 && "mb-8"
+            className={`absolute bottom-full w-full left-1/2 -translate-x-1/2 mb-2 bg-[#171717] px-3 py-2 rounded text-white/80 text-xs ${typingUsers.size > 0 && "mb-8"
               }`}
           >
             {selectedFile.name}
@@ -487,7 +488,7 @@ export const ChatUI = ({
         )}
 
         {typingUsers.size > 0 && (
-          <div className="absolute w-[450px] left-1/2 -translate-x-1/2 bottom-full text-xs text-gray-400 bg-[#171717] px-3 py-1.5 rounded-[10px] rounded-b-none border border-[#323232] border-b-0 backdrop-blur-sm">
+          <div className="absolute w-full left-1/2 -translate-x-1/2 bottom-full text-xs text-gray-400 bg-[#171717] px-3 py-1.5 rounded-[10px] rounded-b-none border border-[#323232] border-b-0 backdrop-blur-sm">
             {Array.from(typingUsers).join(", ")}{" "}
             {typingUsers.size === 1 ? "is" : "are"} typing...
           </div>
@@ -550,7 +551,7 @@ export const ChatUI = ({
               });
             }
           }}
-          className="rounded-[8px] bg-transparent bg-[#121212] text-white/80 outline-none py-4 md:py-2 px-3 w-80 placeholder-[#777581]"
+          className="rounded-[8px] bg-transparent bg-[#121212] text-white/80 outline-none py-4 md:py-2 px-3 w-fit md:w-80 placeholder-[#777581]"
           type="text"
           placeholder="Press / to focus"
           disabled={uploading}

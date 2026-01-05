@@ -56,9 +56,9 @@ export default function FriendsTab() {
 
       <div
         className={`
-    fixed z-[9999] right-[224px] top-[16px] text-white/90 font-sans flex flex-col overflow-hidden items-start
+    fixed z-[9999] md:right-[224px] right-4 md:top-[16px] top-[35px] text-white/90 font-sans flex flex-col overflow-hidden items-start
     max-w-[140px]
-    h-screen
+    h-auto
     rounded-[8px] bg-[#0f1320] border border-[#3a3a3a]
     shadow-lg text-xs
     transform transition-all duration-150

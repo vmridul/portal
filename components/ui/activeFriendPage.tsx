@@ -52,7 +52,7 @@ export default function ActiveFriendPage() {
         </div>
       </div>
 
-      <div className="px-2">
+      <div className="">
         {!user || !activeFriendPage || loading ? (
           <ChatSkeleton />
         ) : (
