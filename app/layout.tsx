@@ -9,7 +9,6 @@ import { PresenceProvider } from "@/contexts/presenceContext";
 export const metadata: Metadata = {
   title: "Portal",
   description: "Realtime chat application",
-  manifest: "/manifest.json",
   icons: {
     icon: "/assets/favicon.ico",
   },
