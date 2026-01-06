@@ -39,31 +39,64 @@ export default function Page() {
     if (Capacitor.isNativePlatform()) {
       const listener = CapApp.addListener('appUrlOpen', async (event: any) => {
         console.log('App opened with URL:', event.url);
+        alert('URL received: ' + event.url);
+        console.log('Full event:', JSON.stringify(event));
 
         // Handle Supabase OAuth callback
-        if (event.url.includes('access_token') || event.url.includes('portal://auth/callback')) {
-          const fragment = event.url.split('#')[1];
+        if (event.url.includes('access_token')) {
+          console.log('Access token found in URL');
 
-          if (fragment) {
-            // Set the hash so Supabase can process the tokens
-            window.location.hash = fragment;
+          // Parse the URL properly
+          try {
+            // Replace custom scheme with https to parse as URL
+            const url = new URL(event.url.replace('portal://', 'https://'));
 
-            // Wait a bit for Supabase to process, then check session
-            setTimeout(async () => {
-              const { data: { session } } = await supabase.auth.getSession();
-              if (session) {
+            // Get hash params (tokens are in the hash)
+            const hashParams = new URLSearchParams(url.hash.substring(1));
+
+            const access_token = hashParams.get('access_token');
+            const refresh_token = hashParams.get('refresh_token');
+
+            console.log('Extracted tokens:', {
+              hasAccessToken: !!access_token,
+              hasRefreshToken: !!refresh_token
+            });
+
+            if (access_token && refresh_token) {
+              // Set the session directly using Supabase
+              const { data, error } = await supabase.auth.setSession({
+                access_token,
+                refresh_token,
+              });
+
+              console.log('Session set result:', {
+                hasSession: !!data.session,
+                error: error?.message
+              });
+
+              if (data.session) {
+                console.log('Successfully signed in, redirecting to portal');
                 router.replace("/portal");
+              } else {
+                console.error('Failed to create session:', error);
               }
-            }, 1000);
+            } else {
+              console.error('Missing tokens in URL');
+            }
+          } catch (error) {
+            console.error('Error parsing auth URL:', error);
           }
         }
       });
 
       // Cleanup listener
       return () => {
-        listener.then((l: any) => l.remove());
+        listener.then(l => l.remove());
       };
     }
+
+
+
   }, [router]);
 
   return (

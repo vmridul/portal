@@ -163,7 +163,7 @@ export const ProfileDialog = ({
                     setNewUsername,
                   })
                 }
-                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-10 md:px-4 rounded-[6px]"
+                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-11 md:px-4 rounded-[6px]"
               >
                 Change Name
               </button>
@@ -176,7 +176,7 @@ export const ProfileDialog = ({
                 className="outline-none truncate
     overflow-hidden w-full
     whitespace-nowrap
-    text-ellipsis bg-transparent placeholder-[#c7c7c7]"
+    text-ellipsis bg-transparent text-white/70 placeholder-[#c7c7c7]"
                 type="text"
                 disabled
                 value={user?.user_id}
