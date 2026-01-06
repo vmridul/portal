@@ -176,7 +176,7 @@ export const ProfileDialog = ({
                 className="outline-none truncate
     overflow-hidden w-full
     whitespace-nowrap
-    text-ellipsis bg-transparent text-white/70 placeholder-[#c7c7c7]"
+    text-ellipsis bg-transparent text-white/60 placeholder-[#c7c7c7]"
                 type="text"
                 disabled
                 value={user?.user_id}

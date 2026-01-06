@@ -18,7 +18,7 @@ export const uploadFile = async ({
 
   const {
     data: { publicUrl },
-  } = supabase.storage.from("chat-files").getPublicUrl(fileName);
+  } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
   return { url: publicUrl, originalName: file.name };
 };
