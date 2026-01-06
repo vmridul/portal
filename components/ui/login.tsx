@@ -1,15 +1,10 @@
 "use client";
-import Image from "next/image";
 import { supabase } from "@/lib/supabase/client";
-import { pixelFont } from "@/app/page";
-import { Capacitor } from '@capacitor/core';
 
 
 export default function Login({ redirect }: { redirect: string }) {
   const loginWithGoogle = async () => {
-    const redirectUrl = Capacitor.isNativePlatform()
-      ? 'portal://auth/callback'
-      : `${window.location.origin}/portal`;
+    const redirectUrl = `${window.location.origin}/portal`;
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
