@@ -124,7 +124,7 @@ const ChatBubbles = () => {
 
 
   return (
-    <div className="absolute inset-0 z-[9999] pointer-events-none select-none">
+    <div className="absolute inset-0 z-[9999] select-none">
       <div className="md:hidden absolute top-4 right-2 flex flex-col gap-2">
 
         {topRows.map((row, i) => (

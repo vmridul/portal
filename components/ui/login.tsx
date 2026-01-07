@@ -4,12 +4,11 @@ import { supabase } from "@/lib/supabase/client";
 
 export default function Login({ redirect }: { redirect: string }) {
   const loginWithGoogle = async () => {
-    const redirectUrl = `${window.location.origin}/portal`;
 
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: redirectUrl,
+        redirectTo: `${window.location.origin}/portal`,
       },
     });
   };
