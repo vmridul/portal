@@ -114,7 +114,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
       )}
       <button
         onClick={() => { setRightMobileMenu(!rightMobileMenu) }}
-        className="z-[1000] w-6 h-6 absolute top-2 right-2 text-white md:hidden"
+        className="z-[2100] w-6 h-6 absolute top-2 right-2 text-white md:hidden"
       >
         <Users className="text-white/60 w-4 h-4" />
       </button>

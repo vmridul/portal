@@ -76,25 +76,22 @@ export const ChatUI = ({
     if (!window.visualViewport) return;
 
     const viewport = window.visualViewport;
+    let frameId: any;
 
     const handleResize = () => {
-      const keyboardHeight =
-        window.innerHeight - viewport.height - viewport.offsetTop;
-
-      const isOpen = keyboardHeight > 80;
-      setKeyboardOpen(isOpen);
-
-      document.documentElement.style.setProperty(
-        "--keyboard-offset",
-        `${Math.max(keyboardHeight, 0)}px`
-      );
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        const offset = window.innerHeight - viewport.height;
+        setKeyboardOpen(offset > 80);
+        document.documentElement.style.setProperty("--keyboard-offset", `${Math.max(offset, 0)}px`);
+      });
     };
 
     viewport.addEventListener("resize", handleResize);
     viewport.addEventListener("scroll", handleResize);
-    handleResize();
 
     return () => {
+      cancelAnimationFrame(frameId);
       viewport.removeEventListener("resize", handleResize);
       viewport.removeEventListener("scroll", handleResize);
     };

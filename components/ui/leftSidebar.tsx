@@ -210,7 +210,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
           />
         </button>
         <div
-          className={`bg-[#080f17] ${className} md:translate-y-0 translate-y-9 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
+          className={`bg-[#080f17] ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
     border-[#322b45] border-r select-none transition-transform duration-300
     flex flex-col py-2 px-4 md:p-2 text-white items-center font-sans z-[1500]
     ${mobileMenu ? "translate-x-0" : "-translate-x-full"}
