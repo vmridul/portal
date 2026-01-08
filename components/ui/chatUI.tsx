@@ -331,7 +331,7 @@ export const ChatUI = ({
           <img
             src={previewImage}
             alt="preview"
-            className="max-w-[95vw] max-h-[95vh] md:max-w-[90vw] md:max-h-[90vh] touch-pan-y touch-pinch-zoom object-contain"
+            className="max-w-[95vw] max-h-[95vh] md:max-w-[85vw] md:max-h-[85vh] touch-pan-y touch-pinch-zoom object-contain"
             onClick={(e) => e.stopPropagation()}
           />
           <button
@@ -467,7 +467,7 @@ export const ChatUI = ({
                         ? color
                         : `${color}3A`,
                   }}
-                  className={`relative group py-2 px-3 hover:opacity-90 hover:scale-105 transition-all duration-200 ease-in-out rounded-[6px] ${message.type?.startsWith("image/")
+                  className={`relative group py-2 px-3 hover:opacity-90 md:hover:scale-100 hover:scale-105 transition-all duration-200 ease-in-out rounded-[6px] ${message.type?.startsWith("image/")
                     ? "bg-transparent"
                     : message.sender_id === user?.user_id
                       ? "text-white"
@@ -492,7 +492,7 @@ export const ChatUI = ({
                     <img
                       src={message.file_url}
                       alt="uploaded"
-                      className="md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
+                      className="md:max-w-[500px] md:max-h-[500px] max-w-[200px] max-h-[200px] cursor-pointer rounded-[8px] mb-2"
                       onLoad={() => {
                         if (shouldScrollToBottom && !isMobile) {
                           bottomRef.current?.scrollIntoView({
