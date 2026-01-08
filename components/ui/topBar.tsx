@@ -13,7 +13,6 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedResult, setSelectedResult] = useState(0);
-
   const { color, setColor } = useColor();
   const [colorDialog, setColorDialog] = useState(false);
 

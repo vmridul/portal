@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase/client";
 import { useDropzone } from "react-dropzone";
 import { shouldShowMeta } from "@/app/actions/shouldShowMeta";
 import { sendMessage } from "@/app/actions/sendMessage";
-import { Send, Plus, BadgeX, X } from "lucide-react";
+import { Send, Plus, BadgeX, X, ArrowDown } from "lucide-react";
 import { useRef } from "react";
 import { useEffect, useState } from "react";
 import { fetchMessages } from "@/app/actions/fetchMessages";
@@ -46,10 +46,28 @@ export const ChatUI = ({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const PAGE_SIZE = 200;
+  const [showScrollDown, setShowScrollDown] = useState(false);
 
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const THRESHOLD = 80;
+
+    const onScroll = () => {
+      const isScrolledUp =
+        el.scrollTop + el.clientHeight < el.scrollHeight - THRESHOLD;
+
+      setShowScrollDown(isScrolledUp);
+    };
+
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!window.visualViewport) return;
@@ -321,8 +339,23 @@ export const ChatUI = ({
     },
   });
 
+  const scrollToBottom = () => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
+      {showScrollDown && (
+        <button
+          onClick={scrollToBottom}
+          className="absolute bottom-4 right-4 rounded-full bg-neutral-900 text-white p-3 shadow-lg hover:bg-neutral-800 transition"
+        >
+          <ArrowDown className="h-6 w-6 border text-white/80 hover:text-white border-white/70 bg-[#313131] rounded-full p-2" />
+        </button>
+      )}
       {previewImage && (
         <div
           className="fixed inset-0 z-[1000] bg-black/80 transition-opacity duration-200 ease-out flex items-center justify-center"
