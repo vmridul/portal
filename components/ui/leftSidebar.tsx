@@ -16,6 +16,7 @@ import { ProfileUI } from "./profileUI";
 import { ProfileDialog } from "./profileDialog";
 import { Press_Start_2P } from "next/font/google";
 import { useUIStore } from "@/store/uiStore";
+import { haptic } from "@/app/actions/haptic";
 
 export const pixelFont = Press_Start_2P({
   weight: "400",
@@ -201,7 +202,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
       </div>
       <div>
         <button
-          onClick={() => { setMobileMenu(!mobileMenu); haptic("light") }}
+          onClick={() => { setMobileMenu(!mobileMenu) }}
           className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-2 left-2 text-white md:hidden`}
         >
           <Menu
