@@ -201,7 +201,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
       </div>
       <div>
         <button
-          onClick={() => setMobileMenu(!mobileMenu)}
+          onClick={() => { setMobileMenu(!mobileMenu); haptic("light") }}
           className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-2 left-2 text-white md:hidden`}
         >
           <Menu
