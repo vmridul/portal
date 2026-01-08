@@ -325,7 +325,7 @@ export const ChatUI = ({
     <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
       {previewImage && (
         <div
-          className="fixed inset-0 z-[1000] bg-black/90 transition-opacity duration-200 ease-out flex items-center justify-center"
+          className="fixed inset-0 z-[1000] bg-black/80 transition-opacity duration-200 ease-out flex items-center justify-center"
           onClick={() => setPreviewImage(null)}
         >
           <img
@@ -336,7 +336,7 @@ export const ChatUI = ({
           />
           <button
             onClick={() => setPreviewImage(null)}
-            className={`absolute ${isMobile ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} top-4 right-4 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
+            className={`absolute ${isMobile ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} top-6 right-6 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
           >
             <X className="h-6 w-6" />
           </button>
