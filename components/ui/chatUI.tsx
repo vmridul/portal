@@ -237,15 +237,22 @@ export const ChatUI = ({
   }, [room_id, user?.user_id, type]);
 
   useEffect(() => {
-    if (!loadingOlder && shouldScrollToBottom && !isMobile) {
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
-      const timer = setTimeout(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 200);
+    if (loadingOlder || !shouldScrollToBottom) return;
 
-      return () => clearTimeout(timer);
+    if (isMobile) {
+      const container = containerRef.current;
+      if (!container) return;
+      container.scrollTop = container.scrollHeight;
+      return;
     }
-  }, [messages, loadingOlder, shouldScrollToBottom]);
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+    const timer = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [messages, loadingOlder, shouldScrollToBottom, isMobile]);
+
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -461,7 +468,7 @@ export const ChatUI = ({
                       alt="uploaded"
                       className="md:max-w-[400px] md:max-h-[500px] rounded-lg mb-2"
                       onLoad={() => {
-                        if (shouldScrollToBottom) {
+                        if (shouldScrollToBottom && !isMobile) {
                           bottomRef.current?.scrollIntoView({
                             behavior: "auto",
                           });
