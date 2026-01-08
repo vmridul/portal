@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase/client";
 import { useDropzone } from "react-dropzone";
 import { shouldShowMeta } from "@/app/actions/shouldShowMeta";
 import { sendMessage } from "@/app/actions/sendMessage";
-import { Send, Plus, BadgeX } from "lucide-react";
+import { Send, Plus, BadgeX, X } from "lucide-react";
 import { useRef } from "react";
 import { useEffect, useState } from "react";
 import { fetchMessages } from "@/app/actions/fetchMessages";
@@ -325,15 +325,21 @@ export const ChatUI = ({
     <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
       {previewImage && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 transition-opacity duration-200 ease-out flex items-center justify-center"
+          className="fixed inset-0 z-[1000] bg-black/90 transition-opacity duration-200 ease-out flex items-center justify-center"
           onClick={() => setPreviewImage(null)}
         >
           <img
             src={previewImage}
             alt="preview"
-            className="max-w-[95vw] max-h-[95vh] touch-pan-y touch-pinch-zoom object-contain"
+            className="max-w-[95vw] max-h-[95vh] md:max-w-[90vw] md:max-h-[90vh] touch-pan-y touch-pinch-zoom object-contain"
             onClick={(e) => e.stopPropagation()}
           />
+          <button
+            onClick={() => setPreviewImage(null)}
+            className={`absolute ${isMobile ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"} top-4 right-4 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
+          >
+            <X className="h-6 w-6" />
+          </button>
         </div>
       )}
 
@@ -486,7 +492,7 @@ export const ChatUI = ({
                     <img
                       src={message.file_url}
                       alt="uploaded"
-                      className="md:max-w-[60%] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
+                      className="md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
                       onLoad={() => {
                         if (shouldScrollToBottom && !isMobile) {
                           bottomRef.current?.scrollIntoView({
