@@ -58,7 +58,7 @@ export const ProfileDialog = ({
           />
         </div>
         <div className=" mt-3 flex flex-col gap-3 text-sm">
-          <div className="flex gap-1 md:gap-4 items-center">
+          <div className="flex gap-0 md:gap-4 items-center">
             <div className="cursor-pointer group relative ">
               <Image
                 src={user?.avatar || "/assets/default-avatar.png"}
@@ -163,7 +163,7 @@ export const ProfileDialog = ({
                     setNewUsername,
                   })
                 }
-                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-11 md:px-4 rounded-[6px]"
+                className="bg-white disabled:opacity-50 mt-1 md:mt-6 ease-in-out hover:bg-gray-100 hover:shadow-sm hover:shadow-white/30 text-black py-2 px-12 md:px-4 rounded-[6px]"
               >
                 Change Name
               </button>
