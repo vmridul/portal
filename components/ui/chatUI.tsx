@@ -237,7 +237,7 @@ export const ChatUI = ({
   }, [room_id, user?.user_id, type]);
 
   useEffect(() => {
-    if (!loadingOlder && shouldScrollToBottom) {
+    if (!loadingOlder && shouldScrollToBottom && !isMobile) {
       bottomRef.current?.scrollIntoView({ behavior: "auto" });
       const timer = setTimeout(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
