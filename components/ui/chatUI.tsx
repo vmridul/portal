@@ -9,7 +9,7 @@ import { Send, Plus, BadgeX, X, ArrowDown } from "lucide-react";
 import { useRef } from "react";
 import { useEffect, useState } from "react";
 import { fetchMessages } from "@/app/actions/fetchMessages";
-import { haptic } from "@/app/actions/haptic";
+
 export const ChatUI = ({
   type,
   messages,
@@ -356,8 +356,8 @@ export const ChatUI = ({
     <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
       {showScrollDown && (
         <button
-          onClick={() => { scrollToBottom(); haptic("light") }}
-          className="absolute z-[9999] bottom-[95px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-white/50 hover:text-white/70 border border-[#313131] border-opacity-90  bg-[#080f17] bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
+          onClick={() => { scrollToBottom() }}
+          className="absolute z-[999] bottom-[95px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-white/50 hover:text-white/70 border border-[#313131] border-opacity-90  bg-[#080f17] bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
         >
           <ArrowDown className="h-6 w-6" />
         </button>
@@ -669,7 +669,7 @@ export const ChatUI = ({
           type="text"
           placeholder="Press / to focus"
           disabled={uploading}
-          onClick={() => haptic("medium")}
+
         />
         <button
           onClick={() =>

@@ -14,7 +14,7 @@ import { RoomInfoDialog } from "./roomInfoDialog";
 import { LeaveDialog } from "./leaveDialog";
 import { useRoomInfo } from "@/hooks/useRooomInfo";
 import { ListSkeleton } from "./listSkeleton";
-import { haptic } from "@/app/actions/haptic";
+
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
   const router = useRouter();
@@ -113,7 +113,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
         />
       )}
       <button
-        onClick={() => { setRightMobileMenu(!rightMobileMenu); haptic("light") }}
+        onClick={() => { setRightMobileMenu(!rightMobileMenu) }}
         className="z-[1000] w-6 h-6 absolute top-2 right-2 text-white md:hidden"
       >
         <Users className="text-white/60 w-4 h-4" />

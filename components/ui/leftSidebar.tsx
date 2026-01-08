@@ -16,7 +16,6 @@ import { ProfileUI } from "./profileUI";
 import { ProfileDialog } from "./profileDialog";
 import { Press_Start_2P } from "next/font/google";
 import { useUIStore } from "@/store/uiStore";
-import { haptic } from "@/app/actions/haptic";
 
 export const pixelFont = Press_Start_2P({
   weight: "400",
