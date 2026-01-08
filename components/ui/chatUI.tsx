@@ -48,6 +48,7 @@ export const ChatUI = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const PAGE_SIZE = 200;
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const isMobile =
     typeof window !== "undefined" &&
@@ -70,6 +71,7 @@ export const ChatUI = ({
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
+
   useEffect(() => {
     if (!window.visualViewport) return;
 
@@ -79,6 +81,9 @@ export const ChatUI = ({
       const keyboardHeight =
         window.innerHeight - viewport.height - viewport.offsetTop;
 
+      const isOpen = keyboardHeight > 80;
+      setKeyboardOpen(isOpen);
+
       document.documentElement.style.setProperty(
         "--keyboard-offset",
         `${Math.max(keyboardHeight, 0)}px`
@@ -87,7 +92,6 @@ export const ChatUI = ({
 
     viewport.addEventListener("resize", handleResize);
     viewport.addEventListener("scroll", handleResize);
-
     handleResize();
 
     return () => {
@@ -95,6 +99,7 @@ export const ChatUI = ({
       viewport.removeEventListener("scroll", handleResize);
     };
   }, []);
+
 
   //jump for search
   useEffect(() => {
@@ -258,7 +263,7 @@ export const ChatUI = ({
 
   useEffect(() => {
     if (loadingOlder || !shouldScrollToBottom) return;
-
+    if (isMobile && keyboardOpen) return;
     if (isMobile) {
       const container = containerRef.current;
       if (!container) return;
@@ -664,7 +669,7 @@ export const ChatUI = ({
           type="text"
           placeholder="Press / to focus"
           disabled={uploading}
-          onClick={() => haptic("light")}
+          onClick={() => haptic("medium")}
         />
         <button
           onClick={() =>
