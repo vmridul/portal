@@ -335,7 +335,7 @@ export const ChatUI = ({
             });
           }
         }}
-        className="flex-1 w-full px-3 md:px-10 overscroll-contain overflow-y-auto flex flex-col gap-2"
+        className="flex-1 w-full px-4 md:px-10 overscroll-contain overflow-y-auto flex flex-col gap-2"
         style={{ paddingBottom: '100px' }}
       >
         {loadingOlder && (
@@ -414,7 +414,7 @@ export const ChatUI = ({
                       }`}
                   >
                     <span
-                      className={`text-xs text-gray-400 ${message.sender_id === user?.user_id
+                      className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${message.sender_id === user?.user_id
                         ? "text-right"
                         : "text-left"
                         }`}
