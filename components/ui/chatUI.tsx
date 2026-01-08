@@ -351,9 +351,9 @@ export const ChatUI = ({
       {showScrollDown && (
         <button
           onClick={scrollToBottom}
-          className="absolute bottom-4 right-4 rounded-full bg-neutral-900 text-white p-3 shadow-lg hover:bg-neutral-800 transition"
+          className="absolute bottom-6 left-6 rounded-full p-2 text-white/80 hover:text-white border-white/70 bg-[#313131] border   transition-all duration-200 ease-out"
         >
-          <ArrowDown className="h-6 w-6 border text-white/80 hover:text-white border-white/70 bg-[#313131] rounded-full p-2" />
+          <ArrowDown className="h-6 w-6" />
         </button>
       )}
       {previewImage && (
