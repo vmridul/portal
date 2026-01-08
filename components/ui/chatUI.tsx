@@ -44,6 +44,7 @@ export const ChatUI = ({
   const channelRef = useRef<any>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const PAGE_SIZE = 200;
 
   const isMobile =
@@ -276,9 +277,14 @@ export const ChatUI = ({
         inputRef.current?.focus();
       }
     };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreviewImage(null);
+    };
+    window.addEventListener("keydown", handler);
     window.addEventListener("keydown", handleKeyPress);
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keydown", handler);
     };
   }, []);
 
@@ -317,6 +323,20 @@ export const ChatUI = ({
 
   return (
     <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 transition-opacity duration-200 ease-out flex items-center justify-center"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            alt="preview"
+            className="max-w-[95vw] max-h-[95vh] touch-pan-y touch-pinch-zoom object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       <div
         ref={containerRef}
         onScroll={(e) => {
@@ -423,7 +443,7 @@ export const ChatUI = ({
                         ? "You"
                         : type === "room" ? message.sender?.username : message?.receiver?.username}
                     </span>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs truncate min-w-0 max-w-[150px] text-gray-600">
                       {formatToIST(message.sent_at)}
                     </span>
                   </div>
@@ -466,14 +486,19 @@ export const ChatUI = ({
                     <img
                       src={message.file_url}
                       alt="uploaded"
-                      className="md:max-w-[400px] md:max-h-[500px] rounded-lg mb-2"
+                      className="md:max-w-[60%] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
                       onLoad={() => {
                         if (shouldScrollToBottom && !isMobile) {
                           bottomRef.current?.scrollIntoView({
                             behavior: "auto",
                           });
+                        } else if (shouldScrollToBottom && isMobile) {
+                          const container = containerRef.current;
+                          if (!container) return;
+                          container.scrollTop = container.scrollHeight;
                         }
                       }}
+                      onClick={() => setPreviewImage(message.file_url)}
                     />
                   )}
 
