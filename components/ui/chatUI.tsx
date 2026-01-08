@@ -73,28 +73,26 @@ export const ChatUI = ({
 
 
   useEffect(() => {
-    if (!window.visualViewport) return;
-
-    const viewport = window.visualViewport;
-    let frameId: any;
+    const vv = window.visualViewport;
+    if (!vv) return;
 
     const handleResize = () => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
-        const offset = window.innerHeight - viewport.height;
-        setKeyboardOpen(offset > 80);
-        document.documentElement.style.setProperty("--keyboard-offset", `${Math.max(offset, 0)}px`);
+      if (!vv) return;
+
+      const offset = window.innerHeight - vv.height;
+
+      requestAnimationFrame(() => {
+        document.documentElement.style.setProperty(
+          "--keyboard-offset",
+          `${Math.max(0, offset)}px`
+        );
       });
     };
 
-    viewport.addEventListener("resize", handleResize);
-    viewport.addEventListener("scroll", handleResize);
+    vv.addEventListener("resize", handleResize);
+    handleResize();
 
-    return () => {
-      cancelAnimationFrame(frameId);
-      viewport.removeEventListener("resize", handleResize);
-      viewport.removeEventListener("scroll", handleResize);
-    };
+    return () => vv.removeEventListener("resize", handleResize);
   }, []);
 
 
