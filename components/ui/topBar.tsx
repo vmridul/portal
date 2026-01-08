@@ -84,7 +84,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
   return (
     <div className="">
       {!roomDetails ? (
-        <Skeleton className="h-[32px] ml-2 w-[884px] mt-2 rounded-[6px]" />
+        <Skeleton className="h-[32px] ml-2 md:w-[884px] w-full mt-2 rounded-[6px]" />
       ) : (
         <div className="z-40 relative overflow-visible text-white/60 text-sm px-10 md:px-2 w-full justify-between flex items-center bg-[#080f17] h-10 border-[#322b45] border-b">
           <div
