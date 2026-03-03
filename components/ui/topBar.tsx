@@ -80,15 +80,15 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="flex px-3 items-center text-white/60 rounded-[6px] bg-theme-surface"
+            className="flex px-3 shrink min-w-10 items-center text-white/60 rounded-[6px] bg-theme-surface"
           >
-            <Search className="w-4 h-4 text-white/40" />
+            <Search className="flex-none w-4 h-4 text-white/40" />
             <input
               type="text"
               placeholder="Search messages"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="px-2 py-1 w-48 md:w-72 bg-transparent outline-none placeholder-white/40"
+              className="px-2 py-1 w-full max-w-[288px] min-w-0 bg-transparent outline-none placeholder-white/40"
             />
           </div>
           {searchResults.length > 0 && (
@@ -122,13 +122,13 @@ export default function TopBar({ room_id }: { room_id: string }) {
               ))}
             </div>
           )}
-          <div className="flex items-center">
+          <div className="flex items-center flex-none gap-2 ml-2">
             <div
               onClick={(e) => {
                 e.stopPropagation();
                 setColorDialog((v) => !v);
               }}
-              className="w-7 select-none  h-7 cursor-pointer rounded-full flex items-center justify-center hover:bg-[#313131]"
+              className="flex-none w-7 select-none h-7 cursor-pointer rounded-full flex items-center justify-center hover:bg-[#313131]"
             >
               <PaintRoller className="w-4 h-4 text-white/60" />
             </div>
@@ -147,7 +147,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 e.stopPropagation();
                 setMediaDialog(true);
               }}
-              className="w-7 select-none h-7 cursor-pointer rounded-full flex items-center justify-center hover:bg-[#313131] ml-2"
+              className="flex-none w-7 select-none h-7 cursor-pointer rounded-full flex items-center justify-center hover:bg-[#313131]"
             >
               <ImageIcon className="w-4 h-4 text-white/60" />
             </div>

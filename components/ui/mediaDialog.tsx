@@ -120,7 +120,7 @@ export const MediaDialog = ({
                     className="bg-theme-surface border border-theme-border w-full max-w-4xl h-[80vh] rounded-[8px] p-6 flex flex-col items-center"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="flex flex-col md:flex-row justify-between w-full items-start md:items-center mb-6 gap-4">
+                    <div className="flex flex-row justify-between w-full items-start md:items-center mb-6 gap-4">
                         <div className="flex space-x-2 bg-theme-base p-1 rounded-xl">
                             <button
                                 onClick={() => setActiveTab("images")}
