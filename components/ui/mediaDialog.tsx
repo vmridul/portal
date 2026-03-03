@@ -121,7 +121,7 @@ export const MediaDialog = ({
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex flex-col md:flex-row justify-between w-full items-start md:items-center mb-6 gap-4">
-                        <div className="flex space-x-2 bg-[#080f17] p-1 rounded-xl">
+                        <div className="flex space-x-2 bg-theme-base p-1 rounded-xl">
                             <button
                                 onClick={() => setActiveTab("images")}
                                 style={activeTab === "images" ? { backgroundColor: color, color: textColor } : {}}
@@ -162,7 +162,7 @@ export const MediaDialog = ({
                                         href={media.file_url!}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center gap-3 p-3 rounded-xl bg-[#080f17] hover:bg-theme-hover border border-white/5 transition-all w-full md:w-1/2"
+                                        className="flex items-center gap-3 p-3 rounded-xl bg-theme-base hover:bg-theme-hover border border-white/5 transition-all w-full md:w-1/2"
                                     >
                                         <div className="w-10 h-10 rounded-[8px] bg-white/5 flex items-center justify-center flex-shrink-0">
                                             <FileText className="w-5 h-5 text-white/50" />
@@ -178,7 +178,7 @@ export const MediaDialog = ({
                                         onClick={() => {
                                             setSelectedIndex(index);
                                         }}
-                                        className="relative group cursor-pointer bg-[#080f17] rounded-xl overflow-hidden border-white/5 border hover:border-opacity-100 border-opacity-10  transition-all aspect-square h-full w-full"
+                                        className="relative group cursor-pointer bg-theme-base rounded-xl overflow-hidden border-white/5 border hover:border-opacity-100 border-opacity-10  transition-all aspect-square h-full w-full"
                                     >
                                         {media.type?.startsWith("video/") ? (
                                             <video
