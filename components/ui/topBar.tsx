@@ -60,7 +60,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
       {!roomDetails ? (
         <Skeleton className="h-[32px] ml-2 md:w-[884px] w-full mt-2 rounded-[6px]" />
       ) : (
-        <div className="z-[2000] relative overflow-visible text-white/60 text-sm px-10 md:px-2 w-full justify-between flex items-center bg-theme-base h-10 border-theme-border border-b">
+        <div className="z-[2000] relative overflow-hidden text-white/60 text-sm px-10 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-base h-10 border-theme-border border-b">
           <div
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "ArrowDown") {
@@ -80,7 +80,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="flex px-3 shrink min-w-10 items-center text-white/60 rounded-[6px] bg-theme-surface"
+            className="flex px-3 min-w-0 flex-1 items-center text-white/60 rounded-[6px] bg-theme-surface overflow-hidden"
           >
             <Search className="flex-none w-4 h-4 text-white/40" />
             <input
@@ -88,7 +88,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               placeholder="Search messages"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="px-2 py-1 w-full max-w-[288px] min-w-0 bg-transparent outline-none placeholder-white/40"
+              className="px-2 py-1 min-w-0 w-full bg-transparent outline-none placeholder-white/40"
             />
           </div>
           {searchResults.length > 0 && (
