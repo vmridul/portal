@@ -1,72 +1,46 @@
-import { useEffect, useRef, useState } from "react"
-import { supabase } from "@/lib/supabase/client"
+import { useEffect } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
-type Status = "online" | "away"
+type Status = "online" | "away";
 
 export function useGlobalPresence() {
-  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set())
-  const [awayUsers, setAwayUsers] = useState<Set<string>>(new Set())
+  const activePresences = useQuery(api.presence.getOnlineUsers) || [];
+  const updatePresence = useMutation(api.presence.update);
 
-  const channelRef = useRef<any>(null)
-  const userIdRef = useRef<string | null>(null)
+  const onlineUsers = new Set<string>();
+  const awayUsers = new Set<string>();
+
+  activePresences.forEach((p: any) => {
+    if (p.status === "online") onlineUsers.add(p.user_id);
+    else if (p.status === "away") awayUsers.add(p.user_id);
+  });
 
   const setStatus = async (status: Status) => {
-    if (!channelRef.current || !userIdRef.current) return
-
-    await channelRef.current.track({
-      user_id: userIdRef.current, // ✅ ALWAYS defined
-      status,
-    })
-  }
+    try {
+      await updatePresence({ status });
+    } catch (e) {}
+  };
 
   useEffect(() => {
-    let active = true
+    const interval = setInterval(() => {
+      setStatus("online");
+    }, 60 * 1000);
 
-    const setup = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user || !active) return
+    // const onFocus = () => setStatus("online");
+    // const onBlur = () => setStatus("away");
 
-      userIdRef.current = user.id
+    // window.addEventListener("focus", onFocus);
+    // window.addEventListener("blur", onBlur);
 
-      const channel = supabase.channel("global-presence", {
-        config: { presence: { key: user.id } },
-      })
-
-      channelRef.current = channel
-
-      channel.on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState()
-        const online = new Set<string>()
-        const away = new Set<string>()
-
-        Object.values(state).forEach((list: any[]) => {
-          list.forEach((p) => {
-            if (!p.user_id) return // safety
-            p.status === "away"
-              ? away.add(p.user_id)
-              : online.add(p.user_id)
-          })
-        })
-
-        setOnlineUsers(online)
-        setAwayUsers(away)
-      })
-
-      channel.subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          await setStatus("online")
-        }
-      })
-    }
-
-    setup()
+    setStatus("online");
 
     return () => {
-      active = false
-      channelRef.current?.untrack()
-      channelRef.current?.unsubscribe()
-    }
-  }, [])
+      clearInterval(interval);
+      // window.removeEventListener("focus", onFocus);
+      // window.removeEventListener("blur", onBlur);
+    };
+  }, []);
 
-  return { onlineUsers, awayUsers, setStatus }
+  return { onlineUsers, awayUsers, setStatus };
 }

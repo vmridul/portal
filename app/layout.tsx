@@ -4,7 +4,8 @@ import { DM_Sans } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import { pixelFont } from "./page";
+import { PresenceProvider } from "@/contexts/presenceContext";
+import ConvexClientProvider from "./ConvexClientProvider";
 
 export const metadata: Metadata = {
   title: "Portal",
@@ -26,13 +27,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={pixelFont.variable}>
-      <body className={`body ${dmSans.variable}`}>
+    <html lang="en">
+      <body suppressHydrationWarning className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
-          <Suspense>
-            <main className="flex-1 font-sans">{children}</main>
-            <Toaster theme="dark" position="top-center" />
-          </Suspense>
+          <ConvexClientProvider>
+            <Suspense>
+              <PresenceProvider>
+
+                <main className="flex-1 font-sans">{children}</main>
+                <Toaster theme="dark" position="top-center" />
+
+              </PresenceProvider>
+            </Suspense>
+          </ConvexClientProvider>
         </div>
       </body>
     </html>

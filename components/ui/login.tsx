@@ -1,25 +1,41 @@
 "use client";
-import Image from "next/image";
-import { supabase } from "@/lib/supabase/client";
-import { pixelFont } from "@/app/page";
+import { auth } from "@/lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/navigation";
+
 
 export default function Login({ redirect }: { redirect: string }) {
+  const router = useRouter();
+
   const loginWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/home`,
-      },
-    });
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      router.push("/portal");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
-    <div className="z-[9999] absolute top-[430px] cursor-pointer left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-around items-center rounded-xl py-3 px-6">
-      <button
-        onClick={loginWithGoogle}
-        className={`${pixelFont.className} portal-btn`}
-      >
-        Enter Portal
+    <div className="z-[9999] ml-1 cursor-pointer flex justify-around items-center rounded-xl">
+      <button onClick={loginWithGoogle} className="animated-btn">
+        <span className="span-mother">
+          <span>E</span>
+          <span>N</span>
+          <span>T</span>
+          <span>E</span>
+          <span>R</span>
+        </span>
+
+        <span className="span-mother2">
+          <span>P</span>
+          <span>O</span>
+          <span>R</span>
+          <span>T</span>
+          <span>A</span>
+          <span>L</span>
+        </span>
       </button>
     </div>
   );

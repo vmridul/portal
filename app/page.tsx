@@ -1,14 +1,13 @@
 "use client";
 import Login from "@/components/ui/login";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Press_Start_2P } from "next/font/google";
-import { PixelSpeechBubble } from "@/components/ui/pixelBubble";
+import { Pixelify_Sans } from "next/font/google";
+import ChatBubbles from "@/components/ui/chatBubbles";
 
-export const pixelFont = Press_Start_2P({
+export const pixelFont = Pixelify_Sans({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-pixel",
@@ -21,56 +20,31 @@ export default function Page() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.replace("/home");
+        router.replace("/portal");
       }
-    };
-    checkAuth();
+    });
+
+    return () => unsubscribe();
   }, [router]);
 
   return (
-    <div className="min-h-screen overflow-hidden">
-      <div className="z-[400] absolute inset-0 bg-[#0a0a0a] bg-opacity-50 backdrop-blur-md" />
-      <div
-        className={`z-[500] ${pixelFont.className} text-white flex flex-col items-center justify-center absolute top-[200px] left-1/2 transform -translate-x-1/2`}
-      >
-        <h1 className={`text-8xl font-bold relative`}>PORTAL</h1>
-        <h1
-          className={`text-8xl font-bold absolute z-[-1] top-2 left-0 text-black`}
-        >
-          PORTAL
-        </h1>
-        <div className="text-2xl mt-4 flex flex-col items-center text-violet-400">
-          <div className="flex gap-3 items-center">
-            <span className="">Realtime</span>
-            <Image
-              src="/assets/chat_icon.png"
-              alt="chat"
-              width={40}
-              height={40}
-              className="mt-1"
-            />
-            <span className="text-white">conversation</span>
+    <div className="min-h-screen overflow-hidden flex items-center justify-center md:justify-normal bg-[#2a1c55]">
+      <div className="z-[400] absolute inset-0 bg-pattern opacity-5" />
+      <ChatBubbles />
+      <div className="z-[9999] mb-[140px] ml-0 md:ml-20 gap-6 flex items-center md:items-start flex-col">
+        <div className="">
+          <div className={`${pixelFont.className} text-white text-7xl md:text-8xl`}>
+            Portal
           </div>
-          <span className="">without friction</span>
+          <div className="ml-1 text-[#dacdfb] text-sm md:text-lg font-sans">
+            Realtime conversation without friction
+          </div>
         </div>
+        <Login redirect={redirectParms ?? "/portal"} />
       </div>
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/assets/landing_bg.png"
-        className="absolute z-[300] scale-110 translate-x-7  inset-0 w-full h-full object-fill"
-      >
-        <source src="/assets/landing_bg.mp4" type="video/mp4" />
-      </video>
-      <Login redirect={redirectParms ?? ""} />
     </div>
   );
 }

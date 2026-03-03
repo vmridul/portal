@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { UUID } from "crypto";
+
 
 export interface User {
-  user_id: UUID;
+  user_id: string;
   username: string;
-  avatar: string;
-  chatColor: string;
-  created_at: Date;
+  avatar?: string;
+  chatColor?: string;
+  _creationTime: number;
 }
 
 interface UserState {

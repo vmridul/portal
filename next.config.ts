@@ -12,8 +12,8 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "maksoasajamzujlqmvhc.supabase.co",
-        pathname: "/storage/v1/object/**",
+        hostname: "grateful-fly-712.eu-west-1.convex.cloud",
+        pathname: "/api/storage/**",
       },
     ],
   },

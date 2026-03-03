@@ -1,0 +1,39 @@
+import { Skeleton } from "./skeleton";
+export const ChatSkeleton = () => {
+  return (
+    <div className="flex flex-col gap-10 p-8">
+      <div className="flex gap-4">
+        <Skeleton className="rounded-[8px] h-9 w-9" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 md:w-[500px] w-[200px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[400px] w-[150px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[600px] w-[220px] rounded-[6px]" />
+        </div>
+      </div>
+      <div className="flex flex-row-reverse gap-4">
+        <Skeleton className="rounded-[8px] h-9 w-9" />
+        <div className="flex flex-col gap-2 items-end">
+          <Skeleton className="h-7 md:w-[500px] w-[200px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[400px] w-[150px] rounded-[6px]" />
+        </div>
+      </div>
+      <div className="flex  gap-4">
+        <Skeleton className="rounded-[8px] h-9 w-9" />
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 md:w-[500px] w-[200px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[400px] w-[150px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[300px] w-[100px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[600px] w-[220px] rounded-[6px]" />
+        </div>
+      </div>
+      <div className="flex flex-row-reverse gap-4">
+        <Skeleton className="rounded-[8px] h-9 w-9" />
+        <div className="flex flex-col gap-2 items-end">
+          <Skeleton className="h-7 md:w-[500px] w-[200px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[400px] w-[150px] rounded-[6px]" />
+          <Skeleton className="h-7 md:w-[300px] w-[100px] rounded-[6px]" />
+        </div>
+      </div>
+    </div>
+  );
+};
