@@ -60,7 +60,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
       {!roomDetails ? (
         <Skeleton className="h-[32px] ml-2 md:w-[884px] w-full mt-2 rounded-[6px]" />
       ) : (
-        <div className="z-[2000] relative overflow-hidden text-white/60 text-sm px-10 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-base h-10 border-theme-border border-b">
+        <div className="z-[2000] relative text-white/60 text-sm px-10 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-base h-10 border-theme-border border-b">
           <div
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
               if (e.key === "ArrowDown") {

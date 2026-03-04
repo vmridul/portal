@@ -144,7 +144,7 @@ html, body {
   background-size: calc(var(--s)/4.667) var(--s),
                    var(--s) calc(var(--s)/4.667);
 
-  /* fade left → right */
+  /* fade left to right */
   -webkit-mask-image: linear-gradient(
     to right,
     rgba(0,0,0,1) 0%,

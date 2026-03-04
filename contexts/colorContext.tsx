@@ -65,7 +65,7 @@ export function ColorProvider({ children }: { children: ReactNode }) {
     if (savedColor) {
       setColor(savedColor);
     } else {
-      setColor("#4a31b0");
+      setColor("#4a31b0"); //default color (purple)
     }
   }, []);
 
