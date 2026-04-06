@@ -342,7 +342,7 @@ export const ChatUI = ({
                     backgroundColor: isImage || isVideo || isFile ? "transparent" : message.sender_id === user?.user_id ? color : `${color}3A`,
                     color: isImage || isVideo || isFile ? undefined : message.sender_id === user?.user_id ? textColor : `${textColor}A`
                   }}
-                  className={`relative group ${isFile ? "px-0 py-1" : "px-3 py-2"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : message.sender_id === user?.user_id ? "" : " text-white/80"}`}
+                  className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : message.sender_id === user?.user_id ? "" : " text-white/80"}`}
                 >
                   {message.sender_id === user?.user_id && (
                     <button

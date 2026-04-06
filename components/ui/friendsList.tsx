@@ -4,7 +4,7 @@ import { Moon, Search, UserPlus } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/app/actions/timeAgo";
 import { Skeleton } from "./skeleton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 
 export default function FriendsList({ friends }: { friends: any[] }) {
@@ -17,9 +17,16 @@ export default function FriendsList({ friends }: { friends: any[] }) {
   } = useUIStore();
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filteredFriends = friends.filter((friend) => {
-    return friend?.friend?.username.toLowerCase().includes(search.toLowerCase());
+    return friend?.friend?.username
+      .toLowerCase()
+      .includes(search.toLowerCase());
   });
 
   return (
@@ -64,56 +71,70 @@ export default function FriendsList({ friends }: { friends: any[] }) {
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-3">
-            {filteredFriends.length > 0 && filteredFriends.map((friend) => {
-              const isUserOnline = onlineUsers.has(friend?.friend?.user_id);
-              const isUserAway = awayUsers.has(friend?.friend?.user_id);
-              return (
-                <div
-                  className="group h-[70px] bg-theme-hover hover:bg-theme-hover hover:bg-opacity-80 transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
-                  key={friend.id}
-                  onClick={() => {
-                    setActiveFriendPage(friend?.friend?.user_id);
-                    setPendingRequestMenu(false);
-                  }}
-                >
-                  <div className="relative">
-                    <Image
-                      src={
-                        friend?.friend?.avatar || "/assets/default-avatar.png"
-                      }
-                      alt=""
-                      width={12}
-                      height={12}
-                      unoptimized
-                      className="w-10 h-10 rounded-[8px] border border-[#080f17]"
-                    />
-                    {isUserOnline ? (
-                      <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
-                    ) : isUserAway ? (
-                      <Moon
-                        fill="yellow"
-                        className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+            {filteredFriends.length > 0 &&
+              filteredFriends.map((friend) => {
+                const isUserOnline = onlineUsers.has(friend?.friend?.user_id);
+                const isUserAway = awayUsers.has(friend?.friend?.user_id);
+                const unreadCount = friend?.unread_count || 0;
+                return (
+                  <div
+                    className="group h-[70px] bg-theme-hover hover:bg-theme-hover/80 transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
+                    key={friend.id}
+                    onClick={() => {
+                      setActiveFriendPage(friend?.friend?.user_id);
+                      setPendingRequestMenu(false);
+                    }}
+                  >
+                    <div className="relative">
+                      <Image
+                        src={
+                          friend?.friend?.avatar || "/assets/default-avatar.png"
+                        }
+                        alt=""
+                        width={12}
+                        height={12}
+                        unoptimized
+                        className="w-10 h-10 rounded-[8px] border border-[#080f17]"
                       />
-                    ) : (
-                      <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />
-                    )}
-                  </div>
-                  <div className="flex-1 flex flex-col">
-                    <span className="text-white/90 text-sm truncate w-[100px]">
-                      {friend?.friend?.username}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#aaaaaa] text-xs truncate w-[100px]">
-                        {friend?.last_msg ? friend?.last_msg : ""}
-                      </span>
+                      {isUserOnline ? (
+                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
+                      ) : isUserAway ? (
+                        <Moon
+                          fill="yellow"
+                          className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+                        />
+                      ) : (
+                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/90 text-sm truncate w-[80px]">
+                          {friend?.friend?.username}
+                        </span>
+                        {mounted && unreadCount > 0 && (
+                          <div
+                            className="w-4 h-4 rounded-full items-center justify-center flex flex-shrink-0 mr-1"
+                            style={{ backgroundColor: color }}
+                          >
+                            <span className="text-[8px] font-medium text-white">
+                              {unreadCount > 99 ? "99+" : unreadCount}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#aaaaaa] text-xs truncate w-[80px]">
+                          {friend?.last_msg ? friend?.last_msg : ""}
+                        </span>
+                        <span className="text-[#aaaaaa] text-xs whitespace-nowrap mr-1">
+                          {timeAgo(friend?.updated_at || friend?._creationTime)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <span className="text-[#aaaaaa] mr-3 text-xs">
-                    {timeAgo(friend?.updated_at || friend?._creationTime)}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       )}

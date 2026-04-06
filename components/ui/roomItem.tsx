@@ -1,9 +1,6 @@
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { EllipsisIcon, Clipboard, UserX } from "lucide-react";
-import { LeaveDialog } from "./leaveDialog";
-import { createPortal } from "react-dom";
+import { useState } from "react";
+import { useColor } from "@/contexts/colorContext";
 
 export function RoomItem({
   room,
@@ -12,111 +9,48 @@ export function RoomItem({
   currentRoom,
   user,
 }: any) {
-  const owner_id = room?.owner_id;
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [leaveDialog, setLeaveDialog] = useState(false);
-  const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const close = () => {
-      setMenuOpen(false);
-    };
-    document.addEventListener("click", close);
-    return () => {
-      document.removeEventListener("click", close);
-    };
-  }, [menuOpen]);
+  const unreadCount = room?.unread_count || 0;
+  const { color } = useColor();
+
+  useState(() => {
+    setMounted(true);
+  });
 
   return (
-    <>
-      {leaveDialog && (
-        <LeaveDialog
-          owner_id={owner_id || ""}
-          user={user}
-          roomName={room?.Rooms?.room_name}
-          room_id={room?.Rooms?.room_id}
-          setLeaveDialog={setLeaveDialog}
-          router={router}
-        />
-      )}
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          setMobileMenu?.(false);
-          router.push(`/portal/room/${room?.Rooms?.room_id}`);
-        }}
-        className={`cursor-pointer group relative flex items-center gap-3 mt-2 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === room?.Rooms?.room_id.toString() &&
-          "bg-theme-hover"
-          }`}
-        key={room?.Rooms?.room_id}
-      >
-        <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
-          {room?.Rooms?.room_name?.charAt(0).toUpperCase()}
-        </div>
-        <div className="flex flex-col rounded-[8px] cursor-pointer">
-          <span className="truncate max-w-[140px]">{room?.Rooms?.room_name}</span>
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        setMobileMenu?.(false);
+        router.push(`/portal/room/${room?.Rooms?.room_id}`);
+      }}
+      className={`cursor-pointer relative flex items-center gap-3 mt-2 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === room?.Rooms?.room_id.toString() &&
+        "bg-theme-hover"
+        }`}
+      key={room?.Rooms?.room_id}
+    >
+      <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10 flex-shrink-0">
+        {room?.Rooms?.room_name?.charAt(0).toUpperCase()}
+      </div>
+      <div className="flex items-center flex-1 min-w-0">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="truncate max-w-[100px]">{room?.Rooms?.room_name}</span>
           <span className="text-white/40 text-xs">
             ID: {room?.Rooms?.room_id}
           </span>
         </div>
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuPos({ x: e.clientX, y: e.clientY });
-            setMenuOpen(!menuOpen);
-          }}
-          className="absolute right-4 transition-all duration-100 opacity-0 group-hover:opacity-100 text-white/70"
-        >
-          <EllipsisIcon className="w-4 h-4 hover:text-white/90" />
-        </div>
-        {menuOpen &&
-          createPortal(
-            <div
-              style={{
-                top: menuPos.y,
-                left: menuPos.x + 14,
-              }}
-              className={`
-    fixed z-[9999] text-white/90 font-sans flex flex-col overflow-hidden items-start
-    max-w-[150px]
-    rounded-[8px] bg-theme-surface border border-theme-border
-    shadow-lg text-xs
-    transform transition-all duration-150 select-none
- ease-out
-    ${menuOpen
-                  ? "scale-100 translate-y-0 pointer-events-auto"
-                  : "scale-95 translate-y-1 pointer-events-none"
-                }
-  `}
-            >
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigator.clipboard.writeText(room?.Rooms?.room_id);
-                  toast.success("Room ID copied to clipboard");
-                  setMenuOpen(false);
-                }}
-                className="border-b cursor-pointer border-theme-border flex items-center hover:bg-theme-hover"
-              >
-                <Clipboard className="w-4 h-4 ml-3 mr-2 text-white/90" />
-                <button className=" w-32 text-start py-3">Copy Room ID</button>
-              </div>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLeaveDialog(true);
-                  setMenuOpen(false);
-                }}
-                className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
-              >
-                <UserX className="w-4 h-4 ml-3 mr-2" />
-                <button className="w-32 text-start py-3">{`${owner_id == user?.user_id ? "Delete Room" : "Leave Room"
-                  }`}</button>
-              </div>
-            </div>,
-            document.body
-          )}
+        {mounted && unreadCount > 0 && (
+          <div 
+            className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex ml-2"
+            style={{ backgroundColor: color }}
+          >
+            <span className="text-[8px] font-medium text-white">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

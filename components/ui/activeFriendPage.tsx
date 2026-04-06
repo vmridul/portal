@@ -1,5 +1,5 @@
 import { useUIStore } from "@/store/uiStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "./chatUI";
@@ -16,6 +16,13 @@ export default function ActiveFriendPage() {
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
+  const clearFriendUnreadCountMutation = useMutation(api.messages.clearFriendUnreadCount);
+
+  useEffect(() => {
+    if (activeFriendPage) {
+      clearFriendUnreadCountMutation({ friend_id: activeFriendPage }).catch(console.error);
+    }
+  }, [activeFriendPage, clearFriendUnreadCountMutation]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;

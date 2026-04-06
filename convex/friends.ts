@@ -26,6 +26,7 @@ export const getFriends = query({
           last_msg: f.last_msg,
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
+          unread_count: f.unread_count || 0,
         };
       }),
     );

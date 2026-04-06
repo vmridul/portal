@@ -35,6 +35,74 @@ export const getRoomMessages = query({
   },
 });
 
+export const getUnreadCount = query({
+  args: { room_id: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+
+    const member = await ctx.db
+      .query("roomMembers")
+      .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+      .filter((q) => q.eq(q.field("user_id"), identity.subject))
+      .first();
+
+    return member?.unread_count || 0;
+  },
+});
+
+export const clearUnreadCount = mutation({
+  args: { room_id: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const member = await ctx.db
+      .query("roomMembers")
+      .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+      .filter((q) => q.eq(q.field("user_id"), identity.subject))
+      .first();
+
+    if (member) {
+      await ctx.db.patch(member._id, { unread_count: 0 });
+    }
+  },
+});
+
+export const getFriendUnreadCount = query({
+  args: { friend_id: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return 0;
+
+    const friendship = await ctx.db
+      .query("friends")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .filter((q) => q.eq(q.field("friend_id"), args.friend_id))
+      .first();
+
+    return friendship?.unread_count || 0;
+  },
+});
+
+export const clearFriendUnreadCount = mutation({
+  args: { friend_id: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const friendship = await ctx.db
+      .query("friends")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .filter((q) => q.eq(q.field("friend_id"), args.friend_id))
+      .first();
+
+    if (friendship) {
+      await ctx.db.patch(friendship._id, { unread_count: 0 });
+    }
+  },
+});
+
 export const searchMessages = query({
   args: { room_id: v.string(), query: v.string() },
   handler: async (ctx, args) => {
@@ -150,6 +218,19 @@ export const sendMessage = mutation({
         type: args.file_type || null,
         file_name: args.file_name || null,
       });
+
+      const members = await ctx.db
+        .query("roomMembers")
+        .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+        .collect();
+
+      for (const member of members) {
+        if (member.user_id !== identity.subject) {
+          await ctx.db.patch(member._id, {
+            unread_count: (member.unread_count || 0) + 1,
+          });
+        }
+      }
     } else {
       await ctx.db.insert("friendMessages", {
         receiver_id: args.room_id,
@@ -184,6 +265,7 @@ export const sendMessage = mutation({
         await ctx.db.patch(friendship2._id, {
           last_msg: args.msg || "Attachment",
           updated_at: new Date().toISOString(),
+          unread_count: (friendship2.unread_count || 0) + 1,
         });
       }
     }

@@ -43,6 +43,7 @@ export const getUserRooms = query({
           memberCount: allRoomMembers.length,
           owner_id: owner?.user_id || null,
           joined_at: membership._creationTime,
+          unread_count: membership.unread_count || 0,
         };
       }),
     );

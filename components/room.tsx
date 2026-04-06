@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
@@ -16,6 +16,11 @@ export default function Room({ room_id }: { room_id: string }) {
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
+  const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
+
+  useEffect(() => {
+    clearUnreadCountMutation({ room_id }).catch(console.error);
+  }, [room_id, clearUnreadCountMutation]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
