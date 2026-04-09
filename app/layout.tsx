@@ -1,11 +1,14 @@
 import "@/app/globals.css";
 
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { PresenceProvider } from "@/contexts/presenceContext";
 import ConvexClientProvider from "./ConvexClientProvider";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Portal",
@@ -27,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", inter.variable)}>
       <body suppressHydrationWarning className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <ConvexClientProvider>
