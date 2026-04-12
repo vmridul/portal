@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { use } from "react";
+import { ChatSkeleton } from "@/components/ui/chatSkeleton";
 
 export default function Page({
   params,
@@ -26,7 +27,7 @@ export default function Page({
       }
 
       if (members !== undefined) {
-        const isMember = members.some((m: any) => m.user_id === user.uid);
+        const isMember = members.some((m: { user_id: string }) => m.user_id === user.uid);
         if (!isMember) {
           router.replace('/portal');
         } else {
@@ -38,7 +39,7 @@ export default function Page({
     return () => unsubscribe();
   }, [room_id, router, members]);
 
-  if (checking) return null;
+  if (checking) return <ChatSkeleton />;
 
   return (
     <Suspense fallback={null}>

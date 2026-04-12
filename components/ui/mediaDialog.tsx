@@ -4,6 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { ArrowLeft, ArrowRight, X, FileText } from "lucide-react";
 import Image from "next/image";
 import { useColor } from "@/contexts/colorContext";
+import { Skeleton } from "./skeleton";
 
 export const MediaDialog = ({
     room_id,
@@ -46,7 +47,30 @@ export const MediaDialog = ({
         return () => window.removeEventListener("keydown", handler);
     }, [selectedIndex, activeData, setMediaDialog]);
 
-    if (!mediaFiles) return null;
+    if (!mediaFiles) {
+        return (
+            <div
+                className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center"
+                onClick={() => setMediaDialog(false)}
+            >
+                <div
+                    className="bg-theme-surface border border-theme-border w-full max-w-4xl h-[80vh] rounded-[8px] p-6 flex flex-col gap-4"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="flex items-center justify-between">
+                        <Skeleton className="h-10 w-[260px] rounded-xl" />
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                    </div>
+                    <div className="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
+                        <Skeleton className="aspect-square rounded-xl" />
+                        <Skeleton className="aspect-square rounded-xl" />
+                        <Skeleton className="aspect-square rounded-xl" />
+                        <Skeleton className="aspect-square rounded-xl" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <>

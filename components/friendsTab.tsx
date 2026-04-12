@@ -1,4 +1,13 @@
-import { Users, Clock, ArrowLeft, Ellipsis, UserX, Moon, PaintRoller, Image as ImageIcon } from "lucide-react";
+import {
+  Users,
+  Clock,
+  ArrowLeft,
+  Ellipsis,
+  UserX,
+  Moon,
+  PaintRoller,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import AddFriendDialog from "../components/ui/addFriendDialog";
 import PendingRequestMenu from "../components/ui/pendingRequestMenu";
@@ -30,11 +39,25 @@ export default function FriendsTab() {
   const user = useUserStore((s) => s.user);
   const { onlineUsers, awayUsers } = usePresence();
 
-  const friends = useQuery(api.friends.getFriends, user?.user_id ? {} : "skip") || [];
-  const pendingRequests = useQuery(api.friends.getPendingRequests, user?.user_id ? {} : "skip") || [];
-  const sentRequests = useQuery(api.friends.getSentRequests, user?.user_id ? {} : "skip") || [];
+  const friendsQuery = useQuery(api.friends.getFriends, user?.user_id ? {} : "skip");
+  const pendingRequestsQuery = useQuery(
+    api.friends.getPendingRequests,
+    user?.user_id ? {} : "skip",
+  );
+  const sentRequestsQuery = useQuery(
+    api.friends.getSentRequests,
+    user?.user_id ? {} : "skip",
+  );
+  const friends = friendsQuery ?? [];
+  const pendingRequests = pendingRequestsQuery ?? [];
+  const sentRequests = sentRequestsQuery ?? [];
+  const isLoadingFriendsData =
+    !user?.user_id ||
+    friendsQuery === undefined ||
+    pendingRequestsQuery === undefined ||
+    sentRequestsQuery === undefined;
   const friend = friends.find(
-    (friend) => friend?.friend?.user_id === activeFriendPage
+    (friend) => friend?.friend?.user_id === activeFriendPage,
   );
 
   const removeFriendMutation = useMutation(api.friends.removeFriend);
@@ -72,10 +95,11 @@ export default function FriendsTab() {
     shadow-lg text-xs
     transform transition-all duration-150
  ease-out
-    ${menuOpen
-            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-          }
+    ${
+      menuOpen
+        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+    }
   `}
       >
         <div
@@ -93,7 +117,7 @@ export default function FriendsTab() {
         </div>
       </div>
       <div className="relative flex-1 font-sans">
-        {!friends || !user ? (
+        {isLoadingFriendsData ? (
           <Skeleton className="h-[45px] w-full" />
         ) : activeFriendPage ? (
           <div
@@ -148,7 +172,7 @@ export default function FriendsTab() {
                   >
                     <HexColorPicker color={color} onChange={setColor} />
                   </div>,
-                  document.body
+                  document.body,
                 )}
               <div
                 onClick={(e) => {
@@ -175,7 +199,7 @@ export default function FriendsTab() {
             </div>
           </div>
         ) : (
-          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 md:py-2">
+          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 md:py-3">
             <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
               <Users className="w-4 h-4" />
               <h1 className="text-md">Friends</h1>
@@ -192,8 +216,9 @@ export default function FriendsTab() {
               >
                 <Clock className="w-4 h-4" />
                 <div
-                  className={`${pendingRequests.length > 0 ? "block" : "hidden"
-                    } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
+                  className={`${
+                    pendingRequests.length > 0 ? "block" : "hidden"
+                  } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
                   `}
                 ></div>
               </button>
@@ -210,7 +235,7 @@ export default function FriendsTab() {
         {activeFriendPage ? (
           <ActiveFriendPage />
         ) : (
-          <FriendsList friends={friends} />
+          <FriendsList friends={friends} isLoading={isLoadingFriendsData} />
         )}
       </div>
     </>

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { UserPlus, Plus, Menu, HouseIcon } from "lucide-react";
+import { UserPlus, Plus, Menu, HouseIcon, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -39,13 +39,21 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const [roomName, setRoomName] = useState("");
   const [room_id, setRoomId] = useState<string | null>(null);
   const [currentRoom, setCurrentRoom] = useState<string | null>(null);
-  const { rooms } = useRooms();
+  const { rooms, isLoading: isRoomsLoading } = useRooms();
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
   const [profileDialog, setProfileDialog] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const { awayUsers, setStatus } = usePresence();
-  const { activeFriendPage, joinDialog, setJoinDialog, createDialog, setCreateDialog, logoutDialog, setLogoutDialog } = useUIStore();
+  const {
+    activeFriendPage,
+    joinDialog,
+    setJoinDialog,
+    createDialog,
+    setCreateDialog,
+    logoutDialog,
+    setLogoutDialog,
+  } = useUIStore();
   const joinRoomMutation = useMutation(api.rooms.joinRoom);
   const createRoomMutation = useMutation(api.rooms.createRoom);
 
@@ -81,7 +89,10 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
     }
     try {
       const generated_id = await generateRoomCode();
-      await createRoomMutation({ room_name: roomName, room_id: generated_id.toString() });
+      await createRoomMutation({
+        room_name: roomName,
+        room_id: generated_id.toString(),
+      });
       setCreateDialog(false);
       setRoomName("");
       setMobileMenu(false);
@@ -235,12 +246,15 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
       </div>
       <div>
         <button
-          onClick={() => { setMobileMenu(!mobileMenu) }}
+          onClick={() => {
+            setMobileMenu(!mobileMenu);
+          }}
           className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-2 left-2 text-white md:hidden`}
         >
           <Menu
-            className={`${mobileMenu ? "rotate-180" : ""
-              } text-white/60 ease-in-out hover:text-white/80 duration-200 w-5 h-5`}
+            className={`${
+              mobileMenu ? "rotate-180" : ""
+            } text-white/60 ease-in-out hover:text-white/80 duration-200 w-5 h-5`}
           />
         </button>
         <div
@@ -251,32 +265,19 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
     md:translate-x-0`}
         >
           {!user?.user_id || !rooms ? (
-            <Skeleton className="h-10 z-[9999] w-60 rounded-[8px]" />
-          ) : (
-            <div
-              onClick={() => router.push("/portal")}
-              className="group relative cursor-pointer w-56 h-9 border border-theme-border border-opacity-60 rounded-[8px] flex justify-center items-center"
-            >
-              <div className="absolute inset-0 rounded-[8px] bg-[url('/assets/portal.png')] opacity-20 group-hover:opacity-30 transition-all duration-300 ease-in-out bg-cover bg-center" />
-              <div className="absolute inset-0 rounded-[8px] bg-theme-base" />
-              <div className="relative z-10 flex">
-                <span
-                  className={`text-white ${pixelFont.className} text-sm`}
-                >
-                  Portal
-                </span>
-              </div>
-            </div>
-          )}
-
-          {!user?.user_id || !rooms ? (
             <Skeleton className="h-[80px] z-[9999] mt-2 w-60 rounded-[8px]" />
           ) : (
-            <div className={`flex flex-col gap-2 mt-2 text-sm items-center`}>
+            <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
+              <button
+                onClick={() => router.push("/portal")}
+                className={`${!pathname.match(/\/portal\/room\/([^/]+)/) ? "bg-theme-hover" : "bg-theme-base"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
+              >
+                <Users className="w-4 h-4" />
+                <span>Friends</span>
+              </button>
               <button
                 onClick={() => setCreateDialog(true)}
-                style={{ backgroundColor: color, color: textColor }}
-                className={`flex items-center hover:opacity-80 hover:brightness-110 justify-center gap-1 duration-200 w-56 py-2 rounded-[8px]`}
+                className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Room</span>
@@ -284,7 +285,7 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
 
               <button
                 onClick={() => setJoinDialog(true)}
-                className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center justify-center gap-2 border-theme-border border w-56 py-2 rounded-[8px]"
+                className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Join Room</span>

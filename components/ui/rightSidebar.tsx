@@ -24,13 +24,14 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
   const [rightMobileMenu, setRightMobileMenu] = useState(false);
   const { onlineUsers, awayUsers } = usePresence();
 
-  const { rooms, membersCount: allMembersCount } = useRooms();
+  const { rooms, membersCount: allMembersCount, isLoading: isRoomsLoading } = useRooms();
   const room = rooms.find((r: any) => r.room_id === room_id);
   const roomName = room?.Rooms?.room_name;
   const createdAt = room?.joined_at;
   const memberCount = room ? allMembersCount[room_id] ?? 0 : 0;
 
-  const members = useQuery(api.roomQueries.getRoomMembers, { room_id }) || [];
+  const membersQuery = useQuery(api.roomQueries.getRoomMembers, { room_id });
+  const members = membersQuery ?? [];
   const owner = members.find((m: any) => m.role === "owner");
   const owner_id = owner?.user_id;
   const ownerName = owner?.Users?.username;
@@ -93,7 +94,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
 
     md:static md:translate-x-0`}
       >
-        {!user?.user_id || !roomName ? (
+        {!user?.user_id || isRoomsLoading || !roomName ? (
           <Skeleton className="h-[56px] mt-2 w-[268px]  rounded-[8px]" />
         ) : (
           <div className="relative w-[268px] flex items-center justify-between mt-2 rounded-[8px] py-2 px-2">
@@ -164,7 +165,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
           </div>
         )}
         <div className="w-full h-0 border border-theme-border mt-2"></div>
-        {!user?.user_id || !members ? (
+        {!user?.user_id || membersQuery === undefined ? (
           <ListSkeleton />
         ) : (
           <RoomMembersList

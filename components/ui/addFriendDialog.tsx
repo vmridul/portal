@@ -31,7 +31,9 @@ export default function AddFriendDialog({
       const serverMatch = msg.match(/Server Error\s+(.*?)\s+at handler/);
       const uncaughtMatch = msg.match(/Uncaught Error:\s*(.*)/);
 
-      toast.error(serverMatch ? serverMatch[1] : (uncaughtMatch ? uncaughtMatch[1] : msg));
+      toast.error(
+        serverMatch ? serverMatch[1] : uncaughtMatch ? uncaughtMatch[1] : msg,
+      );
     }
   };
 
@@ -64,7 +66,7 @@ export default function AddFriendDialog({
           <button
             onClick={handleSend}
             style={{ backgroundColor: color, color: textColor }}
-            className="ease-in-out py-2 px-6 rounded-xl"
+            className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
           >
             Send
           </button>

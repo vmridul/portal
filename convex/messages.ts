@@ -207,9 +207,15 @@ export const sendMessage = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthenticated");
+    const sender = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .first();
+    const notificationMessage =
+      args.msg || (args.file_name ? `Attachment: ${args.file_name}` : "Attachment");
 
     if (args.type === "room") {
-      await ctx.db.insert("messages", {
+      const insertedMessageId = await ctx.db.insert("messages", {
         room_id: args.room_id,
         sender_id: identity.subject,
         content: args.msg || null,
@@ -219,20 +225,37 @@ export const sendMessage = mutation({
         file_name: args.file_name || null,
       });
 
-      const members = await ctx.db
-        .query("roomMembers")
-        .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
-        .collect();
+      const [members, room] = await Promise.all([
+        ctx.db
+          .query("roomMembers")
+          .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+          .collect(),
+        ctx.db
+          .query("rooms")
+          .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+          .first(),
+      ]);
 
       for (const member of members) {
         if (member.user_id !== identity.subject) {
           await ctx.db.patch(member._id, {
             unread_count: (member.unread_count || 0) + 1,
           });
+          await ctx.db.insert("chatNotifications", {
+            user_id: member.user_id,
+            message_id: insertedMessageId,
+            source_type: "room",
+            source_id: args.room_id,
+            source_name: room?.room_name || args.room_id,
+            sender_id: identity.subject,
+            sender_name: sender?.username || "Unknown user",
+            sender_avatar: sender?.avatar || "",
+            message: notificationMessage,
+          });
         }
       }
     } else {
-      await ctx.db.insert("friendMessages", {
+      const insertedMessageId = await ctx.db.insert("friendMessages", {
         receiver_id: args.room_id,
         sender_id: identity.subject,
         content: args.msg || null,
@@ -268,6 +291,18 @@ export const sendMessage = mutation({
           unread_count: (friendship2.unread_count || 0) + 1,
         });
       }
+
+      await ctx.db.insert("chatNotifications", {
+        user_id: args.room_id,
+        message_id: insertedMessageId,
+        source_type: "friend",
+        source_id: identity.subject,
+        source_name: sender?.username || "Unknown user",
+        sender_id: identity.subject,
+        sender_name: sender?.username || "Unknown user",
+        sender_avatar: sender?.avatar || "",
+        message: notificationMessage,
+      });
     }
   },
 });

@@ -12,7 +12,6 @@ import { toast } from "sonner";
 export default function Room({ room_id }: { room_id: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
@@ -26,7 +25,10 @@ export default function Room({ room_id }: { room_id: string }) {
     if (!messageToDelete) return;
 
     try {
-      await deleteMessageMutation({ type: "messages", msg_id: messageToDelete as any });
+      await deleteMessageMutation({
+        type: "messages",
+        msg_id: messageToDelete as any,
+      });
       setDeleteDialogOpen(false);
       setMessageToDelete(null);
       toast.success("Message deleted");
@@ -37,7 +39,6 @@ export default function Room({ room_id }: { room_id: string }) {
 
   return (
     <>
-
       <div
         className={`fixed inset-0 ${deleteDialogOpen ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} bg-black bg-opacity-35 z-[9999] flex items-center justify-center transition-all duration-200`}
       >
@@ -77,7 +78,6 @@ export default function Room({ room_id }: { room_id: string }) {
           textColor={textColor}
           setMessageToDelete={setMessageToDelete}
           setDeleteDialogOpen={setDeleteDialogOpen}
-          onLoad={() => setLoading(false)}
         />
       )}
     </>

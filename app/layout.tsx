@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { PresenceProvider } from "@/contexts/presenceContext";
 import ConvexClientProvider from "./ConvexClientProvider";
 import { cn } from "@/lib/utils";
+import { getThemeBootstrapScript } from "@/lib/theme";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -31,6 +32,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn("font-sans", inter.variable)}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }} />
+      </head>
       <body suppressHydrationWarning className={`body ${dmSans.variable}`}>
         <div className="flex min-h-screen">
           <ConvexClientProvider>

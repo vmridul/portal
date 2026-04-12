@@ -56,6 +56,20 @@ export default defineSchema({
     .index("by_receiver_id", ["receiver_id"])
     .index("by_sender_id", ["sender_id"]),
 
+  chatNotifications: defineTable({
+    user_id: v.string(),
+    message_id: v.string(),
+    source_type: v.union(v.literal("room"), v.literal("friend")),
+    source_id: v.string(),
+    source_name: v.string(),
+    sender_id: v.string(),
+    sender_name: v.string(),
+    sender_avatar: v.optional(v.string()),
+    message: v.string(),
+  })
+    .index("by_user_id", ["user_id"])
+    .index("by_message_id", ["message_id"]),
+
   presence: defineTable({
     user_id: v.string(),
     status: v.union(v.literal("online"), v.literal("away")),

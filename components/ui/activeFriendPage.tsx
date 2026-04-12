@@ -12,7 +12,7 @@ export default function ActiveFriendPage() {
   const { activeFriendPage, setActiveFriendPage } = useUIStore();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
@@ -21,6 +21,7 @@ export default function ActiveFriendPage() {
   useEffect(() => {
     if (activeFriendPage) {
       clearFriendUnreadCountMutation({ friend_id: activeFriendPage }).catch(console.error);
+      setLoading(true);
     }
   }, [activeFriendPage, clearFriendUnreadCountMutation]);
 

@@ -17,7 +17,6 @@ export const ChatUI = ({
   textColor,
   setMessageToDelete,
   setDeleteDialogOpen,
-  onLoad,
 }: {
   type: "room" | "friend";
   room_id: string;
@@ -26,7 +25,6 @@ export const ChatUI = ({
   textColor: string;
   setMessageToDelete: (message: any) => void;
   setDeleteDialogOpen: (open: boolean) => void;
-  onLoad: () => void;
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -46,20 +44,21 @@ export const ChatUI = ({
   const updateTyping = useMutation(api.typing.updateTyping);
   const removeTyping = useMutation(api.typing.removeTyping);
 
-  const typingUsers = useQuery(api.typing.getTypingUsers, { room_id }) || [];
+  const typingUsersQuery = useQuery(api.typing.getTypingUsers, { room_id });
+  const typingUsers = typingUsersQuery ?? [];
 
-  const messages = useQuery(
-    type === "room" ? api.messages.getRoomMessages : api.messages.getFriendMessages,
-    type === "room" ? { room_id, limit } : { friend_id: room_id, limit }
-  ) || [];
+  const messagesQuery = useQuery(
+    type === "room"
+      ? api.messages.getRoomMessages
+      : api.messages.getFriendMessages,
+    type === "room" ? { room_id, limit } : { friend_id: room_id, limit },
+  );
+  const messages = messagesQuery ?? [];
 
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-
-  useEffect(() => {
-    if (messages.length > 0) onLoad?.();
-  }, [messages.length, onLoad]);
+  console.log("messagesQuery:", messagesQuery);
 
   useEffect(() => {
     const handleJump = (e: Event) => {
@@ -101,7 +100,8 @@ export const ChatUI = ({
     if (!el) return;
     const THRESHOLD = 80;
     const onScroll = () => {
-      const isScrolledUp = el.scrollTop + el.clientHeight < el.scrollHeight - THRESHOLD;
+      const isScrolledUp =
+        el.scrollTop + el.clientHeight < el.scrollHeight - THRESHOLD;
       setShowScrollDown(isScrolledUp);
 
       if (el.scrollTop <= 0 && messages.length >= limit) {
@@ -119,7 +119,10 @@ export const ChatUI = ({
     const handleResize = () => {
       const offset = window.innerHeight - vv.height;
       requestAnimationFrame(() => {
-        document.documentElement.style.setProperty("--keyboard-offset", `${Math.max(0, offset)}px`);
+        document.documentElement.style.setProperty(
+          "--keyboard-offset",
+          `${Math.max(0, offset)}px`,
+        );
       });
     };
     vv.addEventListener("resize", handleResize);
@@ -168,7 +171,12 @@ export const ChatUI = ({
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      )
+        return;
       if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         inputRef.current?.focus();
@@ -204,7 +212,9 @@ export const ChatUI = ({
     setUploading(true);
 
     try {
-      let storageId: import("@/convex/_generated/dataModel").Id<"_storage"> | undefined;
+      let storageId:
+        | import("@/convex/_generated/dataModel").Id<"_storage">
+        | undefined;
       let finalFileName: string | null = null;
       let finalFileType: string | null = null;
 
@@ -246,7 +256,9 @@ export const ChatUI = ({
   };
 
   return (
-    <div className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}>
+    <div
+      className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}
+    >
       {showScrollDown && (
         <button
           onClick={scrollToBottom}
@@ -296,7 +308,9 @@ export const ChatUI = ({
               >
                 <span className="font-medium">{message.sender?.username}</span>
                 <span className="ml-2">{message.content}</span>
-                <span className="ml-4">{formatToIST(message._creationTime as number)}</span>
+                <span className="ml-4">
+                  {formatToIST(message._creationTime as number)}
+                </span>
               </div>
             );
           }
@@ -311,8 +325,14 @@ export const ChatUI = ({
                 <Image
                   src={
                     type === "room"
-                      ? (message.sender?.user_id == user?.user_id ? user?.avatar : message.sender?.avatar) || "/assets/default-avatar.png"
-                      : (message.sender_id == user?.user_id ? user?.avatar : message.sender?.avatar) || "/assets/default-avatar.png"
+                      ? (message.sender?.user_id == user?.user_id
+                          ? user?.avatar
+                          : message.sender?.avatar) ||
+                        "/assets/default-avatar.png"
+                      : (message.sender_id == user?.user_id
+                          ? user?.avatar
+                          : message.sender?.avatar) ||
+                        "/assets/default-avatar.png"
                   }
                   width={40}
                   height={40}
@@ -324,11 +344,19 @@ export const ChatUI = ({
                 <div className="w-8 h-8" />
               )}
 
-              <div className={`flex flex-col max-w-[60%] ${message.sender_id === user?.user_id ? "items-end" : "items-start"}`}>
+              <div
+                className={`flex flex-col max-w-[60%] ${message.sender_id === user?.user_id ? "items-end" : "items-start"}`}
+              >
                 {showMeta && (
-                  <div className={`flex items-center mb-1 gap-2 px-2 ${message.sender_id === user?.user_id ? "flex-row-reverse" : "flex-row"}`}>
-                    <span className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${message.sender_id === user?.user_id ? "text-right" : "text-left"}`}>
-                      {message.sender_id === user?.user_id ? "You" : message.sender?.username}
+                  <div
+                    className={`flex items-center mb-1 gap-2 px-2 ${message.sender_id === user?.user_id ? "flex-row-reverse" : "flex-row"}`}
+                  >
+                    <span
+                      className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${message.sender_id === user?.user_id ? "text-right" : "text-left"}`}
+                    >
+                      {message.sender_id === user?.user_id
+                        ? "You"
+                        : message.sender?.username}
                     </span>
                     <span className="text-xs truncate min-w-0 max-w-[150px] text-gray-600">
                       {formatToIST(message._creationTime as number)}
@@ -338,9 +366,22 @@ export const ChatUI = ({
                 <div
                   id={`msg-${message._id}`}
                   style={{
-                    borderRadius: message.sender_id === user?.user_id ? "8px 8px 0px 8px" : "8px 8px 8px 0px",
-                    backgroundColor: isImage || isVideo || isFile ? "transparent" : message.sender_id === user?.user_id ? color : `${color}3A`,
-                    color: isImage || isVideo || isFile ? undefined : message.sender_id === user?.user_id ? textColor : `${textColor}A`
+                    borderRadius:
+                      message.sender_id === user?.user_id
+                        ? "8px 8px 0px 8px"
+                        : "8px 8px 8px 0px",
+                    backgroundColor:
+                      isImage || isVideo || isFile
+                        ? "transparent"
+                        : message.sender_id === user?.user_id
+                          ? color
+                          : `${color}3A`,
+                    color:
+                      isImage || isVideo || isFile
+                        ? undefined
+                        : message.sender_id === user?.user_id
+                          ? textColor
+                          : `${textColor}A`,
                   }}
                   className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : message.sender_id === user?.user_id ? "" : " text-white/80"}`}
                 >
@@ -366,10 +407,13 @@ export const ChatUI = ({
                       className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
                       onLoad={() => {
                         if (shouldScrollToBottom && !isMobile) {
-                          bottomRef.current?.scrollIntoView({ behavior: "auto" });
+                          bottomRef.current?.scrollIntoView({
+                            behavior: "auto",
+                          });
                         } else if (shouldScrollToBottom && isMobile) {
                           const container = containerRef.current;
-                          if (container) container.scrollTop = container.scrollHeight;
+                          if (container)
+                            container.scrollTop = container.scrollHeight;
                         }
                       }}
                       onClick={() => setPreviewImage(message.file_url)}
@@ -381,10 +425,13 @@ export const ChatUI = ({
                       src={message.file_url}
                       onLoadedData={() => {
                         if (shouldScrollToBottom && !isMobile) {
-                          bottomRef.current?.scrollIntoView({ behavior: "auto" });
+                          bottomRef.current?.scrollIntoView({
+                            behavior: "auto",
+                          });
                         } else if (shouldScrollToBottom && isMobile) {
                           const container = containerRef.current;
-                          if (container) container.scrollTop = container.scrollHeight;
+                          if (container)
+                            container.scrollTop = container.scrollHeight;
                         }
                       }}
                     />
@@ -394,7 +441,20 @@ export const ChatUI = ({
                     <a
                       href={message.file_url}
                       target="_blank"
-                      style={{ borderRadius: message.sender_id === user?.user_id ? "8px 8px 0px 8px" : "8px 8px 8px 0px", backgroundColor: message.sender_id === user?.user_id ? color : `${color}3A`, color: message.sender_id === user?.user_id ? textColor : "inherit" }}
+                      style={{
+                        borderRadius:
+                          message.sender_id === user?.user_id
+                            ? "8px 8px 0px 8px"
+                            : "8px 8px 8px 0px",
+                        backgroundColor:
+                          message.sender_id === user?.user_id
+                            ? color
+                            : `${color}3A`,
+                        color:
+                          message.sender_id === user?.user_id
+                            ? textColor
+                            : "inherit",
+                      }}
                       rel="noopener noreferrer"
                       className={`
       flex items-center gap-2 
@@ -404,7 +464,6 @@ export const ChatUI = ({
       mb-2
     `}
                     >
-
                       <div className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center flex-shrink-0">
                         <FileText className="w-5 h-5 text-white/50" />
                       </div>
@@ -435,7 +494,11 @@ export const ChatUI = ({
               </span>
             </div>
             <span className="text-xs text-white/50 italic">
-              {typingUsers.map((u: any) => u?.username).filter(Boolean).join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+              {typingUsers
+                .map((u: any) => u?.username)
+                .filter(Boolean)
+                .join(", ")}{" "}
+              {typingUsers.length === 1 ? "is" : "are"} typing...
             </span>
           </div>
         )}
@@ -445,10 +508,19 @@ export const ChatUI = ({
       <div
         {...getRootProps()}
         className="flex items-center z-[1000] gap-2 absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-theme-base focus-within:border-[#393939] bg-opacity-90 border border-theme-border border-opacity-90 backdrop-blur-md"
-        style={isMobile ? { transform: "translateY(calc(-1 * var(--keyboard-offset)))", transition: "transform 0.2s ease-out" } : undefined}
+        style={
+          isMobile
+            ? {
+                transform: "translateY(calc(-1 * var(--keyboard-offset)))",
+                transition: "transform 0.2s ease-out",
+              }
+            : undefined
+        }
       >
         {selectedFile && (
-          <div className={`absolute bottom-full w-full left-1/2 -translate-x-1/2 mb-2 bg-theme-base px-3 py-2 rounded text-white/80 text-xs`}>
+          <div
+            className={`absolute bottom-full w-full left-1/2 -translate-x-1/2 mb-2 bg-theme-base px-3 py-2 rounded text-white/80 text-xs`}
+          >
             {selectedFile.name}
             <button
               onClick={() => {
@@ -462,8 +534,18 @@ export const ChatUI = ({
           </div>
         )}
 
-        <input {...getInputProps()} ref={fileInputRef} type="file" onChange={handleFileSelect} className="hidden" />
-        <button onClick={() => fileInputRef.current?.click()} className="bg-theme-surface/60 py-2 px-3 rounded-2xl text-white hover:bg-theme-surface disabled:opacity-50" disabled={uploading}>
+        <input
+          {...getInputProps()}
+          ref={fileInputRef}
+          type="file"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-theme-surface/60 py-2 px-3 rounded-2xl text-white hover:bg-theme-surface disabled:opacity-50"
+          disabled={uploading}
+        >
           <Plus className="text-[#a89691] w-7 h-8" />
         </button>
 
@@ -505,12 +587,19 @@ export const ChatUI = ({
           rows={1}
           style={{ minHeight: "40px", maxHeight: "150px" }}
         />
-        <button onClick={handleSendMessage} style={{ backgroundColor: color, color: textColor }} className="py-2 px-3 rounded-2xl ease-in-out disabled:opacity-50" disabled={uploading}>
+        <button
+          onClick={handleSendMessage}
+          style={{ backgroundColor: color, color: textColor }}
+          className="py-2 px-3 rounded-2xl ease-in-out disabled:opacity-50"
+          disabled={uploading}
+        >
           <Send className="mr-0.5 opacity-80 hover:opacity-100 transition-transform duration-150 hover:scale-105 ease-in-out w-6 h-7" />
         </button>
         {isDragActive && (
           <div className="z-[9999] flex justify-center border border-dashed border-white/50 items-center absolute top-0 left-0 rounded-[10px] w-[462px] h-[72px] bg-opacity-80 bg-[#313131]">
-            <span className="text-white/50 tracking-wider text-xl">DROP HERE</span>
+            <span className="text-white/50 tracking-wider text-xl">
+              DROP HERE
+            </span>
           </div>
         )}
       </div>
