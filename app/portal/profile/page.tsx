@@ -31,7 +31,7 @@ export default function ProfilePage() {
 
   return (
     <div className="text-white flex">
-      <LeftSidebar className="w-64" />
+      <LeftSidebar className="w-64" showPortalSkeletons={false} />
       <ProfilePageContent />
     </div>
   );

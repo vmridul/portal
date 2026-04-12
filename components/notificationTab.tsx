@@ -66,7 +66,7 @@ export default function NotificationTab() {
     <>
       <button
         onClick={() => setMobileMenu(!mobileMenu)}
-        className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-1.5 right-2 text-white md:hidden`}
+        className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
       >
         <Bell className="text-white/90 ml-1 w-4 h-4" />
       </button>
@@ -80,7 +80,7 @@ export default function NotificationTab() {
 
     md:static md:translate-x-0 border-theme-border border-l bg-theme-base font-sans`}
       >
-        <div className="flex justify-between px-2 items-center bg-theme-base border-b border-theme-border py-1 md:py-3">
+        <div className="flex justify-between px-2 items-center bg-theme-base border-b border-theme-border py-1 h-12">
           <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
             <Bell className="w-4 h-4" />
             <h1 className="text-md">Notifications</h1>

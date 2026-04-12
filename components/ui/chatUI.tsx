@@ -58,7 +58,6 @@ export const ChatUI = ({
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-  console.log("messagesQuery:", messagesQuery);
 
   useEffect(() => {
     const handleJump = (e: Event) => {
@@ -262,7 +261,7 @@ export const ChatUI = ({
       {showScrollDown && (
         <button
           onClick={scrollToBottom}
-          className="absolute z-[2000] bottom-[100px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 border border-theme-border border-opacity-90 bg-theme-base bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
+          className="absolute z-[2000] md:bottom-[100px] bottom-[80px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 border border-theme-border border-opacity-90 bg-theme-base bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
         >
           <ArrowDown className="h-6 w-6" />
         </button>

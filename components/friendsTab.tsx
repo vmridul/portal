@@ -120,9 +120,7 @@ export default function FriendsTab() {
         </div>
       </div>
       <div className="relative flex-1 font-sans">
-        {isLoadingFriendsData ? (
-          <Skeleton className="h-[45px] w-full" />
-        ) : activeFriendPage ? (
+        {activeFriendPage ? (
           <div
             className={`
  flex items-center p-3  w-full gap-4 border-b border-theme-border bg-theme-hover bg-opacity-100`}
@@ -202,20 +200,20 @@ export default function FriendsTab() {
             </div>
           </div>
         ) : (
-          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 md:py-3">
+          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 h-12">
             <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
               <Users className="w-4 h-4" />
               <h1 className="text-md">Friends</h1>
             </div>
             <div className="ml-3 md:hidden flex items-center gap-2 text-white/90">
-              <h1 className="text-md font-semibold mt-1">Portal</h1>
+              <h1 className="text-md font-semibold">Portal</h1>
             </div>
             <div className="flex items-center text-sm gap-1">
               <button
                 onClick={(e) => {
                   setPendingRequestMenu(!pendingRequestMenu);
                 }}
-                className={`relative flex items-center gap-2 h-[28px] md:hover:bg-theme-hover text-white/90 px-3 py-1 rounded-[8px]`}
+                className={`relative select-none p-2 cursor-pointer md:pr-0 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
               >
                 <Clock className="w-4 h-4" />
                 <div

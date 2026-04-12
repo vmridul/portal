@@ -28,9 +28,13 @@ export const pixelFont = Press_Start_2P({
 
 type LeftSidebarProps = {
   className?: string;
+  showPortalSkeletons?: boolean;
 };
 
-export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
+export default function LeftSidebar({
+  className = "",
+  showPortalSkeletons = true,
+}: LeftSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -122,7 +126,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
 
   return (
     <>
-
       <div
         className={`fixed ${joinDialog ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} inset-0 z-[9999] bg-black bg-opacity-35 flex items-center justify-center transition-all duration-200`}
       >
@@ -238,12 +241,12 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
           onClick={() => {
             setMobileMenu(!mobileMenu);
           }}
-          className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-2 left-2 text-white md:hidden`}
+          className={`z-[3000] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 left-2 text-white md:hidden`}
         >
           <Menu
             className={`${
               mobileMenu ? "rotate-180" : ""
-            } text-white/60 ease-in-out hover:text-white/80 duration-200 w-5 h-5`}
+            } text-white ease-in-out duration-200 w-5 h-5`}
           />
         </button>
         <div
@@ -254,7 +257,20 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
     md:translate-x-0`}
         >
           {!user?.user_id || !rooms ? (
-            <Skeleton className="h-[80px] z-[9999] mt-2 w-60 rounded-[8px]" />
+            <div className="flex flex-col gap-1 mt-2 text-sm items-center">
+              <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
+                <Users className="w-4 h-4" />
+                <span>Friends</span>
+              </div>
+              <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
+                <Plus className="w-4 h-4" />
+                <span>Create Room</span>
+              </div>
+              <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
+                <UserPlus className="w-4 h-4" />
+                <span>Join Room</span>
+              </div>
+            </div>
           ) : (
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
@@ -282,39 +298,41 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
             </div>
           )}
           {!user?.user_id || !rooms ? (
-            <div className="flex mt-2 flex-col gap-2 items-center">
-              <Skeleton className="h-[24px] mt-2 w-[240px] rounded-[4px]" />
-              <div className="flex mt-2 flex-col items-center gap-2">
-                <div className="flex gap-2 items-center">
-                  <Skeleton className="rounded-[8px] w-9 h-9" />
-                  <div className="flex flex-col ">
-                    <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
-                    <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+            showPortalSkeletons ? (
+              <div className="flex mt-2 flex-col gap-2 items-center">
+                <Skeleton className="h-[24px] mt-2 w-[240px] rounded-[4px]" />
+                <div className="flex mt-2 flex-col items-center gap-2">
+                  <div className="flex gap-2 items-center">
+                    <Skeleton className="rounded-[8px] w-9 h-9" />
+                    <div className="flex flex-col ">
+                      <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
+                      <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <Skeleton className="rounded-[8px] w-9 h-9" />
-                  <div className="flex flex-col ">
-                    <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
-                    <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                  <div className="flex gap-2 items-center">
+                    <Skeleton className="rounded-[8px] w-9 h-9" />
+                    <div className="flex flex-col ">
+                      <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
+                      <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <Skeleton className="rounded-[8px] w-9 h-9" />
-                  <div className="flex flex-col ">
-                    <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
-                    <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                  <div className="flex gap-2 items-center">
+                    <Skeleton className="rounded-[8px] w-9 h-9" />
+                    <div className="flex flex-col ">
+                      <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
+                      <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <Skeleton className="rounded-[8px] w-9 h-9" />
-                  <div className="flex flex-col ">
-                    <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
-                    <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                  <div className="flex gap-2 items-center">
+                    <Skeleton className="rounded-[8px] w-9 h-9" />
+                    <div className="flex flex-col ">
+                      <Skeleton className="h-[26px] mt-2 w-[190px] rounded-[4px]" />
+                      <Skeleton className="h-[12px] mt-2 w-[120px] rounded-[4px]" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : null
           ) : (
             <div className="mt-3">
               <div className="flex gap-36 items-center ml-3 text-[#aaaaaa]">

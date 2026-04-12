@@ -11,9 +11,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const room_id = params.room_id as string;
 
   return (
-    <section className="flex">
+    <section className="flex h-screen overflow-hidden">
       <div className="flex-1 flex">
-        <LeftSidebar className="w-64" />
+        <LeftSidebar className="w-64" showPortalSkeletons={false} />
         <div className="flex flex-col w-full">
           <TopBar room_id={room_id} />
           {children}

@@ -24,11 +24,15 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
   const [rightMobileMenu, setRightMobileMenu] = useState(false);
   const { onlineUsers, awayUsers } = usePresence();
 
-  const { rooms, membersCount: allMembersCount, isLoading: isRoomsLoading } = useRooms();
+  const {
+    rooms,
+    membersCount: allMembersCount,
+    isLoading: isRoomsLoading,
+  } = useRooms();
   const room = rooms.find((r: any) => r.room_id === room_id);
   const roomName = room?.Rooms?.room_name;
   const createdAt = room?.joined_at;
-  const memberCount = room ? allMembersCount[room_id] ?? 0 : 0;
+  const memberCount = room ? (allMembersCount[room_id] ?? 0) : 0;
 
   const membersQuery = useQuery(api.roomQueries.getRoomMembers, { room_id });
   const members = membersQuery ?? [];
@@ -76,10 +80,12 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
         />
       )}
       <button
-        onClick={() => { setRightMobileMenu(!rightMobileMenu) }}
-        className="z-[2100] w-6 h-6 absolute top-2 right-2 text-white md:hidden"
+        onClick={() => {
+          setRightMobileMenu(!rightMobileMenu);
+        }}
+        className="z-[3000] w-6 h-6 absolute top-3 right-2 text-white md:hidden"
       >
-        <Users className="text-white/60 w-4 h-4" />
+        <Users className="text-white w-4 h-4" />
       </button>
 
       <div
@@ -110,9 +116,9 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
             <div className="flex gap-1 items-center">
               <div
                 onClick={() => setInfoDialog(true)}
-                className="w-10 h-10 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
+                className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
               >
-                <Info className="w-5 h-5 text-white/90 hover:text-gray-200 cursor-pointer" />
+                <Info className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
               </div>
 
               <div
@@ -120,9 +126,9 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   e.stopPropagation();
                   setOpenMenu((v) => !v);
                 }}
-                className="w-10 h-10 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
+                className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
               >
-                <Menu className="w-5 h-5 text-white/90 hover:text-gray-200 cursor-pointer" />
+                <Menu className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
               </div>
               <div
                 className={`
@@ -132,10 +138,11 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     shadow-lg text-sm
     transform transition-all duration-150 select-none
  ease-out
-    ${openMenu
-                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                    : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-                  }
+    ${
+      openMenu
+        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+    }
   `}
               >
                 <div
@@ -157,14 +164,14 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >
                   <UserX className="w-4 h-4 ml-3 mr-2" />
-                  <button className="w-32 text-start py-3">{`${owner_id == user?.user_id ? "Delete Room" : "Leave Room"
-                    }`}</button>
+                  <button className="w-32 text-start py-3">{`${
+                    owner_id == user?.user_id ? "Delete Room" : "Leave Room"
+                  }`}</button>
                 </div>
               </div>
             </div>
           </div>
         )}
-        <div className="w-full h-0 border border-theme-border mt-2"></div>
         {!user?.user_id || membersQuery === undefined ? (
           <ListSkeleton />
         ) : (
