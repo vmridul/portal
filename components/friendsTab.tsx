@@ -213,7 +213,7 @@ export default function FriendsTab() {
                 onClick={(e) => {
                   setPendingRequestMenu(!pendingRequestMenu);
                 }}
-                className={`relative select-none p-2 cursor-pointer md:pr-0 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
+                className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
               >
                 <Clock className="w-4 h-4" />
                 <div
