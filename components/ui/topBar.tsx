@@ -12,7 +12,10 @@ import { MediaDialog } from "./mediaDialog";
 export default function TopBar({ room_id }: { room_id: string }) {
   const roomDetails = useQuery(api.roomQueries.getRoomDetails, { room_id });
   const [query, setQuery] = useState("");
-  const rawSearchResults = useQuery(api.messages.searchMessages, { room_id, query });
+  const rawSearchResults = useQuery(api.messages.searchMessages, {
+    room_id,
+    query,
+  });
 
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedResult, setSelectedResult] = useState(0);
@@ -44,7 +47,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const handleSearchClick = (index: number, id: string, sent_at: number) => {
     setSelectedResult(index);
     window.dispatchEvent(
-      new CustomEvent("jump-to-msg", { detail: { id, sent_at } })
+      new CustomEvent("jump-to-msg", { detail: { id, sent_at } }),
     );
   };
 
@@ -66,7 +69,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               if (e.key === "ArrowDown") {
                 e.preventDefault();
                 setSelectedResult((prev) =>
-                  Math.min(prev + 1, searchResults.length - 1)
+                  Math.min(prev + 1, searchResults.length - 1),
                 );
               }
               if (e.key === "ArrowUp") {
@@ -76,7 +79,11 @@ export default function TopBar({ room_id }: { room_id: string }) {
               if (e.key === "Enter" && searchResults.length > 0) {
                 e.preventDefault();
                 const result = searchResults[selectedResult];
-                handleSearchClick(selectedResult, result._id, result._creationTime);
+                handleSearchClick(
+                  selectedResult,
+                  result._id,
+                  result._creationTime,
+                );
               }
             }}
             onClick={(e) => e.stopPropagation()}
@@ -104,8 +111,9 @@ export default function TopBar({ room_id }: { room_id: string }) {
                     e.preventDefault();
                     handleSearchClick(index, result._id, result._creationTime);
                   }}
-                  className={`hover:bg-[white/10] ${selectedResult == index ? "bg-theme-hover" : ""
-                    } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
+                  className={`hover:bg-[white/10] ${
+                    selectedResult == index ? "bg-theme-hover" : ""
+                  } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-white/40">
@@ -140,7 +148,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 >
                   <HexColorPicker color={color} onChange={setColor} />
                 </div>,
-                document.body
+                document.body,
               )}
             <div
               onClick={(e) => {

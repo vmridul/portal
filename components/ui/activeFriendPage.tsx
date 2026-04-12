@@ -12,16 +12,18 @@ export default function ActiveFriendPage() {
   const { activeFriendPage, setActiveFriendPage } = useUIStore();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
-  const clearFriendUnreadCountMutation = useMutation(api.messages.clearFriendUnreadCount);
+  const clearFriendUnreadCountMutation = useMutation(
+    api.messages.clearFriendUnreadCount,
+  );
 
   useEffect(() => {
     if (activeFriendPage) {
-      clearFriendUnreadCountMutation({ friend_id: activeFriendPage }).catch(console.error);
-      setLoading(true);
+      clearFriendUnreadCountMutation({ friend_id: activeFriendPage }).catch(
+        console.error,
+      );
     }
   }, [activeFriendPage, clearFriendUnreadCountMutation]);
 
@@ -29,7 +31,10 @@ export default function ActiveFriendPage() {
     if (!messageToDelete) return;
 
     try {
-      await deleteMessageMutation({ type: "friendMessages", msg_id: messageToDelete as any });
+      await deleteMessageMutation({
+        type: "friendMessages",
+        msg_id: messageToDelete as any,
+      });
       setDeleteDialogOpen(false);
       setMessageToDelete(null);
       toast.success("Message deleted");
@@ -69,7 +74,7 @@ export default function ActiveFriendPage() {
       </div>
 
       <div className="">
-        {!user || !activeFriendPage || loading ? (
+        {!user || !activeFriendPage ? (
           <ChatSkeleton />
         ) : (
           <div className="w-full">
@@ -81,7 +86,6 @@ export default function ActiveFriendPage() {
               textColor={textColor}
               setMessageToDelete={setMessageToDelete}
               setDeleteDialogOpen={setDeleteDialogOpen}
-              onLoad={() => setLoading(false)}
             />
           </div>
         )}

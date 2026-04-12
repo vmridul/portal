@@ -124,9 +124,10 @@ export default function NotificationTab() {
             </div>
           ) : (
             notifications.map((notification) => (
+              // td : change to separate item
               <div
                 key={notification.id}
-                className="group relative rounded-[14px] border border-theme-border bg-theme-surface p-3 shadow-sm"
+                className="group relative rounded-[14px] bg-theme-surface p-3 shadow-sm"
               >
                 <button
                   onClick={async (e) => {
@@ -168,13 +169,13 @@ export default function NotificationTab() {
                     }}
                     className="flex min-w-0 flex-1 items-start gap-3 text-left"
                   >
-                    <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
                       {notification.senderAvatar ? (
                         <Image
                           src={notification.senderAvatar}
                           alt={notification.senderName}
-                          width={44}
-                          height={44}
+                          width={12}
+                          height={12}
                           unoptimized
                           className="h-full w-full object-cover"
                         />
@@ -203,6 +204,7 @@ export default function NotificationTab() {
                           {notification.message}
                         </p>
                         <p className="ml-auto pr-1 flex-shrink-0 pt-0.5 text-xs text-white/35">
+                          {/* //td: change this to the other timeago func */}
                           {formatTimeAgo(notification.createdAt)}
                         </p>
                       </div>

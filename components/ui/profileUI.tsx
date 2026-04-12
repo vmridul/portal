@@ -2,21 +2,21 @@ import Image from "next/image";
 import { Moon } from "lucide-react";
 import { LogOut } from "lucide-react";
 import { User } from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
 
 export const ProfileUI = ({
   user,
   awayUsers,
-  setProfileDialog,
   setLogoutDialog,
 }: {
   user: User | null;
   awayUsers: Set<string>;
-  setProfileDialog: (value: boolean) => void;
   setLogoutDialog: (value: boolean) => void;
 }) => {
+  const router = useRouter();
   return (
     <div
-      onClick={() => setProfileDialog(true)}
+      onClick={() => router.push("/portal/profile")}
       className={`flex justify-between absolute bottom-2 items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
     >
       <div className="flex gap-4 items-center">

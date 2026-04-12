@@ -262,7 +262,7 @@ export const ChatUI = ({
       {showScrollDown && (
         <button
           onClick={scrollToBottom}
-          className="absolute z-[2000] bottom-[95px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-white/50 hover:text-white/70 border border-theme-border border-opacity-90 bg-theme-base bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
+          className="absolute z-[2000] bottom-[100px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 border border-theme-border border-opacity-90 bg-theme-base bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
         >
           <ArrowDown className="h-6 w-6" />
         </button>
@@ -349,7 +349,7 @@ export const ChatUI = ({
               >
                 {showMeta && (
                   <div
-                    className={`flex items-center mb-1 gap-2 px-2 ${message.sender_id === user?.user_id ? "flex-row-reverse" : "flex-row"}`}
+                    className={`flex items-center mb-1 gap-2 px-1 ${message.sender_id === user?.user_id ? "flex-row-reverse" : "flex-row"}`}
                   >
                     <span
                       className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${message.sender_id === user?.user_id ? "text-right" : "text-left"}`}

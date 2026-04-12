@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { generateRoomCode } from "@/app/actions/randomID";
 import { usePresence } from "@/contexts/presenceContext";
 import { ProfileUI } from "./profileUI";
-import { ProfileDialog } from "./profileDialog";
 import { Press_Start_2P } from "next/font/google";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
@@ -42,7 +41,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
   const { rooms, isLoading: isRoomsLoading } = useRooms();
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
-  const [profileDialog, setProfileDialog] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const { awayUsers, setStatus } = usePresence();
   const {
@@ -124,15 +122,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
 
   return (
     <>
-      {profileDialog && (
-        <ProfileDialog
-          user={user}
-          setProfileDialog={setProfileDialog}
-          setStatus={setStatus}
-          awayUsers={awayUsers}
-        />
-      )}
-      {/* JOIN DIALOG */}
 
       <div
         className={`fixed ${joinDialog ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} inset-0 z-[9999] bg-black bg-opacity-35 flex items-center justify-center transition-all duration-200`}
@@ -348,7 +337,6 @@ export default function LeftSidebar({ className = "" }: LeftSidebarProps) {
             <ProfileUI
               user={user}
               awayUsers={awayUsers}
-              setProfileDialog={setProfileDialog}
               setLogoutDialog={setLogoutDialog}
             />
           )}

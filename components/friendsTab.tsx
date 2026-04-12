@@ -39,7 +39,10 @@ export default function FriendsTab() {
   const user = useUserStore((s) => s.user);
   const { onlineUsers, awayUsers } = usePresence();
 
-  const friendsQuery = useQuery(api.friends.getFriends, user?.user_id ? {} : "skip");
+  const friendsQuery = useQuery(
+    api.friends.getFriends,
+    user?.user_id ? {} : "skip",
+  );
   const pendingRequestsQuery = useQuery(
     api.friends.getPendingRequests,
     user?.user_id ? {} : "skip",
