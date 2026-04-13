@@ -34,6 +34,7 @@ export default function FriendsList({
     addFriendDialog,
     setAddFriendDialog,
     setPendingRequestMenu,
+    activeFriendPage,
   } = useUIStore();
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
@@ -97,6 +98,7 @@ export default function FriendsList({
                   : false;
                 const isUserAway = friendId ? awayUsers.has(friendId) : false;
                 const unreadCount = friend?.unread_count || 0;
+                const isActiveFriend = activeFriendPage === friendId;
                 return (
                   <div
                     className="group h-[70px] bg-theme-border hover:bg-theme-hover transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
@@ -134,7 +136,7 @@ export default function FriendsList({
                         <span className="text-white/90 text-sm truncate w-[80px]">
                           {friend?.friend?.username}
                         </span>
-                        {mounted && unreadCount > 0 && (
+                        {mounted && unreadCount > 0 && !isActiveFriend && (
                           <div
                             className="w-4 h-4 rounded-full items-center justify-center flex flex-shrink-0 mr-1"
                             style={{ backgroundColor: color, color: textColor }}

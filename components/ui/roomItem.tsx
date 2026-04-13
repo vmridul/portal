@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 
 export function RoomItem({
@@ -10,13 +10,14 @@ export function RoomItem({
   user,
 }: any) {
   const [mounted, setMounted] = useState(false);
-
   const unreadCount = room?.unread_count || 0;
   const { color } = useColor();
 
-  useState(() => {
+  useEffect(() => {
     setMounted(true);
-  });
+  }, []);
+
+  const isCurrentRoom = currentRoom?.toString() === room?.Rooms?.room_id?.toString();
 
   return (
     <div
@@ -40,7 +41,7 @@ export function RoomItem({
             ID: {room?.Rooms?.room_id}
           </span>
         </div>
-        {mounted && unreadCount > 0 && (
+        {mounted && unreadCount > 0 && !isCurrentRoom && (
           <div 
             className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex ml-2"
             style={{ backgroundColor: color }}
