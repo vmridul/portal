@@ -86,16 +86,15 @@ export default function NotificationListener() {
                   <p className="min-w-0 flex-1 truncate text-sm font-medium text-white/90">
                     {item.senderName}
                   </p>
-                  <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
-                    {item.sourceType === "room" ? (
+                  {item.sourceType === "room" && (
+                    <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
                       <Hash className="h-3.5 w-3.5 flex-shrink-0" />
-                    ) : (
-                      <MessageCircle className="h-3.5 w-3.5 flex-shrink-0" />
-                    )}
-                    <span className="max-w-[140px] truncate text-sm text-white/75">
-                      {item.sourceName}
-                    </span>
-                  </div>
+
+                      <span className="max-w-[140px] truncate text-sm text-white/75">
+                        {item.sourceName}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <p className="mt-1 max-h-10 overflow-hidden text-sm text-white/65">
                   {item.message}
