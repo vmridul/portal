@@ -132,10 +132,10 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
               </div>
               <div
                 className={`
-    absolute right-0 text-white/90 flex flex-col overflow-hidden items-start top-full mt-1
-    min-w-[140px]
+    absolute right-0 text-white/90 flex flex-col text-xs overflow-hidden items-start top-[48px] mt-1
+    min-w-[80px]
     rounded-[8px] bg-theme-surface border border-theme-border
-    shadow-lg text-sm
+    shadow-lg
     transform transition-all duration-150 select-none
  ease-out
     ${
@@ -153,9 +153,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   className="border-b cursor-pointer border-theme-border flex items-center hover:bg-theme-hover"
                 >
                   <Clipboard className="w-4 h-4 ml-3 mr-2 text-white/90" />
-                  <button className=" w-32 text-start py-3">
-                    Copy Room ID
-                  </button>
+                  <button className="w-32 text-start py-3">Copy Room ID</button>
                 </div>
                 <div
                   onClick={() => {

@@ -1,0 +1,203 @@
+import { Upload, Moon, Circle, Copy, LogOut } from "lucide-react";
+import Image from "next/image";
+import { useUserStore } from "@/store/useUserStore";
+import { toast } from "sonner";
+import { formatToIST } from "@/app/actions/formatToIST";
+import { Skeleton } from "./skeleton";
+import { useState, useEffect, useRef } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useColor } from "@/contexts/colorContext";
+import { usePresence } from "@/contexts/presenceContext";
+
+export const UserInfoTab = () => {
+  const user = useUserStore((s) => s.user);
+  const [presenceMenu, setPresenceMenu] = useState(false);
+  const setUser = useUserStore((s) => s.setUser);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [newUsername, setNewUsername] = useState(user?.username || "");
+  const [isUploading, setIsUploading] = useState(false);
+  const { color, textColor } = useColor();
+
+  const changeNameMutation = useMutation(api.users.changeName);
+  const changeAvatarMutation = useMutation(api.users.changeAvatar);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const getUrl = useMutation(api.storage.getUrlMutation);
+  const { awayUsers, setStatus } = usePresence();
+  // const identity = await ctx.auth.getUserIdentity();
+  return (
+    <div className="flex flex-col items-center justify-center pt-10 w-[47%] mx-auto">
+      <div className="flex items-end justify-center gap-4">
+        <div className="flex-shrink-0">
+          <span className="text-xs text-gray-300 pl-1">Avatar</span>
+          <div className="group relative ">
+            <Image
+              src={user?.avatar || "/assets/default-avatar.png"}
+              alt="Profile"
+              width={120}
+              height={120}
+              unoptimized
+              className="rounded-[12px] w-24 h-24 border border-theme-border"
+            />
+            <div
+              onClick={() => fileRef?.current?.click()}
+              className="flex items-center justify-center opacity-0 rounded-[12px] transition-all duration-300 absolute inset-0"
+            >
+              {isUploading && (
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
+            {isUploading && (
+              <div className="flex items-center justify-center opacity-70 rounded-[12px] w-[60px] h-[60px] absolute inset-0 bg-white/50">
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              className="hidden"
+              accept="image/*"
+              // onChange={onChangeAvatar}
+            />
+          </div>
+          <div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setPresenceMenu(true);
+              }}
+              className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
+            >
+              {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
+                <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border px-3 py-2 hover:bg-theme-hover rounded-[6px]">
+                  <Moon fill="yellow" className="w-3 h-3 text-yellow-200" />
+                  <span className={``}>Away</span>
+                </div>
+              ) : (
+                <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border px-3 py-2 hover:bg-theme-hover rounded-[6px]">
+                  <Circle fill="green" className="w-3 h-3 text-green-700" />
+                  <span className={``}>Online</span>
+                </div>
+              )}
+              {presenceMenu && (
+                <div className="absolute w-[105px] border border-theme-border cursor-pointer -right-[108px] -top-[4px] z-10 bg-theme-base text-xs text-white rounded-[10px] shadow-md shadow-theme-base">
+                  <ul className="py-0">
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStatus("online");
+                        setPresenceMenu(false);
+                      }}
+                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-green-500"
+                    >
+                      <Circle
+                        fill="green"
+                        className="w-3 h-3 text-green-700 border-none"
+                      />
+                      <span className="">Online</span>
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStatus("away");
+                        setPresenceMenu(false);
+                      }}
+                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-yellow-400"
+                    >
+                      <Moon
+                        fill="yellow"
+                        className="w-3 h-3 border-none text-yellow-200"
+                      />
+                      <span>Away</span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 items-start w-full">
+          <button
+            className={`gap-2 relative select-none px-5 py-5 text-sm cursor-pointer rounded-xl flex items-center justify-center bg-theme-border hover:bg-theme-hover`}
+          >
+            <Upload className="w-4 h-4" />
+          </button>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-300">Username</span>
+            <div className="flex gap-2">
+              <input
+                className=" w-[270px] outline-none border disabled:opacity-70 placeholder-[#c7c7c7] border-theme-border rounded-[8px] text-[#e3e3e3] bg-theme-hover py-2 px-3"
+                type="text"
+                onChange={(e) => setNewUsername(e.target.value)}
+                placeholder="Username"
+                minLength={3}
+                maxLength={16}
+                value={newUsername || ""}
+              />
+              <button
+                disabled={newUsername === user?.username}
+                style={{ backgroundColor: color, color: textColor }}
+                className="disabled:opacity-50 ease-in-out hover:brightness-110 py-2 px-12 md:px-4 text-sm rounded-[6px]"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-1 w-full mt-5">
+        <span className="text-xs text-gray-300">User ID</span>
+        <div className="relative border-theme-border bg-opacity-70 border-opacity-70 rounded-[8px] text-[#e3e3e3] bg-theme-hover py-1 px-3 w-full border flex justify-between items-center">
+          <input
+            className="outline-none truncate
+    overflow-hidden w-full
+    whitespace-nowrap
+    text-ellipsis bg-transparent text-gray-300 text-sm placeholder-[#c7c7c7]"
+            type="text"
+            disabled
+            value={user?.user_id}
+            placeholder="User ID"
+          />
+          <div
+            onClick={() => {
+              if (!user?.user_id) return;
+              toast.success("User ID copied to clipboard");
+              navigator.clipboard.writeText(user?.user_id || "");
+            }}
+            className="cursor-pointer flex items-center justify-center w-7 h-7 rounded-[8px] hover:bg-theme-base"
+          >
+            <Copy className="w-4 h-4 text-gray-300" />
+          </div>
+        </div>
+      </div>
+      <div className="w-full flex flex-col gap-1 mt-5">
+        <span className="text-xs text-gray-300">Email</span>
+        <input
+          className="outline-none text-sm border text-gray-300 bg-theme-hover placeholder-[#c7c7c7] border-theme-border rounded-[8px] py-2 px-3 w-full"
+          type="text"
+          disabled
+          placeholder="Email"
+        />
+      </div>
+      <div className="w-full flex flex-col gap-1 mt-5">
+        <span className="text-xs text-gray-300">Joined On</span>
+        <input
+          className="outline-none text-sm border text-gray-300 bg-theme-hover placeholder-[#c7c7c7] border-theme-border rounded-[8px] py-2 px-3 w-full"
+          type="text"
+          disabled
+          value={formatToIST(user?._creationTime)}
+          placeholder="Joined On"
+        />
+      </div>
+
+      <div className="flex gap-3 items-center w-full mt-5">
+        <button className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-12 md:px-4 text-sm rounded-[6px]">
+          Delete Account
+        </button>
+        <button className="ease-in-out py-2 px-12 bg-theme-border md:px-4 w-full hover:text-gray-200 text-sm rounded-[6px]">
+          Logout
+        </button>
+      </div>
+    </div>
+  );
+};

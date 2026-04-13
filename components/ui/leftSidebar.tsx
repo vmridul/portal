@@ -275,7 +275,7 @@ export default function LeftSidebar({
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
                 onClick={() => router.push("/portal")}
-                className={`${!pathname.match(/\/portal\/room\/([^/]+)/) ? "bg-theme-hover" : "bg-theme-base"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
+                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover" : "bg-theme-base"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
                 <Users className="w-4 h-4" />
                 <span>Friends</span>

@@ -188,16 +188,14 @@ export default function NotificationTab() {
                         <p className="min-w-0 flex-1 truncate text-sm font-medium text-white/90">
                           {notification.senderName}
                         </p>
-                        <div className="ml-auto pr-1 flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
-                          {notification.sourceType === "room" ? (
+                        {notification.sourceType === "room" && (
+                          <div className="ml-auto pr-1 flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
                             <Hash className="h-3.5 w-3.5 flex-shrink-0" />
-                          ) : (
-                            <MessageCircle className="h-3.5 w-3.5 flex-shrink-0" />
-                          )}
-                          <span className="max-w-[130px] truncate text-sm text-white/75">
-                            {notification.sourceName}
-                          </span>
-                        </div>
+                            <span className="max-w-[130px] truncate text-sm text-white/75">
+                              {notification.sourceName}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="mt-1 flex items-start gap-3">
                         <p className="line-clamp-2 min-w-0 flex-1 text-sm text-white/60">

@@ -14,12 +14,17 @@ import {
   Users,
   Clock,
   User,
+  X,
+  CircleUser,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatToIST } from "@/app/actions/formatToIST";
 import { useColor } from "@/contexts/colorContext";
 import { usePresence } from "@/contexts/presenceContext";
 import { useRouter } from "next/navigation";
+import { UserInfoTab } from "./userInfoTab";
+import { PreferencesTab } from "./preferencesTab";
 
 export default function ProfilePageContent() {
   const router = useRouter();
@@ -27,6 +32,7 @@ export default function ProfilePageContent() {
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
   const { awayUsers, setStatus } = usePresence();
+  const [currentTab, setCurrentTab] = useState("Info");
 
   const { user: firebaseUser } = useAuthFromFirebase();
   const ensureUser = useMutation(api.users.createUser);
@@ -107,15 +113,66 @@ export default function ProfilePageContent() {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between w-full md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 md:py-3">
-        <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
-          <User className="w-4 h-4" />
-          <h1 className="text-md">Profile</h1>
+      {/* Header */}
+      <div className="flex justify-between w-full md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 h-12">
+        <div className="ml-3 flex items-center w-full justify-between text-white/90">
+          <div className="flex gap-2 items-center">
+            <User className="w-4 h-4" />
+            <h1 className="text-md">Profile</h1>
+          </div>
+          <X
+            onClick={() => {
+              router.back();
+            }}
+            className="w-6 h-6 md:mr-2 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
+          />
         </div>
-        <div className="ml-3 md:hidden flex items-center gap-2 text-white/90">
-          <h1 className="text-md font-semibold mt-1">Portal</h1>
+      </div>
+
+      <div className="flex md:flex-row flex-col">
+        {/* Sidebar */}
+        <div className="md:flex hidden w-[22%] h-screen bg-theme-base border-r border-theme-border p-3 flex-col gap-2">
+          <button
+            onClick={() => setCurrentTab("Info")}
+            style={{ color: textColor }}
+            className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
+          >
+            <CircleUser className="w-4 h-4" />
+            <span>User Info</span>
+          </button>
+          <button
+            onClick={() => setCurrentTab("Preferences")}
+            style={{ color: textColor }}
+            className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
+          >
+            <Settings className="w-4 h-4" />
+            <span>Preferences</span>
+          </button>
         </div>
-        <div className="flex items-center text-sm gap-1"></div>
+
+        {/* Mobile Tabs */}
+        <div className="flex items-center md:hidden p-2 gap-1">
+          <button
+            onClick={() => setCurrentTab("Info")}
+            style={{ color: textColor }}
+            className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
+          >
+            <CircleUser className="w-4 h-4" />
+            <span>User Info</span>
+          </button>
+          <button
+            onClick={() => setCurrentTab("Preferences")}
+            style={{ color: textColor }}
+            className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
+          >
+            <Settings className="w-4 h-4" />
+            <span>Preferences</span>
+          </button>
+        </div>
+        <div className="w-full h-screen">
+          {currentTab === "Info" && <UserInfoTab />}
+          {currentTab === "Preferences" && <PreferencesTab />}
+        </div>
       </div>
     </div>
   );

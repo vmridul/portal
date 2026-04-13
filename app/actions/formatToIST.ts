@@ -14,6 +14,7 @@ export function formatToIST(
     timeZone: "Asia/Kolkata",
     day: "numeric",
     month: "short",
+    year: "numeric",
   });
 
   return `${_date}, ${_time}`;

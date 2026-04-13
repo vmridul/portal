@@ -3,6 +3,7 @@ import { Moon } from "lucide-react";
 import { LogOut } from "lucide-react";
 import { User } from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export const ProfileUI = ({
   user,
@@ -14,10 +15,11 @@ export const ProfileUI = ({
   setLogoutDialog: (value: boolean) => void;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   return (
     <div
       onClick={() => router.push("/portal/profile")}
-      className={`flex justify-between absolute bottom-2 items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
+      className={`${/^\/portal\/profile$/.test(pathname) ? "bg-theme-hover" : ""} flex justify-between absolute bottom-2 items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
     >
       <div className="flex gap-4 items-center">
         <div className="relative">

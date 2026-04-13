@@ -17,7 +17,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (firebaseUser) {
       ensureUser({
-        username: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+        username:
+          firebaseUser.displayName ||
+          firebaseUser.email?.split("@")[0] ||
+          "User",
         avatar: firebaseUser.photoURL || "",
       });
     }

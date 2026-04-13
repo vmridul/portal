@@ -115,7 +115,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
                   <span className="text-white/40">
                     {result.sender?.username}:
                   </span>
-                  <span className="text-white/60 font-medium">
+                  <span className="text-white/60 max-w-[260px] font-medium">
                     {result.content}
                   </span>
                 </div>
