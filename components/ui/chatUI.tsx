@@ -261,7 +261,7 @@ export const ChatUI = ({
       {showScrollDown && (
         <button
           onClick={scrollToBottom}
-          className="absolute z-[2000] md:bottom-[100px] bottom-[80px] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out"
+          className={`absolute z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out ${selectedFile ? "md:bottom-[140px] bottom-[120px]" : "md:bottom-[100px] bottom-[80px]"}`}
         >
           <ArrowDown className="h-6 w-6" />
         </button>
@@ -518,18 +518,16 @@ export const ChatUI = ({
       >
         {selectedFile && (
           <div
-            className={`absolute bottom-full w-full left-1/2 -translate-x-1/2 mb-2 bg-theme-base px-3 py-2 rounded text-white/80 text-xs`}
+            className={`absolute bottom-full justify-between flex w-full left-1/2 -translate-x-1/2 mb-2 bg-theme-base px-3 py-2 rounded text-gray-300 text-xs`}
           >
-            {selectedFile.name}
-            <button
+            <span>{selectedFile.name}</span>
+            <BadgeX
               onClick={() => {
                 setSelectedFile(null);
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }}
-              className="ml-2 text-white/80 hover:text-red-400 ease-in-out duration-300"
-            >
-              ✕
-            </button>
+              className="ml-2 w-4 cursor-pointer h-4 text-gray-400 ease-in-out duration-300"
+            />
           </div>
         )}
 

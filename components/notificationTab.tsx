@@ -75,7 +75,7 @@ export default function NotificationTab() {
     transition-transform duration-300 ease-in-out
     h-screen
     fixed top-0 right-0 z-[9000]
-    md:translate-y-0 translate-y-9
+    md:translate-y-0 translate-y-12
     ${mobileMenu ? "translate-x-0" : "translate-x-full"}
 
     md:static md:translate-x-0 border-theme-border border-l bg-theme-base font-sans`}

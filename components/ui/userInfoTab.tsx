@@ -1,4 +1,6 @@
-import { Upload, Moon, Circle, Copy, LogOut } from "lucide-react";
+import { Upload, Moon, Circle, Copy, LogOut, Camera } from "lucide-react";
+import { getAuth, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -11,8 +13,10 @@ import { useColor } from "@/contexts/colorContext";
 import { usePresence } from "@/contexts/presenceContext";
 
 export const UserInfoTab = () => {
+  const router = useRouter();
   const user = useUserStore((s) => s.user);
   const [presenceMenu, setPresenceMenu] = useState(false);
+  const [logoutConfirm, setLogoutConfirm] = useState(false);
   const setUser = useUserStore((s) => s.setUser);
   const fileRef = useRef<HTMLInputElement>(null);
   const [newUsername, setNewUsername] = useState(user?.username || "");
@@ -24,12 +28,56 @@ export const UserInfoTab = () => {
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
   const getUrl = useMutation(api.storage.getUrlMutation);
   const { awayUsers, setStatus } = usePresence();
+
+  useEffect(() => {
+    setNewUsername(user?.username || "");
+  }, [user?.user_id]);
+
+  const onChangeName = async () => {
+    if (!newUsername || newUsername === user?.username) return;
+    try {
+      await changeNameMutation({ username: newUsername });
+      setUser({ ...user!, username: newUsername });
+      toast.success("Name updated successfully");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to change name");
+    }
+  };
+
+  const onChangeAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const postUrl = await generateUploadUrl();
+      const result = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      const { storageId } = await result.json();
+
+      const newAvatarUrl = await getUrl({ storageId });
+
+      if (newAvatarUrl) {
+        await changeAvatarMutation({ avatarUrl: newAvatarUrl });
+        setUser({ ...user!, avatar: newAvatarUrl });
+        toast.success("Avatar updated successfully");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Failed to change avatar");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center pt-2 overflow-y-auto md:pt-10 w-[80%] md:w-[47%] mx-auto">
       <div className="flex md:items-end justify-center gap-2 md:gap-4 w-full md:flex-row flex-col items-center">
         <div className="flex-shrink-0">
           <span className="text-xs text-gray-300 pl-1">Avatar</span>
-          <div className="group relative ">
+          <div className="group relative">
             <Image
               src={user?.avatar || "/assets/default-avatar.png"}
               alt="Profile"
@@ -38,28 +86,8 @@ export const UserInfoTab = () => {
               unoptimized
               className="rounded-[12px] w-24 h-24 border border-theme-border"
             />
-            <div
-              onClick={() => fileRef?.current?.click()}
-              className="flex items-center justify-center opacity-0 rounded-[12px] transition-all duration-300 absolute inset-0"
-            >
-              {isUploading && (
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-              )}
-            </div>
-            {isUploading && (
-              <div className="flex items-center justify-center opacity-70 rounded-[12px] w-[60px] h-[60px] absolute inset-0 bg-white/50">
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            )}
-            <input
-              ref={fileRef}
-              type="file"
-              className="hidden"
-              accept="image/*"
-              // onChange={onChangeAvatar}
-            />
           </div>
-          <div>
+          <div className="mt-2">
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -117,10 +145,23 @@ export const UserInfoTab = () => {
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start w-full">
           <button
-            className={`gap-2 relative select-none md:px-5 px-10 py-5 text-sm cursor-pointer rounded-xl flex items-center justify-center bg-theme-border hover:bg-theme-hover`}
+            onClick={() => !isUploading && fileRef?.current?.click()}
+            disabled={isUploading}
+            className={`gap-2 relative select-none md:px-5 px-10 py-5 text-sm cursor-pointer rounded-xl flex items-center justify-center bg-theme-border hover:bg-theme-hover disabled:opacity-50`}
           >
-            <Upload className="w-4 h-4" />
+            {isUploading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Upload className="w-4 h-4" />
+            )}
           </button>
+          <input
+            ref={fileRef}
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={onChangeAvatar}
+          />
           <div className="flex flex-col gap-1 w-full">
             <span className="text-xs text-gray-300">Username</span>
             <div className="flex gap-2">
@@ -135,6 +176,7 @@ export const UserInfoTab = () => {
               />
               <button
                 disabled={newUsername === user?.username}
+                onClick={onChangeName}
                 style={{ backgroundColor: color, color: textColor }}
                 className="disabled:opacity-50 ease-in-out hover:brightness-110 py-2 px-3 md:px-4 text-sm rounded-[6px]"
               >
@@ -194,10 +236,44 @@ export const UserInfoTab = () => {
         <button className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-2 md:px-4 text-sm rounded-[6px]">
           Delete Account
         </button>
-        <button className="ease-in-out py-2 px-2 bg-theme-border md:px-4 w-full hover:text-gray-200 text-sm rounded-[6px]">
+        <button
+          onClick={() => setLogoutConfirm(true)}
+          className="ease-in-out py-2 px-2 bg-theme-border md:px-4 w-full hover:text-gray-200 text-sm rounded-[6px]"
+        >
           Logout
         </button>
       </div>
+
+      {logoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-35 z-[9999] flex items-center justify-center">
+          <div className="w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
+            Are you sure you want to log out?
+            <div className="text-[#676767] mt-2 text-sm">
+              You can sign in back anytime.
+            </div>
+            <div className="flex justify-end gap-2 mt-6 text-sm">
+              <button
+                onClick={() => setLogoutConfirm(false)}
+                className="ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const auth = getAuth();
+                  await signOut(auth);
+                  setLogoutConfirm(false);
+                  router.push("/");
+                }}
+                style={{ backgroundColor: color, color: textColor }}
+                className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
