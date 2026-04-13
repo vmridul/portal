@@ -6,6 +6,7 @@ export default defineSchema({
     user_id: v.string(),
     username: v.string(),
     avatar: v.optional(v.string()),
+    email: v.optional(v.string()),
   }).index("by_user_id", ["user_id"]),
 
   friends: defineTable({

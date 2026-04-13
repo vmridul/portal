@@ -5,7 +5,6 @@ import {
   Ellipsis,
   UserX,
   Moon,
-  PaintRoller,
   Image as ImageIcon,
 } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
@@ -21,8 +20,6 @@ import { Skeleton } from "./ui/skeleton";
 import { usePresence } from "@/contexts/presenceContext";
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
-import { HexColorPicker } from "react-colorful";
-import { createPortal } from "react-dom";
 import { MediaDialog } from "./ui/mediaDialog";
 
 export default function FriendsTab() {
@@ -156,25 +153,6 @@ export default function FriendsTab() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setColorDialog((v) => !v);
-                }}
-                className="w-7 select-none h-7 cursor-pointer rounded-[8px] p-1 flex items-center justify-center hover:bg-theme-base duration-100 transition-all ease-in-out"
-              >
-                <PaintRoller className="w-4 h-4 text-white/70" />
-              </div>
-              {colorDialog &&
-                createPortal(
-                  <div
-                    className="absolute md:scale-100 scale-[80%] top-8 md:top-12 right-0 md:right-[290px] z-[9999]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <HexColorPicker color={color} onChange={setColor} />
-                  </div>,
-                  document.body,
-                )}
               <div
                 onClick={(e) => {
                   e.stopPropagation();

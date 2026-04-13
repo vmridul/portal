@@ -134,7 +134,6 @@ export default function ProfilePageContent() {
         <div className="md:flex hidden w-[22%] h-screen bg-theme-base border-r border-theme-border p-3 flex-col gap-2">
           <button
             onClick={() => setCurrentTab("Info")}
-            style={{ color: textColor }}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
             <CircleUser className="w-4 h-4" />
@@ -142,7 +141,6 @@ export default function ProfilePageContent() {
           </button>
           <button
             onClick={() => setCurrentTab("Preferences")}
-            style={{ color: textColor }}
             className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
             <Settings className="w-4 h-4" />
@@ -154,7 +152,6 @@ export default function ProfilePageContent() {
         <div className="flex items-center md:hidden p-2 gap-1">
           <button
             onClick={() => setCurrentTab("Info")}
-            style={{ color: textColor }}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
           >
             <CircleUser className="w-4 h-4" />
@@ -162,14 +159,13 @@ export default function ProfilePageContent() {
           </button>
           <button
             onClick={() => setCurrentTab("Preferences")}
-            style={{ color: textColor }}
             className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
           >
             <Settings className="w-4 h-4" />
             <span>Preferences</span>
           </button>
         </div>
-        <div className="w-full h-screen">
+        <div className="w-full overflow-y-auto h-screen">
           {currentTab === "Info" && <UserInfoTab />}
           {currentTab === "Preferences" && <PreferencesTab />}
         </div>

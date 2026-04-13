@@ -6,6 +6,7 @@ export interface User {
   username: string;
   avatar?: string;
   chatColor?: string;
+  email?: string;
   _creationTime: number;
 }
 

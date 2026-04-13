@@ -12,7 +12,11 @@ export const getCurrentUser = query({
       .query("users")
       .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
       .first();
-    return user;
+    if (!user) return null;
+    return {
+      ...user,
+      email: user.email || identity.email,
+    };
   },
 });
 
@@ -41,6 +45,7 @@ export const createUser = mutation({
       user_id: identity.subject,
       avatar: args.avatar,
       username: args.username,
+      email: identity.email,
     });
 
     return await ctx.db.get(userId);

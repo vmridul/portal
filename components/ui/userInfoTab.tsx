@@ -24,10 +24,9 @@ export const UserInfoTab = () => {
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
   const getUrl = useMutation(api.storage.getUrlMutation);
   const { awayUsers, setStatus } = usePresence();
-  // const identity = await ctx.auth.getUserIdentity();
   return (
-    <div className="flex flex-col items-center justify-center pt-10 w-[47%] mx-auto">
-      <div className="flex items-end justify-center gap-4">
+    <div className="flex flex-col items-center justify-center pt-2 overflow-y-auto md:pt-10 w-[80%] md:w-[47%] mx-auto">
+      <div className="flex md:items-end justify-center gap-2 md:gap-4 w-full md:flex-row flex-col items-center">
         <div className="flex-shrink-0">
           <span className="text-xs text-gray-300 pl-1">Avatar</span>
           <div className="group relative ">
@@ -69,18 +68,18 @@ export const UserInfoTab = () => {
               className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
             >
               {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
-                <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border px-3 py-2 hover:bg-theme-hover rounded-[6px]">
+                <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
                   <Moon fill="yellow" className="w-3 h-3 text-yellow-200" />
                   <span className={``}>Away</span>
                 </div>
               ) : (
-                <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border px-3 py-2 hover:bg-theme-hover rounded-[6px]">
+                <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
                   <Circle fill="green" className="w-3 h-3 text-green-700" />
                   <span className={``}>Online</span>
                 </div>
               )}
               {presenceMenu && (
-                <div className="absolute w-[105px] border border-theme-border cursor-pointer -right-[108px] -top-[4px] z-10 bg-theme-base text-xs text-white rounded-[10px] shadow-md shadow-theme-base">
+                <div className="absolute w-[105px] border border-theme-border cursor-pointer md:-right-[108px] md:-top-[4px] top-7 z-10 bg-theme-base text-xs text-white rounded-[10px] shadow-md shadow-theme-base">
                   <ul className="py-0">
                     <li
                       onClick={(e) => {
@@ -116,17 +115,17 @@ export const UserInfoTab = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-2 items-start w-full">
+        <div className="flex flex-col items-center gap-2 md:items-start w-full">
           <button
-            className={`gap-2 relative select-none px-5 py-5 text-sm cursor-pointer rounded-xl flex items-center justify-center bg-theme-border hover:bg-theme-hover`}
+            className={`gap-2 relative select-none md:px-5 px-10 py-5 text-sm cursor-pointer rounded-xl flex items-center justify-center bg-theme-border hover:bg-theme-hover`}
           >
             <Upload className="w-4 h-4" />
           </button>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full">
             <span className="text-xs text-gray-300">Username</span>
             <div className="flex gap-2">
               <input
-                className=" w-[270px] outline-none border disabled:opacity-70 placeholder-[#c7c7c7] border-theme-border rounded-[8px] text-[#e3e3e3] bg-theme-hover py-2 px-3"
+                className="md:w-[270px] w-[100%] outline-none border disabled:opacity-70 placeholder-[#c7c7c7] border-theme-border rounded-[8px] text-[#e3e3e3] bg-theme-hover py-2 px-3"
                 type="text"
                 onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="Username"
@@ -137,7 +136,7 @@ export const UserInfoTab = () => {
               <button
                 disabled={newUsername === user?.username}
                 style={{ backgroundColor: color, color: textColor }}
-                className="disabled:opacity-50 ease-in-out hover:brightness-110 py-2 px-12 md:px-4 text-sm rounded-[6px]"
+                className="disabled:opacity-50 ease-in-out hover:brightness-110 py-2 px-3 md:px-4 text-sm rounded-[6px]"
               >
                 Save
               </button>
@@ -176,6 +175,7 @@ export const UserInfoTab = () => {
           className="outline-none text-sm border text-gray-300 bg-theme-hover placeholder-[#c7c7c7] border-theme-border rounded-[8px] py-2 px-3 w-full"
           type="text"
           disabled
+          value={user?.email || ""}
           placeholder="Email"
         />
       </div>
@@ -190,11 +190,11 @@ export const UserInfoTab = () => {
         />
       </div>
 
-      <div className="flex gap-3 items-center w-full mt-5">
-        <button className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-12 md:px-4 text-sm rounded-[6px]">
+      <div className="flex md:flex-row flex-col gap-2 md:gap-3 items-center w-full mt-5">
+        <button className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-2 md:px-4 text-sm rounded-[6px]">
           Delete Account
         </button>
-        <button className="ease-in-out py-2 px-12 bg-theme-border md:px-4 w-full hover:text-gray-200 text-sm rounded-[6px]">
+        <button className="ease-in-out py-2 px-2 bg-theme-border md:px-4 w-full hover:text-gray-200 text-sm rounded-[6px]">
           Logout
         </button>
       </div>

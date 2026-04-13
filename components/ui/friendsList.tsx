@@ -137,9 +137,9 @@ export default function FriendsList({
                         {mounted && unreadCount > 0 && (
                           <div
                             className="w-4 h-4 rounded-full items-center justify-center flex flex-shrink-0 mr-1"
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: color, color: textColor }}
                           >
-                            <span className="text-[8px] font-medium text-white">
+                            <span className="text-[8px] font-medium">
                               {unreadCount > 99 ? "99+" : unreadCount}
                             </span>
                           </div>
@@ -149,7 +149,7 @@ export default function FriendsList({
                         <span className="text-[#aaaaaa] text-xs truncate w-[80px]">
                           {friend?.last_msg ? friend?.last_msg : ""}
                         </span>
-                        <span className="text-[#aaaaaa] text-xs whitespace-nowrap mr-1">
+                        <span className="text-[#aaaaaa] text-xs whitespace-nowrap mr-2">
                           {timeAgo(friend?.updated_at || friend?._creationTime)}
                         </span>
                       </div>

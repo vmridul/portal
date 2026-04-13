@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { PaintRoller, Search, Image as ImageIcon } from "lucide-react";
+import { Search, Image as ImageIcon } from "lucide-react";
 import { formatToIST } from "@/app/actions/formatToIST";
 import { useColor } from "@/contexts/colorContext";
-import { HexColorPicker } from "react-colorful";
-import { createPortal } from "react-dom";
 import { MediaDialog } from "./mediaDialog";
 
 export default function TopBar({ room_id }: { room_id: string }) {
@@ -127,25 +125,6 @@ export default function TopBar({ room_id }: { room_id: string }) {
           </div>
         )}
         <div className="flex items-center flex-none gap-2 ml-2">
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setColorDialog((v) => !v);
-            }}
-            className="flex-none w-7 select-none h-7 cursor-pointer rounded-full flex items-center justify-center hover:bg-[#313131]"
-          >
-            <PaintRoller className="w-4 h-4 text-white/60" />
-          </div>
-          {colorDialog &&
-            createPortal(
-              <div
-                className="absolute md:scale-100 scale-[80%] top-8 md:top-12 right-0 md:right-[290px] z-[9999]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <HexColorPicker color={color} onChange={setColor} />
-              </div>,
-              document.body,
-            )}
           <div
             onClick={(e) => {
               e.stopPropagation();
