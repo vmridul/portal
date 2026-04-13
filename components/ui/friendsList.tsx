@@ -99,7 +99,7 @@ export default function FriendsList({
                 const unreadCount = friend?.unread_count || 0;
                 return (
                   <div
-                    className="group h-[70px] bg-theme-hover hover:bg-theme-hover/80 transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
+                    className="group h-[70px] bg-theme-border hover:bg-theme-hover transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
                     key={friend.id}
                     onClick={() => {
                       if (!friendId) return;
