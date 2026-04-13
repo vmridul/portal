@@ -1,39 +1,40 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "./ui/chatUI";
 import { ChatSkeleton } from "./ui/chatSkeleton";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMessageActions } from "@/src/hooks";
 import { toast } from "sonner";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export default function Room({ room_id }: { room_id: string }) {
+  const router = useRouter();
+  const { deleteMessage, clearUnreadCount } = useMessageActions();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
-  const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
-  const deleteMessageMutation = useMutation(api.messages.deleteMessage);
-  const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
+  const { color, textColor } = useColor();
 
   useEffect(() => {
-    clearUnreadCountMutation({ room_id }).catch(console.error);
-  }, [room_id, clearUnreadCountMutation]);
+    clearUnreadCount(room_id).catch(console.error);
+  }, [room_id, clearUnreadCount]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
 
     try {
-      await deleteMessageMutation({
+      await deleteMessage({
         type: "messages",
-        msg_id: messageToDelete as any,
+        msg_id: messageToDelete as Id<"messages">,
       });
       setDeleteDialogOpen(false);
       setMessageToDelete(null);
       toast.success("Message deleted");
-    } catch (e: any) {
-      toast.error(e.message || "Failed to delete message");
+    } catch (e) {
+      toast.error((e as Error).message || "Failed to delete message");
     }
   };
 

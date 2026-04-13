@@ -1,38 +1,12 @@
 "use client";
-import { useMemo, useState } from "react";
-import { BadgeX, Bell, Hash, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { BadgeX, Bell, Hash } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
-import { useNotificationStore } from "@/store/notificationStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useNotifications, useNotificationActions } from "@/src/hooks";
 import { Skeleton } from "./ui/skeleton";
-
-function formatTimeAgo(createdAt: number) {
-  const diffMs = Date.now() - createdAt;
-  const diffSeconds = Math.max(1, Math.floor(diffMs / 1000));
-
-  if (diffSeconds < 60) return "Just now";
-
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-  const diffHours = Math.floor(diffMinutes / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-
-  const diffWeeks = Math.floor(diffDays / 7);
-  if (diffWeeks < 5) return `${diffWeeks}w ago`;
-
-  const diffMonths = Math.floor(diffDays / 30);
-  if (diffMonths < 12) return `${diffMonths}mo ago`;
-
-  const diffYears = Math.floor(diffDays / 365);
-  return `${diffYears}y ago`;
-}
+import { timeAgo } from "@/lib/utils/date";
 
 type ActiveFriendId = ReturnType<
   typeof useUIStore.getState
@@ -42,25 +16,16 @@ export default function NotificationTab() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const router = useRouter();
   const { activeFriendPage, setActiveFriendPage } = useUIStore();
-  const rawNotifications = useNotificationStore((s) => s.notifications);
-  const notifications = useMemo(() => rawNotifications, [rawNotifications]);
-  const notificationsQuery = useQuery(
-    api.chatNotifications.getMessageNotifications,
-  );
-  const isNotificationsLoading =
-    notificationsQuery === undefined && notifications.length === 0;
-  const removeNotificationLocal = useNotificationStore(
-    (s) => s.removeNotification,
-  );
-  const clearAllNotificationsLocal = useNotificationStore(
-    (s) => s.clearAllNotifications,
-  );
-  const removeNotification = useMutation(
-    api.chatNotifications.removeNotification,
-  );
-  const clearAllNotifications = useMutation(
-    api.chatNotifications.clearAllNotifications,
-  );
+  const {
+    notifications,
+    isLoading: isNotificationsLoading,
+  } = useNotifications();
+  const {
+    removeNotification: removeNotificationAction,
+    clearAllNotifications: clearAllNotificationsAction,
+  } = useNotificationActions();
+
+  const isLoading = isNotificationsLoading && notifications.length === 0;
 
   return (
     <>
@@ -93,8 +58,7 @@ export default function NotificationTab() {
             <button
               onClick={async () => {
                 try {
-                  await clearAllNotifications({});
-                  clearAllNotificationsLocal();
+                  await clearAllNotificationsAction();
                 } catch (error) {
                   console.error(error);
                 }
@@ -107,14 +71,14 @@ export default function NotificationTab() {
         </div>
 
         <div className="mt-2 flex h-[calc(100vh-72px)] flex-col gap-1 overflow-y-auto px-2">
-          {isNotificationsLoading ? (
+          {isLoading ? (
             <>
               <Skeleton className="h-[92px] rounded-[14px]" />
               <Skeleton className="h-[92px] rounded-[14px]" />
               <Skeleton className="h-[92px] rounded-[14px]" />
             </>
           ) : notifications.length === 0 ? (
-            <div className="mt-8 rounded-[14px] px-4 py-5 text-center">
+            <div className="rounded-[14px] mt-[82%] text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
                 <Bell className="h-5 w-5 text-white/45" />
               </div>
@@ -124,7 +88,6 @@ export default function NotificationTab() {
             </div>
           ) : (
             notifications.map((notification) => (
-              // td : change to separate item
               <div
                 key={notification.id}
                 className="group relative rounded-[14px] bg-theme-surface p-3 shadow-sm"
@@ -133,18 +96,7 @@ export default function NotificationTab() {
                   onClick={async (e) => {
                     e.stopPropagation();
                     try {
-                      const notificationId = String(notification.id);
-                      if (
-                        notificationId.startsWith("room-") ||
-                        notificationId.startsWith("friend-")
-                      ) {
-                        removeNotificationLocal(notification.id);
-                        return;
-                      }
-                      await removeNotification({
-                        notification_id: notification.id,
-                      });
-                      removeNotificationLocal(notification.id);
+                      await removeNotificationAction(notification.id);
                     } catch (error) {
                       console.error(error);
                     }
@@ -202,8 +154,7 @@ export default function NotificationTab() {
                           {notification.message}
                         </p>
                         <p className="ml-auto pr-1 flex-shrink-0 pt-0.5 text-xs text-white/35">
-                          {/* //td: change this to the other timeago func */}
-                          {formatTimeAgo(notification.createdAt)}
+                          {timeAgo(notification.createdAt)}
                         </p>
                       </div>
                     </div>

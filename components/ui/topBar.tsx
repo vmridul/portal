@@ -1,44 +1,34 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Search, Image as ImageIcon } from "lucide-react";
-import { formatToIST } from "@/app/actions/formatToIST";
+import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { MediaDialog } from "./mediaDialog";
+import { useRoom } from "@/src/hooks";
+import { useSearchMessages } from "@/src/hooks";
+
+interface SearchResult {
+  _id: string;
+  sender?: { username?: string };
+  content?: string;
+  _creationTime: number;
+}
 
 export default function TopBar({ room_id }: { room_id: string }) {
-  const roomDetails = useQuery(api.roomQueries.getRoomDetails, { room_id });
+  const { room } = useRoom(room_id);
   const [query, setQuery] = useState("");
-  const rawSearchResults = useQuery(api.messages.searchMessages, {
-    room_id,
-    query,
-  });
+  const { results: searchResults, isLoading } = useSearchMessages({ roomId: room_id, query });
 
-  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedResult, setSelectedResult] = useState(0);
-  const { color, setColor } = useColor();
-  const [colorDialog, setColorDialog] = useState(false);
+  const { color } = useColor();
   const [mediaDialog, setMediaDialog] = useState(false);
-
-  useEffect(() => {
-    if (query.trim() && rawSearchResults) {
-      setSearchResults(rawSearchResults);
-    } else {
-      setSearchResults([]);
-    }
-  }, [rawSearchResults, query]);
 
   useEffect(() => {
     const close = () => {
       setQuery("");
-      setColorDialog(false);
-      setSearchResults([]);
+      setMediaDialog(false);
     };
     window.addEventListener("click", close);
-
-    return () => {
-      window.removeEventListener("click", close);
-    };
+    return () => window.removeEventListener("click", close);
   }, []);
 
   const handleSearchClick = (index: number, id: string, sent_at: number) => {

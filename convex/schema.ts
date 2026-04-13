@@ -67,6 +67,7 @@ export default defineSchema({
     sender_name: v.string(),
     sender_avatar: v.optional(v.string()),
     message: v.string(),
+    toast_shown: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_message_id", ["message_id"]),

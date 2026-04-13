@@ -35,6 +35,123 @@ export const getRoomMessages = query({
   },
 });
 
+export const getRoomMessagesPaginated = query({
+  args: {
+    room_id: v.string(),
+    cursor: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+    const cursor = args.cursor;
+
+    let q = ctx.db
+      .query("messages")
+      .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+      .order("desc");
+
+    if (cursor) {
+      q = q.filter((q) => q.lt(q.field("_creationTime"), cursor));
+    }
+
+    const rawMessages = await q.take(limit + 1);
+    const hasMore = rawMessages.length > limit;
+    const messages = hasMore ? rawMessages.slice(0, -1).reverse() : rawMessages.reverse();
+    const nextCursor = hasMore ? rawMessages[limit - 1]._creationTime : null;
+
+    const result = await Promise.all(
+      messages.map(async (msg) => {
+        const sender = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", msg.sender_id))
+          .first();
+
+        let finalUrl = msg.file_url;
+        if (msg.file_storage_id) {
+          finalUrl = await ctx.storage.getUrl(msg.file_storage_id);
+        }
+
+        return {
+          ...msg,
+          file_url: finalUrl,
+          sender,
+        };
+      }),
+    );
+
+    return {
+      messages: result,
+      nextCursor,
+      hasMore,
+    };
+  },
+});
+
+export const getFriendMessagesPaginated = query({
+  args: {
+    friend_id: v.string(),
+    cursor: v.optional(v.number()),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { messages: [], nextCursor: null, hasMore: false };
+
+    const limit = args.limit ?? 50;
+    const cursor = args.cursor;
+    const myId = identity.subject;
+
+    const msgs1 = await ctx.db
+      .query("friendMessages")
+      .withIndex("by_receiver_id", (q) => q.eq("receiver_id", args.friend_id))
+      .filter((q) => q.eq(q.field("sender_id"), myId))
+      .collect();
+
+    const msgs2 = await ctx.db
+      .query("friendMessages")
+      .withIndex("by_receiver_id", (q) => q.eq("receiver_id", myId))
+      .filter((q) => q.eq(q.field("sender_id"), args.friend_id))
+      .collect();
+
+    let allMessages = [...msgs1, ...msgs2];
+    allMessages.sort((a, b) => b._creationTime - a._creationTime);
+
+    if (cursor) {
+      allMessages = allMessages.filter((m) => m._creationTime < cursor);
+    }
+
+    const hasMore = allMessages.length > limit;
+    const messages = hasMore ? allMessages.slice(0, limit) : allMessages;
+    const nextCursor = hasMore ? messages[messages.length - 1]._creationTime : null;
+
+    const result = await Promise.all(
+      messages.map(async (msg) => {
+        const sender = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", msg.sender_id))
+          .first();
+
+        let finalUrl = msg.file_url;
+        if (msg.file_storage_id) {
+          finalUrl = await ctx.storage.getUrl(msg.file_storage_id);
+        }
+
+        return {
+          ...msg,
+          file_url: finalUrl,
+          sender,
+        };
+      }),
+    );
+
+    return {
+      messages: result,
+      nextCursor,
+      hasMore,
+    };
+  },
+});
+
 export const getUnreadCount = query({
   args: { room_id: v.string() },
   handler: async (ctx, args) => {

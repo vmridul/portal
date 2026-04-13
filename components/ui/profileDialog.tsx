@@ -3,11 +3,10 @@ import { Moon, X, Circle, Pencil, Copy } from "lucide-react";
 import { User } from "@/store/useUserStore";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
-import { formatToIST } from "@/app/actions/formatToIST";
+import { formatToIST } from "@/lib/utils/date";
 import { Skeleton } from "./skeleton";
 import { useState, useEffect, useRef } from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useUserProfileActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";
 
 export const ProfileDialog = ({
@@ -28,19 +27,16 @@ export const ProfileDialog = ({
   const [isUploading, setIsUploading] = useState(false);
   const { color, textColor } = useColor();
 
-  const changeNameMutation = useMutation(api.users.changeName);
-  const changeAvatarMutation = useMutation(api.users.changeAvatar);
-  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
-  const getUrl = useMutation(api.storage.getUrlMutation);
+  const { changeName, changeAvatar, generateUploadUrl, getUrl } = useUserProfileActions();
 
   const onChangeName = async () => {
     if (!newUsername || newUsername === user?.username) return;
     try {
-      await changeNameMutation({ username: newUsername });
+      await changeName(newUsername);
       setUser({ ...user!, username: newUsername });
       toast.success("Name updated successfully");
-    } catch (e: any) {
-      toast.error(e.message || "Failed to change name");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to change name");
     }
   };
 
@@ -58,17 +54,15 @@ export const ProfileDialog = ({
       });
       const { storageId } = await result.json();
 
-      const newAvatarUrl = await getUrl({ storageId });
+      const newAvatarUrl = await getUrl(storageId);
 
       if (newAvatarUrl) {
-        await changeAvatarMutation({ avatarUrl: newAvatarUrl });
+        await changeAvatar(newAvatarUrl);
         setUser({ ...user!, avatar: newAvatarUrl });
         toast.success("Avatar updated successfully");
       }
-    } catch (e: any) {
-      toast.error(e.message || "Failed to change avatar");
-    } finally {
-      setIsUploading(false);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to change avatar");
     }
   };
 

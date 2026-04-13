@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useFriendActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";
+
+interface AddFriendDialogProps {
+  setAddFriendDialog: (value: boolean) => void;
+  user_id: string;
+}
 
 export default function AddFriendDialog({
   setAddFriendDialog,
-  user_id,
-}: {
-  setAddFriendDialog: (value: boolean) => void;
-  user_id: string;
-}) {
+}: AddFriendDialogProps) {
   const [friendId, setFriendId] = useState("");
-  const sendRequest = useMutation(api.friends.sendRequest);
+  const { sendRequest } = useFriendActions();
   const { color, textColor } = useColor();
 
   const handleSend = async () => {
@@ -22,18 +22,13 @@ export default function AddFriendDialog({
     }
 
     try {
-      await sendRequest({ receiver_id: friendId });
+      await sendRequest(friendId);
       toast.success("Friend request sent!");
       setFriendId("");
       setAddFriendDialog(false);
-    } catch (e: any) {
-      const msg = e?.data?.message || e?.message || "Failed to send request";
-      const serverMatch = msg.match(/Server Error\s+(.*?)\s+at handler/);
-      const uncaughtMatch = msg.match(/Uncaught Error:\s*(.*)/);
-
-      toast.error(
-        serverMatch ? serverMatch[1] : uncaughtMatch ? uncaughtMatch[1] : msg,
-      );
+    } catch (e) {
+      const msg = (e as Error).message || "Failed to send request";
+      toast.error(msg);
     }
   };
 

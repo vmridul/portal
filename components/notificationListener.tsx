@@ -1,13 +1,11 @@
 "use client";
 
-import { api } from "@/convex/_generated/api";
-import { useNotificationStore } from "@/store/notificationStore";
 import { useUIStore } from "@/store/uiStore";
-import { useQuery } from "convex/react";
-import { Bell, Hash, MessageCircle } from "lucide-react";
+import { useNotifications, useNotificationActions } from "@/src/hooks";
+import { Bell, Hash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 
 type ActiveFriendId = ReturnType<
@@ -17,52 +15,38 @@ type ActiveFriendId = ReturnType<
 export default function NotificationListener() {
   const router = useRouter();
   const { setActiveFriendPage } = useUIStore();
-  const notificationsQuery = useQuery(
-    api.chatNotifications.getMessageNotifications,
-  );
+  const { notifications: convexNotifications } = useNotifications();
+  const { markAsShown } = useNotificationActions();
   const notifications = useMemo(
-    () => notificationsQuery || [],
-    [notificationsQuery],
+    () => convexNotifications || [],
+    [convexNotifications],
   );
-  const syncNotifications = useNotificationStore((s) => s.syncNotifications);
-  const initializedRef = useRef(false);
-  const knownIdsRef = useRef<Set<string>>(new Set());
+
+  const handleNotificationClick = useCallback((item: typeof notifications[0]) => {
+    if (item.sourceType === "friend") {
+      setActiveFriendPage(item.sourceId as ActiveFriendId);
+      router.push("/portal");
+    } else {
+      router.push(`/portal/room/${item.sourceId}`);
+    }
+  }, [router, setActiveFriendPage]);
 
   useEffect(() => {
-    if (notificationsQuery === undefined) {
-      return;
-    }
-
-    syncNotifications(notifications);
-  }, [notifications, notificationsQuery, syncNotifications]);
-
-  useEffect(() => {
-    if (notificationsQuery === undefined) {
-      return;
-    }
-
-    const currentIds = new Set(notifications.map((item) => item.id));
-
-    if (!initializedRef.current) {
-      knownIdsRef.current = currentIds;
-      initializedRef.current = true;
+    if (convexNotifications === undefined) {
       return;
     }
 
     notifications.forEach((item) => {
-      if (knownIdsRef.current.has(item.id)) return;
+      if (!item.shouldShowToast) return;
+
+      markAsShown(item.id);
 
       toast.custom(
         () => (
           <button
             onClick={() => {
               toast.dismiss(item.id);
-              if (item.sourceType === "friend") {
-                setActiveFriendPage(item.sourceId as ActiveFriendId);
-                router.push("/portal");
-              } else {
-                router.push(`/portal/room/${item.sourceId}`);
-              }
+              handleNotificationClick(item);
             }}
             className="w-[min(72vw,350px)] rounded-[12px] border border-theme-border bg-theme-surface px-4 py-3 text-left text-white shadow-2xl"
           >
@@ -109,9 +93,7 @@ export default function NotificationListener() {
         },
       );
     });
-
-    knownIdsRef.current = currentIds;
-  }, [notifications, notificationsQuery, router, setActiveFriendPage]);
+  }, [notifications, convexNotifications, router, setActiveFriendPage, markAsShown, handleNotificationClick]);
 
   return null;
 }

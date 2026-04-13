@@ -14,8 +14,7 @@ import ActiveFriendPage from "./ui/activeFriendPage";
 import FriendsList from "./ui/friendsList";
 import { useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useFriends, useFriendActions } from "@/src/hooks";
 import { Skeleton } from "./ui/skeleton";
 import { usePresence } from "@/contexts/presenceContext";
 import { useState, useEffect } from "react";
@@ -35,32 +34,11 @@ export default function FriendsTab() {
   } = useUIStore();
   const user = useUserStore((s) => s.user);
   const { onlineUsers, awayUsers } = usePresence();
-
-  const friendsQuery = useQuery(
-    api.friends.getFriends,
-    user?.user_id ? {} : "skip",
-  );
-  const pendingRequestsQuery = useQuery(
-    api.friends.getPendingRequests,
-    user?.user_id ? {} : "skip",
-  );
-  const sentRequestsQuery = useQuery(
-    api.friends.getSentRequests,
-    user?.user_id ? {} : "skip",
-  );
-  const friends = friendsQuery ?? [];
-  const pendingRequests = pendingRequestsQuery ?? [];
-  const sentRequests = sentRequestsQuery ?? [];
-  const isLoadingFriendsData =
-    !user?.user_id ||
-    friendsQuery === undefined ||
-    pendingRequestsQuery === undefined ||
-    sentRequestsQuery === undefined;
+  const { friends, pendingRequests, sentRequests, isLoading: isLoadingFriendsData } = useFriends();
+  const { removeFriend } = useFriendActions();
   const friend = friends.find(
     (friend) => friend?.friend?.user_id === activeFriendPage,
   );
-
-  const removeFriendMutation = useMutation(api.friends.removeFriend);
 
   const { color, setColor } = useColor();
   const [colorDialog, setColorDialog] = useState(false);
@@ -105,7 +83,7 @@ export default function FriendsTab() {
         <div
           onClick={async (e) => {
             if (activeFriendPage) {
-              await removeFriendMutation({ friend_id: activeFriendPage });
+              await removeFriend(activeFriendPage);
             }
             setActiveFriendPage(null);
             setMenuOpen(false);

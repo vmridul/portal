@@ -2,7 +2,7 @@ import Image from "next/image";
 import { usePresence } from "@/contexts/presenceContext";
 import { Moon, Search, UserPlus, Users } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
-import { timeAgo } from "@/app/actions/timeAgo";
+import { timeAgo } from "@/lib/utils/date";
 import { Skeleton } from "./skeleton";
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";

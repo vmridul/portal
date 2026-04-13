@@ -11,8 +11,8 @@ import { RoomInfoDialog } from "./roomInfoDialog";
 import { LeaveDialog } from "./leaveDialog";
 import { ListSkeleton } from "./listSkeleton";
 import { useRooms } from "@/contexts/roomContext";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomMembers } from "@/src/hooks";
+import type { UserRoom, RoomMemberWithUser, User } from "@/lib/types";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
   const router = useRouter();
@@ -29,16 +29,15 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     membersCount: allMembersCount,
     isLoading: isRoomsLoading,
   } = useRooms();
-  const room = rooms.find((r: any) => r.room_id === room_id);
-  const roomName = room?.Rooms?.room_name;
-  const createdAt = room?.joined_at;
+  const room = rooms.find((r) => r.room_id === room_id);
+  const roomName = room?.Rooms?.room_name ?? "";
+  const createdAt = room?.joined_at ?? 0;
   const memberCount = room ? (allMembersCount[room_id] ?? 0) : 0;
 
-  const membersQuery = useQuery(api.roomQueries.getRoomMembers, { room_id });
-  const members = membersQuery ?? [];
-  const owner = members.find((m: any) => m.role === "owner");
-  const owner_id = owner?.user_id;
-  const ownerName = owner?.Users?.username;
+  const members = useRoomMembers(room_id);
+  const owner = members.find((m) => m.role === "owner");
+  const owner_id = owner?.user_id ?? "";
+  const ownerName = owner?.Users?.username ?? "";
 
   useEffect(() => {
     setNewRoomName(roomName);
@@ -162,15 +161,15 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >
                   <UserX className="w-4 h-4 ml-3 mr-2" />
-                  <button className="w-32 text-start py-3">{`${
-                    owner_id == user?.user_id ? "Delete Room" : "Leave Room"
-                  }`}</button>
+                  <button className="w-32 text-start py-3">
+                    {owner_id === (user?.user_id ?? "") ? "Delete Room" : "Leave Room"}
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         )}
-        {!user?.user_id || membersQuery === undefined ? (
+        {!user?.user_id || members.length === 0 ? (
           <ListSkeleton />
         ) : (
           <RoomMembersList

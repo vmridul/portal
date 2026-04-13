@@ -17,6 +17,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const setUser = useUserStore((s) => s.setUser);
   const pathname = usePathname();
   const { isThemeReady } = useColor();
+  const isRoomPage = pathname.startsWith("/portal/room");
 
   const { isAuthenticated, isLoading } = useConvexAuth();
 
@@ -34,8 +35,12 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [profile, setUser]);
 
-  if (isLoading || !isThemeReady || profile === undefined || !user?.user_id) {
+  if ((isLoading || !isThemeReady || profile === undefined || !user?.user_id) && !isRoomPage) {
     return <PortalShellSkeleton />;
+  }
+
+  if (!user?.user_id) {
+    return null;
   }
 
   return (

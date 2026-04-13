@@ -4,11 +4,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
-import { formatToIST } from "@/app/actions/formatToIST";
+import { formatToIST } from "@/lib/utils/date";
 import { Skeleton } from "./skeleton";
 import { useState, useEffect, useRef } from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useUserProfileActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";
 import { usePresence } from "@/contexts/presenceContext";
 
@@ -23,10 +22,7 @@ export const UserInfoTab = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { color, textColor } = useColor();
 
-  const changeNameMutation = useMutation(api.users.changeName);
-  const changeAvatarMutation = useMutation(api.users.changeAvatar);
-  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
-  const getUrl = useMutation(api.storage.getUrlMutation);
+  const { changeName, changeAvatar, generateUploadUrl, getUrl } = useUserProfileActions();
   const { awayUsers, setStatus } = usePresence();
 
   useEffect(() => {
@@ -36,11 +32,11 @@ export const UserInfoTab = () => {
   const onChangeName = async () => {
     if (!newUsername || newUsername === user?.username) return;
     try {
-      await changeNameMutation({ username: newUsername });
+      await changeName(newUsername);
       setUser({ ...user!, username: newUsername });
       toast.success("Name updated successfully");
-    } catch (e: any) {
-      toast.error(e.message || "Failed to change name");
+    } catch (e) {
+      toast.error((e as Error).message || "Failed to change name");
     }
   };
 
@@ -58,15 +54,15 @@ export const UserInfoTab = () => {
       });
       const { storageId } = await result.json();
 
-      const newAvatarUrl = await getUrl({ storageId });
+      const newAvatarUrl = await getUrl(storageId);
 
       if (newAvatarUrl) {
-        await changeAvatarMutation({ avatarUrl: newAvatarUrl });
+        await changeAvatar(newAvatarUrl);
         setUser({ ...user!, avatar: newAvatarUrl });
         toast.success("Avatar updated successfully");
       }
-    } catch (e: any) {
-      toast.error(e.message || "Failed to change avatar");
+    } catch (e) {
+      toast.error((e as Error).message || "Failed to change avatar");
     } finally {
       setIsUploading(false);
     }
@@ -117,10 +113,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-green-500"
                     >
-                      <Circle
-                        fill="green"
-                        className="w-3 h-3 text-green-700 border-none"
-                      />
+                      <Circle fill="green" className="w-3 h-3 text-green-700 border-none" />
                       <span className="">Online</span>
                     </li>
                     <li
@@ -131,10 +124,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-yellow-400"
                     >
-                      <Moon
-                        fill="yellow"
-                        className="w-3 h-3 border-none text-yellow-200"
-                      />
+                      <Moon fill="yellow" className="w-3 h-3 border-none text-yellow-200" />
                       <span>Away</span>
                     </li>
                   </ul>
@@ -190,10 +180,7 @@ export const UserInfoTab = () => {
         <span className="text-xs text-gray-300">User ID</span>
         <div className="relative border-theme-border bg-opacity-70 border-opacity-70 rounded-[8px] text-[#e3e3e3] bg-theme-hover py-1 px-3 w-full border flex justify-between items-center">
           <input
-            className="outline-none truncate
-    overflow-hidden w-full
-    whitespace-nowrap
-    text-ellipsis bg-transparent text-gray-300 text-sm placeholder-[#c7c7c7]"
+            className="outline-none truncate overflow-hidden w-full whitespace-nowrap text-ellipsis bg-transparent text-gray-300 text-sm placeholder-[#c7c7c7]"
             type="text"
             disabled
             value={user?.user_id}

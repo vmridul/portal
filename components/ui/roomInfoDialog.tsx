@@ -1,8 +1,20 @@
-import { formatToIST } from "@/app/actions/formatToIST";
+import { formatToIST } from "@/lib/utils/date";
 import { toast } from "sonner";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";
+import type { User } from "@/lib/types";
+
+interface RoomInfoDialogProps {
+  setInfoDialog: (value: boolean) => void;
+  owner_id: string;
+  ownerName: string;
+  roomName: string;
+  createdAt: number;
+  newRoomName: string;
+  setNewRoomName: (value: string) => void;
+  user: User | null;
+  room_id: string;
+}
 
 export const RoomInfoDialog = ({
   setInfoDialog,
@@ -14,29 +26,18 @@ export const RoomInfoDialog = ({
   setNewRoomName,
   user,
   room_id,
-}: {
-
-  setInfoDialog: (value: boolean) => void;
-  owner_id: string;
-  ownerName: string;
-  roomName: string;
-  createdAt: number;
-  newRoomName: string;
-  setNewRoomName: (value: string) => void;
-  user: any;
-  room_id: string;
-}) => {
-  const renameRoomMutation = useMutation(api.rooms.renameRoom);
+}: RoomInfoDialogProps) => {
+  const { renameRoom } = useRoomActions();
   const { color, textColor } = useColor();
 
   const onRename = async () => {
     try {
-      await renameRoomMutation({ room_id, new_name: newRoomName });
+      await renameRoom({ room_id, new_name: newRoomName });
       setNewRoomName(newRoomName);
       setInfoDialog(false);
       toast.success("Changed room name");
-    } catch (e: any) {
-      toast.error(e.message || "Failed to rename room");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to rename room");
     }
   };
   return (

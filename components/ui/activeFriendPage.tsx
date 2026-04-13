@@ -4,9 +4,9 @@ import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "./chatUI";
 import { ChatSkeleton } from "./chatSkeleton";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useMessageActions } from "@/src/hooks";
 import { toast } from "sonner";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export default function ActiveFriendPage() {
   const { activeFriendPage, setActiveFriendPage } = useUIStore();
@@ -14,32 +14,29 @@ export default function ActiveFriendPage() {
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
-  const deleteMessageMutation = useMutation(api.messages.deleteMessage);
-  const clearFriendUnreadCountMutation = useMutation(
-    api.messages.clearFriendUnreadCount,
-  );
+  const { deleteMessage, clearFriendUnreadCount } = useMessageActions();
 
   useEffect(() => {
     if (activeFriendPage) {
-      clearFriendUnreadCountMutation({ friend_id: activeFriendPage }).catch(
+      clearFriendUnreadCount(activeFriendPage).catch(
         console.error,
       );
     }
-  }, [activeFriendPage, clearFriendUnreadCountMutation]);
+  }, [activeFriendPage, clearFriendUnreadCount]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
 
     try {
-      await deleteMessageMutation({
+      await deleteMessage({
         type: "friendMessages",
-        msg_id: messageToDelete as any,
+        msg_id: messageToDelete as Id<"friendMessages">,
       });
       setDeleteDialogOpen(false);
       setMessageToDelete(null);
       toast.success("Message deleted");
-    } catch (e: any) {
-      toast.error(e.message || "Failed to delete message");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete message");
     }
   };
 

@@ -1,6 +1,15 @@
 import Image from "next/image";
 import { User as UserIcon, Moon } from "lucide-react";
 import { User } from "@/store/useUserStore";
+import type { RoomMemberWithUser } from "@/lib/types";
+
+interface RoomMembersListProps {
+  members: RoomMemberWithUser[];
+  memberCount: number;
+  onlineUsers: Set<string>;
+  awayUsers: Set<string>;
+  user: User | null;
+}
 
 export const RoomMembersList = ({
   members,
@@ -8,13 +17,7 @@ export const RoomMembersList = ({
   onlineUsers,
   awayUsers,
   user,
-}: {
-  members: any[];
-  memberCount: number;
-  onlineUsers: Set<string>;
-  awayUsers: Set<string>;
-  user: User | null;
-}) => {
+}: RoomMembersListProps) => {
   return (
     <div className="mt-3 overflow-y-scroll">
       <div className="flex items-center gap-40">
@@ -35,9 +38,9 @@ export const RoomMembersList = ({
                 <div className="relative">
                   <Image
                     src={
-                      member?.Users?.user_id == user?.user_id
-                        ? user?.avatar
-                        : member?.Users?.avatar
+                      member?.Users?.user_id === user?.user_id
+                        ? user?.avatar ?? "/assets/default-avatar.png"
+                        : member?.Users?.avatar ?? "/assets/default-avatar.png"
                     }
                     alt="Avatar"
                     width={30}

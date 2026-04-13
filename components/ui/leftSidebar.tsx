@@ -9,8 +9,7 @@ import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { getAuth, signOut } from "firebase/auth";
 import { RoomList } from "./roomsList";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomActions } from "@/src/hooks";
 import { toast } from "sonner";
 import { generateRoomCode } from "@/app/actions/randomID";
 import { usePresence } from "@/contexts/presenceContext";
@@ -56,8 +55,7 @@ export default function LeftSidebar({
     logoutDialog,
     setLogoutDialog,
   } = useUIStore();
-  const joinRoomMutation = useMutation(api.rooms.joinRoom);
-  const createRoomMutation = useMutation(api.rooms.createRoom);
+  const { joinRoom, createRoom } = useRoomActions();
 
   const onJoin = async () => {
     if (!room_id) {
@@ -65,14 +63,15 @@ export default function LeftSidebar({
       return;
     }
     try {
-      await joinRoomMutation({ room_id });
+      await joinRoom({ room_id });
       setJoinDialog(false);
       setRoomId(null);
       setMobileMenu(false);
       toast.success("Room joined successfully");
       router.replace(`/portal/room/${room_id}`);
-    } catch (e: any) {
-      if (e.message?.includes("already in this room")) {
+    } catch (e) {
+      const msg = (e as Error).message || "Failed to join room";
+      if (msg.includes("already in this room")) {
         toast.info("You are already in this room");
         setJoinDialog(false);
         setMobileMenu(false);
@@ -91,17 +90,14 @@ export default function LeftSidebar({
     }
     try {
       const generated_id = await generateRoomCode();
-      await createRoomMutation({
-        room_name: roomName,
-        room_id: generated_id.toString(),
-      });
+      await createRoom({ room_name: roomName, room_id: generated_id.toString() });
       setCreateDialog(false);
       setRoomName("");
       setMobileMenu(false);
       toast.success("Room created successfully");
       router.push(`/portal/room/${generated_id}`);
-    } catch (e: any) {
-      toast.error("Failed to create room");
+    } catch (e) {
+      toast.error((e as Error).message || "Failed to create room");
     }
   };
 
@@ -345,7 +341,7 @@ export default function LeftSidebar({
               <RoomList
                 router={router}
                 setMobileMenu={setMobileMenu}
-                currentRoom={currentRoom as any}
+                currentRoom={currentRoom}
               />
             </div>
           )}

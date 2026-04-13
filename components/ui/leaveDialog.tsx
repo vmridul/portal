@@ -1,9 +1,18 @@
 import { User } from "@/store/useUserStore";
 import { createPortal } from "react-dom";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomActions } from "@/src/hooks";
 import { toast } from "sonner";
 import { useUIStore } from "@/store/uiStore";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+interface LeaveDialogProps {
+  owner_id: string;
+  user: User | null;
+  roomName: string;
+  room_id: string;
+  setLeaveDialog: (value: boolean) => void;
+  router: AppRouterInstance;
+}
 
 export const LeaveDialog = ({
   owner_id,
@@ -12,33 +21,25 @@ export const LeaveDialog = ({
   room_id,
   setLeaveDialog,
   router,
-}: {
-  owner_id: string;
-  user: User | null;
-  roomName: string;
-  room_id: string;
-  setLeaveDialog: (value: boolean) => void;
-  router: any;
-}) => {
+}: LeaveDialogProps) => {
   const isOwner = String(owner_id) === String(user?.user_id);
-  const deleteRoomMutation = useMutation(api.rooms.deleteRoom);
-  const leaveRoomMutation = useMutation(api.rooms.leaveRoom);
+  const { deleteRoom, leaveRoom } = useRoomActions();
   const { setJoinDialog } = useUIStore();
-
+ 
   const onAction = async () => {
     try {
       if (isOwner) {
-        await deleteRoomMutation({ room_id });
+        await deleteRoom({ room_id });
         toast.success("Room deleted");
       } else {
-        await leaveRoomMutation({ room_id });
+        await leaveRoom({ room_id });
         toast.success("Left room");
       }
       setLeaveDialog(false);
       setJoinDialog(false);
       router.replace('/portal');
-    } catch (e: any) {
-      toast.error(e.message || "Failed action");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed action");
     }
   };
 

@@ -2,8 +2,7 @@
 
 import { useRooms } from "@/contexts/roomContext";
 import { useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomMembers } from "@/src/hooks";
 
 export function useRoomInfo(room_id?: string) {
   const { rooms, membersCount } = useRooms();
@@ -17,9 +16,9 @@ export function useRoomInfo(room_id?: string) {
   const roomName = room?.Rooms?.room_name;
   const createdAt = room?.joined_at;
 
-  const members = useQuery(api.roomQueries.getRoomMembers, { room_id: room_id || null }) || [];
+  const members = useRoomMembers(room_id || null);
 
-  const owner = members.find((m: any) => m.role === "owner");
+  const owner = members.find((m) => m.role === "owner");
   const owner_id = owner?.user_id;
   const ownerName = owner?.Users?.username;
 

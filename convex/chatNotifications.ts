@@ -23,7 +23,22 @@ export const getMessageNotifications = query({
       senderAvatar: notification.sender_avatar || "",
       message: notification.message,
       createdAt: notification._creationTime,
+      shouldShowToast: !notification.toast_shown,
     }));
+  },
+});
+
+export const markToastShown = mutation({
+  args: { notification_id: v.id("chatNotifications") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const notification = await ctx.db.get(args.notification_id);
+    if (!notification) return;
+    if (notification.user_id !== identity.subject) throw new Error("Unauthorized");
+
+    await ctx.db.patch(args.notification_id, { toast_shown: true });
   },
 });
 
