@@ -19,7 +19,7 @@ export const RoomMembersList = ({
   user,
 }: RoomMembersListProps) => {
   return (
-    <div className="mt-3 overflow-y-scroll">
+    <div className="mt-3 flex flex-col">
       <div className="flex items-center gap-40">
         <span className="text-xs ml-2 text-[#aaaaaa]">Members</span>
         <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-xs items-center gap-0.5">
@@ -28,7 +28,7 @@ export const RoomMembersList = ({
         </div>
       </div>
 
-      <div className="mt-2">
+      <div className="overflow-y-auto h-full">
         {members?.map((member) => {
           const isUserOnline = onlineUsers.has(member.user_id.toString());
           const isUserAway = awayUsers.has(member.user_id.toString());
@@ -39,8 +39,9 @@ export const RoomMembersList = ({
                   <Image
                     src={
                       member?.Users?.user_id === user?.user_id
-                        ? user?.avatar ?? "/assets/default-avatar.png"
-                        : member?.Users?.avatar ?? "/assets/default-avatar.png"
+                        ? (user?.avatar ?? "/assets/default-avatar.png")
+                        : (member?.Users?.avatar ??
+                          "/assets/default-avatar.png")
                     }
                     alt="Avatar"
                     width={30}

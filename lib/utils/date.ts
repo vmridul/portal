@@ -61,3 +61,39 @@ export function formatMessageDate(timestamp: number): string {
   }
   return formatToIST(timestamp);
 }
+
+export function formatDateFull(timestamp: Date | string | number | undefined): string {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function formatTimeOnly(timestamp: Date | string | number | undefined): string {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+export function isSameDay(
+  timestamp1: Date | string | number | undefined,
+  timestamp2: Date | string | number | undefined,
+): boolean {
+  if (!timestamp1 || !timestamp2) return false;
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}

@@ -1,5 +1,5 @@
-import { formatToIST } from "@/lib/utils/date";
-import { shouldShowMeta } from "@/lib/utils/message";
+import { formatToIST, formatDateFull, formatTimeOnly } from "@/lib/utils/date";
+import { shouldShowMeta, shouldShowDateDivider } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import { validateFile } from "@/lib/utils/file";
 import { useMessages } from "@/src/hooks/use-messages";
@@ -40,13 +40,20 @@ export function ChatUI({
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
+  const [currentDate, setCurrentDate] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  const { messages, nextCursor, hasMore, isLoading: messagesLoading } = useMessages({
+  const {
+    messages,
+    nextCursor,
+    hasMore,
+    isLoading: messagesLoading,
+  } = useMessages({
     conversationId: room_id,
   });
   const { typingUsers, setTyping, clearTyping } = useTypingIndicators(room_id);
@@ -176,10 +183,29 @@ export function ChatUI({
       const isScrolledUp =
         el.scrollTop + el.clientHeight < el.scrollHeight - 80;
       setShowScrollDown(isScrolledUp);
+
+      const scrollTop = el.scrollTop;
+      const containerHeight = el.clientHeight;
+
+      for (const [id, div] of messageRefs.current) {
+        const rect = div.getBoundingClientRect();
+        const containerRect = el.getBoundingClientRect();
+        if (
+          rect.top >= containerRect.top &&
+          rect.top <= containerRect.top + containerHeight / 2
+        ) {
+          const msg = messages.find((m) => m._id === id);
+          if (msg) {
+            const dateStr = formatDateFull(msg._creationTime);
+            setCurrentDate((prev) => (prev !== dateStr ? dateStr : prev));
+          }
+          break;
+        }
+      }
     };
     el.addEventListener("scroll", onScroll);
     return () => el.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [messages]);
 
   useEffect(() => {
     const vv = window.visualViewport;
@@ -211,6 +237,16 @@ export function ChatUI({
     );
     return () => clearTimeout(timer);
   }, [messages, shouldScrollToBottom, isMobile]);
+
+  useEffect(() => {
+    if (messages.length > 0 && !currentDate) {
+      setCurrentDate(formatDateFull(messages[0]._creationTime));
+    }
+  }, [messages, currentDate]);
+
+  useEffect(() => {
+    messageRefs.current.clear();
+  }, [room_id]);
 
   const [prevTypingUsersLength, setPrevTypingUsersLength] = useState(0);
 
@@ -263,158 +299,192 @@ export function ChatUI({
     message: MessageWithSender,
     index: number,
     msgs: MessageWithSender[],
+    setRef?: (el: HTMLDivElement, id: string) => void,
+    pinnedDate?: string | null,
   ) => {
     const isImage = message.type?.startsWith("image/");
     const isVideo = message.type?.startsWith("video/");
     const isFile = message.file_url && !isImage && !isVideo;
     const isSystem = message.type === "system";
     const isCurrentUser = message.sender_id === user?.user_id;
+    const messageDate = formatDateFull(message._creationTime);
+    const showDateDivider = shouldShowDateDivider(
+      message,
+      index > 0 ? msgs[index - 1] : null,
+    );
 
     if (isSystem) {
       return (
-        <div
-          key={message._id}
-          className="px-3 py-1 mx-auto rounded-[6px] items-center text-white/70 text-xs flex justify-center my-2"
-        >
-          <span className="font-medium">{message.sender?.username}</span>
-          <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
-          <span className="ml-4">{formatToIST(message._creationTime)}</span>
-        </div>
-      );
-    }
-
-    const previousMsg = index > 0 ? msgs[index - 1] : null;
-    const showMeta = shouldShowMeta(message, previousMsg);
-
-    return (
-      <div
-        key={message._id}
-        className={`flex gap-2 ${showMeta ? "mt-2" : "my-0"} ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
-      >
-        {showMeta ? (
-          <Image
-            src={getSenderAvatar(
-              message.sender_id,
-              user?.user_id,
-              message.sender,
-              user ?? undefined,
-            )}
-            width={40}
-            height={40}
-            unoptimized
-            alt={message.sender?.username || "User"}
-            className="w-8 h-8 rounded-[8px] flex-shrink-0 border border-theme-border"
-          />
-        ) : (
-          <div className="w-8 h-8" />
-        )}
-
-        <div
-          className={`flex flex-col max-w-[60%] ${isCurrentUser ? "items-end" : "items-start"}`}
-        >
-          {showMeta && (
-            <div
-              className={`flex items-center mb-1 gap-2 px-1 ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
-            >
-              <span
-                className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${isCurrentUser ? "text-right" : "text-left"}`}
-              >
-                {getDisplayName(
-                  message.sender_id,
-                  user?.user_id,
-                  message.sender,
-                )}
-              </span>
-              <span className="text-xs truncate min-w-0 max-w-[150px] text-gray-600">
-                {formatToIST(message._creationTime)}
+        <>
+          {showDateDivider && pinnedDate !== messageDate && (
+            <div className="flex items-center justify-center my-4">
+              <span className="px-3 py-1 rounded-full bg-theme-surface text-xs text-gray-400 border border-theme-border">
+                {messageDate}
               </span>
             </div>
           )}
           <div
-            id={`msg-${message._id}`}
-            style={{
-              borderRadius: isCurrentUser
-                ? "8px 8px 0px 8px"
-                : "8px 8px 8px 0px",
-              backgroundColor:
-                isImage || isVideo || isFile
-                  ? "transparent"
-                  : isCurrentUser
-                    ? color
-                    : `${color}3A`,
-              color:
-                isImage || isVideo || isFile
-                  ? undefined
-                  : isCurrentUser
-                    ? textColor
-                    : `${textColor}A`,
-            }}
-            className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : " text-white/80"}`}
+            key={message._id}
+            className="px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center my-2"
           >
-            {isCurrentUser && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMessageToDelete(message._id as string);
-                  setDeleteDialogOpen(true);
-                }}
-                className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center duration-400 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm border border-white/5 hover:scale-110"
+            <span className="font-medium">{message.sender?.username}</span>
+            <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
+            <span className="ml-2">
+              {formatTimeOnly(message._creationTime)}
+            </span>
+          </div>
+        </>
+      );
+    }
+
+    const showMeta = shouldShowMeta(
+      message,
+      index > 0 ? msgs[index - 1] : null,
+    );
+
+    return (
+      <>
+        {showDateDivider && pinnedDate !== messageDate && (
+          <div className="flex items-center justify-center my-4">
+            <span className="px-3 py-1 rounded-full bg-theme-surface text-xs text-gray-400 border border-theme-border">
+              {messageDate}
+            </span>
+          </div>
+        )}
+        <div
+          ref={(el) => {
+            if (el && setRef) setRef(el, message._id as string);
+          }}
+          key={message._id}
+          className={`flex gap-2 ${showMeta ? "mt-2" : "my-0"} ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
+        >
+          {showMeta ? (
+            <Image
+              src={getSenderAvatar(
+                message.sender_id,
+                user?.user_id,
+                message.sender,
+                user ?? undefined,
+              )}
+              width={40}
+              height={40}
+              unoptimized
+              alt={message.sender?.username || "User"}
+              className="w-8 h-8 rounded-[8px] flex-shrink-0 border border-theme-border"
+            />
+          ) : (
+            <div className="w-8 h-8" />
+          )}
+
+          <div
+            className={`flex flex-col max-w-[60%] ${isCurrentUser ? "items-end" : "items-start"}`}
+          >
+            {showMeta && (
+              <div
+                className={`flex items-center mb-1 gap-2 px-1 ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
               >
-                <BadgeX className="w-4 h-4 text-white/50" />
-              </button>
+                <span
+                  className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${isCurrentUser ? "text-right" : "text-left"}`}
+                >
+                  {getDisplayName(
+                    message.sender_id,
+                    user?.user_id,
+                    message.sender,
+                  )}
+                </span>
+                <span className="text-xs truncate min-w-0 max-w-[150px] text-gray-600">
+                  {formatTimeOnly(message._creationTime)}
+                </span>
+              </div>
             )}
+            <div
+              id={`msg-${message._id}`}
+              style={{
+                borderRadius: isCurrentUser
+                  ? "8px 8px 0px 8px"
+                  : "8px 8px 8px 0px",
+                backgroundColor:
+                  isImage || isVideo || isFile
+                    ? "transparent"
+                    : isCurrentUser
+                      ? color
+                      : `${color}3A`,
+                color:
+                  isImage || isVideo || isFile
+                    ? undefined
+                    : isCurrentUser
+                      ? textColor
+                      : `${textColor}A`,
+              }}
+              className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : " text-white/80"}`}
+            >
+              {isCurrentUser && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMessageToDelete(message._id as string);
+                    setDeleteDialogOpen(true);
+                  }}
+                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center duration-400 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm border border-white/5 hover:scale-110"
+                >
+                  <BadgeX className="w-4 h-4 text-white/50" />
+                </button>
+              )}
 
-            {isImage && message.file_url && (
-              <Image
-                src={message.file_url}
-                alt="uploaded"
-                width={500}
-                height={500}
-                className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
-                onClick={() => setPreviewImage(message.file_url)}
-              />
-            )}
+              {isImage && message.file_url && (
+                <Image
+                  src={message.file_url}
+                  alt="uploaded"
+                  width={500}
+                  height={500}
+                  className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
+                  onClick={() => setPreviewImage(message.file_url)}
+                />
+              )}
 
-            {isVideo && message.file_url && (
-              <VideoMessage src={message.file_url} />
-            )}
+              {isVideo && message.file_url && (
+                <VideoMessage src={message.file_url} />
+              )}
 
-            {isFile && message.file_url && (
-              <a
-                href={message.file_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 border border-white/5 transition mb-2"
-                style={{
-                  borderRadius: isCurrentUser
-                    ? "8px 8px 0px 8px"
-                    : "8px 8px 8px 0px",
-                }}
-              >
-                <div className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5 text-white/50" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium truncate max-w-[200px]">
-                    {message.file_name}
-                  </span>
-                  <span className="text-xs text-white/60">
-                    Click to download
-                  </span>
-                </div>
-              </a>
-            )}
+              {isFile && message.file_url && (
+                <a
+                  href={message.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-2 border border-white/5 transition mb-2"
+                  style={{
+                    borderRadius: isCurrentUser
+                      ? "8px 8px 0px 8px"
+                      : "8px 8px 8px 0px",
+                  }}
+                >
+                  <div className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-5 h-5 text-white/50" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium truncate max-w-[200px]">
+                      {message.file_name}
+                    </span>
+                    <span className="text-xs text-white/60">
+                      Click to download
+                    </span>
+                  </div>
+                </a>
+              )}
 
-            {message.content && <div className="whitespace-pre-wrap">{message.content}</div>}
+              {message.content && (
+                <div className="whitespace-pre-wrap">{message.content}</div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   };
 
   return (
-<div
-      className={`flex flex-col items-center ${type ===  'direct' ? 'h-[calc(100dvh-55px)]' : 'h-[calc(100dvh-40px)]'} relative overflow-hidden`}
+    <div
+      className={`flex flex-col items-center ${type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}
     >
       {showScrollDown && (
         <button
@@ -454,13 +524,28 @@ export function ChatUI({
         className="flex-1 w-full px-4 md:px-10 overscroll-contain overflow-y-auto flex flex-col gap-2"
         style={{ paddingBottom: "100px" }}
       >
+        {currentDate && (
+          <div className="sticky top-0 z-10 flex items-center justify-center py-2 -mx-4 md:-mx-10">
+            <span className="px-3 py-1 rounded-full bg-theme-border text-xs text-gray-400 border border-theme-border">
+              {currentDate}
+            </span>
+          </div>
+        )}
         {messagesLoading ? (
           <div className="text-white/50 text-center py-4">
             Loading messages...
           </div>
         ) : (
           messages.map((message, index) =>
-            renderMessage(message, index, messages),
+            renderMessage(
+              message,
+              index,
+              messages,
+              (el, id) => {
+                messageRefs.current.set(id, el);
+              },
+              currentDate,
+            ),
           )
         )}
 

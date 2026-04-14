@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { Search, Image as ImageIcon } from "lucide-react";
+import { Search, Image as ImageIcon, Info } from "lucide-react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { MediaDialog } from "./mediaDialog";
-import { useRoom } from "@/src/hooks";
+import { RoomInfoDialog } from "./roomInfoDialog";
+import { useRoom, useRoomMembers } from "@/src/hooks";
 import { useSearchMessages } from "@/src/hooks";
+import { useUserStore } from "@/store/useUserStore";
 
 interface SearchResult {
   _id: string;
@@ -15,12 +17,19 @@ interface SearchResult {
 
 export default function TopBar({ room_id }: { room_id: string }) {
   const { room } = useRoom(room_id);
+  const members = useRoomMembers(room_id);
   const [query, setQuery] = useState("");
   const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
+  const user = useUserStore((s) => s.user);
 
   const [selectedResult, setSelectedResult] = useState(0);
   const { color } = useColor();
   const [mediaDialog, setMediaDialog] = useState(false);
+  const [infoDialog, setInfoDialog] = useState(false);
+
+  const owner = members.find((m) => m.role === "owner");
+  const ownerId = owner?.user_id ?? "";
+  const ownerName = owner?.Users?.username ?? "";
 
   useEffect(() => {
     const close = () => {
@@ -129,6 +138,28 @@ export default function TopBar({ room_id }: { room_id: string }) {
               room_id={room_id}
               type="room"
               setMediaDialog={setMediaDialog}
+            />
+          )}
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setInfoDialog(true);
+            }}
+            className="flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center hover:bg-theme-hover"
+          >
+            <Info className="w-4 h-4 text-white" />
+          </div>
+          {infoDialog && room && (
+            <RoomInfoDialog
+              setInfoDialog={setInfoDialog}
+              createdAt={(room as unknown as { _creationTime?: number })?._creationTime ?? 0}
+              owner_id={ownerId}
+              ownerName={ownerName}
+              roomName={room?.room_name ?? ""}
+              newRoomName={room?.room_name ?? ""}
+              setNewRoomName={() => {}}
+              user={user}
+              room_id={room_id}
             />
           )}
         </div>

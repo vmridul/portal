@@ -1,4 +1,13 @@
 import type { MessageWithSender } from "@/lib/types";
+import { isSameDay } from "./date";
+
+export function shouldShowDateDivider(
+  currentMsg: MessageWithSender | undefined,
+  previousMsg: MessageWithSender | null,
+): boolean {
+  if (!previousMsg) return true;
+  return !isSameDay(currentMsg?._creationTime, previousMsg._creationTime);
+}
 
 export function shouldShowMeta(
   currentMsg: MessageWithSender | undefined,

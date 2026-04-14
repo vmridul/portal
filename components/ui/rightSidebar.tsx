@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Info, UserX, Clipboard, Users, Menu } from "lucide-react";
+import { UserX, Clipboard, Users, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "./skeleton";
 import { useUserStore } from "@/store/useUserStore";
@@ -92,7 +92,6 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     text-white
     select-none
     transition-transform duration-300 ease-in-out
-
     fixed top-0 right-0 z-[60] w-70
     md:translate-y-0 translate-y-10
     ${rightMobileMenu ? "translate-x-0" : "translate-x-full"}
@@ -113,13 +112,6 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
               </div>
             </div>
             <div className="flex gap-1 items-center">
-              <div
-                onClick={() => setInfoDialog(true)}
-                className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
-              >
-                <Info className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
-              </div>
-
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -162,7 +154,9 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 >
                   <UserX className="w-4 h-4 ml-3 mr-2" />
                   <button className="w-32 text-start py-3">
-                    {owner_id === (user?.user_id ?? "") ? "Delete Room" : "Leave Room"}
+                    {owner_id === (user?.user_id ?? "")
+                      ? "Delete Room"
+                      : "Leave Room"}
                   </button>
                 </div>
               </div>
