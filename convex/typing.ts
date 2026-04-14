@@ -76,9 +76,19 @@ export const getTypingUsers = query({
 
     const otherTypists = typists.filter((t) => t.user_id !== identity.subject);
 
-    return otherTypists.map((t) => ({
-      user_id: t.user_id,
-      username: t.user_id.split("=").pop() || "Unknown",
-    }));
+    const usersWithNames = await Promise.all(
+      otherTypists.map(async (t) => {
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", t.user_id))
+          .first();
+        return {
+          user_id: t.user_id,
+          username: user?.username || "Unknown",
+        };
+      })
+    );
+
+    return usersWithNames;
   },
 });

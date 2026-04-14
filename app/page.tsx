@@ -85,6 +85,7 @@ export default function Page() {
         </div>
         <Image
           src="/assets/ss.png"
+          preload
           width={screen.width}
           height={screen.height}
           style={{

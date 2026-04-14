@@ -212,6 +212,15 @@ export function ChatUI({
     return () => clearTimeout(timer);
   }, [messages, shouldScrollToBottom, isMobile]);
 
+  const [prevTypingUsersLength, setPrevTypingUsersLength] = useState(0);
+
+  useEffect(() => {
+    if (typingUsers.length > 0 && prevTypingUsersLength === 0) {
+      scrollToBottom();
+    }
+    setPrevTypingUsersLength(typingUsers.length);
+  }, [typingUsers, prevTypingUsersLength, scrollToBottom]);
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
