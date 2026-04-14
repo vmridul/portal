@@ -16,7 +16,7 @@ interface SearchResult {
 export default function TopBar({ room_id }: { room_id: string }) {
   const { room } = useRoom(room_id);
   const [query, setQuery] = useState("");
-  const { results: searchResults, isLoading } = useSearchMessages({ roomId: room_id, query });
+  const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
 
   const [selectedResult, setSelectedResult] = useState(0);
   const { color } = useColor();

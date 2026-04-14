@@ -7,6 +7,11 @@ export const joinRoom = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthenticated");
 
+    const sender = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .first();
+
     const room = await ctx.db
       .query("rooms")
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
@@ -27,12 +32,17 @@ export const joinRoom = mutation({
     await ctx.db.insert("roomMembers", {
       room_id: args.room_id,
       user_id: identity.subject,
+      username: sender?.username,
+      avatar: sender?.avatar,
       role: "member",
     });
 
     await ctx.db.insert("messages", {
-      room_id: args.room_id,
+      conversation_id: args.room_id,
+      conversation_type: "room",
       sender_id: identity.subject,
+      sender_username: sender?.username || "Unknown",
+      sender_avatar: sender?.avatar,
       content: "joined the room",
       type: "system",
       file_url: null,
@@ -47,6 +57,11 @@ export const createRoom = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthenticated");
 
+    const sender = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .first();
+
     const roomId = await ctx.db.insert("rooms", {
       room_name: args.room_name,
       room_id: args.room_id,
@@ -56,6 +71,8 @@ export const createRoom = mutation({
     await ctx.db.insert("roomMembers", {
       room_id: args.room_id,
       user_id: identity.subject,
+      username: sender?.username,
+      avatar: sender?.avatar,
       role: "owner",
     });
 
@@ -96,6 +113,11 @@ export const leaveRoom = mutation({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthenticated");
 
+    const sender = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+      .first();
+
     const membership = await ctx.db
       .query("roomMembers")
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
@@ -113,8 +135,11 @@ export const leaveRoom = mutation({
     await ctx.db.delete(membership._id);
 
     await ctx.db.insert("messages", {
-      room_id: args.room_id,
+      conversation_id: args.room_id,
+      conversation_type: "room",
       sender_id: identity.subject,
+      sender_username: sender?.username || "Unknown",
+      sender_avatar: sender?.avatar,
       content: "left the room",
       type: "system",
       file_url: null,

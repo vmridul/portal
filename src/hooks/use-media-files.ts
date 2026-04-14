@@ -2,15 +2,13 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import type { MessageWithSender, MessageSourceType } from "@/lib/types";
 
 interface UseMediaFilesOptions {
-  roomId: string;
-  type: MessageSourceType;
+  conversationId: string;
 }
 
-export function useMediaFiles({ roomId, type }: UseMediaFilesOptions) {
-  const mediaFiles = useQuery(api.messages.getMedia, { room_id: roomId, type });
+export function useMediaFiles({ conversationId }: UseMediaFilesOptions) {
+  const mediaFiles = useQuery(api.messages.getMedia, { conversation_id: conversationId });
   return {
     mediaFiles: mediaFiles ?? [],
     isLoading: mediaFiles === undefined,

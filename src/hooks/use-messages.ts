@@ -2,31 +2,39 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import type { MessageWithSender, MessageSourceType } from "@/lib/types";
+import type { MessageWithSender } from "@/lib/types";
 
 export interface UseMessagesOptions {
-  type: MessageSourceType;
-  roomId: string;
+  conversationId: string;
+  cursor?: number;
   limit?: number;
 }
 
 export interface UseMessagesResult {
   messages: MessageWithSender[];
+  nextCursor: number | null;
+  hasMore: boolean;
   isLoading: boolean;
 }
 
-export function useMessages({ type, roomId, limit = 50 }: UseMessagesOptions): UseMessagesResult {
-  const queryFn = type === "room" 
-    ? api.messages.getRoomMessages 
-    : api.messages.getFriendMessages;
-
-  const result = useQuery(queryFn, type === "room" 
-    ? { room_id: roomId, limit } 
-    : { friend_id: roomId, limit }
+export function useMessages({ 
+  conversationId, 
+  cursor, 
+  limit = 50 
+}: UseMessagesOptions): UseMessagesResult {
+  const result = useQuery(
+    api.messages.getMessagesPaginated, 
+    {
+      conversation_id: conversationId,
+      cursor,
+      limit,
+    }
   );
 
   return {
-    messages: result ?? [],
+    messages: result?.messages ?? [],
+    nextCursor: result?.nextCursor ?? null,
+    hasMore: result?.hasMore ?? false,
     isLoading: result === undefined,
   };
 }

@@ -28,13 +28,10 @@ export interface SentRequest {
 export interface ConvexFriend {
   id: Id<"friends">;
   friend: {
-    _id: Id<"users">;
-    _creationTime: number;
-    avatar?: string;
-    email?: string;
     user_id: string;
     username: string;
-  } | null;
+    avatar?: string;
+  };
   last_msg?: string;
   updated_at?: string;
   _creationTime: number;

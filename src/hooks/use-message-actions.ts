@@ -3,12 +3,11 @@
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import type { MessageSourceType } from "@/lib/types";
 import { useCallback, useState } from "react";
 
 interface SendMessageArgs {
-  type: MessageSourceType;
-  room_id: string;
+  conversation_id: string;
+  conversation_type: "room" | "direct";
   msg: string | null;
   file_storage_id?: string | Id<"_storage">;
   file_type: string | null;
@@ -16,31 +15,26 @@ interface SendMessageArgs {
 }
 
 interface DeleteMessageArgs {
-  msg_id: Id<"messages"> | Id<"friendMessages">;
-  type: "messages" | "friendMessages";
+  msg_id: Id<"messages">;
 }
 
 interface UseMessageActionsResult {
   sendMessage: (args: SendMessageArgs) => Promise<void>;
   deleteMessage: (args: DeleteMessageArgs) => Promise<void>;
-  clearUnreadCount: (room_id: string) => Promise<void>;
-  clearFriendUnreadCount: (friend_id: string) => Promise<void>;
+  clearUnreadCount: (conversation_id: string) => Promise<void>;
   generateUploadUrl: () => Promise<string>;
-  isSending: boolean;
   error: Error | null;
 }
 
 export function useMessageActions(): UseMessageActionsResult {
-  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const sendMessageMutation = useMutation(api.messages.sendMessage);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
   const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
-  const clearFriendUnreadCountMutation = useMutation(api.messages.clearFriendUnreadCount);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
 
-const sendMessage = useCallback(
+  const sendMessage = useCallback(
     async (args: SendMessageArgs) => {
       const convexArgs = {
         ...args,
@@ -65,25 +59,14 @@ const sendMessage = useCallback(
   );
 
   const clearUnreadCount = useCallback(
-    async (room_id: string) => {
+    async (conversation_id: string) => {
       try {
-        await clearUnreadCountMutation({ room_id });
+        await clearUnreadCountMutation({ conversation_id });
       } catch (e) {
         console.error("Failed to clear unread count:", e);
       }
     },
     [clearUnreadCountMutation]
-  );
-
-  const clearFriendUnreadCount = useCallback(
-    async (friend_id: string) => {
-      try {
-        await clearFriendUnreadCountMutation({ friend_id });
-      } catch (e) {
-        console.error("Failed to clear friend unread count:", e);
-      }
-    },
-    [clearFriendUnreadCountMutation]
   );
 
   const generateUploadUrlFn = useCallback(async () => {
@@ -95,9 +78,7 @@ const sendMessage = useCallback(
     sendMessage,
     deleteMessage,
     clearUnreadCount,
-    clearFriendUnreadCount,
     generateUploadUrl: generateUploadUrlFn,
-    isSending,
     error,
   };
 }

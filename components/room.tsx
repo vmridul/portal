@@ -27,7 +27,6 @@ export default function Room({ room_id }: { room_id: string }) {
 
     try {
       await deleteMessage({
-        type: "messages",
         msg_id: messageToDelete as Id<"messages">,
       });
       setDeleteDialogOpen(false);

@@ -70,3 +70,19 @@ export const clearAllNotifications = mutation({
     await Promise.all(notifications.map((notification) => ctx.db.delete(notification._id)));
   },
 });
+
+export const cleanup = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+    const oldNotifications = await ctx.db
+      .query("chatNotifications")
+      .filter((q) => q.lt(q.field("_creationTime"), cutoff))
+      .collect();
+
+    for (const notification of oldNotifications) {
+      await ctx.db.delete(notification._id);
+    }
+  },
+});

@@ -18,6 +18,7 @@ import { useFriends, useFriendActions } from "@/src/hooks";
 import { Skeleton } from "./ui/skeleton";
 import { usePresence } from "@/contexts/presenceContext";
 import { useState, useEffect } from "react";
+import { getDirectConversationId } from "@/lib/utils/message";
 import { useColor } from "@/contexts/colorContext";
 import { MediaDialog } from "./ui/mediaDialog";
 
@@ -140,10 +141,10 @@ export default function FriendsTab() {
               >
                 <ImageIcon className="w-4 h-4 text-white/70" />
               </div>
-              {mediaDialog && activeFriendPage && (
+{mediaDialog && activeFriendPage && user && (
                 <MediaDialog
-                  room_id={activeFriendPage}
-                  type="friend"
+                  room_id={getDirectConversationId(activeFriendPage, user.user_id)}
+                  type='direct'
                   setMediaDialog={setMediaDialog}
                 />
               )}

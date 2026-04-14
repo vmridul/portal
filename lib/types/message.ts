@@ -3,11 +3,15 @@ import type { User } from "./user";
 
 export type MessageType = "text" | "image" | "video" | "file" | "system";
 
-export type MessageSourceType = "room" | "friend";
+export type MessageSourceType = "room" | "direct";
 
 export interface BaseMessage {
-  _id: Id<"messages"> | Id<"friendMessages">;
+  _id: Id<"messages">;
+  conversation_id: string;
+  conversation_type: "room" | "direct";
   sender_id: string;
+  sender_username?: string;
+  sender_avatar?: string;
   content: string | null;
   file_storage_id?: Id<"_storage">;
   file_url: string | null;
@@ -17,20 +21,12 @@ export interface BaseMessage {
 }
 
 export interface MessageWithSender extends BaseMessage {
-  sender?: User | null;
-}
-
-export interface RoomMessage extends MessageWithSender {
-  room_id: string;
-}
-
-export interface FriendMessage extends MessageWithSender {
-  receiver_id: string;
+  sender?: User;
 }
 
 export interface SendMessageArgs {
-  type: MessageSourceType;
-  room_id: string;
+  conversation_id: string;
+  conversation_type: "room" | "direct";
   msg: string | null;
   file_storage_id?: Id<"_storage">;
   file_type: string | null;
@@ -38,16 +34,15 @@ export interface SendMessageArgs {
 }
 
 export interface DeleteMessageArgs {
-  msg_id: Id<"messages"> | Id<"friendMessages">;
-  type: "messages" | "friendMessages";
+  msg_id: Id<"messages">;
 }
 
 export interface MessageSearchResult {
   _id: Id<"messages">;
-  room_id: string;
+  conversation_id: string;
   sender_id: string;
   content: string | null;
-  sender?: User | null;
+  sender?: User;
   _creationTime: number;
 }
 

@@ -8,7 +8,7 @@ export interface User {
   avatar?: string;
   email?: string;
   chatColor?: string;
-  _creationTime: number;
+  _creationTime?: number;
 }
 
 export interface UserWithPresence extends User {

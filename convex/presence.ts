@@ -1,6 +1,22 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+export const cleanup = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoff = Date.now() - 5 * 60 * 1000;
+
+    const oldRecords = await ctx.db
+      .query("presence")
+      .filter((q) => q.lt(q.field("updated_at"), cutoff))
+      .collect();
+
+    for (const record of oldRecords) {
+      await ctx.db.delete(record._id);
+    }
+  },
+});
+
 export const update = mutation({
   args: { status: v.union(v.literal("online"), v.literal("away")) },
   handler: async (ctx, args) => {

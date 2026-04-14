@@ -7,12 +7,12 @@ import { useMediaFiles } from "@/src/hooks";
 
 interface MediaDialogProps {
   room_id: string;
-  type: "room" | "friend";
+  type: 'room' | 'direct';
   setMediaDialog: (v: boolean) => void;
 }
 
 export function MediaDialog({ room_id, type, setMediaDialog }: MediaDialogProps) {
-  const { mediaFiles, isLoading } = useMediaFiles({ roomId: room_id, type });
+  const { mediaFiles, isLoading } = useMediaFiles({ conversationId: room_id });
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"images" | "videos" | "files">("images");
   const { color, textColor } = useColor();

@@ -16,7 +16,7 @@ import { VideoMessage } from "./videoMessage";
 import type { User, MessageSourceType, MessageWithSender } from "@/lib/types";
 
 interface ChatUIProps {
-  type: MessageSourceType;
+  type: "room" | "direct";
   room_id: string;
   user: User | null;
   color: string;
@@ -46,9 +46,8 @@ export function ChatUI({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const { messages, isLoading: messagesLoading } = useMessages({
-    type,
-    roomId: room_id,
+  const { messages, nextCursor, hasMore, isLoading: messagesLoading } = useMessages({
+    conversationId: room_id,
   });
   const { typingUsers, setTyping, clearTyping } = useTypingIndicators(room_id);
   const { sendMessage, generateUploadUrl } = useMessageActions();
@@ -96,8 +95,8 @@ export function ChatUI({
       }
 
       await sendMessage({
-        type,
-        room_id,
+        conversation_id: room_id,
+        conversation_type: type,
         msg: msg || null,
         file_storage_id: storageId,
         file_type: finalFileType,
@@ -405,8 +404,8 @@ export function ChatUI({
   };
 
   return (
-    <div
-      className={`flex flex-col items-center ${type === "friend" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"} relative overflow-hidden`}
+<div
+      className={`flex flex-col items-center ${type ===  'direct' ? 'h-[calc(100dvh-55px)]' : 'h-[calc(100dvh-40px)]'} relative overflow-hidden`}
     >
       {showScrollDown && (
         <button

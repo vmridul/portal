@@ -62,20 +62,33 @@ export const getRoomMembers = query({
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id as string))
       .collect();
 
-    const membersWithUser = await Promise.all(
-      memberships.map(async (membership) => {
-        const user = await ctx.db
-          .query("users")
-          .withIndex("by_user_id", (q) => q.eq("user_id", membership.user_id))
-          .first();
+    const result = await Promise.all(
+      memberships.map(async (m) => {
+        let username = m.username;
+        let avatar = m.avatar;
+
+        if (!username) {
+          const user = await ctx.db
+            .query("users")
+            .withIndex("by_user_id", (q) => q.eq("user_id", m.user_id))
+            .first();
+          if (user) {
+            username = user.username;
+            avatar = user.avatar;
+          }
+        }
 
         return {
-          ...membership,
-          Users: user,
+          ...m,
+          Users: {
+            user_id: m.user_id,
+            username: username || "Unknown",
+            avatar,
+          },
         };
-      }),
+      })
     );
 
-    return membersWithUser;
+    return result;
   },
 });

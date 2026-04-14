@@ -12,6 +12,8 @@ export default defineSchema({
   friends: defineTable({
     user_id: v.string(),
     friend_id: v.string(),
+    friend_username: v.optional(v.string()),
+    friend_avatar: v.optional(v.string()),
     status: v.union(v.literal("pending"), v.literal("accepted")),
     last_msg: v.optional(v.string()),
     updated_at: v.optional(v.string()),
@@ -29,38 +31,37 @@ export default defineSchema({
   roomMembers: defineTable({
     room_id: v.string(),
     user_id: v.string(),
+    username: v.optional(v.string()),
+    avatar: v.optional(v.string()),
     role: v.optional(v.string()),
     unread_count: v.optional(v.number()),
   })
     .index("by_room_id", ["room_id"])
-    .index("by_user_id", ["user_id"]),
+    .index("by_user_id", ["user_id"])
+    .index("by_user_room", ["user_id", "room_id"]),
 
-  messages: defineTable({
-    room_id: v.string(),
+messages: defineTable({
+    conversation_id: v.string(),
+    conversation_type: v.union(v.literal('room'), v.literal('direct')),
     sender_id: v.string(),
+    sender_username: v.optional(v.string()),
+    sender_avatar: v.optional(v.string()),
     content: v.union(v.string(), v.null()),
-    file_storage_id: v.optional(v.id("_storage")),
-    file_url: v.union(v.string(), v.null()),
-    type: v.union(v.string(), v.null()),
-    file_name: v.union(v.string(), v.null()),
-  }).index("by_room_id", ["room_id"]),
-
-  friendMessages: defineTable({
-    receiver_id: v.string(),
-    sender_id: v.string(),
-    content: v.union(v.string(), v.null()),
-    file_storage_id: v.optional(v.id("_storage")),
+    file_storage_id: v.optional(v.id('_storage')),
     file_url: v.union(v.string(), v.null()),
     type: v.union(v.string(), v.null()),
     file_name: v.union(v.string(), v.null()),
   })
-    .index("by_receiver_id", ["receiver_id"])
-    .index("by_sender_id", ["sender_id"]),
+    .index('by_conversation', ['conversation_id'])
+    .searchIndex('search_content', {
+      searchField: 'content',
+      filterFields: ['conversation_id'],
+    }),
 
   chatNotifications: defineTable({
     user_id: v.string(),
     message_id: v.string(),
-    source_type: v.union(v.literal("room"), v.literal("friend")),
+    source_type: v.union(v.literal("room"), v.literal("direct")),
     source_id: v.string(),
     source_name: v.string(),
     sender_id: v.string(),
@@ -84,5 +85,6 @@ export default defineSchema({
     updated_at: v.number(),
   })
     .index("by_room_id", ["room_id"])
-    .index("by_user_id", ["user_id"]),
+    .index("by_user_id", ["user_id"])
+    .index("by_user_room", ["user_id", "room_id"]),
 });

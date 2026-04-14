@@ -1,7 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-// Friends Queries
 export const getFriends = query({
   args: {},
   handler: async (ctx) => {
@@ -14,22 +13,38 @@ export const getFriends = query({
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .collect();
 
-    return Promise.all(
+    const result = await Promise.all(
       friendships.map(async (f) => {
-        const friend = await ctx.db
-          .query("users")
-          .withIndex("by_user_id", (q) => q.eq("user_id", f.friend_id))
-          .first();
+        let username = f.friend_username;
+        let avatar = f.friend_avatar;
+
+        if (!username) {
+          const user = await ctx.db
+            .query("users")
+            .withIndex("by_user_id", (q) => q.eq("user_id", f.friend_id))
+            .first();
+          if (user) {
+            username = user.username;
+            avatar = user.avatar;
+          }
+        }
+
         return {
           id: f._id,
-          friend,
+          friend: {
+            user_id: f.friend_id,
+            username: username || "Unknown",
+            avatar,
+          },
           last_msg: f.last_msg,
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
           unread_count: f.unread_count || 0,
         };
-      }),
+      })
     );
+
+    return result;
   },
 });
 
@@ -45,19 +60,35 @@ export const getPendingRequests = query({
       .filter((q) => q.eq(q.field("status"), "pending"))
       .collect();
 
-    return Promise.all(
+    const result = await Promise.all(
       requests.map(async (r) => {
-        const sender = await ctx.db
-          .query("users")
-          .withIndex("by_user_id", (q) => q.eq("user_id", r.user_id))
-          .first();
+        let username = r.friend_username;
+        let avatar = r.friend_avatar;
+
+        if (!username) {
+          const user = await ctx.db
+            .query("users")
+            .withIndex("by_user_id", (q) => q.eq("user_id", r.user_id))
+            .first();
+          if (user) {
+            username = user.username;
+            avatar = user.avatar;
+          }
+        }
+
         return {
           id: r._id,
           _creationTime: r._creationTime,
-          sender,
+          sender: {
+            user_id: r.user_id,
+            username: username || "Unknown",
+            avatar,
+          },
         };
-      }),
+      })
     );
+
+    return result;
   },
 });
 
@@ -73,19 +104,35 @@ export const getSentRequests = query({
       .filter((q) => q.eq(q.field("status"), "pending"))
       .collect();
 
-    return Promise.all(
+    const result = await Promise.all(
       requests.map(async (r) => {
-        const receiver = await ctx.db
-          .query("users")
-          .withIndex("by_user_id", (q) => q.eq("user_id", r.friend_id))
-          .first();
+        let username = r.friend_username;
+        let avatar = r.friend_avatar;
+
+        if (!username) {
+          const user = await ctx.db
+            .query("users")
+            .withIndex("by_user_id", (q) => q.eq("user_id", r.friend_id))
+            .first();
+          if (user) {
+            username = user.username;
+            avatar = user.avatar;
+          }
+        }
+
         return {
           id: r._id,
           _creationTime: r._creationTime,
-          receiver,
+          receiver: {
+            user_id: r.friend_id,
+            username: username || "Unknown",
+            avatar,
+          },
         };
-      }),
+      })
     );
+
+    return result;
   },
 });
 
@@ -127,6 +174,8 @@ export const sendRequest = mutation({
     await ctx.db.insert("friends", {
       user_id: identity.subject,
       friend_id: args.receiver_id,
+      friend_username: receiver.username,
+      friend_avatar: receiver.avatar,
       status: "pending",
       updated_at: new Date().toISOString(),
     });
@@ -143,6 +192,11 @@ export const acceptRequest = mutation({
     if (!request) throw new Error("Request not found");
     if (request.friend_id !== identity.subject) throw new Error("Unauthorized");
 
+    const sender = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", request.user_id))
+      .first();
+
     await ctx.db.patch(args.requestId, {
       status: "accepted",
       updated_at: new Date().toISOString(),
@@ -151,6 +205,8 @@ export const acceptRequest = mutation({
     await ctx.db.insert("friends", {
       user_id: identity.subject,
       friend_id: request.user_id,
+      friend_username: sender?.username,
+      friend_avatar: sender?.avatar,
       status: "accepted",
       updated_at: new Date().toISOString(),
     });

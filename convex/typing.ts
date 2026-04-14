@@ -1,6 +1,22 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+export const cleanup = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const cutoff = Date.now() - 30000;
+
+    const oldRecords = await ctx.db
+      .query("typingIndicators")
+      .filter((q) => q.lt(q.field("updated_at"), cutoff))
+      .collect();
+
+    for (const record of oldRecords) {
+      await ctx.db.delete(record._id);
+    }
+  },
+});
+
 export const updateTyping = mutation({
   args: { room_id: v.string() },
   handler: async (ctx, args) => {
@@ -60,14 +76,9 @@ export const getTypingUsers = query({
 
     const otherTypists = typists.filter((t) => t.user_id !== identity.subject);
 
-    return Promise.all(
-      otherTypists.map(async (t) => {
-        const user = await ctx.db
-          .query("users")
-          .withIndex("by_user_id", (q) => q.eq("user_id", t.user_id))
-          .first();
-        return user;
-      }),
-    );
+    return otherTypists.map((t) => ({
+      user_id: t.user_id,
+      username: t.user_id.split("=").pop() || "Unknown",
+    }));
   },
 });

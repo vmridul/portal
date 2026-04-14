@@ -1,6 +1,7 @@
 "use client";
 import { Galindo } from "next/font/google";
 import { Lexend } from "next/font/google";
+import { Pacifico } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -19,6 +20,13 @@ const lexend = Lexend({
   display: "swap",
 });
 
+const pacifico = Pacifico({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-lexend",
+  display: "swap",
+});
+
 export default function Page() {
   const router = useRouter();
 
@@ -32,7 +40,7 @@ export default function Page() {
     }
   };
   return (
-    <section className="h-screen bg-[#080e2a] overflow-y-auto overflow-x-hidden relative flex flex-col">
+    <section className="h-screen bg-[#080e2a] overflow-y-auto overflow-x-hidden relative flex flex-col text-white">
       <div className="flex flex-col items-center">
         <svg
           className="absolute -top-32 z-[0]"
@@ -64,15 +72,13 @@ export default function Page() {
           />
         </svg>
         <div className="flex flex-col items-center mt-48 z-[1]">
-          <span className={`${galindo.className} text-white text-8xl`}>
-            Portal
-          </span>
-          <span className="text-xl text-white">
+          <span className={`${galindo.className} text-8xl`}>Portal</span>
+          <span className="text-xl ">
             Realtime conversation without friction
           </span>
           <button
             onClick={loginWithGoogle}
-            className="text-white cursor-pointer bg-white mt-4 bg-opacity-20 backdrop-blur-lg px-6 py-2 rounded-[8px]"
+            className="cursor-pointer bg-white mt-4 bg-opacity-20 backdrop-blur-lg px-6 py-2 rounded-[8px]"
           >
             Enter
           </button>
@@ -237,7 +243,8 @@ export default function Page() {
           />
         </svg>
       </div>
-      <div className="z-[1] ml-40 text-white mt-20">
+      {/* Privacy section */}
+      <div className="z-[1] ml-40 mt-32 relative">
         <span className={`text-7xl ${lexend.className}`}>
           Privacy
           <br /> First
@@ -254,6 +261,37 @@ export default function Page() {
           <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
             No tracking
           </div>
+        </div>
+        <Image
+          className="absolute top-20 left-12"
+          width={700}
+          height={700}
+          src="/assets/lock1.png"
+          alt="lock"
+        />
+      </div>
+      {/* Featues section */}
+      <div className="z-[1] flex flex-col items-center mt-[20%] w-full px-32 gap-12">
+        <span className={`text-7xl ${lexend.className}`}>Features</span>
+
+        <div className="grid grid-cols-3 auto-rows-[120px] gap-3 w-full relative">
+          <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] border border-[#231b30] rounded-xl">
+            <span className={`text-2xl text-gray-300 mt-6 ml-6`}>
+              Beautifully crafted interface
+            </span>
+            <Image
+              className="absolute top-[69px] left-2"
+              width={900}
+              height={10}
+              src="/assets/card1.png"
+              alt="f1"
+            />
+          </div>
+          <div className="row-span-4 bg-[#0f0d14] border border-[#231b30] rounded-xl"></div>
+
+          <div className="row-span-3 bg-[#0f0d14] border border-[#231b30] rounded-xl"></div>
+          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl"></div>
+          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl"></div>
         </div>
       </div>
     </section>

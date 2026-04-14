@@ -107,19 +107,19 @@ export default function NotificationTab() {
                   <BadgeX className="h-4 w-4 text-white/50" />
                 </button>
                 <div className="group flex items-start gap-3">
-                  <button
+<button
                     onClick={() => {
-                      if (notification.sourceType === "friend") {
+                      if (notification.sourceType ===  'direct') {
                         setActiveFriendPage(
                           notification.sourceId as ActiveFriendId,
                         );
-                        router.push("/portal");
+                        router.push(  '/portal');
                       } else {
                         router.push(`/portal/room/${notification.sourceId}`);
                       }
                       setMobileMenu(false);
                     }}
-                    className="flex min-w-0 flex-1 items-start gap-3 text-left"
+                    className=  'flex min-w-0 flex-1 items-start gap-3 text-left'
                   >
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
                       {notification.senderAvatar ? (

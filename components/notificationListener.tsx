@@ -22,10 +22,10 @@ export default function NotificationListener() {
     [convexNotifications],
   );
 
-  const handleNotificationClick = useCallback((item: typeof notifications[0]) => {
-    if (item.sourceType === "friend") {
+const handleNotificationClick = useCallback((item: typeof notifications[0]) => {
+    if (item.sourceType ===  'direct') {
       setActiveFriendPage(item.sourceId as ActiveFriendId);
-      router.push("/portal");
+      router.push(  '/portal');
     } else {
       router.push(`/portal/room/${item.sourceId}`);
     }

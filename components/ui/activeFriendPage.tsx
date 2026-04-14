@@ -5,6 +5,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "./chatUI";
 import { ChatSkeleton } from "./chatSkeleton";
 import { useMessageActions } from "@/src/hooks";
+import { getDirectConversationId } from "@/lib/utils/message";
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -14,23 +15,24 @@ export default function ActiveFriendPage() {
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
-  const { deleteMessage, clearFriendUnreadCount } = useMessageActions();
+  const { deleteMessage, clearUnreadCount } = useMessageActions();
 
-  useEffect(() => {
-    if (activeFriendPage) {
-      clearFriendUnreadCount(activeFriendPage).catch(
-        console.error,
-      );
+  const conversationId = activeFriendPage && user?.user_id 
+    ? getDirectConversationId(activeFriendPage, user.user_id)
+    : null;
+
+useEffect(() => {
+    if (conversationId) {
+      clearUnreadCount(conversationId).catch(console.error);
     }
-  }, [activeFriendPage, clearFriendUnreadCount]);
+  }, [conversationId, clearUnreadCount]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
 
     try {
       await deleteMessage({
-        type: "friendMessages",
-        msg_id: messageToDelete as Id<"friendMessages">,
+        msg_id: messageToDelete as Id<"messages">,
       });
       setDeleteDialogOpen(false);
       setMessageToDelete(null);
@@ -48,7 +50,7 @@ export default function ActiveFriendPage() {
         <div className="md:scale-100 scale-[80%] w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
           Are you sure you want to Delete this message?
           <div className="text-[#676767] mt-2 text-sm">
-            You won't be able to revert this action.
+            You won&apos;t be able to revert this action.
           </div>
           <div className="flex justify-end gap-2 mt-6 text-sm">
             <button
@@ -76,8 +78,8 @@ export default function ActiveFriendPage() {
         ) : (
           <div className="w-full">
             <ChatUI
-              type="friend"
-              room_id={activeFriendPage || ""}
+              type="direct"
+              room_id={conversationId || ""}
               user={user}
               color={color}
               textColor={textColor}
