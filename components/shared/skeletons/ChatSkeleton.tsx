@@ -1,4 +1,4 @@
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "./Skeleton";
 export const ChatSkeleton = () => {
   return (
     <div className="flex flex-col gap-10 p-8">

@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { User, CircleUser, Settings, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { UserInfoTab } from "./userInfoTab";
-import { PreferencesTab } from "./preferencesTab";
+import { UserInfoTab } from "./UserInfoTab";
+import { PreferencesTab } from "./PreferencesTab";
 
-export default function ProfilePageContent() {
+export default function ProfilePage() {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState("Info");
 

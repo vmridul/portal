@@ -5,7 +5,7 @@ import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useNotifications, useNotificationActions } from "@/src/hooks";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { timeAgo } from "@/lib/utils/date";
 
 type ActiveFriendId = ReturnType<

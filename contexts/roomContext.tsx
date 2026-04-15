@@ -40,10 +40,16 @@ export function RoomsProvider({
     if (!userRooms) return { rooms: [], membersCount: {} };
 
     const countMap: Record<string, number> = {};
-    const roomsList = userRooms.map((r: UserRoom) => {
-      countMap[r.room_id] = r.memberCount;
-      return r;
-    });
+    const roomsList = userRooms
+      .map((r: UserRoom) => {
+        countMap[r.room_id] = r.memberCount;
+        return r;
+      })
+      .sort((a: UserRoom, b: UserRoom) => {
+        const timeA = a.last_msg_time ?? a.joined_at ?? 0;
+        const timeB = b.last_msg_time ?? b.joined_at ?? 0;
+        return timeB - timeA;
+      });
 
     return { rooms: roomsList, membersCount: countMap };
   }, [userRooms]);

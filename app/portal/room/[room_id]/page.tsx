@@ -1,12 +1,12 @@
 "use client";
-import Room from "@/components/room";
+import Room from "@/components/features/rooms/Room";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { use } from "react";
-import { ChatSkeleton } from "@/components/ui/chatSkeleton";
+import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 
 export default function Page({
   params,

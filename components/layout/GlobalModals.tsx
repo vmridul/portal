@@ -4,10 +4,10 @@ import { useUIStore } from "@/store/uiStore";
 import { JoinRoomModal } from "@/components/ui/modals/JoinRoomModal";
 import { CreateRoomModal } from "@/components/ui/modals/CreateRoomModal";
 import { LogoutModal } from "@/components/ui/modals/LogoutModal";
-import { LeaveDialog } from "./leaveDialog";
-import { RoomInfoDialog } from "./roomInfoDialog";
-import { MediaDialog } from "./mediaDialog";
-import { AddFriendDialog } from "./addFriendDialog";
+import { LeaveDialog } from "@/components/features/rooms/LeaveDialog";
+import { RoomInfoDialog } from "@/components/features/rooms/RoomInfoDialog";
+import { MediaDialog } from "@/components/shared/MediaDialog";
+import { AddFriendDialog } from "@/components/features/friends/AddFriendDialog";
 
 export function GlobalModals() {
   const { activeModal, modalData, closeModal } = useUIStore();

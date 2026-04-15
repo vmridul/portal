@@ -4,7 +4,7 @@ import { User } from "@/store/useUserStore";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { formatToIST } from "@/lib/utils/date";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useState, useEffect, useRef } from "react";
 import { useUserProfileActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";

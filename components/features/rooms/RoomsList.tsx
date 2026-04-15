@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
-import { RoomItem } from "./roomItem";
+import { RoomItem } from "./RoomItem";
 
 interface RoomWithNested {
   room_id: string;
@@ -23,7 +23,7 @@ interface RoomListProps {
   currentRoom?: string | number | null;
 }
 
-export const RoomList = ({
+export const RoomsList = ({
   router,
   setMobileMenu,
   currentRoom,

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { formatToIST } from "@/lib/utils/date";
-import { Skeleton } from "./skeleton";
 import { useState, useEffect, useRef } from "react";
 import { useUserProfileActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";

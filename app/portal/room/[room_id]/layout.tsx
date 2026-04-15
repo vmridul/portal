@@ -1,10 +1,10 @@
 "use client";
-import RightSidebar from "@/components/ui/rightSidebar";
-import TopBar from "@/components/ui/topBar";
+import RightSidebar from "@/components/layout/RightSidebar";
+import TopBar from "@/components/layout/TopBar";
 import { useParams } from "next/navigation";
 import { Suspense } from "react";
 import React from "react";
-import LeftSidebar from "@/components/ui/leftSidebar";
+import LeftSidebar from "@/components/layout/LeftSidebar";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const params = useParams();

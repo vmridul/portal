@@ -50,8 +50,14 @@ export function useFriends(): UseFriendsResult {
   const pendingRequestsQuery = useQuery(api.friends.getPendingRequests);
   const sentRequestsQuery = useQuery(api.friends.getSentRequests);
 
+  const sortedFriends = (friendsQuery ?? []).slice().sort((a, b) => {
+    const timeA = a.updated_at ?? a._creationTime ?? 0;
+    const timeB = b.updated_at ?? b._creationTime ?? 0;
+    return timeB - timeA;
+  });
+
   return {
-    friends: friendsQuery ?? [],
+    friends: sortedFriends,
     pendingRequests: pendingRequestsQuery ?? [],
     sentRequests: sentRequestsQuery ?? [],
     isLoading: friendsQuery === undefined,

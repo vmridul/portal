@@ -2,8 +2,8 @@ import { useUIStore } from "@/store/uiStore";
 import { useState } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
-import { ChatUI } from "./chatUI";
-import { ChatSkeleton } from "./chatSkeleton";
+import { ChatUI } from "../messaging/ChatUI";
+import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 import { useMessageActions } from "@/src/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ export default function ActiveFriendPage() {
   const user = useUserStore((s) => s.user);
   const { deleteMessage } = useMessageActions();
 
-  const conversationId = activeFriendPage && user?.user_id 
+  const conversationId = activeFriendPage && user?.user_id
     ? getDirectConversationId(activeFriendPage, user.user_id)
     : null;
 

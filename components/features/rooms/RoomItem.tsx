@@ -63,11 +63,6 @@ export function RoomItem({
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center justify-between">
             <span className="truncate max-w-[100px]">{roomName}</span>
-            {mounted && room.last_msg_time ? (
-              <span className="text-[#aaaaaa] text-xs whitespace-nowrap ml-2">
-                {timeAgo(room.last_msg_time)}
-              </span>
-            ) : null}
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#aaaaaa] text-xs truncate max-w-[100px]">

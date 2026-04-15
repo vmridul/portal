@@ -7,10 +7,10 @@ import { RoomsProvider } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { usePathname } from "next/navigation";
 import { ColorProvider } from "@/contexts/colorContext";
-import NotificationListener from "@/components/notificationListener";
+import NotificationListener from "@/components/features/notifications/NotificationListener";
 import { useColor } from "@/contexts/colorContext";
-import PortalShellSkeleton from "@/components/ui/portalShellSkeleton";
-import { GlobalModals } from "@/components/ui/GlobalModals";
+import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
+import { GlobalModals } from "@/components/layout/GlobalModals";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();

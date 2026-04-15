@@ -3,9 +3,9 @@ import { shouldShowMeta, shouldShowDateDivider } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
 import { BadgeX, FileText } from "lucide-react";
-import { VideoMessage } from "./videoMessage";
+import { VideoMessage } from "./VideoMessage";
 import type { User, MessageWithSender } from "@/lib/types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface MessageItemProps {
   message: MessageWithSender;
@@ -15,7 +15,6 @@ interface MessageItemProps {
   color: string;
   textColor: string;
   pinnedDate?: string | null;
-  onSetRef?: (el: HTMLDivElement | null, id: string) => void;
   onPreviewImage: (url: string) => void;
   onDeleteRequest: (id: string) => void;
 }
@@ -28,10 +27,10 @@ export const MessageItem = React.memo(({
   color,
   textColor,
   pinnedDate,
-  onSetRef,
   onPreviewImage,
   onDeleteRequest,
 }: MessageItemProps) => {
+  const [highlight, setHighlight] = useState(false);
   const isImage = message.type?.startsWith("image/");
   const isVideo = message.type?.startsWith("video/");
   const isFile = message.file_url && !isImage && !isVideo;
@@ -39,9 +38,21 @@ export const MessageItem = React.memo(({
   const messageDate = formatDateFull(message._creationTime);
   const showDateDivider = shouldShowDateDivider(message, prevMessage);
 
+  useEffect(() => {
+    const handleJump = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail.id === message._id) {
+        setHighlight(true);
+        setTimeout(() => setHighlight(false), 3000);
+      }
+    };
+    window.addEventListener("jump-to-msg", handleJump);
+    return () => window.removeEventListener("jump-to-msg", handleJump);
+  }, [message._id]);
+
   if (isSystem) {
     return (
-      <>
+      <div className="w-full">
         {showDateDivider && pinnedDate !== messageDate && (
           <div className="flex items-center justify-center my-4">
             <span className="px-3 py-1 rounded-full bg-theme-base text-xs text-gray-400 border border-theme-border">
@@ -51,7 +62,7 @@ export const MessageItem = React.memo(({
         )}
         <div
           data-msg-id={message._id}
-          className="px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center my-2"
+          className={`px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center my-2 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
         >
           <span className="font-medium">{message.sender?.username}</span>
           <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
@@ -59,14 +70,14 @@ export const MessageItem = React.memo(({
             {formatTimeOnly(message._creationTime)}
           </span>
         </div>
-      </>
+      </div>
     );
   }
 
   const showMeta = shouldShowMeta(message, prevMessage);
 
   return (
-    <>
+    <div className="w-full">
       {showDateDivider && pinnedDate !== messageDate && (
         <div className="flex items-center justify-center my-4">
           <span className="px-3 py-1 rounded-full bg-theme-surface text-xs text-gray-400 border border-theme-border">
@@ -75,11 +86,8 @@ export const MessageItem = React.memo(({
         </div>
       )}
       <div
-        ref={(el) => {
-          if (onSetRef) onSetRef(el, message._id as string);
-        }}
         data-msg-id={message._id}
-        className={`flex gap-2 rounded-[6px] ${showMeta ? "mt-2" : "my-0"} ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex gap-2 rounded-[6px] transition-colors duration-500 ${highlight ? "bg-yellow-500/10" : ""} ${showMeta ? "mt-2" : "my-0"} ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
       >
         {showMeta ? (
           <Image
@@ -128,7 +136,7 @@ export const MessageItem = React.memo(({
                 : "8px 8px 8px 0px",
               backgroundColor:
                 isImage || isVideo || isFile
-                  ? "transparent"
+                   ? highlight ? "rgba(234, 179, 8, 0.2)" : "transparent"
                   : isCurrentUser
                     ? color
                     : `${color}3A`,
@@ -139,7 +147,7 @@ export const MessageItem = React.memo(({
                     ? textColor
                     : `${textColor}A`,
             }}
-            className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-colors duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : " text-white/80"}`}
+            className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-500 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : " text-white/80"}`}
           >
             {isCurrentUser && (
               <button
@@ -154,18 +162,22 @@ export const MessageItem = React.memo(({
             )}
 
             {isImage && message.file_url && (
-              <Image
-                src={message.file_url}
-                alt="uploaded"
-                width={500}
-                height={500}
-                className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer rounded-[8px] mb-2"
-                onClick={() => onPreviewImage(message.file_url as string)}
-              />
+              <div className="relative min-h-[150px] min-w-[200px] bg-theme-surface/30 rounded-[8px] overflow-hidden mb-2">
+                <Image
+                  src={message.file_url}
+                  alt="uploaded"
+                  width={500}
+                  height={500}
+                  className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer"
+                  onClick={() => onPreviewImage(message.file_url as string)}
+                />
+              </div>
             )}
 
             {isVideo && message.file_url && (
-              <VideoMessage src={message.file_url} />
+              <div className="min-h-[150px] bg-theme-surface/30 rounded-[8px] overflow-hidden mb-2">
+                <VideoMessage src={message.file_url} />
+              </div>
             )}
 
             {isFile && message.file_url && (
@@ -200,7 +212,7 @@ export const MessageItem = React.memo(({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 });
 

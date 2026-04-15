@@ -4,16 +4,16 @@ import { UserPlus, Plus, Menu, HouseIcon, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { getAuth, signOut } from "firebase/auth";
-import { RoomList } from "./roomsList";
+import { RoomsList } from "@/components/features/rooms/RoomsList";
 import { useRoomActions } from "@/src/hooks";
 import { toast } from "sonner";
 import { generateRoomCode } from "@/app/actions/randomID";
 import { usePresence } from "@/contexts/presenceContext";
-import { ProfileUI } from "./profileUI";
+import { ProfileUI } from "@/components/features/profile/ProfileUI";
 import { Press_Start_2P } from "next/font/google";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
@@ -170,7 +170,7 @@ export default function LeftSidebar({
                   {rooms.length ?? 0}
                 </div>
               </div>
-              <RoomList
+              <RoomsList
                 router={router}
                 setMobileMenu={setMobileMenu}
                 currentRoom={currentRoom}

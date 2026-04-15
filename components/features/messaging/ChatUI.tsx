@@ -62,9 +62,8 @@ export function ChatUI({
 
   return (
     <div
-      className={`flex flex-col items-center relative overflow-hidden ${
-        type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
-      }`}
+      className={`flex flex-col items-center relative overflow-hidden pt-4 ${type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
+        }`}
     >
       {previewImage && (
         <div
@@ -83,9 +82,8 @@ export function ChatUI({
           </div>
           <button
             onClick={() => setPreviewImage(null)}
-            className={`absolute ${
-              isMobile ? "opacity-0 pointer-events-none" : "opacity-100"
-            } top-6 right-6 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
+            className={`absolute ${isMobile ? "opacity-0 pointer-events-none" : "opacity-100"
+              } top-6 right-6 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
           >
             <X className="h-6 w-6" />
           </button>

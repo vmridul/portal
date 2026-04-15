@@ -5,9 +5,9 @@ import { api } from "@/convex/_generated/api";
 import { useAuthFromFirebase } from "@/app/hooks/useAuthFromFirebase";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
-import LeftSidebar from "@/components/ui/leftSidebar";
-import FriendsTab from "@/components/friendsTab";
-import NotificationTab from "@/components/notificationTab";
+import LeftSidebar from "@/components/layout/LeftSidebar";
+import FriendsTab from "@/components/features/friends/FriendsTab";
+import NotificationTab from "@/components/features/notifications/NotificationTab";
 
 export default function Page() {
   const router = useRouter();

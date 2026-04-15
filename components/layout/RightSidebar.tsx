@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { UserX, Clipboard, Users, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { usePresence } from "@/contexts/presenceContext";
-import { RoomMembersList } from "./roomMembersList";
-import { ListSkeleton } from "./listSkeleton";
+import { RoomMembersList } from "@/components/features/rooms/RoomMembersList";
+import { ListSkeleton } from "@/components/shared/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/src/hooks";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";

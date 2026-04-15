@@ -9,15 +9,13 @@ import {
 } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 
-import PendingRequestMenu from "../components/ui/pendingRequestMenu";
-import ActiveFriendPage from "./ui/activeFriendPage";
-import FriendsList from "./ui/friendsList";
+import PendingRequestMenu from "@/components/features/friends/PendingRequestMenu";
+import ActiveFriendPage from "@/components/features/friends/ActiveFriendPage";
+import FriendsList from "@/components/features/friends/FriendsList";
 import { useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
 import { useFriends, useFriendActions } from "@/src/hooks";
-import { Skeleton } from "./ui/skeleton";
 import { usePresence } from "@/contexts/presenceContext";
-import { useState, useEffect } from "react";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useColor } from "@/contexts/colorContext";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
@@ -66,11 +64,10 @@ export default function FriendsTab() {
     shadow-lg text-xs
     transform transition-all duration-150
  ease-out
-    ${
-      menuOpen
-        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-    }
+    ${menuOpen
+            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+          }
   `}
       >
         <div
@@ -161,9 +158,8 @@ export default function FriendsTab() {
               >
                 <Clock className="w-4 h-4" />
                 <div
-                  className={`${
-                    pendingRequests.length > 0 ? "block" : "hidden"
-                  } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
+                  className={`${pendingRequests.length > 0 ? "block" : "hidden"
+                    } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
                   `}
                 ></div>
               </button>
