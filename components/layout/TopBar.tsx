@@ -23,7 +23,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
   const user = useUserStore((s) => s.user);
   const searchRef = useRef<HTMLDivElement>(null);
-  const { toggleSidebar, isSidebarOpen, sidebarTab } = useUIStore();
+  const { toggleSidebar, isSidebarOpen, sidebarTab, setJumpedMessageId } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
   const { color } = useColor();
@@ -38,6 +38,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
   const handleSearchClick = (index: number, id: string, sent_at: number) => {
     setSelectedResult(index);
+    setJumpedMessageId(id);
     window.dispatchEvent(
       new CustomEvent("jump-to-msg", { detail: { id, sent_at } }),
     );

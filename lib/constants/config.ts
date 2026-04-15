@@ -14,16 +14,7 @@ export const CONVEX_CONFIG = {
 export const APP_CONFIG = {
   defaultChatColor: "#4a31b0",
   storageKey: "chatColor",
-  maxFileSizeBytes: 10 * 1024 * 1024,
-  allowedFileTypes: [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-    "video/mp4",
-    "video/webm",
-    "video/quicktime",
-  ],
+  maxFileSizeBytes: 50 * 1024 * 1024, // Increased to 50MB for better file support
   messagePageSize: 10,
   typingDebounceMs: 1000,
   presenceUpdateIntervalMs: 60 * 1000,

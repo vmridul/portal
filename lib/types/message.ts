@@ -17,6 +17,7 @@ export interface BaseMessage {
   file_url: string | null;
   type: string | null;
   file_name: string | null;
+  file_size?: number;
   _creationTime: number;
 }
 
@@ -31,6 +32,7 @@ export interface SendMessageArgs {
   file_storage_id?: Id<"_storage">;
   file_type: string | null;
   file_name: string | null;
+  file_size?: number;
 }
 
 export interface DeleteMessageArgs {

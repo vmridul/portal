@@ -12,6 +12,7 @@ interface SendMessageArgs {
   file_storage_id?: string | Id<"_storage">;
   file_type: string | null;
   file_name: string | null;
+  file_size?: number;
 }
 
 interface DeleteMessageArgs {

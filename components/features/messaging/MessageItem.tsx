@@ -1,10 +1,12 @@
 import { formatTimeOnly, formatDateFull } from "@/lib/utils/date";
+import { formatFileSize } from "@/lib/utils/file";
 import { shouldShowMeta, shouldShowDateDivider } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
 import { BadgeX, FileText } from "lucide-react";
 import { VideoMessage } from "./VideoMessage";
 import type { User, MessageWithSender } from "@/lib/types";
+import { useUIStore } from "@/store/uiStore";
 import React, { useEffect, useState } from "react";
 
 interface MessageItemProps {
@@ -31,6 +33,7 @@ export const MessageItem = React.memo(({
   onDeleteRequest,
 }: MessageItemProps) => {
   const [highlight, setHighlight] = useState(false);
+  const { jumpedMessageId, setJumpedMessageId } = useUIStore();
   const isImage = message.type?.startsWith("image/");
   const isVideo = message.type?.startsWith("video/");
   const isFile = message.file_url && !isImage && !isVideo;
@@ -49,6 +52,18 @@ export const MessageItem = React.memo(({
     window.addEventListener("jump-to-msg", handleJump);
     return () => window.removeEventListener("jump-to-msg", handleJump);
   }, [message._id]);
+
+  useEffect(() => {
+    if (jumpedMessageId === message._id) {
+      setHighlight(true);
+      // Clear it after a delay
+      const timer = setTimeout(() => {
+        setHighlight(false);
+        setJumpedMessageId(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [jumpedMessageId, message._id, setJumpedMessageId]);
 
   if (isSystem) {
     return (
@@ -133,19 +148,19 @@ export const MessageItem = React.memo(({
             style={{
               borderRadius: "8px 8px 8px 0px",
               backgroundColor:
-                isImage || isVideo || isFile
-                   ? highlight ? "rgba(234, 179, 8, 0.2)" : "transparent"
+                isImage || isVideo
+                  ? highlight ? "rgba(234, 179, 8, 0.2)" : "transparent"
                   : isCurrentUser
                     ? color
                     : `${color}3A`,
               color:
-                isImage || isVideo || isFile
+                isImage || isVideo
                   ? undefined
                   : isCurrentUser
                     ? textColor
                     : `${textColor}A`,
             }}
-            className={`relative group ${isFile ? "px-0 py-1" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-500 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : " text-white/80"}`}
+            className={`relative group ${isFile ? "px-0.5 py-0.5" : "px-2 py-1.5"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-all duration-500 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white/90"}`}
           >
             {isCurrentUser && (
               <button
@@ -160,21 +175,49 @@ export const MessageItem = React.memo(({
             )}
 
             {isImage && message.file_url && (
-              <div className="relative min-h-[150px] min-w-[200px] bg-theme-surface/30 rounded-[8px] overflow-hidden mb-2">
-                <Image
-                  src={message.file_url}
-                  alt="uploaded"
-                  width={500}
-                  height={500}
-                  className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer"
-                  onClick={() => onPreviewImage(message.file_url as string)}
-                />
+              <div className="flex flex-col gap-1 mb-2">
+                <div className="relative min-h-[150px] min-w-[200px] bg-theme-surface/30 rounded-[8px] overflow-hidden">
+                  <Image
+                    src={message.file_url}
+                    alt="uploaded"
+                    width={500}
+                    height={500}
+                    className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer"
+                    onClick={() => onPreviewImage(message.file_url as string)}
+                  />
+                </div>
+                <div className="flex flex-col px-1">
+                  <span
+                    className="text-sm text-white break-words"
+                  >
+                    {message.file_name || "Attachment"}
+                  </span>
+                  {message.file_size && (
+                    <span className="text-[10px] text-gray-400">
+                      {formatFileSize(message.file_size)}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
 
             {isVideo && message.file_url && (
-              <div className="min-h-[150px] bg-theme-surface/30 rounded-[8px] overflow-hidden mb-2">
-                <VideoMessage src={message.file_url} />
+              <div className="flex flex-col gap-1 mb-2">
+                <div className="min-h-[150px] bg-theme-surface/30 rounded-[8px] overflow-hidden">
+                  <VideoMessage src={message.file_url} />
+                </div>
+                <div className="flex flex-col px-1">
+                  <span
+                    className="text-sm text-white break-words"
+                  >
+                    {message.file_name || "Attachment"}
+                  </span>
+                  {message.file_size && (
+                    <span className="text-[11px] text-gray-400">
+                      {formatFileSize(message.file_size)}
+                    </span>
+                  )}
+                </div>
               </div>
             )}
 
@@ -183,23 +226,25 @@ export const MessageItem = React.memo(({
                 href={message.file_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 border border-white/5 transition mb-2"
+                className="flex items-center gap-3 px-3 py-1 transition-colors duration-200 mb-1 group/file"
                 style={{
-                  borderRadius: isCurrentUser
-                    ? "8px 8px 0px 8px"
-                    : "8px 8px 8px 0px",
+                  borderRadius: "12px 12px 12px 4px",
                 }}
               >
-                <div className="w-9 h-9 rounded-[8px] bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5 text-white/50" />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/5">
+                  <FileText className="w-5 h-5 text-gray-400" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium truncate max-w-[200px]">
-                    {message.file_name}
+                <div className="flex flex-col min-w-0">
+                  <span
+                    className="text-sm break-words opacity-90"
+                  >
+                    {message.file_name || "Attachment"}
                   </span>
-                  <span className="text-xs text-white/60">
-                    Click to download
-                  </span>
+                  {message.file_size && (
+                    <span className="text-[11px] opacity-60">
+                      {formatFileSize(message.file_size)}
+                    </span>
+                  )}
                 </div>
               </a>
             )}

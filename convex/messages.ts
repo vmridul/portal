@@ -120,6 +120,7 @@ export const sendMessage = mutation({
     file_storage_id: v.optional(v.id('_storage')),
     file_type: v.union(v.string(), v.null()),
     file_name: v.union(v.string(), v.null()),
+    file_size: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -144,6 +145,7 @@ export const sendMessage = mutation({
       file_url: null,
       type: args.file_type || null,
       file_name: args.file_name || null,
+      file_size: args.file_size,
     });
 
     const now = Date.now();

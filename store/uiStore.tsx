@@ -33,6 +33,10 @@ type UIState = {
   setSidebarOpen: (v: boolean) => void;
   setSidebarTab: (v: "info" | "media") => void;
   toggleSidebar: (tab?: "info" | "media") => void;
+  
+  // Jump/Highlight System
+  jumpedMessageId: string | null;
+  setJumpedMessageId: (id: string | null) => void;
 };
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -67,4 +71,7 @@ export const useUIStore = create<UIState>((set, get) => ({
       set({ isSidebarOpen: !currentOpen, sidebarTab: tab || currentTab });
     }
   },
+
+  jumpedMessageId: null,
+  setJumpedMessageId: (id) => set({ jumpedMessageId: id }),
 }));

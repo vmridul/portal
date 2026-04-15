@@ -16,13 +16,7 @@ export function validateFile(file: File): FileValidationResult {
     };
   }
 
-  if (!allowedTypes.includes(file.type)) {
-    return {
-      valid: false,
-      error: "File type not allowed",
-    };
-  }
-
+  // All file types are allowed as requested
   return { valid: true };
 }
 
