@@ -1,7 +1,6 @@
 "use client";
 import { createContext, useContext, useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useUserRooms } from "@/hooks";
 
 interface RoomsContextType {
   rooms: UserRoom[];
@@ -33,8 +32,7 @@ export function RoomsProvider({
   children: React.ReactNode;
   user_id: string | null;
 }) {
-  const userRooms = useQuery(api.roomQueries.getUserRooms, { user_id: user_id || null });
-  const isLoading = !!user_id && userRooms === undefined;
+  const { rooms: userRooms, isLoading } = useUserRooms(user_id);
 
   const { rooms, membersCount } = useMemo(() => {
     if (!userRooms) return { rooms: [], membersCount: {} };

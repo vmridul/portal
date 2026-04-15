@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useRoomActions } from "@/src/hooks";
+import { useRoomActions } from "@/hooks";
 import { toast } from "sonner";
 import { useUIStore } from "@/store/uiStore";
 import { useRouter } from "next/navigation";

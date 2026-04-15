@@ -1,16 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect } from "react";
-import { useConvexAuth, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useConvexAuth } from "convex/react";
 import { RoomsProvider } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { usePathname } from "next/navigation";
-import { ColorProvider } from "@/contexts/colorContext";
+import { ColorProvider, useColor } from "@/contexts/colorContext";
 import NotificationListener from "@/components/features/notifications/NotificationListener";
-import { useColor } from "@/contexts/colorContext";
 import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
 import { GlobalModals } from "@/components/layout/GlobalModals";
+import { useCurrentUser } from "@/hooks";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -21,8 +20,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const isRoomPage = pathname.startsWith("/portal/room");
 
   const { isAuthenticated, isLoading } = useConvexAuth();
-
-  const profile = useQuery(api.users.getCurrentUser);
+  const { user: profile, isLoading: isProfileLoading } = useCurrentUser();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -36,7 +34,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [profile, setUser]);
 
-  if ((isLoading || !isThemeReady || profile === undefined || !user?.user_id) && !isRoomPage) {
+  if ((isLoading || !isThemeReady || isProfileLoading || !profile || !user?.user_id) && !isRoomPage) {
     return <PortalShellSkeleton />;
   }
 

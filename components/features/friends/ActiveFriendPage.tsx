@@ -4,7 +4,7 @@ import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "../messaging/ChatUI";
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
-import { useMessageActions } from "@/src/hooks";
+import { useMessageActions } from "@/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";

@@ -3,8 +3,8 @@ import Image from "next/image";
 import { X } from "lucide-react";
 import { MessageList } from "./MessageList";
 import { ChatInputBar } from "./ChatInputBar";
-import { useMessages } from "@/src/hooks/use-messages";
-import { useMessageActions, useTypingIndicators } from "@/src/hooks/use-message-actions";
+import { useMessages } from "@/hooks/useMessages";
+import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import type { User } from "@/lib/types";
 
 interface ChatUIProps {

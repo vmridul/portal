@@ -1,6 +1,6 @@
 import { formatToIST } from "@/lib/utils/date";
 import { toast } from "sonner";
-import { useRoomActions } from "@/src/hooks";
+import { useRoomActions } from "@/hooks";
 import { useColor } from "@/contexts/colorContext";
 import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";

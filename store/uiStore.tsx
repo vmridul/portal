@@ -1,17 +1,17 @@
 import { UUID } from "crypto";
 import { create } from "zustand";
 
-export type ModalType = 
-  | "CREATE_ROOM" 
-  | "JOIN_ROOM" 
-  | "LOGOUT" 
-  | "ADD_FRIEND" 
-  | "LEAVE_ROOM" 
-  | "INFO" 
-  | "COLOR" 
-  | "MEDIA" 
-  | "PROFILE" 
-  | "ROOM_SETTINGS" 
+export type ModalType =
+  | "CREATE_ROOM"
+  | "JOIN_ROOM"
+  | "LOGOUT"
+  | "ADD_FRIEND"
+  | "LEAVE_ROOM"
+  | "INFO"
+  | "COLOR"
+  | "MEDIA"
+  | "PROFILE"
+  | "ROOM_SETTINGS"
   | null;
 
 type UIState = {
@@ -27,13 +27,15 @@ type UIState = {
   selectedPendingMenu: boolean;
   menuOpen: boolean;
 
-  setPendingRequestMenu: (v: boolean) => void;
-  setActiveFriendPage: (v: UUID | null) => void;
-  setSelectedPendingMenu: (v: boolean) => void;
-  setMenuOpen: (v: boolean) => void;
+  // Details Sidebar
+  isSidebarOpen: boolean;
+  sidebarTab: "info" | "media";
+  setSidebarOpen: (v: boolean) => void;
+  setSidebarTab: (v: "info" | "media") => void;
+  toggleSidebar: (tab?: "info" | "media") => void;
 };
 
-export const useUIStore = create<UIState>((set) => ({
+export const useUIStore = create<UIState>((set, get) => ({
   // Initialization
   activeModal: null,
   modalData: null,
@@ -45,8 +47,24 @@ export const useUIStore = create<UIState>((set) => ({
   selectedPendingMenu: true,
   menuOpen: false,
 
+  isSidebarOpen: false,
+  sidebarTab: "info",
+
   setPendingRequestMenu: (v) => set({ pendingRequestMenu: v }),
   setActiveFriendPage: (v) => set({ activeFriendPage: v }),
   setSelectedPendingMenu: (v) => set({ selectedPendingMenu: v }),
   setMenuOpen: (v) => set({ menuOpen: v }),
+
+  setSidebarOpen: (v) => set({ isSidebarOpen: v }),
+  setSidebarTab: (v) => set({ sidebarTab: v }),
+  toggleSidebar: (tab) => {
+    const currentOpen = get().isSidebarOpen;
+    const currentTab = get().sidebarTab;
+
+    if (tab && tab !== currentTab) {
+      set({ isSidebarOpen: true, sidebarTab: tab });
+    } else {
+      set({ isSidebarOpen: !currentOpen, sidebarTab: tab || currentTab });
+    }
+  },
 }));

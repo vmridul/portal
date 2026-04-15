@@ -1,22 +1,21 @@
 "use client";
 import { useEffect } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useAuthFromFirebase } from "@/app/hooks/useAuthFromFirebase";
+import { useAuthFromFirebase } from "@/hooks/useAuthFromFirebase";
 import { useUserStore } from "@/store/useUserStore";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import ProfilePage from "@/components/features/profile/ProfilePage";
+import { useCurrentUser, useUserProfileActions } from "@/hooks";
 
 export default function Page() {
   const setUser = useUserStore((s) => s.setUser);
 
   const { user: firebaseUser } = useAuthFromFirebase();
-  const ensureUser = useMutation(api.users.createUser);
-  const profile = useQuery(api.users.getCurrentUser);
+  const { createUser } = useUserProfileActions();
+  const { user: profile } = useCurrentUser();
 
   useEffect(() => {
     if (firebaseUser) {
-      ensureUser({
+      createUser({
         username:
           firebaseUser.displayName ||
           firebaseUser.email?.split("@")[0] ||
@@ -24,7 +23,7 @@ export default function Page() {
         avatar: firebaseUser.photoURL || "",
       });
     }
-  }, [firebaseUser, ensureUser]);
+  }, [firebaseUser, createUser]);
 
   useEffect(() => {
     if (profile) {

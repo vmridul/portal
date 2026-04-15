@@ -5,7 +5,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { validateFile } from "@/lib/utils/file";
 import { Send, Plus, BadgeX } from "lucide-react";
 import { toast } from "sonner";
-import { useMessageActions, useTypingIndicators } from "@/src/hooks/use-message-actions";
+import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 
 interface ChatInputBarProps {
   room_id: string;

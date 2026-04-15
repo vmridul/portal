@@ -114,12 +114,12 @@ export function useRoomActions(): UseRoomActionsResult {
   };
 }
 
-export function useRoomMembers(roomId: string | null): RoomMemberWithUser[] {
+export function useRoomMembers(roomId: string | null): RoomMemberWithUser[] | undefined {
   const membersQuery = useQuery(api.roomQueries.getRoomMembers, { room_id: roomId || null });
-  return (membersQuery ?? []) as RoomMemberWithUser[];
+  return membersQuery as RoomMemberWithUser[] | undefined;
 }
 
-export function useRoomMemberCount(roomId: string | null): number {
+export function useRoomMemberCount(roomId: string | null): number | undefined {
   const membersQuery = useQuery(api.roomQueries.getRoomMembers, { room_id: roomId || null });
-  return membersQuery?.length ?? 0;
+  return membersQuery?.length;
 }

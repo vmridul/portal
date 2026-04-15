@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useRoomActions } from "@/src/hooks";
+import { useRoomActions } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
 import { toast } from "sonner";

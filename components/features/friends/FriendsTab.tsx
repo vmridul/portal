@@ -6,15 +6,17 @@ import {
   UserX,
   Moon,
   Image as ImageIcon,
+  Info,
 } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
+import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
 
 import PendingRequestMenu from "@/components/features/friends/PendingRequestMenu";
 import ActiveFriendPage from "@/components/features/friends/ActiveFriendPage";
 import FriendsList from "@/components/features/friends/FriendsList";
 import { useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
-import { useFriends, useFriendActions } from "@/src/hooks";
+import { useFriends, useFriendActions } from "@/hooks";
 import { usePresence } from "@/contexts/presenceContext";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useColor } from "@/contexts/colorContext";
@@ -31,6 +33,9 @@ export default function FriendsTab() {
     menuOpen,
     setMenuOpen,
     setModal,
+    isSidebarOpen,
+    sidebarTab,
+    toggleSidebar,
   } = useUIStore();
   const user = useUserStore((s) => s.user);
   const { onlineUsers, awayUsers } = usePresence();
@@ -124,13 +129,24 @@ export default function FriendsTab() {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (activeFriendPage && user) {
-                    import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("MEDIA", { room_id: getDirectConversationId(activeFriendPage, user.user_id), type: "direct" }));
-                  }
+                  toggleSidebar("media");
                 }}
-                className="w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center hover:bg-theme-base"
+                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${
+                  isSidebarOpen && sidebarTab === "media" ? "bg-theme-base" : "hover:bg-theme-base"
+                }`}
               >
-                <ImageIcon className="w-4 h-4 text-white/70" />
+                <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/70"}`} />
+              </div>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSidebar("info");
+                }}
+                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${
+                  isSidebarOpen && sidebarTab === "info" ? "bg-theme-base" : "hover:bg-theme-base"
+                }`}
+              >
+                <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-white/70"}`} />
               </div>
               <div
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -173,11 +189,23 @@ export default function FriendsTab() {
         />
 
         {/* friends list */}
-        {activeFriendPage ? (
-          <ActiveFriendPage />
-        ) : (
-          <FriendsList friends={friends} isLoading={isLoadingFriendsData} />
-        )}
+        <div className="flex h-full overflow-hidden">
+          <div className="flex-1 overflow-hidden">
+            {activeFriendPage ? (
+              <ActiveFriendPage />
+            ) : (
+              <FriendsList friends={friends} isLoading={isLoadingFriendsData} />
+            )}
+          </div>
+          {activeFriendPage && isSidebarOpen && (
+            <div className="flex-none transition-all duration-300 ease-in-out">
+              <DetailsSidebar 
+                id={getDirectConversationId(activeFriendPage, user?.user_id || "")} 
+                type="direct" 
+              />
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

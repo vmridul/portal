@@ -6,7 +6,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { formatToIST } from "@/lib/utils/date";
 import { useState, useEffect, useRef } from "react";
-import { useUserProfileActions } from "@/src/hooks";
+import { useUserProfileActions } from "@/hooks";
 import { useColor } from "@/contexts/colorContext";
 import { usePresence } from "@/contexts/presenceContext";
 

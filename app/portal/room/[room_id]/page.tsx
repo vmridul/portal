@@ -3,8 +3,7 @@ import Room from "@/components/features/rooms/Room";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useRoomMembers } from "@/hooks";
 import { use } from "react";
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 
@@ -15,7 +14,7 @@ export default function Page({
 }) {
   const { room_id } = use(params);
   const router = useRouter();
-  const members = useQuery(api.roomQueries.getRoomMembers, { room_id });
+  const members = useRoomMembers(room_id);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {

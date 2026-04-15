@@ -160,7 +160,7 @@ export default function FriendsList({
             </div>
           ) : (
             <div className="flex h-full mt-[30%] justify-center">
-              <div className="rounded-[14px] text-center">
+              <div className={`${isLoading ? "hidden" : "block"} rounded-[14px] text-center`}>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
                   <Users className="h-5 w-5 text-white/45" />
                 </div>

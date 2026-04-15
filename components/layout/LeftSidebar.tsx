@@ -9,7 +9,7 @@ import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { getAuth, signOut } from "firebase/auth";
 import { RoomsList } from "@/components/features/rooms/RoomsList";
-import { useRoomActions } from "@/src/hooks";
+import { useRoomActions } from "@/hooks";
 import { toast } from "sonner";
 import { generateRoomCode } from "@/app/actions/randomID";
 import { usePresence } from "@/contexts/presenceContext";

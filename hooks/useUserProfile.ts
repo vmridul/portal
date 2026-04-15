@@ -1,9 +1,26 @@
 "use client";
 
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useCallback } from "react";
+import type { User } from "@/lib/types";
+
+export function useUser(userId: string | null) {
+  const user = useQuery(api.users.getUserById, userId ? { user_id: userId } : "skip");
+  return {
+    user: user as User | null,
+    isLoading: user === undefined,
+  };
+}
+
+export function useCurrentUser() {
+  const user = useQuery(api.users.getCurrentUser);
+  return {
+    user: user as User | null,
+    isLoading: user === undefined,
+  };
+}
 
 interface UseUserProfileActionsResult {
   changeName: (username: string) => Promise<void>;
@@ -12,11 +29,19 @@ interface UseUserProfileActionsResult {
   getUrl: (storageId: string) => Promise<string | null>;
 }
 
-export function useUserProfileActions(): UseUserProfileActionsResult {
+export function useUserProfileActions(): UseUserProfileActionsResult & { createUser: (args: { username: string; avatar?: string }) => Promise<any> } {
   const changeNameMutation = useMutation(api.users.changeName);
   const changeAvatarMutation = useMutation(api.users.changeAvatar);
+  const createUserMutation = useMutation(api.users.createUser);
   const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
   const getUrlMutation = useMutation(api.storage.getUrlMutation);
+
+  const createUser = useCallback(
+    async (args: { username: string; avatar?: string }) => {
+      return await createUserMutation(args);
+    },
+    [createUserMutation]
+  );
 
   const changeName = useCallback(
     async (username: string) => {
@@ -50,5 +75,6 @@ export function useUserProfileActions(): UseUserProfileActionsResult {
     changeAvatar,
     generateUploadUrl,
     getUrl,
+    createUser,
   };
 }

@@ -4,7 +4,7 @@ import { BadgeX, Bell, Hash } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useNotifications, useNotificationActions } from "@/src/hooks";
+import { useNotifications, useNotificationActions } from "@/hooks";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { timeAgo } from "@/lib/utils/date";
 

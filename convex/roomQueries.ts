@@ -9,7 +9,18 @@ export const getRoomDetails = query({
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
       .first();
 
-    return room;
+    if (!room) return null;
+
+    const owner = await ctx.db
+      .query("roomMembers")
+      .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
+      .filter((q) => q.eq(q.field("role"), "owner"))
+      .first();
+
+    return {
+      ...room,
+      owner_id: owner?.user_id || null,
+    };
   },
 });
 

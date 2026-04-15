@@ -2,10 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import { Search, Image as ImageIcon, Info } from "lucide-react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
-import { useRoom, useRoomMembers } from "@/src/hooks";
-import { useSearchMessages } from "@/src/hooks";
+import { useRoom, useRoomMembers } from "@/hooks";
+import { useSearchMessages } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
+
+import { useUIStore } from "@/store/uiStore";
 
 interface SearchResult {
   _id: string;
@@ -21,6 +23,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
   const user = useUserStore((s) => s.user);
   const searchRef = useRef<HTMLDivElement>(null);
+  const { toggleSidebar, isSidebarOpen, sidebarTab } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
   const { color } = useColor();
@@ -29,7 +32,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
     setQuery("");
   });
 
-  const owner = members.find((m) => m.role === "owner");
+  const owner = members?.find((m) => m.role === "owner");
   const ownerId = owner?.user_id ?? "";
   const ownerName = owner?.Users?.username ?? "";
 
@@ -74,15 +77,15 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="flex px-3 py-1 items-center text-white/60 rounded-[6px] bg-theme-surface overflow-hidden"
+            className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-surface overflow-hidden"
           >
-            <Search className="flex-none w-4 h-4 text-white/40" />
+            <Search className="flex-none w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search messages"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="px-2 py-1 min-w-0 w-full bg-transparent outline-none placeholder-white/40"
+              className="px-2 py-1 min-w-0 w-full bg-transparent outline-none placeholder-gray-400"
             />
           </div>
           {searchResults.length > 0 && (
@@ -98,9 +101,8 @@ export default function TopBar({ room_id }: { room_id: string }) {
                     e.preventDefault();
                     handleSearchClick(index, result._id, result._creationTime);
                   }}
-                  className={`hover:bg-[white/10] ${
-                    selectedResult == index ? "bg-theme-hover" : ""
-                  } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
+                  className={`hover:bg-[white/10] ${selectedResult == index ? "bg-theme-hover" : ""
+                    } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-white/40">
@@ -122,26 +124,22 @@ export default function TopBar({ room_id }: { room_id: string }) {
           <div
             onClick={(e) => {
               e.stopPropagation();
-              import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("MEDIA", { room_id, type: "room" }));
+              toggleSidebar("media");
             }}
-            className="flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center hover:bg-theme-hover"
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-hover" : "hover:bg-theme-hover"
+              }`}
           >
-            <ImageIcon className="w-4 h-4 text-white" />
+            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/60"}`} />
           </div>
           <div
             onClick={(e) => {
               e.stopPropagation();
-              import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("INFO", { 
-                createdAt: (room as unknown as { _creationTime?: number })?._creationTime ?? 0,
-                owner_id: ownerId,
-                ownerName,
-                roomName: room?.room_name ?? "",
-                room_id
-              }));
+              toggleSidebar("info");
             }}
-            className="flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center hover:bg-theme-hover"
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-hover" : "hover:bg-theme-hover"
+              }`}
           >
-            <Info className="w-4 h-4 text-white" />
+            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-white/60"}`} />
           </div>
         </div>
       </div>

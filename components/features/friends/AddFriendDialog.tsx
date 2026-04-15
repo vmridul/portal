@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useFriendActions } from "@/src/hooks";
+import { useFriendActions } from "@/hooks";
 import { useColor } from "@/contexts/colorContext";
 import { useUIStore } from "@/store/uiStore";
 import { useForm } from "react-hook-form";

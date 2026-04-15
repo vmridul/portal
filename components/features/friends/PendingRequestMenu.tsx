@@ -6,7 +6,7 @@ import {
   useFriendActions,
   type PendingRequest,
   type SentRequest,
-} from "@/src/hooks";
+} from "@/hooks";
 import { useColor } from "@/contexts/colorContext";
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";

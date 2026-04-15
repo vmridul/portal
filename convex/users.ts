@@ -85,3 +85,14 @@ export const changeName = mutation({
     await ctx.db.patch(user._id, { username: args.username });
   },
 });
+
+export const getUserById = query({
+  args: { user_id: v.string() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", args.user_id))
+      .first();
+    return user;
+  },
+});

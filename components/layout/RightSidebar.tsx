@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { UserX, Clipboard, Users, Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -8,17 +7,16 @@ import { usePresence } from "@/contexts/presenceContext";
 import { RoomMembersList } from "@/components/features/rooms/RoomMembersList";
 import { ListSkeleton } from "@/components/shared/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
-import { useRoomMembers } from "@/src/hooks";
+import { useRoomMembers } from "@/hooks";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
-import type { UserRoom, RoomMemberWithUser, User } from "@/lib/types";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
-  const router = useRouter();
+
   const [openMenu, setOpenMenu] = useState(false);
   const user = useUserStore((s) => s.user);
   const [rightMobileMenu, setRightMobileMenu] = useState(false);
   const { onlineUsers, awayUsers } = usePresence();
-  
+
   const menuRef = useRef<HTMLDivElement>(null);
   useOutsideClick(menuRef, () => setOpenMenu(false));
 
@@ -27,19 +25,13 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     membersCount: allMembersCount,
     isLoading: isRoomsLoading,
   } = useRooms();
+
   const room = rooms.find((r) => r.room_id === room_id);
   const roomName = room?.Rooms?.room_name ?? "";
-  const createdAt = room?.joined_at ?? 0;
   const memberCount = room ? (allMembersCount[room_id] ?? 0) : 0;
-
   const members = useRoomMembers(room_id);
-  const owner = members.find((m) => m.role === "owner");
+  const owner = members?.find((m) => m.role === "owner");
   const owner_id = owner?.user_id ?? "";
-  const ownerName = owner?.Users?.username ?? "";
-
-
-
-
 
   return (
     <>
@@ -94,11 +86,10 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     shadow-lg
     transform transition-all duration-150 select-none
  ease-out
-    ${
-      openMenu
-        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-    }
+    ${openMenu
+                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+                  }
   `}
               >
                 <div
@@ -128,7 +119,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
             </div>
           </div>
         )}
-        {!user?.user_id || members.length === 0 ? (
+        {!user?.user_id || !members || members.length === 0 ? (
           <ListSkeleton />
         ) : (
           <RoomMembersList

@@ -87,7 +87,7 @@ export const MessageItem = React.memo(({
       )}
       <div
         data-msg-id={message._id}
-        className={`flex gap-2 rounded-[6px] transition-colors duration-500 ${highlight ? "bg-yellow-500/10" : ""} ${showMeta ? "mt-2" : "my-0"} ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
+        className={`flex gap-2 rounded-[6px] transition-colors duration-500 ${highlight ? "bg-yellow-500/10" : ""} ${showMeta ? "mt-2" : "my-0"} flex-row`}
       >
         {showMeta ? (
           <Image
@@ -108,14 +108,14 @@ export const MessageItem = React.memo(({
         )}
 
         <div
-          className={`flex flex-col max-w-[60%] ${isCurrentUser ? "items-end" : "items-start"}`}
+          className="flex flex-col max-w-[60%] items-start"
         >
           {showMeta && (
             <div
-              className={`flex items-center mb-1 gap-2 px-1 ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
+              className="flex items-center mb-1 gap-2 px-1 flex-row"
             >
               <span
-                className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 ${isCurrentUser ? "text-right" : "text-left"}`}
+                className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left"
               >
                 {getDisplayName(
                   message.sender_id,
@@ -131,9 +131,7 @@ export const MessageItem = React.memo(({
           <div
             id={`msg-${message._id}`}
             style={{
-              borderRadius: isCurrentUser
-                ? "8px 8px 0px 8px"
-                : "8px 8px 8px 0px",
+              borderRadius: "8px 8px 8px 0px",
               backgroundColor:
                 isImage || isVideo || isFile
                    ? highlight ? "rgba(234, 179, 8, 0.2)" : "transparent"

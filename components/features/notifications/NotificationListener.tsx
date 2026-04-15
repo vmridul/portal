@@ -1,7 +1,7 @@
 "use client";
 
 import { useUIStore } from "@/store/uiStore";
-import { useNotifications, useNotificationActions } from "@/src/hooks";
+import { useNotifications, useNotificationActions } from "@/hooks";
 import { Bell, Hash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

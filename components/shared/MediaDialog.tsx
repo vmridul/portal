@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, X, FileText } from "lucide-react";
 import Image from "next/image";
 import { useColor } from "@/contexts/colorContext";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
-import { useMediaFiles } from "@/src/hooks";
+import { useMediaFiles } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import { useKeyBinding } from "@/hooks/ui/useKeyBinding";
 

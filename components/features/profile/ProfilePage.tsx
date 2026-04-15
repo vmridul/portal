@@ -18,12 +18,12 @@ export default function ProfilePage() {
             <User className="w-4 h-4" />
             <h1 className="text-md">Profile</h1>
           </div>
-          <X
-            onClick={() => {
-              router.back();
-            }}
-            className="w-6 h-6 md:mr-2 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
-          />
+          <button
+            onClick={() => router.back()}
+            className="p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

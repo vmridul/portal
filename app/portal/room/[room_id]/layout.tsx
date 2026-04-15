@@ -6,17 +6,30 @@ import { Suspense } from "react";
 import React from "react";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 
+import { useUIStore } from "@/store/uiStore";
+import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
+
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const room_id = params.room_id as string;
+  const { isSidebarOpen } = useUIStore();
 
   return (
     <section className="flex h-screen overflow-hidden">
       <div className="flex-1 flex">
-        <LeftSidebar className="w-64" showPortalSkeletons={false} />
-        <div className="flex flex-col w-full">
+        <LeftSidebar className="w-64 flex-shrink-0" showPortalSkeletons={false} />
+        <div className="flex flex-col flex-1 min-w-0 bg-theme-base overflow-hidden relative">
           <TopBar room_id={room_id} />
-          {children}
+          <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 overflow-hidden relative">
+              {children}
+            </div>
+            {isSidebarOpen && (
+              <div className="flex-none transition-all duration-300 ease-in-out">
+                <DetailsSidebar id={room_id} type="room" />
+              </div>
+            )}
+          </div>
         </div>
         <RightSidebar room_id={room_id} />
       </div>

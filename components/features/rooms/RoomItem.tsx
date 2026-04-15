@@ -65,8 +65,8 @@ export function RoomItem({
             <span className="truncate max-w-[100px]">{roomName}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[#aaaaaa] text-xs truncate max-w-[100px]">
-              {room.last_msg_preview || `ID: ${roomId}`}
+            <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">
+              ID: {roomId}
             </span>
             {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
               <div
