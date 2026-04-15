@@ -10,6 +10,7 @@ import { ColorProvider } from "@/contexts/colorContext";
 import NotificationListener from "@/components/notificationListener";
 import { useColor } from "@/contexts/colorContext";
 import PortalShellSkeleton from "@/components/ui/portalShellSkeleton";
+import { GlobalModals } from "@/components/ui/GlobalModals";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -46,6 +47,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <RoomsProvider user_id={user.user_id}>
       <section className="flex font-sans bg-theme-surface">
+        <GlobalModals />
         <Suspense fallback={null}></Suspense>
         <NotificationListener />
         <div className="flex-1">{children}</div>

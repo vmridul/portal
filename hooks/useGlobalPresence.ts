@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -11,16 +11,18 @@ export function useGlobalPresence() {
   const onlineUsers = new Set<string>();
   const awayUsers = new Set<string>();
 
-  activePresences.forEach((p: any) => {
+  activePresences.forEach((p: { status: string; user_id: string }) => {
     if (p.status === "online") onlineUsers.add(p.user_id);
     else if (p.status === "away") awayUsers.add(p.user_id);
   });
 
-  const setStatus = async (status: Status) => {
+  const setStatus = useCallback(async (status: Status) => {
     try {
       await updatePresence({ status });
-    } catch (e) {}
-  };
+    } catch (e) {
+      console.error("Failed to update presence:", e);
+    }
+  }, [updatePresence]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,7 +42,7 @@ export function useGlobalPresence() {
       // window.removeEventListener("focus", onFocus);
       // window.removeEventListener("blur", onBlur);
     };
-  }, []);
+  }, [setStatus]);
 
   return { onlineUsers, awayUsers, setStatus };
 }

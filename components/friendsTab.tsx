@@ -8,7 +8,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
-import AddFriendDialog from "../components/ui/addFriendDialog";
+
 import PendingRequestMenu from "../components/ui/pendingRequestMenu";
 import ActiveFriendPage from "./ui/activeFriendPage";
 import FriendsList from "./ui/friendsList";
@@ -20,18 +20,19 @@ import { usePresence } from "@/contexts/presenceContext";
 import { useState, useEffect } from "react";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useColor } from "@/contexts/colorContext";
-import { MediaDialog } from "./ui/mediaDialog";
+import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
+import { useRef } from "react";
+
 
 export default function FriendsTab() {
   const {
-    addFriendDialog,
-    setAddFriendDialog,
     pendingRequestMenu,
     setPendingRequestMenu,
     activeFriendPage,
     setActiveFriendPage,
     menuOpen,
     setMenuOpen,
+    setModal,
   } = useUIStore();
   const user = useUserStore((s) => s.user);
   const { onlineUsers, awayUsers } = usePresence();
@@ -42,30 +43,21 @@ export default function FriendsTab() {
   );
 
   const { color, setColor } = useColor();
-  const [colorDialog, setColorDialog] = useState(false);
-  const [mediaDialog, setMediaDialog] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const close = () => {
-      setColorDialog(false);
-    };
-    window.addEventListener("click", close);
+  useOutsideClick(menuRef, () => {
+    setMenuOpen(false);
+  });
 
-    return () => {
-      window.removeEventListener("click", close);
-    };
-  }, []);
+
+
 
   return (
     <>
-      {addFriendDialog && (
-        <AddFriendDialog
-          setAddFriendDialog={setAddFriendDialog}
-          user_id={user?.user_id!}
-        />
-      )}
+
 
       <div
+        ref={menuRef}
         className={`
     fixed z-[9999] md:right-[224px] right-4 md:top-[16px] top-[35px] text-white/90 font-sans flex flex-col overflow-hidden items-start
     max-w-[140px]
@@ -135,19 +127,14 @@ export default function FriendsTab() {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  setMediaDialog(true);
+                  if (activeFriendPage && user) {
+                    import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("MEDIA", { room_id: getDirectConversationId(activeFriendPage, user.user_id), type: "direct" }));
+                  }
                 }}
                 className="w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center hover:bg-theme-base"
               >
                 <ImageIcon className="w-4 h-4 text-white/70" />
               </div>
-{mediaDialog && activeFriendPage && user && (
-                <MediaDialog
-                  room_id={getDirectConversationId(activeFriendPage, user.user_id)}
-                  type='direct'
-                  setMediaDialog={setMediaDialog}
-                />
-              )}
               <div
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center"

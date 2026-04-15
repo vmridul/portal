@@ -8,11 +8,9 @@ import { usePathname } from "next/navigation";
 export const ProfileUI = ({
   user,
   awayUsers,
-  setLogoutDialog,
 }: {
   user: User | null;
   awayUsers: Set<string>;
-  setLogoutDialog: (value: boolean) => void;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -55,7 +53,7 @@ export const ProfileUI = ({
       <LogOut
         onClick={(e) => {
           e.stopPropagation();
-          setLogoutDialog(true);
+          import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LOGOUT"));
         }}
         className="w-4 h-4 mr-1 text-white hover:text-gray-200 cursor-pointer"
       />

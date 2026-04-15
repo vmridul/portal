@@ -1,4 +1,4 @@
-import type { Id } from "@/convex/_generated/dataModel";
+
 import type { User } from "./user";
 
 export type RoomRole = "owner" | "member";
@@ -14,6 +14,9 @@ export interface RoomMember {
   user_id: string;
   role: RoomRole;
   unread_count: number;
+  last_msg_preview?: string;
+  last_msg_time?: number;
+  last_read_time?: number;
   _creationTime: number;
 }
 
@@ -27,6 +30,9 @@ export interface UserRoom {
   owner_id: string | null;
   joined_at: number;
   unread_count: number;
+  last_msg_preview?: string;
+  last_msg_time?: number;
+  last_read_time?: number;
   Rooms?: {
     room_name?: string;
     room_id?: string;

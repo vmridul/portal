@@ -33,7 +33,7 @@ export interface ConvexFriend {
     avatar?: string;
   };
   last_msg?: string;
-  updated_at?: string;
+  updated_at?: number;
   _creationTime: number;
   unread_count: number;
 }

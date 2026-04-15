@@ -38,9 +38,7 @@ export default function LeftSidebar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const joinParam = searchParams.get("join");
-  const [roomName, setRoomName] = useState("");
-  const [room_id, setRoomId] = useState<string | null>(null);
-  const [currentRoom, setCurrentRoom] = useState<string | null>(null);
+  const currentRoom = pathname.match(/\/portal\/room\/([^/]+)/)?.[1] || null;
   const { rooms, isLoading: isRoomsLoading } = useRooms();
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
@@ -48,190 +46,24 @@ export default function LeftSidebar({
   const { awayUsers, setStatus } = usePresence();
   const {
     activeFriendPage,
-    joinDialog,
-    setJoinDialog,
-    createDialog,
-    setCreateDialog,
-    logoutDialog,
-    setLogoutDialog,
+    setModal,
   } = useUIStore();
   const { joinRoom, createRoom } = useRoomActions();
 
-  const onJoin = async () => {
-    if (!room_id) {
-      toast.error("Enter a Room ID!");
-      return;
-    }
-    try {
-      await joinRoom({ room_id });
-      setJoinDialog(false);
-      setRoomId(null);
-      setMobileMenu(false);
-      toast.success("Room joined successfully");
-      router.replace(`/portal/room/${room_id}`);
-    } catch (e) {
-      const msg = (e as Error).message || "Failed to join room";
-      if (msg.includes("already in this room")) {
-        toast.info("You are already in this room");
-        setJoinDialog(false);
-        setMobileMenu(false);
-        router.replace(`/portal/room/${room_id}`);
-        setRoomId(null);
-      } else {
-        toast.error("Failed to join room");
-      }
-    }
-  };
 
-  const onCreate = async () => {
-    if (!roomName) {
-      toast.error("Enter a valid room name!");
-      return;
-    }
-    try {
-      const generated_id = await generateRoomCode();
-      await createRoom({ room_name: roomName, room_id: generated_id.toString() });
-      setCreateDialog(false);
-      setRoomName("");
-      setMobileMenu(false);
-      toast.success("Room created successfully");
-      router.push(`/portal/room/${generated_id}`);
-    } catch (e) {
-      toast.error((e as Error).message || "Failed to create room");
-    }
-  };
 
-  //get current room from pathname
-  useEffect(() => {
-    const match = pathname.match(/\/portal\/room\/([^/]+)/);
-    if (match) {
-      setCurrentRoom(match[1]);
-    } else {
-      setCurrentRoom(null);
-    }
-  }, [pathname]);
+
 
   //open join dialog when path name have search params: join
   useEffect(() => {
     if (joinParam) {
-      setRoomId(joinParam);
-      setJoinDialog(true);
+      setModal("JOIN_ROOM");
       router.replace(pathname);
     }
-  }, [joinParam, pathname, router, setJoinDialog]);
+  }, [joinParam, pathname, router, setModal]);
 
   return (
     <>
-      <div
-        className={`fixed ${joinDialog ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} inset-0 z-[9999] bg-black bg-opacity-35 flex items-center justify-center transition-all duration-200`}
-      >
-        <div className="md:scale-100 scale-[80%] w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
-          Join Room
-          <div className=" mt-3 flex text-md gap-2 text-sm items-center">
-            <input
-              required
-              min={1000}
-              max={9999}
-              onChange={(e) => {
-                const val = e.target.value;
-                setRoomId(val === "" ? null : val);
-              }}
-              className="outline-none border placeholder-[#c7c7c7] border-theme-border rounded-[8px] text-[#e3e3e3] bg-theme-hover py-2 px-3 w-full"
-              type="text"
-              value={room_id ?? ""}
-              placeholder="Room ID"
-            />
-          </div>
-          <div className="flex justify-end gap-2 mt-6 text-sm">
-            <button
-              onClick={() => {
-                setRoomId(null);
-                setJoinDialog(false);
-              }}
-              className=" ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onJoin}
-              style={{ backgroundColor: color, color: textColor }}
-              className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
-            >
-              Join
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* CREATE DIALOG */}
-
-      <div
-        className={`fixed ${createDialog ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} bg-black bg-opacity-35 inset-0 z-[9999] flex items-center justify-center transition-all duration-200`}
-      >
-        <div className="md:scale-100 scale-[80%] w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
-          Create Room
-          <div className=" mt-3 flex text-md gap-2 text-sm items-center">
-            <input
-              required
-              onChange={(e) => setRoomName(e.target.value)}
-              value={roomName}
-              className="outline-none border placeholder-[#c7c7c7] border-theme-border rounded-[8px] text-[#e3e3e3] bg-theme-hover py-2 px-3 w-full"
-              type="text"
-              placeholder="Room Name"
-            />
-          </div>
-          <div className="flex justify-end gap-2 mt-6 text-sm">
-            <button
-              onClick={() => {
-                setCreateDialog(false);
-                setRoomName("");
-              }}
-              className=" ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onCreate}
-              style={{ backgroundColor: color, color: textColor }}
-              className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
-            >
-              Create
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* LOG OUT DIALOG */}
-
-      <div
-        className={`fixed ${logoutDialog ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 scale-95 pointer-events-none"} inset-0 bg-black bg-opacity-35 z-[9999] flex items-center justify-center transition-all duration-200`}
-      >
-        <div className="w-96 rounded-xl text-lg md:scale-100 scale-[80%] font-regular bg-theme-surface border-theme-border border p-6 text-white">
-          Are you sure you want to log out?
-          <div className="text-[#676767] mt-2 text-sm">
-            You can sign in back anytime.
-          </div>
-          <div className="flex justify-end gap-2 mt-6 text-sm">
-            <button
-              onClick={() => setLogoutDialog(false)}
-              className="ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={async (e) => {
-                const auth = getAuth();
-                await signOut(auth);
-                setLogoutDialog(false);
-                router.push("/");
-              }}
-              style={{ backgroundColor: color, color: textColor }}
-              className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
-            >
-              Log Out
-            </button>
-          </div>
-        </div>
-      </div>
       <div>
         <button
           onClick={() => {
@@ -277,7 +109,7 @@ export default function LeftSidebar({
                 <span>Friends</span>
               </button>
               <button
-                onClick={() => setCreateDialog(true)}
+                onClick={() => setModal("CREATE_ROOM")}
                 className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <Plus className="w-4 h-4" />
@@ -285,7 +117,7 @@ export default function LeftSidebar({
               </button>
 
               <button
-                onClick={() => setJoinDialog(true)}
+                onClick={() => setModal("JOIN_ROOM")}
                 className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <UserPlus className="w-4 h-4" />
@@ -351,7 +183,6 @@ export default function LeftSidebar({
             <ProfileUI
               user={user}
               awayUsers={awayUsers}
-              setLogoutDialog={setLogoutDialog}
             />
           )}
         </div>

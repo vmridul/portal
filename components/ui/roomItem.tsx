@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import type { User } from "@/lib/types";
+import { timeAgo } from "@/lib/utils/date";
 
 interface RoomWithNested {
   room_id: string;
@@ -9,6 +10,8 @@ interface RoomWithNested {
   owner_id?: string | null;
   joined_at?: number;
   unread_count?: number;
+  last_msg_preview?: string;
+  last_msg_time?: number;
   Rooms?: {
     room_name?: string;
     room_id?: string;
@@ -32,7 +35,7 @@ export function RoomItem({
 }: RoomItemProps) {
   const [mounted, setMounted] = useState(false);
   const unreadCount = room?.unread_count || 0;
-  const { color } = useColor();
+  const { color, textColor } = useColor();
 
   useEffect(() => {
     setMounted(true);
@@ -58,21 +61,30 @@ export function RoomItem({
       </div>
       <div className="flex items-center flex-1 min-w-0">
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="truncate max-w-[100px]">{roomName}</span>
-          <span className="text-white/40 text-xs">
-            ID: {roomId}
-          </span>
-        </div>
-        {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
-          <div 
-            className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex ml-2"
-            style={{ backgroundColor: color }}
-          >
-            <span className="text-[8px] font-medium text-white">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
+          <div className="flex items-center justify-between">
+            <span className="truncate max-w-[100px]">{roomName}</span>
+            {mounted && room.last_msg_time ? (
+              <span className="text-[#aaaaaa] text-xs whitespace-nowrap ml-2">
+                {timeAgo(room.last_msg_time)}
+              </span>
+            ) : null}
           </div>
-        )}
+          <div className="flex items-center justify-between">
+            <span className="text-[#aaaaaa] text-xs truncate max-w-[100px]">
+              {room.last_msg_preview || `ID: ${roomId}`}
+            </span>
+            {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
+              <div
+                className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex ml-2"
+                style={{ backgroundColor: color, color: textColor }}
+              >
+                <span className="text-[8px] font-medium">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

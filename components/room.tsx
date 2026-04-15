@@ -12,15 +12,11 @@ import type { Id } from "@/convex/_generated/dataModel";
 
 export default function Room({ room_id }: { room_id: string }) {
   const router = useRouter();
-  const { deleteMessage, clearUnreadCount } = useMessageActions();
+  const { deleteMessage } = useMessageActions();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
-
-  useEffect(() => {
-    clearUnreadCount(room_id).catch(console.error);
-  }, [room_id, clearUnreadCount]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
@@ -76,8 +72,10 @@ export default function Room({ room_id }: { room_id: string }) {
           user={user}
           color={color}
           textColor={textColor}
-          setMessageToDelete={setMessageToDelete}
-          setDeleteDialogOpen={setDeleteDialogOpen}
+          onDeleteRequest={(id) => {
+            setMessageToDelete(id);
+            setDeleteDialogOpen(true);
+          }}
         />
       )}
     </>

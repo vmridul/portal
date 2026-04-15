@@ -44,11 +44,17 @@ export const getUserRooms = query({
           owner_id: owner?.user_id || null,
           joined_at: membership._creationTime,
           unread_count: membership.unread_count || 0,
+          last_msg_preview: membership.last_msg_preview,
+          last_msg_time: membership.last_msg_time,
+          last_read_time: membership.last_read_time,
         };
       }),
     );
 
-    return roomsWithCount.sort((a, b) => b.joined_at - a.joined_at);
+    // Sort by most recent activity first, fall back to join time
+    return roomsWithCount.sort(
+      (a, b) => (b.last_msg_time || b.joined_at) - (a.last_msg_time || a.joined_at)
+    );
   },
 });
 

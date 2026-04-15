@@ -1,4 +1,4 @@
-export default {
+const authConfig = {
   providers: [
     {
       domain: "https://securetoken.google.com/portal-433a1",
@@ -6,3 +6,5 @@ export default {
     },
   ],
 };
+
+export default authConfig;

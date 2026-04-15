@@ -10,6 +10,7 @@
 
 import type * as chatNotifications from "../chatNotifications.js";
 import type * as friends from "../friends.js";
+import type * as lib_conversations from "../lib/conversations.js";
 import type * as messages from "../messages.js";
 import type * as presence from "../presence.js";
 import type * as roomQueries from "../roomQueries.js";
@@ -27,6 +28,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   chatNotifications: typeof chatNotifications;
   friends: typeof friends;
+  "lib/conversations": typeof lib_conversations;
   messages: typeof messages;
   presence: typeof presence;
   roomQueries: typeof roomQueries;

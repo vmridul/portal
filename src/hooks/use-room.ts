@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import type { RoomWithDetails, RoomMemberWithUser, UserRoom, Room } from "@/lib/types";
+import type { RoomMemberWithUser, UserRoom } from "@/lib/types";
 import { useCallback } from "react";
 
 export interface UseRoomOptions {

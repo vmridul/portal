@@ -8,6 +8,7 @@ import { Skeleton } from "./skeleton";
 import { useState, useEffect, useRef } from "react";
 import { useUserProfileActions } from "@/src/hooks";
 import { useColor } from "@/contexts/colorContext";
+import { useKeyBinding } from "@/hooks/ui/useKeyBinding";
 
 export const ProfileDialog = ({
   user,
@@ -70,16 +71,12 @@ export const ProfileDialog = ({
     setNewUsername(user?.username || "");
   }, [user?.user_id]);
 
-  useEffect(() => {
-    const closeDialogs = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
+  useKeyBinding({
+    Escape: () => {
+      setNewUsername(user?.username || "");
       setProfileDialog(false);
-    };
-    window.addEventListener("keydown", closeDialogs);
-    return () => {
-      window.removeEventListener("keydown", closeDialogs);
-    };
-  }, []);
+    }
+  });
 
   if (!user) return <Skeleton className="w-[500px] h-[380px]" />;
   return (

@@ -9,6 +9,8 @@ interface RoomWithNested {
   owner_id?: string | null;
   joined_at?: number;
   unread_count?: number;
+  last_msg_preview?: string;
+  last_msg_time?: number;
   Rooms?: {
     room_name?: string;
     room_id?: string;

@@ -1,5 +1,5 @@
 import { useUIStore } from "@/store/uiStore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "./chatUI";
@@ -10,22 +10,16 @@ import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
 
 export default function ActiveFriendPage() {
-  const { activeFriendPage, setActiveFriendPage } = useUIStore();
+  const { activeFriendPage } = useUIStore();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
-  const { deleteMessage, clearUnreadCount } = useMessageActions();
+  const { deleteMessage } = useMessageActions();
 
   const conversationId = activeFriendPage && user?.user_id 
     ? getDirectConversationId(activeFriendPage, user.user_id)
     : null;
-
-useEffect(() => {
-    if (conversationId) {
-      clearUnreadCount(conversationId).catch(console.error);
-    }
-  }, [conversationId, clearUnreadCount]);
 
   const onDelete = async () => {
     if (!messageToDelete) return;
@@ -40,6 +34,11 @@ useEffect(() => {
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to delete message");
     }
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    setMessageToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
   return (
@@ -83,8 +82,7 @@ useEffect(() => {
               user={user}
               color={color}
               textColor={textColor}
-              setMessageToDelete={setMessageToDelete}
-              setDeleteDialogOpen={setDeleteDialogOpen}
+              onDeleteRequest={handleDeleteRequest}
             />
           </div>
         )}

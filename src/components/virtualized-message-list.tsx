@@ -27,7 +27,6 @@ export function VirtualizedMessageList({
   currentUserId,
   color,
   textColor,
-  isMobile,
   onLoadMore,
   hasMore,
   isLoadingMore,
@@ -47,7 +46,7 @@ export function VirtualizedMessageList({
 
   const handleScroll = useCallback(() => {
     if (parentRef.current && hasMore && !isLoadingMore) {
-      const { scrollTop, scrollHeight, clientHeight } = parentRef.current;
+      const { scrollTop } = parentRef.current;
       if (scrollTop < 100) {
         onLoadMore();
       }

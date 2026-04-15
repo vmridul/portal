@@ -1,5 +1,4 @@
-"use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UserX, Clipboard, Users, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "./skeleton";
@@ -7,22 +6,21 @@ import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { usePresence } from "@/contexts/presenceContext";
 import { RoomMembersList } from "./roomMembersList";
-import { RoomInfoDialog } from "./roomInfoDialog";
-import { LeaveDialog } from "./leaveDialog";
 import { ListSkeleton } from "./listSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/src/hooks";
+import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import type { UserRoom, RoomMemberWithUser, User } from "@/lib/types";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
   const router = useRouter();
   const [openMenu, setOpenMenu] = useState(false);
-  const [leaveDialog, setLeaveDialog] = useState(false);
-  const [infoDialog, setInfoDialog] = useState(false);
-  const [newRoomName, setNewRoomName] = useState("");
   const user = useUserStore((s) => s.user);
   const [rightMobileMenu, setRightMobileMenu] = useState(false);
   const { onlineUsers, awayUsers } = usePresence();
+  
+  const menuRef = useRef<HTMLDivElement>(null);
+  useOutsideClick(menuRef, () => setOpenMenu(false));
 
   const {
     rooms,
@@ -39,45 +37,12 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
   const owner_id = owner?.user_id ?? "";
   const ownerName = owner?.Users?.username ?? "";
 
-  useEffect(() => {
-    setNewRoomName(roomName);
-  }, [roomName]);
 
-  //for menu click close
-  useEffect(() => {
-    const close = () => setOpenMenu(false);
-    window.addEventListener("click", close);
 
-    return () => {
-      window.removeEventListener("click", close);
-    };
-  }, []);
+
 
   return (
     <>
-      {infoDialog && (
-        <RoomInfoDialog
-          setInfoDialog={setInfoDialog}
-          createdAt={createdAt}
-          owner_id={owner_id || ""}
-          ownerName={ownerName || ""}
-          roomName={roomName}
-          newRoomName={newRoomName}
-          setNewRoomName={setNewRoomName}
-          user={user}
-          room_id={room_id}
-        />
-      )}
-      {leaveDialog && (
-        <LeaveDialog
-          owner_id={owner_id || ""}
-          user={user}
-          roomName={roomName}
-          room_id={room_id}
-          setLeaveDialog={setLeaveDialog}
-          router={router}
-        />
-      )}
       <button
         onClick={() => {
           setRightMobileMenu(!rightMobileMenu);
@@ -111,7 +76,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 <span className="text-white/40 text-xs">ID: {room_id}</span>
               </div>
             </div>
-            <div className="flex gap-1 items-center">
+            <div ref={menuRef} className="flex gap-1 items-center">
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -148,7 +113,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 </div>
                 <div
                   onClick={() => {
-                    setLeaveDialog(true);
+                    import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LEAVE_ROOM", { roomName, owner_id, room_id }))
                   }}
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >

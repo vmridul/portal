@@ -31,10 +31,9 @@ export default function FriendsList({
   const { onlineUsers, awayUsers } = usePresence();
   const {
     setActiveFriendPage,
-    addFriendDialog,
-    setAddFriendDialog,
     setPendingRequestMenu,
     activeFriendPage,
+    setModal
   } = useUIStore();
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
@@ -79,7 +78,7 @@ export default function FriendsList({
           </div>
           <button
             onClick={() => {
-              setAddFriendDialog(!addFriendDialog);
+              setModal("ADD_FRIEND");
             }}
             style={{ backgroundColor: color, color: textColor }}
             className="flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px]"

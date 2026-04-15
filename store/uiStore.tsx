@@ -1,20 +1,32 @@
 import { UUID } from "crypto";
 import { create } from "zustand";
 
+export type ModalType = 
+  | "CREATE_ROOM" 
+  | "JOIN_ROOM" 
+  | "LOGOUT" 
+  | "ADD_FRIEND" 
+  | "LEAVE_ROOM" 
+  | "INFO" 
+  | "COLOR" 
+  | "MEDIA" 
+  | "PROFILE" 
+  | "ROOM_SETTINGS" 
+  | null;
+
 type UIState = {
-  createDialog: boolean;
-  joinDialog: boolean;
-  logoutDialog: boolean;
-  addFriendDialog: boolean;
+  // Global Modal System
+  activeModal: ModalType;
+  modalData: any | null;
+  setModal: (modal: ModalType, data?: any) => void;
+  closeModal: () => void;
+
+  // General App State
   pendingRequestMenu: boolean;
   activeFriendPage: UUID | null;
   selectedPendingMenu: boolean;
   menuOpen: boolean;
 
-  setCreateDialog: (v: boolean) => void;
-  setJoinDialog: (v: boolean) => void;
-  setLogoutDialog: (v: boolean) => void;
-  setAddFriendDialog: (v: boolean) => void;
   setPendingRequestMenu: (v: boolean) => void;
   setActiveFriendPage: (v: UUID | null) => void;
   setSelectedPendingMenu: (v: boolean) => void;
@@ -22,18 +34,17 @@ type UIState = {
 };
 
 export const useUIStore = create<UIState>((set) => ({
-  createDialog: false,
-  joinDialog: false,
-  logoutDialog: false,
-  addFriendDialog: false,
+  // Initialization
+  activeModal: null,
+  modalData: null,
+  setModal: (modal, data = null) => set({ activeModal: modal, modalData: data }),
+  closeModal: () => set({ activeModal: null, modalData: null }),
+
   pendingRequestMenu: false,
   activeFriendPage: null,
   selectedPendingMenu: true,
   menuOpen: false,
-  setCreateDialog: (v) => set({ createDialog: v }),
-  setJoinDialog: (v) => set({ joinDialog: v }),
-  setLogoutDialog: (v) => set({ logoutDialog: v }),
-  setAddFriendDialog: (v) => set({ addFriendDialog: v }),
+
   setPendingRequestMenu: (v) => set({ pendingRequestMenu: v }),
   setActiveFriendPage: (v) => set({ activeFriendPage: v }),
   setSelectedPendingMenu: (v) => set({ selectedPendingMenu: v }),

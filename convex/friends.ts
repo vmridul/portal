@@ -40,6 +40,7 @@ export const getFriends = query({
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
           unread_count: f.unread_count || 0,
+          last_read_time: f.last_read_time,
         };
       })
     );
@@ -177,7 +178,7 @@ export const sendRequest = mutation({
       friend_username: receiver.username,
       friend_avatar: receiver.avatar,
       status: "pending",
-      updated_at: new Date().toISOString(),
+      updated_at: Date.now(),
     });
   },
 });
@@ -199,7 +200,7 @@ export const acceptRequest = mutation({
 
     await ctx.db.patch(args.requestId, {
       status: "accepted",
-      updated_at: new Date().toISOString(),
+      updated_at: Date.now(),
     });
 
     await ctx.db.insert("friends", {
@@ -208,7 +209,7 @@ export const acceptRequest = mutation({
       friend_username: sender?.username,
       friend_avatar: sender?.avatar,
       status: "accepted",
-      updated_at: new Date().toISOString(),
+      updated_at: Date.now(),
     });
   },
 });

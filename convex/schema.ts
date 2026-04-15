@@ -16,8 +16,9 @@ export default defineSchema({
     friend_avatar: v.optional(v.string()),
     status: v.union(v.literal("pending"), v.literal("accepted")),
     last_msg: v.optional(v.string()),
-    updated_at: v.optional(v.string()),
+    updated_at: v.optional(v.number()),
     unread_count: v.optional(v.number()),
+    last_read_time: v.optional(v.number()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_friend_id", ["friend_id"]),
@@ -35,6 +36,9 @@ export default defineSchema({
     avatar: v.optional(v.string()),
     role: v.optional(v.string()),
     unread_count: v.optional(v.number()),
+    last_msg_preview: v.optional(v.string()),
+    last_msg_time: v.optional(v.number()),
+    last_read_time: v.optional(v.number()),
   })
     .index("by_room_id", ["room_id"])
     .index("by_user_id", ["user_id"])

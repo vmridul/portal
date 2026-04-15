@@ -1,5 +1,12 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
+import { 
+  extractFriendId, 
+  findFriendshipPair, 
+  findMembership, 
+  toPreview, 
+  updateConversationMetadata 
+} from './lib/conversations';
 
 export const getMessagesPaginated = query({
   args: {
@@ -54,64 +61,27 @@ export const getMessagesPaginated = query({
   },
 });
 
-export const getUnreadCount = query({
-  args: { conversation_id: v.string() },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return 0;
-
-    const member = await ctx.db
-      .query('roomMembers')
-      .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
-      .filter((q) => q.eq(q.field('user_id'), identity.subject))
-      .first();
-    if (member) {
-      return member?.unread_count || 0;
-    }
-
-    const friendIdParts = args.conversation_id.replace('direct_', '').split('_');
-      const friendId = friendIdParts.find(id => id !== identity.subject) ?? '';
-
-      if (friendId) {
-        const friendship = await ctx.db
-          .query('friends')
-          .withIndex('by_user_id', (q) => q.eq('user_id', identity.subject))
-          .filter((q) => q.eq(q.field('friend_id'), friendId))
-          .first();
-        return friendship?.unread_count || 0;
-      }
-
-      return 0;
-  },
-});
-
 export const clearUnreadCount = mutation({
   args: { conversation_id: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error('Unauthenticated');
 
-    const member = await ctx.db
-      .query('roomMembers')
-      .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
-      .filter((q) => q.eq(q.field('user_id'), identity.subject))
-      .first();
+    const now = Date.now();
+
+    // Try room membership first (O(1) compound index)
+    const member = await findMembership(ctx.db, identity.subject, args.conversation_id);
     if (member) {
-      await ctx.db.patch(member._id, { unread_count: 0 });
+      await ctx.db.patch(member._id, { unread_count: 0, last_read_time: now });
       return;
     }
 
-    const friendIdParts = args.conversation_id.replace('direct_', '').split('_');
-    const friendId = friendIdParts.find(id => id !== identity.subject) ?? '';
-
+    // Try direct conversation
+    const friendId = extractFriendId(args.conversation_id, identity.subject);
     if (friendId) {
-      const friendship = await ctx.db
-        .query('friends')
-        .withIndex('by_user_id', (q) => q.eq('user_id', identity.subject))
-        .filter((q) => q.eq(q.field('friend_id'), friendId))
-        .first();
-      if (friendship) {
-        await ctx.db.patch(friendship._id, { unread_count: 0 });
+      const { mine } = await findFriendshipPair(ctx.db, identity.subject, friendId);
+      if (mine) {
+        await ctx.db.patch(mine._id, { unread_count: 0, last_read_time: now });
       }
     }
   },
@@ -176,23 +146,32 @@ export const sendMessage = mutation({
       file_name: args.file_name || null,
     });
 
+    const now = Date.now();
+    const preview = toPreview(args.msg, args.file_name);
+
+    await updateConversationMetadata(
+      ctx.db,
+      args.conversation_id,
+      args.conversation_type,
+      identity.subject,
+      preview,
+      now,
+      { incrementUnread: true }
+    );
+
     if (args.conversation_type === 'room') {
-      const [members, room] = await Promise.all([
-        ctx.db
-          .query('roomMembers')
-          .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
-          .collect(),
-        ctx.db
-          .query('rooms')
-          .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
-          .first(),
-      ]);
+      const room = await ctx.db
+        .query('rooms')
+        .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
+        .first();
+
+      const members = await ctx.db
+        .query('roomMembers')
+        .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
+        .collect();
 
       for (const member of members) {
         if (member.user_id !== identity.subject) {
-          await ctx.db.patch(member._id, {
-            unread_count: (member.unread_count || 0) + 1,
-          });
           await ctx.db.insert('chatNotifications', {
             user_id: member.user_id,
             message_id: insertedMessageId,
@@ -207,49 +186,20 @@ export const sendMessage = mutation({
         }
       }
     } else {
-      const friendIdParts = args.conversation_id.replace('direct_', '').split('_');
-      const friendId = friendIdParts.find(id => id !== identity.subject) ?? '';
-
-      if (!friendId) return;
-
-      const friendship1 = await ctx.db
-        .query('friends')
-        .withIndex('by_user_id', (q) => q.eq('user_id', identity.subject))
-        .filter((q) => q.eq(q.field('friend_id'), friendId))
-        .first();
-
-      const friendship2 = await ctx.db
-        .query('friends')
-        .withIndex('by_user_id', (q) => q.eq('user_id', friendId))
-        .filter((q) => q.eq(q.field('friend_id'), identity.subject))
-        .first();
-
-      if (friendship1) {
-        await ctx.db.patch(friendship1._id, {
-          last_msg: args.msg || 'Attachment',
-          updated_at: new Date().toISOString(),
+      const friendId = extractFriendId(args.conversation_id, identity.subject);
+      if (friendId) {
+        await ctx.db.insert('chatNotifications', {
+          user_id: friendId,
+          message_id: insertedMessageId,
+          source_type: 'direct',
+          source_id: identity.subject,
+          source_name: sender?.username || 'Unknown user',
+          sender_id: identity.subject,
+          sender_name: sender?.username || 'Unknown user',
+          sender_avatar: sender?.avatar || '',
+          message: notificationMessage,
         });
       }
-
-      if (friendship2) {
-        await ctx.db.patch(friendship2._id, {
-          last_msg: args.msg || 'Attachment',
-          updated_at: new Date().toISOString(),
-          unread_count: (friendship2.unread_count || 0) + 1,
-        });
-      }
-
-      await ctx.db.insert('chatNotifications', {
-        user_id: friendId!,
-        message_id: insertedMessageId,
-        source_type: 'direct',
-        source_id: identity.subject,
-        source_name: sender?.username || 'Unknown user',
-        sender_id: identity.subject,
-        sender_name: sender?.username || 'Unknown user',
-        sender_avatar: sender?.avatar || '',
-        message: notificationMessage,
-      });
     }
   },
 });
@@ -271,6 +221,26 @@ export const deleteMessage = mutation({
     if (msg.file_storage_id) {
       await ctx.storage.delete(msg.file_storage_id);
     }
+
+    // Update last_msg_preview to the previous message after deletion
+    const latestMsg = await ctx.db
+      .query('messages')
+      .withIndex('by_conversation', (q) => q.eq('conversation_id', msg.conversation_id))
+      .order('desc')
+      .first();
+
+    const preview = toPreview(latestMsg?.content ?? null, latestMsg?.file_name ?? null);
+    const timestamp = latestMsg?._creationTime || 0;
+
+    await updateConversationMetadata(
+      ctx.db,
+      msg.conversation_id,
+      msg.conversation_type,
+      msg.sender_id,
+      preview,
+      timestamp,
+      { incrementUnread: false }
+    );
   },
 });
 
