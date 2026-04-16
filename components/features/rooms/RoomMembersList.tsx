@@ -28,12 +28,12 @@ export const RoomMembersList = ({
         </div>
       </div>
 
-      <div className="overflow-y-auto h-full">
+      <div className="overflow-y-auto h-full mt-2">
         {members?.map((member) => {
           const isUserOnline = onlineUsers.has(member.user_id.toString());
           const isUserAway = awayUsers.has(member.user_id.toString());
           return (
-            <div className="text-sm ml-2 mt-2" key={member.user_id}>
+            <div className="text-sm ml-2 mb-3" key={member.user_id}>
               <div className="flex gap-4 items-center">
                 <div className="relative">
                   <Image
@@ -47,7 +47,7 @@ export const RoomMembersList = ({
                     width={30}
                     height={30}
                     unoptimized
-                    className="border w-8 h-8 border-theme-border rounded-[10px]"
+                    className="w-10 h-10 rounded-[12px]"
                   />
                   {isUserOnline ? (
                     <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />

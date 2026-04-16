@@ -16,10 +16,10 @@ export function getSenderAvatar(
 ): string {
   const isCurrentUser = messageSenderId === currentUserId;
   // Always prefer the "live" profile but fallback to the message's cached sender data
-  const avatar = isCurrentUser 
-    ? (currentUser?.avatar || messageSender?.avatar) 
+  const avatar = isCurrentUser
+    ? currentUser?.avatar || messageSender?.avatar
     : messageSender?.avatar;
-    
+
   return getAvatarUrl(avatar);
 }
 
@@ -28,6 +28,5 @@ export function getDisplayName(
   currentUserId: string | undefined,
   messageSender: { username?: string | null } | null | undefined,
 ): string {
-  if (messageSenderId === currentUserId) return "You";
   return messageSender?.username || "Unknown";
 }

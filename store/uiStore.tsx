@@ -26,6 +26,10 @@ type UIState = {
   activeFriendPage: UUID | null;
   selectedPendingMenu: boolean;
   menuOpen: boolean;
+  setPendingRequestMenu: (v: boolean) => void;
+  setActiveFriendPage: (v: UUID | null) => void;
+  setSelectedPendingMenu: (v: boolean) => void;
+  setMenuOpen: (v: boolean) => void;
 
   // Details Sidebar
   isSidebarOpen: boolean;
@@ -37,6 +41,15 @@ type UIState = {
   // Jump/Highlight System
   jumpedMessageId: string | null;
   setJumpedMessageId: (id: string | null) => void;
+
+  // Lightbox System
+  lightboxData: {
+    isOpen: boolean;
+    startIndex: number;
+    items: { file_url: string; type: string; file_name?: string }[];
+  } | null;
+  openLightbox: (items: { file_url: string; type: string; file_name?: string }[], index?: number) => void;
+  closeLightbox: () => void;
 };
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -74,4 +87,14 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   jumpedMessageId: null,
   setJumpedMessageId: (id) => set({ jumpedMessageId: id }),
+
+  lightboxData: null,
+  openLightbox: (items, index = 0) => set({ 
+    lightboxData: { 
+      isOpen: true, 
+      startIndex: index, 
+      items: items 
+    } 
+  }),
+  closeLightbox: () => set({ lightboxData: null }),
 }));

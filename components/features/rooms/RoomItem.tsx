@@ -68,18 +68,18 @@ export function RoomItem({
             <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">
               ID: {roomId}
             </span>
-            {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
-              <div
-                className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex ml-2"
-                style={{ backgroundColor: color, color: textColor }}
-              >
-                <span className="text-[8px] font-medium">
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </span>
-              </div>
-            )}
           </div>
         </div>
+        {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
+          <div
+            className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex"
+            style={{ backgroundColor: color, color: textColor }}
+          >
+            <span className="text-[8px] font-medium">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

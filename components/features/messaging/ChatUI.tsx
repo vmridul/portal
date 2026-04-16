@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
-import { X } from "lucide-react";
 import { MessageList } from "./MessageList";
 import { ChatInputBar } from "./ChatInputBar";
 import { useMessages } from "@/hooks/useMessages";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import type { User } from "@/lib/types";
+import { MediaLightbox } from "@/components/shared/MediaLightbox";
+import { useUIStore } from "@/store/uiStore";
 
 interface ChatUIProps {
   type: "room" | "direct";
@@ -24,7 +24,7 @@ export function ChatUI({
   textColor,
   onDeleteRequest,
 }: ChatUIProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const { openLightbox } = useUIStore();
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
 
   const { messages, isLoading: messagesLoading } = useMessages({
@@ -40,55 +40,31 @@ export function ChatUI({
     }
   }, [messages.length, room_id, clearUnreadCount]);
 
-  // Global keydown listeners
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPreviewImage(null);
-    };
-    window.addEventListener("keydown", handler);
-    return () => {
-      window.removeEventListener("keydown", handler);
-    };
-  }, []);
-
   const handleScrollToBottomReq = useCallback(() => {
     setShouldScrollToBottom(true);
     window.dispatchEvent(new CustomEvent("force-scroll-bottom"));
   }, []);
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const handlePreviewMedia = useCallback((url: string) => {
+    // Collect all media from current messages for the lightbox gallery
+    const mediaItems = messages
+      .filter(m => (m.type?.startsWith("image/") || m.type?.startsWith("video/")) && m.file_url)
+      .map(m => ({
+        file_url: m.file_url as string,
+        type: m.type as string,
+        file_name: m.file_name
+      }));
+
+    const index = mediaItems.findIndex(m => m.file_url === url);
+    openLightbox(mediaItems, index >= 0 ? index : 0);
+  }, [messages, openLightbox]);
 
   return (
     <div
-      className={`flex flex-col items-center relative overflow-hidden pt-4 ${type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
+      className={`flex flex-col items-center relative overflow-hidden ${type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
         }`}
     >
-      {previewImage && (
-        <div
-          className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-4"
-          onClick={() => setPreviewImage(null)}
-        >
-          <div className="relative w-full h-full max-w-[95vw] max-h-[95vh] flex items-center justify-center">
-            <Image
-              src={previewImage}
-              alt="preview"
-              fill
-              className="object-contain"
-              sizes="100vw"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-          <button
-            onClick={() => setPreviewImage(null)}
-            className={`absolute ${isMobile ? "opacity-0 pointer-events-none" : "opacity-100"
-              } top-6 right-6 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2`}
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
-      )}
+      <MediaLightbox />
 
       <MessageList
         messages={messages}
@@ -97,7 +73,7 @@ export function ChatUI({
         user={user}
         color={color}
         textColor={textColor}
-        onPreviewImage={setPreviewImage}
+        onPreviewMedia={handlePreviewMedia}
         onDeleteRequest={onDeleteRequest}
         shouldScrollToBottom={shouldScrollToBottom}
         setShouldScrollToBottom={setShouldScrollToBottom}

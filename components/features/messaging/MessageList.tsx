@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { MessageItem } from "./MessageItem";
 import { useMessageScroll } from "@/hooks/ui/useMessageScroll";
+import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { ArrowDown } from "lucide-react";
-import { formatDateFull } from "@/lib/utils/date";
 import type { User, MessageWithSender } from "@/lib/types";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 
@@ -15,7 +15,7 @@ interface MessageListProps {
   user: User | null;
   color: string;
   textColor: string;
-  onPreviewImage: (url: string) => void;
+  onPreviewMedia: (url: string) => void;
   onDeleteRequest: (id: string) => void;
   shouldScrollToBottom: boolean;
   setShouldScrollToBottom: (val: boolean) => void;
@@ -29,17 +29,25 @@ export const MessageList = React.memo(({
   user,
   color,
   textColor,
-  onPreviewImage,
+  onPreviewMedia,
   onDeleteRequest,
   shouldScrollToBottom,
   setShouldScrollToBottom,
   inputBarHeightOffset = 100
 }: MessageListProps) => {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const pinnedHeaderRef = useRef<HTMLDivElement>(null);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
-  const [currentDate, setCurrentDate] = useState<string | null>(
-    messages.length > 0 ? formatDateFull(messages[0]._creationTime) : null
-  );
+
+  const { pinnedDate } = usePinnedDate({
+    messages,
+    containerRef: scrollerRef,
+    viewportRef,
+    pinnedHeaderRef,
+    headerHeight: 40,
+  });
 
   const { scrollToBottom } = useMessageScroll({
     virtuosoRef,
@@ -51,16 +59,9 @@ export const MessageList = React.memo(({
     setShowScrollDown(!atBottom);
   }, []);
 
-  const onRangeChanged = useCallback(({ startIndex }: { startIndex: number }) => {
-    const message = messages[startIndex];
-    if (message) {
-      setCurrentDate(formatDateFull(message._creationTime));
-    }
-  }, [messages]);
-
   return (
     <>
-      {showScrollDown && !messages && !messagesLoading && (
+      {showScrollDown && messages.length > 0 && !messagesLoading && (
         <button
           onClick={() => scrollToBottom("smooth")}
           className={`absolute z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-80 backdrop-blur-md transition-all duration-200 ease-out`}
@@ -70,31 +71,37 @@ export const MessageList = React.memo(({
         </button>
       )}
 
-      {currentDate && (
-        <div className="absolute top-[5px] left-0 right-0 z-20 flex items-center justify-center pointer-events-none">
+      {pinnedDate && (
+        <div
+          ref={pinnedHeaderRef}
+          className="absolute top-[5px] left-0 right-0 z-20 flex items-center justify-center pointer-events-none"
+        >
           <span className="px-3 py-1 rounded-full bg-theme-base bg-opacity-80 backdrop-blur text-xs text-gray-400 border border-theme-border shadow-sm">
-            {currentDate}
+            {pinnedDate}
           </span>
         </div>
       )}
 
-      <div className="flex-1 w-full relative h-full">
+      <div ref={viewportRef} className="flex-1 w-full relative h-full">
         {messagesLoading ? null : (
           <Virtuoso<MessageWithSender>
             ref={virtuosoRef}
+            scrollerRef={(el) => {
+              if (el instanceof HTMLDivElement) {
+                (scrollerRef as any).current = el;
+              }
+            }}
             data={messages}
-            initialTopMostItemIndex={Math.max(0, messages.length - 1)}
             alignToBottom={true}
             followOutput={(isAtBottom: boolean) => (isAtBottom ? "auto" : false)}
             atBottomStateChange={handleScroll}
-            rangeChanged={onRangeChanged}
-            increaseViewportBy={200}
+            increaseViewportBy={800}
             className="flex-1 w-full h-full"
             style={{
               backgroundColor: "transparent",
             }}
             components={{
-              Header: () => <div className="h-2" />,
+              Header: () => <div className="h-0" />,
               Footer: () => (
                 <div className="flex flex-col gap-2 p-6">
                   {typingUsers.length > 0 && (
@@ -123,7 +130,7 @@ export const MessageList = React.memo(({
             itemContent={(index, message) => {
               const prevMessage = index > 0 ? messages[index - 1] : null;
               return (
-                <div className="px-4 md:px-10 py-1">
+                <div data-index={index} className="py-0">
                   <MessageItem
                     key={message._id}
                     message={message}
@@ -132,8 +139,7 @@ export const MessageList = React.memo(({
                     isCurrentUser={message.sender_id === user?.user_id}
                     color={color}
                     textColor={textColor}
-                    pinnedDate={currentDate}
-                    onPreviewImage={onPreviewImage}
+                    onPreviewMedia={onPreviewMedia}
                     onDeleteRequest={onDeleteRequest}
                   />
                 </div>

@@ -10,7 +10,7 @@ interface SidebarHeaderProps {
 export function SidebarHeader({ title, onClose }: SidebarHeaderProps) {
   return (
     <div className="flex items-center justify-between p-2 border-b border-theme-border">
-      <span className="text-sm text-gray-400 px-2">
+      <span className="text-sm text-gray-200 px-2">
         {title}
       </span>
       <button

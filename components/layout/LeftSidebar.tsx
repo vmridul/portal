@@ -72,9 +72,8 @@ export default function LeftSidebar({
           className={`z-[3000] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 left-2 text-white md:hidden`}
         >
           <Menu
-            className={`${
-              mobileMenu ? "rotate-180" : ""
-            } text-white ease-in-out duration-200 w-5 h-5`}
+            className={`${mobileMenu ? "rotate-180" : ""
+              } text-white ease-in-out duration-200 w-5 h-5`}
           />
         </button>
         <div

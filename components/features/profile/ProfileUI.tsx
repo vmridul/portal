@@ -27,7 +27,7 @@ export const ProfileUI = ({
             width={40}
             height={40}
             unoptimized
-            className="rounded-xl w-10 h-10 border border-theme-border"
+            className="rounded-[12px] w-10 h-10"
           />
 
           {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (

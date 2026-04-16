@@ -4,7 +4,8 @@ import { BadgeX, Bell, Hash } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useNotifications, useNotificationActions } from "@/hooks";
+import { useNotifications, useNotificationActions, useFriends } from "@/hooks";
+import { useRooms } from "@/contexts/roomContext";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { timeAgo } from "@/lib/utils/date";
 
@@ -24,6 +25,8 @@ export default function NotificationTab() {
     removeNotification: removeNotificationAction,
     clearAllNotifications: clearAllNotificationsAction,
   } = useNotificationActions();
+  const { rooms } = useRooms();
+  const { friends } = useFriends();
 
   const isLoading = isNotificationsLoading && notifications.length === 0;
 
@@ -87,11 +90,21 @@ export default function NotificationTab() {
               </p>{" "}
             </div>
           ) : (
-            notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="group relative rounded-[14px] bg-theme-surface p-3 shadow-sm"
-              >
+            notifications.map((notification) => {
+              const isUnread =
+                notification.sourceType === "direct"
+                  ? (friends.find((f) => f.friend.user_id === notification.sourceId)
+                      ?.unread_count ?? 0) > 0
+                  : (rooms.find((r) => r.room_id === notification.sourceId)
+                      ?.unread_count ?? 0) > 0;
+
+              return (
+                <div
+                  key={notification.id}
+                  className={`group relative rounded-[14px] p-3 shadow-sm ${
+                    isUnread ? "bg-theme-hover" : "bg-theme-base"
+                  }`}
+                >
                 <button
                   onClick={async (e) => {
                     e.stopPropagation();
@@ -107,19 +120,19 @@ export default function NotificationTab() {
                   <BadgeX className="h-4 w-4 text-white/50" />
                 </button>
                 <div className="group flex items-start gap-3">
-<button
+                  <button
                     onClick={() => {
-                      if (notification.sourceType ===  'direct') {
+                      if (notification.sourceType === 'direct') {
                         setActiveFriendPage(
                           notification.sourceId as ActiveFriendId,
                         );
-                        router.push(  '/portal');
+                        router.push('/portal');
                       } else {
                         router.push(`/portal/room/${notification.sourceId}`);
                       }
                       setMobileMenu(false);
                     }}
-                    className=  'flex min-w-0 flex-1 items-start gap-3 text-left'
+                    className='flex min-w-0 flex-1 items-start gap-3 text-left'
                   >
                     <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
                       {notification.senderAvatar ? (
@@ -161,9 +174,10 @@ export default function NotificationTab() {
                   </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            );
+          })
+        )}
+      </div>
       </div>
     </>
   );

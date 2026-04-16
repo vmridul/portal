@@ -54,7 +54,7 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
       case "media":
         return "Media Gallery";
       default:
-        return sidebarTab.charAt(0).toUpperCase() + sidebarTab.slice(1);
+        return sidebarTab;
     }
   };
 

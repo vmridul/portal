@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, X, FileText } from "lucide-react";
+import { useState } from "react";
+import { X, FileText } from "lucide-react";
 import Image from "next/image";
 import { useColor } from "@/contexts/colorContext";
-import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useMediaFiles } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
-import { useKeyBinding } from "@/hooks/ui/useKeyBinding";
+
+import { MediaLightbox } from "@/components/shared/MediaLightbox";
 
 export function MediaDialog() {
-  const { modalData, closeModal } = useUIStore();
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const { modalData, closeModal, openLightbox } = useUIStore();
   const [activeTab, setActiveTab] = useState<"images" | "videos" | "files">("images");
   const { color, textColor } = useColor();
 
@@ -23,49 +22,20 @@ export function MediaDialog() {
 
   const activeData = activeTab === "images" ? images : activeTab === "videos" ? videos : files;
 
-  useKeyBinding({
-    Escape: () => {
-      if (selectedIndex !== null) setSelectedIndex(null);
-      else closeModal();
-    },
-    ArrowLeft: () => {
-      if (selectedIndex !== null && selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
-    },
-    ArrowRight: () => {
-      if (selectedIndex !== null && activeData && selectedIndex < activeData.length - 1) {
-        setSelectedIndex(selectedIndex + 1);
-      }
-    }
-  });
+  const handlePreview = (index: number) => {
+    const mediaItems = activeData.map((m: any) => ({
+      file_url: m.file_url,
+      type: m.type,
+      file_name: m.file_name
+    }));
+    openLightbox(mediaItems, index);
+  };
 
   if (!room_id) return null;
 
   return (
     <>
-      {selectedIndex !== null && (
-        <div className="fixed inset-0 z-[10000] bg-black/95 transition-opacity flex items-center justify-center p-4 md:p-10 animate-in fade-in-0 duration-200" onClick={() => setSelectedIndex(null)}>
-          {activeData[selectedIndex]?.type?.startsWith("video/") ? (
-            <video src={activeData[selectedIndex].file_url!} controls autoPlay className="max-w-full max-h-full object-contain" onClick={(e) => e.stopPropagation()} />
-          ) : (
-            <div className="relative w-full h-full max-w-[95vw] max-h-[95vh] flex items-center justify-center pointer-events-none">
-              <Image src={activeData[selectedIndex].file_url!} alt="media preview" fill className="object-contain pointer-events-auto" sizes="100vw" onClick={(e) => e.stopPropagation()} />
-            </div>
-          )}
-          <button onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }} className="absolute top-6 right-6 text-white/60 hover:text-white/80 bg-black/50 rounded-full p-2">
-            <X className="w-6 h-6" />
-          </button>
-          {selectedIndex > 0 && (
-            <button onClick={(e) => { e.stopPropagation(); setSelectedIndex(selectedIndex - 1); }} className="absolute left-6 hover:bg-theme-hover text-white p-2 rounded-[8px]">
-              <ArrowLeft className="w-6 h-6" />
-            </button>
-          )}
-          {selectedIndex < activeData.length - 1 && (
-            <button onClick={(e) => { e.stopPropagation(); setSelectedIndex(selectedIndex + 1); }} className="absolute right-6 hover:bg-theme-hover text-white p-2 rounded-[8px]">
-              <ArrowRight className="w-6 h-6" />
-            </button>
-          )}
-        </div>
-      )}
+      <MediaLightbox />
 
       <div className="bg-theme-surface border border-theme-border w-full max-w-4xl h-[80vh] rounded-[8px] p-6 flex flex-col items-center animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
         <div className="flex flex-row justify-between w-full items-start md:items-center mb-6 gap-4">
@@ -96,7 +66,7 @@ export function MediaDialog() {
                   <div className="flex flex-col overflow-hidden"><span className="text-sm text-white/90 font-medium truncate">{media.file_name || "Document"}</span><span className="text-xs text-white/40">Click to download</span></div>
                 </a>
               ) : (
-                <div key={media._id} onClick={() => setSelectedIndex(index)} className="relative group cursor-pointer bg-theme-base rounded-xl overflow-hidden border-white/5 border hover:border-opacity-100 border-opacity-10 transition-all aspect-square h-full w-full">
+                <div key={media._id} onClick={() => handlePreview(index)} className="relative group cursor-pointer bg-theme-base rounded-xl overflow-hidden border-white/5 border hover:border-opacity-100 border-opacity-10 transition-all aspect-square h-full w-full">
                   {media.type?.startsWith("video/") ? <video src={media.file_url!} preload="metadata" className="w-full h-full object-cover" /> : <Image src={media.file_url!} alt="media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover opacity-85 group-hover:opacity-100 transition-opacity" />}
                   {media.type?.startsWith("video/") && <div className="absolute inset-0 flex items-center justify-center bg-black/20"><div className="w-8 h-8 rounded-full bg-black/50 flex items-center"><div className="w-0 h-0 border-t-4 border-t-transparent border-l-6 border-l-white border-b-4 border-b-transparent ml-1" /></div></div>}
                 </div>
