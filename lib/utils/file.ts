@@ -7,7 +7,6 @@ export interface FileValidationResult {
 
 export function validateFile(file: File): FileValidationResult {
   const maxSize = APP_CONFIG.maxFileSizeBytes;
-  const allowedTypes = APP_CONFIG.allowedFileTypes as readonly string[];
 
   if (file.size > maxSize) {
     return {

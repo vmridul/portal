@@ -1,29 +1,37 @@
-import { useEffect, useRef, useCallback, RefObject } from "react";
+import { useEffect, useCallback, RefObject } from "react";
 import type { MessageWithSender } from "@/lib/types";
 import { VirtuosoHandle } from "react-virtuoso";
 
 interface UseMessageScrollProps {
   virtuosoRef: RefObject<VirtuosoHandle | null>;
+  scrollerRef: RefObject<HTMLDivElement | null>;
   messages: MessageWithSender[];
-  typingCount: number;
 }
 
 export function useMessageScroll({
   virtuosoRef,
+  scrollerRef,
   messages,
-  typingCount,
 }: UseMessageScrollProps) {
-  const prevTypingCount = useRef(0);
-
   const scrollToBottom = useCallback(
     (behavior: "smooth" | "auto" = "smooth") => {
-      virtuosoRef.current?.scrollToIndex({
-        index: messages.length - 1,
-        behavior,
-        align: "end",
-      });
+      if (messages.length === 0) return;
+      
+      if (scrollerRef.current) {
+        scrollerRef.current.scrollTo({
+          top: scrollerRef.current.scrollHeight,
+          behavior,
+        });
+      } else {
+        // Fallback to index if scrollerRef not available
+        virtuosoRef.current?.scrollToIndex({
+          index: messages.length - 1,
+          behavior,
+          align: "end",
+        });
+      }
     },
-    [virtuosoRef, messages.length],
+    [virtuosoRef, scrollerRef, messages.length],
   );
 
   // Handle manual scroll bottom request (Force Scroll)
@@ -47,24 +55,11 @@ export function useMessageScroll({
           behavior: "smooth",
           align: "center"
         });
-
-        // The highlight logic now depends on the component rendering the item.
-        // We'll dispatch a local event or rely on standard highlight logic being stable now.
-        // For virtualization, we can't reliably query the DOM here since it might not be rendered yet.
-        // The highlight will be handled by the MessageItem itself based on the same detail.id.
       }
     };
     window.addEventListener("jump-to-msg", handleJump);
     return () => window.removeEventListener("jump-to-msg", handleJump);
   }, [messages, virtuosoRef]);
-
-  // Auto-scroll on typing start
-  useEffect(() => {
-    if (typingCount > 0 && prevTypingCount.current === 0) {
-      scrollToBottom();
-    }
-    prevTypingCount.current = typingCount;
-  }, [typingCount, scrollToBottom]);
 
   return { scrollToBottom };
 }

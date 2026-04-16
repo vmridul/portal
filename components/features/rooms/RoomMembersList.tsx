@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { User as UserIcon, Moon } from "lucide-react";
-import { User } from "@/store/useUserStore";
+import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 
 interface RoomMembersListProps {

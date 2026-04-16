@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 interface MessageItemProps {
   message: MessageWithSender;
   prevMessage: MessageWithSender | null;
+  nextMessage: MessageWithSender | null;
   user: User | null;
   isCurrentUser: boolean;
   color: string;
@@ -23,6 +24,7 @@ interface MessageItemProps {
 export const MessageItem = React.memo(({
   message,
   prevMessage,
+  nextMessage,
   user,
   isCurrentUser,
   color,
@@ -72,7 +74,7 @@ export const MessageItem = React.memo(({
           <div
             data-date-header="true"
             data-date-string={messageDate}
-            className="flex items-center justify-center my-4"
+            className="flex items-center justify-center py-4"
           >
             <span className="px-3 py-1 rounded-full bg-theme-base text-xs text-gray-400 border border-theme-border">
               {messageDate}
@@ -81,7 +83,7 @@ export const MessageItem = React.memo(({
         )}
         <div
           data-msg-id={message._id}
-          className={`px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center my-2 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
+          className={`px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-2 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
         >
           <span className="font-medium">{message.sender?.username}</span>
           <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
@@ -104,7 +106,7 @@ export const MessageItem = React.memo(({
           <div
             data-date-header="true"
             data-date-string={messageDate}
-            className="flex items-center justify-center my-4"
+            className="flex items-center justify-center py-4"
           >
             <span className="px-3 py-1 rounded-full bg-theme-surface text-xs text-gray-400 border border-theme-border">
               {messageDate}
@@ -115,7 +117,7 @@ export const MessageItem = React.memo(({
       <div className={`px-4 md:px-10 hover:bg-theme-border group/row transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""}`}>
         <div
           data-msg-id={message._id}
-          className={`flex gap-3 ${showMeta ? "mt-3" : "mt-[1px]"} flex-row`}
+          className={`flex gap-2 ${showMeta ? "mt-3" : "pt-[0]"} flex-row`}
         >
           {showMeta ? (
             <Image
@@ -179,14 +181,17 @@ export const MessageItem = React.memo(({
 
               {isImage && message.file_url && (
                 <div className="flex flex-col gap-1">
-                  <div className="relative min-h-[150px] min-w-[200px] rounded-[8px] overflow-hidden">
+                  <div className="relative group/img max-w-[300px] md:max-w-[500px] rounded-[12px] overflow-hidden">
                     <Image
                       src={message.file_url}
                       alt="uploaded"
                       width={500}
                       height={500}
-                      className="w-auto h-auto max-w-[200px] max-h-[200px] md:max-w-[500px] md:max-h-[500px] cursor-pointer"
+                      className="w-full h-auto object-contain cursor-pointer"
                       onClick={() => onPreviewMedia(message.file_url as string)}
+                      onLoadingComplete={(img) => {
+                        // Image loaded
+                      }}
                     />
                   </div>
                 </div>
@@ -235,7 +240,7 @@ export const MessageItem = React.memo(({
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 });
 

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Moon } from "lucide-react";
 import { LogOut } from "lucide-react";
-import { User } from "@/store/useUserStore";
+import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 

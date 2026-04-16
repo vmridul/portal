@@ -46,9 +46,9 @@ type UIState = {
   lightboxData: {
     isOpen: boolean;
     startIndex: number;
-    items: { file_url: string; type: string; file_name?: string }[];
+    items: { file_url: string; type: string; file_name?: string | null }[];
   } | null;
-  openLightbox: (items: { file_url: string; type: string; file_name?: string }[], index?: number) => void;
+  openLightbox: (items: { file_url: string; type: string; file_name?: string | null }[], index?: number) => void;
   closeLightbox: () => void;
 };
 

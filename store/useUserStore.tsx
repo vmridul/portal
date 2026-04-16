@@ -1,14 +1,6 @@
 import { create } from "zustand";
+import type { User } from "@/lib/types";
 
-
-export interface User {
-  user_id: string;
-  username: string;
-  avatar?: string;
-  chatColor?: string;
-  email?: string;
-  _creationTime: number;
-}
 
 interface UserState {
   user: User | null;

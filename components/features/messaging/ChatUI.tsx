@@ -25,7 +25,7 @@ export function ChatUI({
   onDeleteRequest,
 }: ChatUIProps) {
   const { openLightbox } = useUIStore();
-  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
 
   const { messages, isLoading: messagesLoading } = useMessages({
     conversationId: room_id,

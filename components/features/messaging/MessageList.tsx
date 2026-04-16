@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MessageItem } from "./MessageItem";
 import { useMessageScroll } from "@/hooks/ui/useMessageScroll";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
@@ -49,15 +49,57 @@ export const MessageList = React.memo(({
     headerHeight: 40,
   });
 
+  const lastLength = useRef(messages.length);
+  const wasAtBottom = useRef(true);
+
   const { scrollToBottom } = useMessageScroll({
     virtuosoRef,
+    scrollerRef,
     messages,
-    typingCount: typingUsers.length,
   });
 
   const handleScroll = useCallback((atBottom: boolean) => {
+    wasAtBottom.current = atBottom;
     setShowScrollDown(!atBottom);
   }, []);
+
+  // Handle message updates (new messages or deletions)
+  useEffect(() => {
+    const isNewMessage = messages.length > lastLength.current;
+    const isDeletion = messages.length < lastLength.current;
+
+    // If it's a new message and we were at bottom, or we explicitly requested a scroll,
+    // ensure we scroll to the new bottom.
+    if ((isNewMessage && wasAtBottom.current) || shouldScrollToBottom) {
+      if (messages.length === 0) {
+        if (shouldScrollToBottom) setShouldScrollToBottom(false);
+        return;
+      }
+      // Use a small delay to ensure the DOM has updated and Virtuoso has processed the new data
+      const timeout = setTimeout(() => {
+        if (scrollerRef.current) {
+          scrollerRef.current.scrollTo({
+            top: scrollerRef.current.scrollHeight,
+            behavior: "smooth",
+          });
+        }
+        if (shouldScrollToBottom) setShouldScrollToBottom(false);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+
+    // For deletions, if we were at the bottom, stay at the bottom
+    if (isDeletion && wasAtBottom.current) {
+      if (scrollerRef.current) {
+        scrollerRef.current.scrollTo({
+          top: scrollerRef.current.scrollHeight,
+          behavior: "auto", // Instant for deletions
+        });
+      }
+    }
+
+    lastLength.current = messages.length;
+  }, [messages, shouldScrollToBottom, setShouldScrollToBottom]);
 
   return (
     <>
@@ -93,7 +135,9 @@ export const MessageList = React.memo(({
             }}
             data={messages}
             alignToBottom={true}
-            followOutput={(isAtBottom: boolean) => (isAtBottom ? "auto" : false)}
+            initialTopMostItemIndex={messages.length > 0 ? messages.length - 1 : 0}
+            // Increase threshold to be more lenient with footer/typing shifts
+            atBottomThreshold={150}
             atBottomStateChange={handleScroll}
             increaseViewportBy={800}
             className="flex-1 w-full h-full"
@@ -105,7 +149,7 @@ export const MessageList = React.memo(({
               Footer: () => (
                 <div className="flex flex-col gap-2 p-6">
                   {typingUsers.length > 0 && (
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 pt-2">
                       <div className="w-8 h-8 rounded-[8px] border border-[#2a2a2a] flex items-center justify-center bg-theme-surface">
                         <span className="flex gap-1">
                           <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -123,18 +167,20 @@ export const MessageList = React.memo(({
                       </span>
                     </div>
                   )}
-                  <div className="h-20" /> {/* Bottom padding */}
+                  <div className="h-16" /> {/* Bottom padding */}
                 </div>
               ),
             }}
             itemContent={(index, message) => {
               const prevMessage = index > 0 ? messages[index - 1] : null;
+              const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
               return (
                 <div data-index={index} className="py-0">
                   <MessageItem
                     key={message._id}
                     message={message}
                     prevMessage={prevMessage}
+                    nextMessage={nextMessage}
                     user={user}
                     isCurrentUser={message.sender_id === user?.user_id}
                     color={color}

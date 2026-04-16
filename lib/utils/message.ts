@@ -1,5 +1,5 @@
 import type { MessageWithSender } from "@/lib/types";
-import { isSameDay } from "./date";
+import { isSameDay, isSameMinute } from "./date";
 
 export function shouldShowDateDivider(
   currentMsg: MessageWithSender | undefined,
@@ -16,10 +16,7 @@ export function shouldShowMeta(
   if (!previousMsg) return true;
   if (currentMsg?.sender_id !== previousMsg.sender_id) return true;
 
-  const currentT = new Date(currentMsg._creationTime);
-  const prevT = new Date(previousMsg._creationTime);
-  const diffInMins = (currentT.getTime() - prevT.getTime()) / 60000;
-  return diffInMins > 10;
+  return !isSameMinute(currentMsg?._creationTime, previousMsg._creationTime);
 }
 
 export function isImageMessage(type: string | null | undefined): boolean {

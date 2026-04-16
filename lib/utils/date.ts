@@ -97,3 +97,19 @@ export function isSameDay(
     date1.getDate() === date2.getDate()
   );
 }
+
+export function isSameMinute(
+  timestamp1: Date | string | number | undefined,
+  timestamp2: Date | string | number | undefined,
+): boolean {
+  if (!timestamp1 || !timestamp2) return false;
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate() &&
+    date1.getHours() === date2.getHours() &&
+    date1.getMinutes() === date2.getMinutes()
+  );
+}

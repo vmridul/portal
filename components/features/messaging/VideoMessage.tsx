@@ -21,25 +21,25 @@ export const VideoMessage = ({
 
     return (
         <div
-            className="relative w-full max-w-[200px] md:max-w-[500px] rounded-[8px] mb-2 overflow-hidden cursor-pointer group/video bg-theme-surface min-h-[150px]"
+            className="relative w-full aspect-video md:max-w-[500px] max-w-[300px] rounded-[12px] overflow-hidden cursor-pointer group/video bg-theme-surface border border-white/5"
             onClick={onPreview}
         >
             {isLoading && (
-                <Skeleton className="absolute inset-0 z-20" />
+                <Skeleton className="absolute inset-0 z-20 bg-theme-hover animate-pulse" />
             )}
 
             <video
                 ref={videoRef}
                 src={src}
                 preload="metadata"
-                className={`w-full h-auto block transition-opacity duration-300 ${isLoading ? "opacity-0" : "opacity-100"}`}
+                className={`w-full h-full object-cover block transition-opacity duration-500 ${isLoading ? "opacity-0" : "opacity-100"}`}
                 onLoadedData={handleLoadedData}
             />
 
             {!isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-[16px] bg-theme-border flex items-center justify-center">
-                        <Play className="w-6 h-6 text-white" fill="currentColor" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover/video:bg-black/20 transition-colors">
+                    <div className="w-12 h-12 rounded-full bg-theme-base/80 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-xl transform group-hover/video:scale-110 transition-transform">
+                        <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
                     </div>
                 </div>
             )}
