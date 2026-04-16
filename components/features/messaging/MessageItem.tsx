@@ -112,10 +112,10 @@ export const MessageItem = React.memo(({
           </div>
         </div>
       )}
-      <div className="px-4 md:px-10 hover:bg-theme-border group/row">
+      <div className={`px-4 md:px-10 hover:bg-theme-border group/row transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""}`}>
         <div
           data-msg-id={message._id}
-          className={`flex gap-3 rounded-[6px] transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""} ${showMeta ? "mt-3" : "mt-[1px]"} flex-row`}
+          className={`flex gap-3 ${showMeta ? "mt-3" : "mt-[1px]"} flex-row`}
         >
           {showMeta ? (
             <Image
@@ -140,7 +140,7 @@ export const MessageItem = React.memo(({
           >
             {showMeta && (
               <div
-                className="flex items-center gap-2 px-1 flex-row"
+                className="flex items-center gap-1 px-1 flex-row"
               >
                 <span
                   className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left"
@@ -151,7 +151,7 @@ export const MessageItem = React.memo(({
                     message.sender,
                   )}
                 </span>
-                <span className="text-xs truncate min-w-0 max-w-[150px] text-gray-600">
+                <span className="text-[10px] truncate min-w-0 max-w-[150px] text-gray-500">
                   {formatTimeOnly(message._creationTime)}
                 </span>
               </div>
@@ -163,7 +163,7 @@ export const MessageItem = React.memo(({
                   isImage || isVideo
                     ? undefined : textColor
               }}
-              className={`text-sm relative group ${isFile ? "px-0.5 py-0.5" : !showMeta ? "px-1 py-0" : "px-1 py-1"} ${!isVideo ? "md:hover:scale-100 hover:scale-105" : ""} transition-[transform,background-color] duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white"}`}
+              className={`text-sm relative group ${isFile ? "px-0.5 py-0.5" : !showMeta ? "px-1 py-0" : "px-1 py-1"} transition-[transform,background-color] duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white"}`}
             >
               {isCurrentUser && (
                 <button
@@ -171,7 +171,7 @@ export const MessageItem = React.memo(({
                     e.stopPropagation();
                     onDeleteRequest(message._id as string);
                   }}
-                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center duration-400 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm border border-white/5 hover:scale-110"
+                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center duration-400 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm border border-white/5"
                 >
                   <BadgeX className="w-4 h-4 text-white/50" />
                 </button>
