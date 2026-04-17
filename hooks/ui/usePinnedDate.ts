@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { formatDateFull } from "@/lib/utils/date";
 import type { MessageWithSender } from "@/lib/types";
 
@@ -17,7 +17,6 @@ export function usePinnedDate({
   pinnedHeaderRef,
   headerHeight = 44,
 }: UsePinnedDateProps) {
-  const [pinnedDate, setPinnedDate] = useState<string | null>(null);
   const lastActiveDateRef = useRef<string | null>(null);
   const rafRef = useRef<number | null>(null);
 
@@ -57,28 +56,28 @@ export function usePinnedDate({
         const relativeTop = activeItemRect.top - viewportTop;
 
         // If the first message is still mostly visible at the top, we fade out the sticky header
-        // This avoids having two identical date bubbles visible at once
         if (relativeTop > -20) {
-           opacity = Math.max(0, Math.min(1, -relativeTop / 20)); // Smooth fade
+           opacity = Math.max(0, Math.min(1, -relativeTop / 20));
            if (relativeTop >= 0) isVisible = false;
         }
       }
 
+      let newDate: string | null = null;
       if (isVisible && activeIndex !== -1 && messages[activeIndex]) {
-        const newDate = formatDateFull(messages[activeIndex]._creationTime);
-        if (newDate !== lastActiveDateRef.current) {
-          lastActiveDateRef.current = newDate;
-          setPinnedDate(newDate);
-        }
-      } else {
-        if (lastActiveDateRef.current !== null) {
-          setPinnedDate(null);
-          lastActiveDateRef.current = null;
-        }
+        newDate = formatDateFull(messages[activeIndex]._creationTime);
       }
 
-      // 3. Update DOM styles directly for zero-lag performance
+      // 3. Update DOM directly for zero-lag performance
       if (pinnedHeader) {
+        // Update text content only when changed
+        if (newDate !== lastActiveDateRef.current) {
+          lastActiveDateRef.current = newDate;
+          const textElement = pinnedHeader.querySelector("span");
+          if (textElement) {
+             textElement.textContent = newDate || "";
+          }
+        }
+
         // Calculate the push effect from upcoming headers
         const headers = scroller.querySelectorAll('[data-date-header="true"]');
         let newTranslateY = 0;
@@ -96,8 +95,7 @@ export function usePinnedDate({
 
         pinnedHeader.style.transform = `translateY(${newTranslateY}px)`;
         pinnedHeader.style.opacity = opacity.toString();
-        // Skip updating display if not necessary, but ensure it's visible if needed
-        pinnedHeader.style.visibility = isVisible ? "visible" : "hidden";
+        pinnedHeader.style.visibility = (isVisible && newDate) ? "visible" : "hidden";
       }
     });
   }, [containerRef, viewportRef, pinnedHeaderRef, headerHeight, messages]);
@@ -115,7 +113,5 @@ export function usePinnedDate({
     };
   }, [containerRef, handleScroll]);
 
-  return {
-    pinnedDate,
-  };
+  return {};
 }

@@ -45,7 +45,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
       </button>
 
       <div
-        className={`bg-theme-base px-2 h-screen border-theme-border border-l
+        className={`bg-theme-surface px-2 h-screen border-theme-border border-l
     text-white
     select-none
     transition-transform duration-300 ease-in-out

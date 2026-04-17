@@ -27,7 +27,7 @@ export function ChatUI({
   const { openLightbox } = useUIStore();
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
 
-  const { messages, isLoading: messagesLoading } = useMessages({
+  const { messages, status, loadMore, isLoading: messagesLoading } = useMessages({
     conversationId: room_id,
   });
   const { typingUsers } = useTypingIndicators(room_id);
@@ -42,7 +42,6 @@ export function ChatUI({
 
   const handleScrollToBottomReq = useCallback(() => {
     setShouldScrollToBottom(true);
-    window.dispatchEvent(new CustomEvent("force-scroll-bottom"));
   }, []);
 
   const handlePreviewMedia = useCallback((url: string) => {
@@ -69,6 +68,8 @@ export function ChatUI({
       <MessageList
         messages={messages}
         messagesLoading={messagesLoading}
+        status={status}
+        loadMore={loadMore}
         typingUsers={typingUsers}
         user={user}
         color={color}

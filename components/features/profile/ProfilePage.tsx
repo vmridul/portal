@@ -12,7 +12,7 @@ export default function ProfilePage() {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex justify-between w-full md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 h-12">
+      <div className="flex justify-between w-full md:px-2 px-7 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
         <div className="ml-3 flex items-center w-full justify-between text-white/90">
           <div className="flex gap-2 items-center">
             <User className="w-4 h-4" />
@@ -29,7 +29,7 @@ export default function ProfilePage() {
 
       <div className="flex md:flex-row flex-col">
         {/* Sidebar */}
-        <div className="md:flex hidden w-[22%] h-screen bg-theme-base border-r border-theme-border p-3 flex-col gap-2">
+        <div className="md:flex hidden w-[22%] h-screen bg-theme-surface border-r border-theme-border p-3 flex-col gap-2">
           <button
             onClick={() => setCurrentTab("Info")}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}

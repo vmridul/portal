@@ -1,40 +1,42 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { usePaginatedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { MessageWithSender } from "@/lib/types";
+import { useMemo } from "react";
 
 export interface UseMessagesOptions {
   conversationId: string;
-  cursor?: number;
   limit?: number;
 }
 
 export interface UseMessagesResult {
   messages: MessageWithSender[];
-  nextCursor: number | null;
-  hasMore: boolean;
+  status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
+  loadMore: () => void;
   isLoading: boolean;
 }
 
 export function useMessages({ 
   conversationId, 
-  cursor, 
   limit = 50 
 }: UseMessagesOptions): UseMessagesResult {
-  const result = useQuery(
-    api.messages.getMessagesPaginated, 
-    {
-      conversation_id: conversationId,
-      cursor,
-      limit,
-    }
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.messages.getMessagesPaginated,
+    { conversation_id: conversationId },
+    { initialNumItems: limit }
   );
 
+  const messages = useMemo(() => {
+    // Reverse results because backend returns newest first (desc),
+    // but UI expects chronological order (oldest first).
+    return [...results].reverse() as MessageWithSender[];
+  }, [results]);
+
   return {
-    messages: result?.messages ?? [],
-    nextCursor: result?.nextCursor ?? null,
-    hasMore: result?.hasMore ?? false,
-    isLoading: result === undefined,
+    messages,
+    status,
+    loadMore: () => loadMore(limit),
+    isLoading: status === "LoadingFirstPage",
   };
 }

@@ -1,5 +1,6 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
+import { paginationOptsValidator } from 'convex/server';
 import { 
   extractFriendId, 
   findFriendshipPair, 
@@ -11,31 +12,19 @@ import {
 export const getMessagesPaginated = query({
   args: {
     conversation_id: v.string(),
-    cursor: v.optional(v.number()),
-    limit: v.optional(v.number()),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const limit = args.limit ?? 50;
-    const cursor = args.cursor;
-
-    let q = ctx.db
+    const messagesPage = await ctx.db
       .query('messages')
       .withIndex('by_conversation', (q) =>
         q.eq('conversation_id', args.conversation_id)
       )
-      .order('desc');
-
-    if (cursor) {
-      q = q.filter((q) => q.lt(q.field('_creationTime'), cursor));
-    }
-
-    const rawMessages = await q.take(limit + 1);
-    const hasMore = rawMessages.length > limit;
-    const messages = hasMore ? rawMessages.slice(0, -1).reverse() : rawMessages.reverse();
-    const nextCursor = hasMore ? rawMessages[limit - 1]._creationTime : null;
+      .order('desc')
+      .paginate(args.paginationOpts);
 
     const result = await Promise.all(
-      messages.map(async (msg) => {
+      messagesPage.page.map(async (msg) => {
         let finalUrl = msg.file_url;
         if (msg.file_storage_id) {
           finalUrl = await ctx.storage.getUrl(msg.file_storage_id);
@@ -54,9 +43,8 @@ export const getMessagesPaginated = query({
     );
 
     return {
-      messages: result,
-      nextCursor,
-      hasMore,
+      ...messagesPage,
+      page: result,
     };
   },
 });

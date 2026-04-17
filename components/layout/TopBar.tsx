@@ -53,7 +53,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
   return (
     <div className="h-12">
-      <div className="z-[2000] relative text-white/60 text-sm px-10 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-base h-12 border-theme-border border-b">
+      <div className="z-[2000] relative text-white/60 text-sm px-10 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
           <div
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -78,7 +78,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }
             }}
             onClick={(e) => e.stopPropagation()}
-            className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-surface overflow-hidden"
+            className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden"
           >
             <Search className="flex-none w-4 h-4 text-gray-400" />
             <input

@@ -21,17 +21,42 @@ export default function PortalShellSkeleton({
         </div>
       </div>
 
-      <div className="flex flex-1">
+      {/* <div className="flex flex-1">
         <div className="flex flex-1 flex-col">
           <div className="flex items-center justify-between border-b border-theme-border bg-theme-base px-4 py-1 md:py-3">
             <Skeleton className="h-6 w-28 rounded-[6px]" />
             <Skeleton className="h-7 w-10 rounded-[8px]" />
           </div>
           <div className="flex-1 p-3">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
-              <Skeleton className="h-[70px] rounded-[8px]" />
-              <Skeleton className="h-[70px] rounded-[8px]" />
-              <Skeleton className="h-[70px] rounded-[8px]" />
+            <div className="flex flex-col gap-5">
+              <div className="flex gap-3 items-center">
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex flex-col gap-2 w-full">
+                  <Skeleton className="h-4 w-1/3 rounded-[4px]" />
+                  <Skeleton className="h-3 w-1/2 rounded-[4px]" />
+                </div>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex flex-col gap-2 w-full">
+                  <Skeleton className="h-4 w-1/4 rounded-[4px]" />
+                  <Skeleton className="h-3 w-2/3 rounded-[4px]" />
+                </div>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex flex-col gap-2 w-full">
+                  <Skeleton className="h-4 w-1/2 rounded-[4px]" />
+                  <Skeleton className="h-3 w-1/3 rounded-[4px]" />
+                </div>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                <div className="flex flex-col gap-2 w-full">
+                  <Skeleton className="h-4 w-1/3 rounded-[4px]" />
+                  <Skeleton className="h-3 w-1/4 rounded-[4px]" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -49,7 +74,7 @@ export default function PortalShellSkeleton({
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

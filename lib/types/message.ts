@@ -47,9 +47,3 @@ export interface MessageSearchResult {
   sender?: User;
   _creationTime: number;
 }
-
-export interface CursorPaginationResult<T> {
-  messages: T[];
-  nextCursor: number | null;
-  hasMore: boolean;
-}

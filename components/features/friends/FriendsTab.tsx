@@ -131,9 +131,8 @@ export default function FriendsTab() {
                   e.stopPropagation();
                   toggleSidebar("media");
                 }}
-                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${
-                  isSidebarOpen && sidebarTab === "media" ? "bg-theme-base" : "hover:bg-theme-base"
-                }`}
+                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-base" : "hover:bg-theme-base"
+                  }`}
               >
                 <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/70"}`} />
               </div>
@@ -142,9 +141,8 @@ export default function FriendsTab() {
                   e.stopPropagation();
                   toggleSidebar("info");
                 }}
-                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${
-                  isSidebarOpen && sidebarTab === "info" ? "bg-theme-base" : "hover:bg-theme-base"
-                }`}
+                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-base" : "hover:bg-theme-base"
+                  }`}
               >
                 <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-white/70"}`} />
               </div>
@@ -157,7 +155,7 @@ export default function FriendsTab() {
             </div>
           </div>
         ) : (
-          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-base border-b border-theme-border py-1 h-12">
+          <div className="flex justify-between md:px-2 px-7 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
             <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
               <Users className="w-4 h-4" />
               <h1 className="text-md">Friends</h1>
@@ -199,9 +197,9 @@ export default function FriendsTab() {
           </div>
           {activeFriendPage && isSidebarOpen && (
             <div className="flex-none transition-all duration-300 ease-in-out">
-              <DetailsSidebar 
-                id={getDirectConversationId(activeFriendPage, user?.user_id || "")} 
-                type="direct" 
+              <DetailsSidebar
+                id={getDirectConversationId(activeFriendPage, user?.user_id || "")}
+                type="direct"
               />
             </div>
           )}

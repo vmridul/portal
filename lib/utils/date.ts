@@ -1,23 +1,21 @@
+const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthsFull = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 export function formatToIST(
   timestamp: Date | string | number | undefined,
 ): string {
   if (!timestamp) return "";
   const date = new Date(timestamp);
-  const time = date.toLocaleTimeString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const d = date.getDate();
+  const m = monthsShort[date.getMonth()];
+  const y = date.getFullYear();
+  
+  let h = date.getHours();
+  const min = date.getMinutes().toString().padStart(2, "0");
+  const ampm = h >= 12 ? "pm" : "am";
+  h = h % 12 || 12;
 
-  const dateStr = date.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-
-  return `${dateStr}, ${time}`;
+  return `${d} ${m} ${y}, ${h}:${min} ${ampm}`;
 }
 
 export function timeAgo(timestamp: number | string | Date | undefined): string {
@@ -54,7 +52,7 @@ export function isYesterday(date: Date | number): boolean {
 
 export function formatMessageDate(timestamp: number): string {
   if (isToday(timestamp)) {
-    return formatToIST(timestamp).split(", ")[1] || "";
+    return formatTimeOnly(timestamp);
   }
   if (isYesterday(timestamp)) {
     return "Yesterday";
@@ -65,23 +63,20 @@ export function formatMessageDate(timestamp: number): string {
 export function formatDateFull(timestamp: Date | string | number | undefined): string {
   if (!timestamp) return "";
   const date = new Date(timestamp);
-  return date.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const d = date.getDate();
+  const m = monthsFull[date.getMonth()];
+  const y = date.getFullYear();
+  return `${d} ${m} ${y}`;
 }
 
 export function formatTimeOnly(timestamp: Date | string | number | undefined): string {
   if (!timestamp) return "";
   const date = new Date(timestamp);
-  return date.toLocaleTimeString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  let h = date.getHours();
+  const m = date.getMinutes().toString().padStart(2, "0");
+  const ampm = h >= 12 ? "pm" : "am";
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
 }
 
 export function isSameDay(

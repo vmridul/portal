@@ -46,9 +46,9 @@ export default function NotificationTab() {
     md:translate-y-0 translate-y-12
     ${mobileMenu ? "translate-x-0" : "translate-x-full"}
 
-    md:static md:translate-x-0 border-theme-border border-l bg-theme-base font-sans`}
+    md:static md:translate-x-0 border-theme-border border-l bg-theme-surface`}
       >
-        <div className="flex justify-between px-2 items-center bg-theme-base border-b border-theme-border py-1 h-12">
+        <div className="flex justify-between px-2 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
           <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
             <Bell className="w-4 h-4" />
             <h1 className="text-md">Notifications</h1>
@@ -94,90 +94,89 @@ export default function NotificationTab() {
               const isUnread =
                 notification.sourceType === "direct"
                   ? (friends.find((f) => f.friend.user_id === notification.sourceId)
-                      ?.unread_count ?? 0) > 0
+                    ?.unread_count ?? 0) > 0
                   : (rooms.find((r) => r.room_id === notification.sourceId)
-                      ?.unread_count ?? 0) > 0;
+                    ?.unread_count ?? 0) > 0;
 
               return (
                 <div
                   key={notification.id}
-                  className={`group relative rounded-[14px] p-3 shadow-sm ${
-                    isUnread ? "bg-theme-hover" : "bg-theme-base"
-                  }`}
+                  className={`group relative rounded-[14px] p-3 shadow-sm ${isUnread ? "bg-theme-hover" : "bg-theme-base"
+                    }`}
                 >
-                <button
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    try {
-                      await removeNotificationAction(notification.id);
-                    } catch (error) {
-                      console.error(error);
-                    }
-                  }}
-                  className="absolute -top-0 right-0 z-[60] flex h-4 w-4 items-center justify-center rounded-full border border-white/5 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:scale-110 group-hover:opacity-100"
-                  aria-label="Clear notification"
-                >
-                  <BadgeX className="h-4 w-4 text-white/50" />
-                </button>
-                <div className="group flex items-start gap-3">
                   <button
-                    onClick={() => {
-                      if (notification.sourceType === 'direct') {
-                        setActiveFriendPage(
-                          notification.sourceId as ActiveFriendId,
-                        );
-                        router.push('/portal');
-                      } else {
-                        router.push(`/portal/room/${notification.sourceId}`);
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        await removeNotificationAction(notification.id);
+                      } catch (error) {
+                        console.error(error);
                       }
-                      setMobileMenu(false);
                     }}
-                    className='flex min-w-0 flex-1 items-start gap-3 text-left'
+                    className="absolute -top-0 right-0 z-[60] flex h-4 w-4 items-center justify-center rounded-full border border-white/5 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:scale-110 group-hover:opacity-100"
+                    aria-label="Clear notification"
                   >
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
-                      {notification.senderAvatar ? (
-                        <Image
-                          src={notification.senderAvatar}
-                          alt={notification.senderName}
-                          width={12}
-                          height={12}
-                          unoptimized
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Bell className="h-4 w-4 text-white/45" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <p className="min-w-0 flex-1 truncate text-sm font-medium text-white/90">
-                          {notification.senderName}
-                        </p>
-                        {notification.sourceType === "room" && (
-                          <div className="ml-auto pr-1 flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
-                            <Hash className="h-3.5 w-3.5 flex-shrink-0" />
-                            <span className="max-w-[130px] truncate text-sm text-white/75">
-                              {notification.sourceName}
-                            </span>
-                          </div>
+                    <BadgeX className="h-4 w-4 text-white/50" />
+                  </button>
+                  <div className="group flex items-start gap-3">
+                    <button
+                      onClick={() => {
+                        if (notification.sourceType === 'direct') {
+                          setActiveFriendPage(
+                            notification.sourceId as ActiveFriendId,
+                          );
+                          router.push('/portal');
+                        } else {
+                          router.push(`/portal/room/${notification.sourceId}`);
+                        }
+                        setMobileMenu(false);
+                      }}
+                      className='flex min-w-0 flex-1 items-start gap-3 text-left'
+                    >
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-theme-border bg-theme-base">
+                        {notification.senderAvatar ? (
+                          <Image
+                            src={notification.senderAvatar}
+                            alt={notification.senderName}
+                            width={12}
+                            height={12}
+                            unoptimized
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <Bell className="h-4 w-4 text-white/45" />
                         )}
                       </div>
-                      <div className="mt-1 flex items-start gap-3">
-                        <p className="line-clamp-2 min-w-0 flex-1 text-sm text-white/60">
-                          {notification.message}
-                        </p>
-                        <p className="ml-auto pr-1 flex-shrink-0 pt-0.5 text-xs text-white/35">
-                          {timeAgo(notification.createdAt)}
-                        </p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <p className="min-w-0 flex-1 truncate text-sm font-medium text-white/90">
+                            {notification.senderName}
+                          </p>
+                          {notification.sourceType === "room" && (
+                            <div className="ml-auto pr-1 flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
+                              <Hash className="h-3.5 w-3.5 flex-shrink-0" />
+                              <span className="max-w-[130px] truncate text-sm text-white/75">
+                                {notification.sourceName}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-1 flex items-start gap-3">
+                          <p className="line-clamp-2 min-w-0 flex-1 text-sm text-white/60">
+                            {notification.message}
+                          </p>
+                          <p className="ml-auto pr-1 flex-shrink-0 pt-0.5 text-xs text-white/35">
+                            {timeAgo(notification.createdAt)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
-      </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </>
   );

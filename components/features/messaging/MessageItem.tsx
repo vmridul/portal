@@ -34,14 +34,32 @@ export const MessageItem = React.memo(({
 }: MessageItemProps) => {
   const [highlight, setHighlight] = useState(false);
   const { jumpedMessageId, setJumpedMessageId } = useUIStore();
-  const isImage = message.type?.startsWith("image/");
-  const isVideo = message.type?.startsWith("video/");
-  const isFile = message.file_url && !isImage && !isVideo;
-  const isSystem = message.type === "system";
-  const messageDate = formatDateFull(message._creationTime);
-  const showDateDivider = shouldShowDateDivider(message, prevMessage);
 
-  const isJumbo = React.useMemo(() => isOnlyEmojis(message.content), [message.content]);
+  // 1. Memoize all derived logic to prevent script execution during scroll
+  const { isImage, isVideo, isFile, isSystem, isJumbo } = React.useMemo(() => ({
+    isImage: message.type?.startsWith("image/"),
+    isVideo: message.type?.startsWith("video/"),
+    isFile: !!(message.file_url && !message.type?.startsWith("image/") && !message.type?.startsWith("video/")),
+    isSystem: message.type === "system",
+    isJumbo: isOnlyEmojis(message.content),
+  }), [message.type, message.file_url, message.content]);
+
+  const { messageDate, showDateDivider, showMeta, timeString } = React.useMemo(() => ({
+    messageDate: formatDateFull(message._creationTime),
+    showDateDivider: shouldShowDateDivider(message, prevMessage),
+    showMeta: shouldShowMeta(message, prevMessage),
+    timeString: formatTimeOnly(message._creationTime),
+  }), [message._creationTime, message._id, prevMessage?._id]);
+
+  const senderAvatar = React.useMemo(() => 
+    getSenderAvatar(message.sender_id, user?.user_id, message.sender, user ?? undefined),
+    [message.sender_id, message.sender, user]
+  );
+
+  const displayName = React.useMemo(() => 
+    getDisplayName(message.sender_id, user?.user_id, message.sender),
+    [message.sender_id, message.sender, user?.user_id]
+  );
 
   useEffect(() => {
     const handleJump = (e: Event) => {
@@ -58,7 +76,6 @@ export const MessageItem = React.memo(({
   useEffect(() => {
     if (jumpedMessageId === message._id) {
       setHighlight(true);
-      // Clear it after a delay
       const timer = setTimeout(() => {
         setHighlight(false);
         setJumpedMessageId(null);
@@ -88,21 +105,17 @@ export const MessageItem = React.memo(({
           <span className="font-medium">{message.sender?.username}</span>
           <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
           <span className="ml-2">
-            {formatTimeOnly(message._creationTime)}
+            {timeString}
           </span>
         </div>
       </div>
     );
   }
 
-  const showMeta = shouldShowMeta(message, prevMessage);
-
   return (
     <div className="w-full">
       {showDateDivider && (
-        <div
-          className="px-4 md:px-10"
-        >
+        <div className="px-4 md:px-10">
           <div
             data-date-header="true"
             data-date-string={messageDate}
@@ -121,12 +134,7 @@ export const MessageItem = React.memo(({
         >
           {showMeta ? (
             <Image
-              src={getSenderAvatar(
-                message.sender_id,
-                user?.user_id,
-                message.sender,
-                user ?? undefined,
-              )}
+              src={senderAvatar}
               width={40}
               height={40}
               unoptimized
@@ -137,35 +145,21 @@ export const MessageItem = React.memo(({
             <div className="w-10" />
           )}
 
-          <div
-            className="flex flex-col max-w-[60%] items-start"
-          >
+          <div className="flex flex-col max-w-[60%] items-start">
             {showMeta && (
-              <div
-                className="flex items-center gap-1 px-1 flex-row"
-              >
-                <span
-                  className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left"
-                >
-                  {getDisplayName(
-                    message.sender_id,
-                    user?.user_id,
-                    message.sender,
-                  )}
+              <div className="flex items-center gap-1 px-1 flex-row">
+                <span className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left">
+                  {displayName}
                 </span>
                 <span className="text-[10px] truncate min-w-0 max-w-[150px] text-gray-500">
-                  {formatTimeOnly(message._creationTime)}
+                  {timeString}
                 </span>
               </div>
             )}
             <div
               id={`msg-${message._id}`}
-              style={{
-                color:
-                  isImage || isVideo
-                    ? undefined : textColor
-              }}
-              className={`text-sm relative group ${isFile ? "px-0.5 py-0.5" : !showMeta ? "px-1 py-0" : "px-1 py-1"} transition-[transform,background-color] duration-200 ease-in-out rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white"}`}
+              style={{ color: isImage || isVideo ? undefined : textColor }}
+              className={`text-sm relative group ${isFile ? "px-0.5 py-0.5" : !showMeta ? "px-1 py-0" : "px-1 py-1"} rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white"}`}
             >
               {isCurrentUser && (
                 <button
@@ -173,7 +167,7 @@ export const MessageItem = React.memo(({
                     e.stopPropagation();
                     onDeleteRequest(message._id as string);
                   }}
-                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center duration-400 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm border border-white/5"
+                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-theme-base border border-white/5"
                 >
                   <BadgeX className="w-4 h-4 text-white/50" />
                 </button>
@@ -181,17 +175,14 @@ export const MessageItem = React.memo(({
 
               {isImage && message.file_url && (
                 <div className="flex flex-col gap-1">
-                  <div className="relative group/img max-w-[300px] md:max-w-[500px] rounded-[12px] overflow-hidden">
+                  <div className="relative group/img max-w-[300px] md:max-w-[500px] rounded-[12px] overflow-hidden min-h-[200px] bg-theme-surface border border-theme-border">
                     <Image
                       src={message.file_url}
                       alt="uploaded"
                       width={500}
                       height={500}
-                      className="w-full h-auto object-contain cursor-pointer"
+                      className="w-full h-auto object-contain cursor-pointer aspect-auto"
                       onClick={() => onPreviewMedia(message.file_url as string)}
-                      onLoadingComplete={(img) => {
-                        // Image loaded
-                      }}
                     />
                   </div>
                 </div>
@@ -199,7 +190,7 @@ export const MessageItem = React.memo(({
 
               {isVideo && message.file_url && (
                 <div className="flex flex-col gap-1">
-                  <div className="min-h-[150px] w-full max-w-[200px] md:max-w-[500px] rounded-[6px] overflow-hidden">
+                  <div className="min-h-[150px] w-full max-w-[200px] md:max-w-[500px] rounded-[6px] overflow-hidden bg-theme-surface border border-theme-border">
                     <VideoMessage
                       src={message.file_url}
                       onPreview={() => onPreviewMedia(message.file_url as string)}
@@ -219,9 +210,7 @@ export const MessageItem = React.memo(({
                     <FileText className="w-5 h-5 text-gray-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span
-                      className="text-sm break-words opacity-90"
-                    >
+                    <span className="text-sm break-words opacity-90">
                       {message.file_name || "Attachment"}
                     </span>
                     {message.file_size && (
@@ -240,7 +229,7 @@ export const MessageItem = React.memo(({
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 });
 

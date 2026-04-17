@@ -77,7 +77,7 @@ export default function LeftSidebar({
           />
         </button>
         <div
-          className={`bg-theme-base ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
+          className={`bg-theme-surface ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
     border-theme-border border-r select-none transition-transform duration-300
     flex flex-col py-2 px-4 md:p-2 text-white items-center font-sans z-[1500]
     ${mobileMenu ? "translate-x-0" : "-translate-x-full"}
@@ -102,14 +102,14 @@ export default function LeftSidebar({
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
                 onClick={() => router.push("/portal")}
-                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover" : "bg-theme-base"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
+                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover" : "bg-theme-surface"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
                 <Users className="w-4 h-4" />
                 <span>Friends</span>
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}
-                className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
+                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Room</span>
@@ -117,7 +117,7 @@ export default function LeftSidebar({
 
               <button
                 onClick={() => setModal("JOIN_ROOM")}
-                className="ease-in-out bg-theme-base hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
+                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Join Room</span>
