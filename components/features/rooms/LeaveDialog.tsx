@@ -15,7 +15,7 @@ export const LeaveDialog = () => {
 
   const isOwner = String(owner_id) === String(user?.user_id);
   const { deleteRoom, leaveRoom } = useRoomActions();
- 
+
   const onAction = async () => {
     try {
       if (isOwner) {

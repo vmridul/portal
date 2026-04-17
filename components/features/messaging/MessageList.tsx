@@ -38,7 +38,7 @@ export const MessageList = React.memo(({
   onDeleteRequest,
   shouldScrollToBottom,
   setShouldScrollToBottom,
-  inputBarHeightOffset = 100
+  inputBarHeightOffset = 140
 }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -169,7 +169,7 @@ export const MessageList = React.memo(({
           initialTopMostItemIndex={initialIndex}
           computeItemKey={computeItemKey}
           alignToBottom={true}
-          increaseViewportBy={1200}
+          increaseViewportBy={1400}
           atBottomThreshold={300}
           atBottomStateChange={handleScroll}
           startReached={handleLoadMore}
@@ -210,7 +210,7 @@ export const MessageList = React.memo(({
                     </span>
                   </div>
                 )}
-                <div className="h-16" />
+                <div className="h-24" />
               </div>
             ),
           }}

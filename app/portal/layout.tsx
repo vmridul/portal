@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { ColorProvider, useColor } from "@/contexts/colorContext";
 import NotificationListener from "@/components/features/notifications/NotificationListener";
 import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
-import { GlobalModals } from "@/components/layout/GlobalModals";
 import { useCurrentUser } from "@/hooks";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
@@ -45,7 +44,6 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <RoomsProvider user_id={user.user_id}>
       <section className="flex font-sans bg-theme-surface">
-        <GlobalModals />
         <Suspense fallback={null}></Suspense>
         <NotificationListener />
         <div className="flex-1">{children}</div>
@@ -56,8 +54,6 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ColorProvider>
-      <PortalLayoutContent>{children}</PortalLayoutContent>
-    </ColorProvider>
+    <PortalLayoutContent>{children}</PortalLayoutContent>
   );
 }

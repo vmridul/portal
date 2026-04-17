@@ -26,10 +26,14 @@ type UIState = {
   activeFriendPage: UUID | null;
   selectedPendingMenu: boolean;
   menuOpen: boolean;
+  leftMobileMenu: boolean;
+  rightMobileMenu: boolean;
   setPendingRequestMenu: (v: boolean) => void;
   setActiveFriendPage: (v: UUID | null) => void;
   setSelectedPendingMenu: (v: boolean) => void;
   setMenuOpen: (v: boolean) => void;
+  setLeftMobileMenu: (v: boolean) => void;
+  setRightMobileMenu: (v: boolean) => void;
 
   // Details Sidebar
   isSidebarOpen: boolean;
@@ -63,6 +67,8 @@ export const useUIStore = create<UIState>((set, get) => ({
   activeFriendPage: null,
   selectedPendingMenu: true,
   menuOpen: false,
+  leftMobileMenu: false,
+  rightMobileMenu: false,
 
   isSidebarOpen: false,
   sidebarTab: "info",
@@ -71,6 +77,8 @@ export const useUIStore = create<UIState>((set, get) => ({
   setActiveFriendPage: (v) => set({ activeFriendPage: v }),
   setSelectedPendingMenu: (v) => set({ selectedPendingMenu: v }),
   setMenuOpen: (v) => set({ menuOpen: v }),
+  setLeftMobileMenu: (v) => set({ leftMobileMenu: v }),
+  setRightMobileMenu: (v) => set({ rightMobileMenu: v }),
 
   setSidebarOpen: (v) => set({ isSidebarOpen: v }),
   setSidebarTab: (v) => set({ sidebarTab: v }),

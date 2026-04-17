@@ -3,7 +3,6 @@ export * from "./useMessageActions";
 export * from "./useRoom";
 export * from "./useFriends";
 export * from "./useNotifications";
-export * from "./useAuth";
 export * from "./useSearchMessages";
 export * from "./useMediaFiles";
 export * from "./useUserProfile";

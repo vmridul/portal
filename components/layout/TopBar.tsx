@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Search, Image as ImageIcon, Info } from "lucide-react";
+import { Search, Image as ImageIcon, Info, Menu, Users } from "lucide-react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { useRoom, useRoomMembers } from "@/hooks";
@@ -23,7 +23,16 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
   const user = useUserStore((s) => s.user);
   const searchRef = useRef<HTMLDivElement>(null);
-  const { toggleSidebar, isSidebarOpen, sidebarTab, setJumpedMessageId } = useUIStore();
+  const {
+    toggleSidebar,
+    isSidebarOpen,
+    sidebarTab,
+    setJumpedMessageId,
+    leftMobileMenu,
+    setLeftMobileMenu,
+    rightMobileMenu,
+    setRightMobileMenu
+  } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
   const { color } = useColor();
@@ -53,7 +62,17 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
   return (
     <div className="h-12">
-      <div className="z-[2000] relative text-white/60 text-sm px-10 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
+      <div className="z-[2000] relative text-white/60 text-sm px-2 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setLeftMobileMenu(!leftMobileMenu);
+          }}
+          className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
+        >
+          <Menu className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
+        </button>
+
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
           <div
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -86,7 +105,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               placeholder="Search messages"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="px-2 py-1 min-w-0 w-full bg-transparent outline-none placeholder-gray-400"
+              className="md:px-2 px-1 py-1 min-w-0 w-full bg-transparent outline-none placeholder-gray-400"
             />
           </div>
           {searchResults.length > 0 && (
@@ -121,7 +140,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             </div>
           )}
         </div>
-        <div className="flex items-center flex-none gap-2 ml-2">
+        <div className="flex items-center flex-none md:gap-2 gap-0 ml-2">
           <div
             onClick={(e) => {
               e.stopPropagation();
@@ -130,7 +149,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/60"}`} />
+            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-400"}`} />
           </div>
           <div
             onClick={(e) => {
@@ -140,8 +159,17 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-white/60"}`} />
+            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-400"}`} />
           </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setRightMobileMenu(!rightMobileMenu);
+            }}
+            className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
+          >
+            <Users className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-400"}`} />
+          </button>
         </div>
       </div>
     </div>

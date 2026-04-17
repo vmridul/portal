@@ -6,7 +6,13 @@ import { auth } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { useAuthFromFirebase } from "@/hooks/useAuthFromFirebase";
-import { LandingTopGradient, LandingHeroIllustration } from "@/components/landing/LandingDecorations";
+import {
+  LandingTopGradient,
+  LandingHeroIllustration,
+} from "@/components/landing/LandingDecorations";
+import { useUIStore } from "@/store/uiStore";
+import { useEffect } from "react";
+import { RoomMockup } from "@/components/marketing/RoomMockup";
 
 const galindo = Galindo({
   weight: "400",
@@ -24,79 +30,90 @@ const lexend = Lexend({
 
 export default function Page() {
   const router = useRouter();
+  const { setModal } = useUIStore();
   const { isAuthenticated } = useAuthFromFirebase();
 
-  const handleEnter = async () => {
+  const handleEnter = () => {
     if (isAuthenticated) {
       router.push("/portal");
       return;
     }
-
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push("/portal");
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    router.push("/login");
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleEnter();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isAuthenticated]);
+
   return (
-    <section className="h-screen bg-[#080e2a] overflow-y-auto overflow-x-hidden relative flex flex-col text-white">
+    <section className="h-screen bg-[#0f0d15] overflow-y-auto overflow-x-hidden relative flex flex-col text-white">
       <div className="flex flex-col items-center">
-        <LandingTopGradient />
-        
-        <div className="flex flex-col items-center mt-48 z-[1]">
+        {/* <LandingTopGradient /> */}
+        <Image
+          className="absolute top-0 left-18 opacity-30 animate-fade-slow"
+          width={1600}
+          height={1200}
+          src="/assets/asciiHero.png"
+          alt="ascii"
+        />
+
+        <div className="flex flex-col items-center mt-[18%] z-[1]">
           <span className={`${galindo.className} text-8xl`}>Portal</span>
-          <span className="text-xl ">
+          <span className="text-xl text-gray-200">
             Realtime conversation without friction
           </span>
           <button
             onClick={handleEnter}
-            className="cursor-pointer bg-white mt-4 bg-opacity-20 backdrop-blur-lg px-6 py-2 rounded-[8px] hover:bg-opacity-30 transition-all active:scale-95"
+            className="cursor-pointer bg-[#4a31b0] mt-4 bg-opacity-90 backdrop-blur-lg px-6 py-2 rounded-[8px] hover:bg-opacity-80 hover:text-gray-200 transition-all active:scale-95"
           >
             Enter
           </button>
         </div>
 
-        <div className="relative z-[1] w-[90%] mt-12 mb-20 aspect-video max-w-7xl">
+        <div className="relative z-[1] w-[90%] mt-20 mb-20 aspect-video max-w-7xl">
+          {/* <div className="w-full h-full">
+            <RoomMockup />
+          </div> */}
           <Image
-            src="/assets/ss.png"
-            fill
-            priority
-            style={{
-              transform: "perspective(1000px) rotateX(5deg)",
-              transformOrigin: "bottom center",
-            }}
-            className="rounded-[20px] shadow-2xl shadow-theme-base border border-theme-border object-cover"
-            alt="Hero screenshot"
+            className="absolute z-[1] -top-16"
+            width={2170}
+            height={1430}
+            src="/assets/macSS.png"
+            alt="macSS"
           />
-        </div>
 
-        <LandingHeroIllustration />
+        </div>
       </div>
 
       {/* Privacy section */}
-      <div className="z-[1] ml-40 mt-32 relative">
-        <span className={`text-7xl ${lexend.className}`}>
-          Privacy
-          <br /> First
-        </span>
-        <div className="flex flex-col gap-6 mt-6 relative">
-          <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
-            End to end encryption
-          </div>
-          <div className="absolute top-8 left-12 h-10 z-[0]  border-l-2 border-dotted border-gray-500" />
-          <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
-            No data collection
-          </div>
-          <div className="absolute top-24 left-12 h-10 z-[0]  border-l-2 border-dotted border-gray-500" />
-          <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
-            No tracking
+      <div className="flex items-center justify-between z-[1] ml-40 mt-16 relative">
+        <div className="flex flex-col items-start">
+          <span className={`text-7xl ${lexend.className}`}>
+            Privacy
+            <br /> First
+          </span>
+          <div className="flex flex-col gap-6 mt-6 relative">
+            <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
+              End to end encryption
+            </div>
+            <div className="absolute top-8 left-12 h-10 z-[0]  border-l-2 border-dotted border-gray-500" />
+            <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
+              No data collection
+            </div>
+            <div className="absolute top-24 left-12 h-10 z-[0]  border-l-2 border-dotted border-gray-500" />
+            <div className="bg-[#0f0d15] w-fit z-[2] text-md rounded-[8px] px-6 py-2">
+              No tracking
+            </div>
           </div>
         </div>
         <Image
-          className="absolute top-20 left-12"
+          className=""
           width={700}
           height={700}
           src="/assets/lock1.png"
@@ -105,26 +122,48 @@ export default function Page() {
       </div>
 
       {/* Features section */}
-      <div className="z-[1] flex flex-col items-center mt-[20%] w-full px-32 gap-12 pb-32">
-        <span className={`text-7xl ${lexend.className}`}>Features</span>
+      <div className="z-[1] flex flex-col items-center mt-[10%] w-full px-32 gap-12 pb-32">
+        <span className={`text-7xl ${lexend.className}`}>Basics Covered</span>
 
         <div className="grid grid-cols-3 auto-rows-[120px] gap-3 w-full relative">
           <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] border border-[#231b30] rounded-xl overflow-hidden relative">
             <span className="text-2xl text-gray-300 mt-6 ml-6">
               Beautifully crafted interface
             </span>
-            <Image
-              className="mt-4"
-              width={900}
-              height={500}
-              src="/assets/card1.png"
-              alt="Feature card"
-            />
+
           </div>
-          <div className="row-span-4 bg-[#0f0d14] border border-[#231b30] rounded-xl" />
-          <div className="row-span-3 bg-[#0f0d14] border border-[#231b30] rounded-xl" />
-          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl" />
-          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl" />
+          <div className="row-span-4 bg-[#0f0d14] border border-[#231b30] rounded-xl">
+            {" "}
+            <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
+              <span className="text-2xl text-gray-300 mt-6 ml-6">
+                Flawless on mobile too
+              </span>
+            </div>
+          </div>
+          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+            <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
+              <span className="text-2xl text-gray-300 mt-6 ml-6">
+                Realtime notifications
+              </span>
+            </div>
+            <div />
+          </div>
+          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+            <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
+              <span className="text-2xl text-gray-300 mt-6 ml-6">
+                Typing Indicators
+              </span>
+            </div>
+            <div />
+          </div>
+          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+            <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
+              <span className="text-2xl text-gray-300 mt-6 ml-6">
+                Online Presense
+              </span>
+            </div>
+            <div />
+          </div>
         </div>
       </div>
     </section>

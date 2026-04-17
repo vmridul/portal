@@ -71,6 +71,15 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        "fade-slow": {
+          "0%, 100%": { opacity: "0.2" },
+          "50%": { opacity: "0.5" },
+        },
+      },
+      animation: {
+        "fade-slow": "fade-slow 8s ease-in-out infinite",
+      },
     },
   },
   plugins: [tailwindcssAnimate],

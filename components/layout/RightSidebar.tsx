@@ -9,12 +9,13 @@ import { ListSkeleton } from "@/components/shared/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/hooks";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
+import { useUIStore } from "@/store/uiStore";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
 
   const [openMenu, setOpenMenu] = useState(false);
   const user = useUserStore((s) => s.user);
-  const [rightMobileMenu, setRightMobileMenu] = useState(false);
+  const { rightMobileMenu } = useUIStore();
   const { onlineUsers, awayUsers } = usePresence();
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -35,15 +36,6 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setRightMobileMenu(!rightMobileMenu);
-        }}
-        className="z-[3000] w-6 h-6 absolute top-3 right-2 text-white md:hidden"
-      >
-        <Users className="text-white w-4 h-4" />
-      </button>
-
       <div
         className={`bg-theme-surface px-2 h-screen border-theme-border border-l
     text-white

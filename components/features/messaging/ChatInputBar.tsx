@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
-import { Send, Plus, X as CloseIcon } from "lucide-react";
+import { Send, Plus, X as CloseIcon, Paperclip, Smile, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";
@@ -215,7 +215,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col z-[1000] absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-2xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
+      className="flex flex-col z-[1000] md:w-[50%] w-[80%] absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
       style={
         isMobile
           ? {
@@ -268,7 +268,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2">
         <input
           {...getInputProps()}
           ref={fileInputRef}
@@ -276,13 +276,6 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
           onChange={handleFileSelect}
           className="hidden"
         />
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="bg-theme-surface/60 py-2 px-3 rounded-2xl text-white hover:bg-theme-surface disabled:opacity-50"
-          disabled={uploading && !msg.trim()}
-        >
-          <Plus className="text-[#a89691] w-7 h-8" />
-        </button>
 
         <TextareaAutosize
           ref={inputRef}
@@ -315,16 +308,34 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
           placeholder="Press / to focus"
           minRows={1}
           maxRows={6}
-          className="rounded-[8px] bg-transparent text-white/80 outline-none py-[10px] md:py-2 px-3 w-fit md:w-80 placeholder-[#58565f] resize-none overflow-y-auto break-words whitespace-pre-wrap"
+          className="w-full rounded-[8px] text-sm bg-transparent text-gray-200 outline-none py-[10px] md:py-2 px-3   placeholder-[#58565f] resize-none overflow-y-auto break-words whitespace-pre-wrap"
         />
-        <button
-          onClick={handleSendMessage}
-          style={{ backgroundColor: color, color: textColor }}
-          className="py-2 px-3 rounded-2xl disabled:opacity-50"
-          disabled={(!msg.trim() && !selectedFile)}
-        >
-          <Send className="w-6 h-7" />
-        </button>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+              disabled={uploading && !msg.trim()}
+            >
+              <Paperclip className="text-gray-400 w-4 h-4" />
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+              disabled={uploading && !msg.trim()}
+            >
+              <Smile className="text-gray-400 w-4 h-4" />
+            </button>
+          </div>
+          <button
+            onClick={handleSendMessage}
+            style={{ backgroundColor: color, color: textColor }}
+            className="py-3 px-3 rounded-[12px] disabled:opacity-50"
+            disabled={(!msg.trim() && !selectedFile)}
+          >
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
       </div>
 
       {isDragActive && (

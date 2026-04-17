@@ -42,11 +42,12 @@ export default function LeftSidebar({
   const { rooms, isLoading: isRoomsLoading } = useRooms();
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
-  const [mobileMenu, setMobileMenu] = useState(false);
   const { awayUsers, setStatus } = usePresence();
   const {
     activeFriendPage,
     setModal,
+    leftMobileMenu,
+    setLeftMobileMenu,
   } = useUIStore();
   const { joinRoom, createRoom } = useRoomActions();
 
@@ -65,22 +66,11 @@ export default function LeftSidebar({
   return (
     <>
       <div>
-        <button
-          onClick={() => {
-            setMobileMenu(!mobileMenu);
-          }}
-          className={`z-[3000] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 left-2 text-white md:hidden`}
-        >
-          <Menu
-            className={`${mobileMenu ? "rotate-180" : ""
-              } text-white ease-in-out duration-200 w-5 h-5`}
-          />
-        </button>
         <div
           className={`bg-theme-surface ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
     border-theme-border border-r select-none transition-transform duration-300
     flex flex-col py-2 px-4 md:p-2 text-white items-center font-sans z-[1500]
-    ${mobileMenu ? "translate-x-0" : "-translate-x-full"}
+    ${leftMobileMenu ? "translate-x-0" : "-translate-x-full"}
     md:translate-x-0`}
         >
           {!user?.user_id || !rooms ? (
@@ -171,7 +161,7 @@ export default function LeftSidebar({
               </div>
               <RoomsList
                 router={router}
-                setMobileMenu={setMobileMenu}
+                setMobileMenu={setLeftMobileMenu}
                 currentRoom={currentRoom}
               />
             </div>

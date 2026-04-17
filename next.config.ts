@@ -15,6 +15,11 @@ const nextConfig: NextConfig = {
         hostname: "grateful-fly-712.eu-west-1.convex.cloud",
         pathname: "/api/storage/**",
       },
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
+        pathname: "/7.x/**",
+      },
     ],
   },
 };
