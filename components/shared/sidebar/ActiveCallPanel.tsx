@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Mic, MicOff, PhoneOff } from "lucide-react";
-import { useCalls } from "@/hooks";
+import { useState, useEffect, useRef } from "react";
+import { Mic, MicOff, PhoneOff, PhoneCall, Users } from "lucide-react";
+import { useCalls, useJitsi } from "@/hooks";
+import { useUserStore } from "@/store/useUserStore";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface Call {
@@ -25,9 +26,30 @@ function formatDuration(startMs: number): string {
 }
 
 export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps) {
-  const { leaveCall } = useCalls(call.roomId);
-  const [isMuted, setIsMuted] = useState(false);
+  const { joinCall, leaveCall } = useCalls(call.roomId);
+  const user = useUserStore((s) => s.user);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [duration, setDuration] = useState(formatDuration(call.startedAt));
+  const jitsiContainerRef = useRef<HTMLDivElement>(null);
+  
+  const isInCall = user && call.participants.includes(user.user_id);
+
+  const {
+    isJoined: isJitsiJoined,
+    isMuted,
+    participantCount,
+    join: joinJitsi,
+    leave: leaveJitsi,
+    toggleMute: toggleJitsiMute,
+  } = useJitsi({
+    onJoin: () => {
+      joinCall(call._id);
+    },
+    onLeave: () => {
+      leaveCall(call._id);
+      onLeave();
+    },
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,10 +58,53 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
     return () => clearInterval(interval);
   }, [call.startedAt]);
 
-  const handleLeave = async () => {
-    await leaveCall(call._id);
-    onLeave();
+  const handleJoin = async () => {
+    setIsConnecting(true);
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      await joinJitsi(call.roomId);
+    } catch (err) {
+      console.error("Failed to join call:", err);
+    } finally {
+      setIsConnecting(false);
+    }
   };
+
+  const handleLeave = async () => {
+    leaveJitsi();
+  };
+
+  const handleToggleMute = () => {
+    toggleJitsiMute();
+  };
+
+  if (!isJitsiJoined && !isInCall) {
+    return (
+      <div className="p-3 border-b border-theme-border">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-sm font-medium text-white">Active Call</span>
+          </div>
+          <span className="text-xs text-gray-400">{duration}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+          <Users className="w-4 h-4" />
+          <span>{call.participants.length} participant{call.participants.length !== 1 ? "s" : ""} already in call</span>
+        </div>
+
+        <button
+          onClick={handleJoin}
+          disabled={isConnecting}
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+        >
+          <PhoneCall className="w-4 h-4" />
+          <span className="text-sm">{isConnecting ? "Connecting..." : "Join Call"}</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-3 border-b border-theme-border">
@@ -51,13 +116,14 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
         <span className="text-xs text-gray-400">{duration}</span>
       </div>
       
-      <div className="text-sm text-gray-400 mb-3">
-        {call.participants.length} participant{call.participants.length !== 1 ? "s" : ""}
+      <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+        <Users className="w-4 h-4" />
+        <span>{participantCount || call.participants.length} in call</span>
       </div>
 
       <div className="flex gap-2">
         <button
-          onClick={() => setIsMuted(!isMuted)}
+          onClick={handleToggleMute}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${
             isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
           }`}

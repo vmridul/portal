@@ -1,11 +1,9 @@
 "use client";
 
-import { Phone } from "lucide-react";
-import { useCalls } from "@/hooks";
-import { Id } from "@/convex/_generated/dataModel";
+import { Phone, Users } from "lucide-react";
+import { useCalls, useJitsi } from "@/hooks";
 
 interface Call {
-  _id: Id<"calls">;
   participants: string[];
   startedAt: number;
   endedAt?: number;
@@ -43,33 +41,41 @@ function groupCallsByDate(calls: Call[]): Record<string, Call[]> {
 interface RecentCallsListProps {
   roomId: string;
   calls: Call[];
+  inCall?: boolean;
 }
 
-export default function RecentCallsList({ roomId, calls }: RecentCallsListProps) {
-  const { startCall } = useCalls(roomId);
+export default function RecentCallsList({ roomId, calls, inCall = false }: RecentCallsListProps) {
+  const { startCall: startConvexCall } = useCalls(roomId);
+  const { join: joinJitsi } = useJitsi();
   const grouped = groupCallsByDate(calls);
 
   const handleStartNewCall = async () => {
-    await startCall();
+    try {
+      await startConvexCall();
+    } catch (err) {
+      console.error("Failed to start call:", err);
+    }
   };
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="p-3">
-        <button
-          onClick={handleStartNewCall}
-          className="w-full py-2 px-4 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-        >
-          Start New Call
-        </button>
-      </div>
+      {!inCall && (
+        <div className="p-3">
+          <button
+            onClick={handleStartNewCall}
+            className="w-full py-2 px-4 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+          >
+            Start New Call
+          </button>
+        </div>
+      )}
 
       {Object.entries(grouped).map(([date, dateCalls]) => (
         <div key={date} className="border-t border-theme-border">
           <div className="px-3 py-2 text-xs text-gray-500 uppercase">{date}</div>
-          {dateCalls.map((call) => (
+          {dateCalls.map((call, idx) => (
             <div
-              key={call._id}
+              key={idx}
               className="px-3 py-2 hover:bg-theme-hover cursor-pointer"
             >
               <div className="flex items-center gap-3">
@@ -77,8 +83,9 @@ export default function RecentCallsList({ roomId, calls }: RecentCallsListProps)
                   <Phone className="w-4 h-4 text-gray-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm text-white">
-                    {call.participants.length} participants
+                  <div className="flex items-center gap-2 text-sm text-white">
+                    <Users className="w-3 h-3" />
+                    <span>{call.participants.length} participants</span>
                   </div>
                   <div className="text-xs text-gray-500">
                     {formatCallTime(call.startedAt)}
