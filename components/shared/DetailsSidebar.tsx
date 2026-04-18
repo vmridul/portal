@@ -7,6 +7,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarInfoView } from "./sidebar/SidebarInfoView";
 import { SidebarMediaView } from "./sidebar/SidebarMediaView";
+import CallSidebar from "./sidebar/CallSidebar";
 
 interface DetailsSidebarProps {
   id: string;
@@ -42,6 +43,8 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
             isLoading={isMediaLoading}
           />
         );
+      case "calls":
+        return <CallSidebar roomId={id} />;
       default:
         return null;
     }
@@ -53,6 +56,8 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
         return `${type === "room" ? "Room" : "Friend"} Info`;
       case "media":
         return "Media Gallery";
+      case "calls":
+        return "Calls";
       default:
         return sidebarTab;
     }
