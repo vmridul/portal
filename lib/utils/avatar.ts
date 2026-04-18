@@ -1,4 +1,4 @@
-const DEFAULT_AVATAR = "/assets/default-avatar.png";
+const DEFAULT_AVATAR = "/assets/defaultAvatar.png";
 
 export function getAvatarUrl(
   avatar: string | undefined | null,

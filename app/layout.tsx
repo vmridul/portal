@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { getThemeBootstrapScript } from "@/lib/theme";
 import { ColorProvider } from "@/contexts/colorContext";
 import { GlobalModals } from "@/components/layout/GlobalModals";
+import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -43,19 +45,38 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }} />
       </head>
       <body suppressHydrationWarning className={`body`}>
-        <div className="flex min-h-screen">
-          <ConvexClientProvider>
-            <Suspense>
-              <PresenceProvider>
-                <ColorProvider>
-                  <GlobalModals />
-                  <main className="flex-1 font-sans">{children}</main>
-                  <Toaster theme="dark" position="top-center" />
-                </ColorProvider>
-              </PresenceProvider>
-            </Suspense>
-          </ConvexClientProvider>
-        </div>
+        <ClerkProvider>
+          <header className="fixed top-4 right-4 z-50 flex gap-2">
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-opacity">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:opacity-90 transition-opacity">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </Show>
+            <Show when="signed-in">
+              <UserButton />
+            </Show>
+          </header>
+          <div className="flex min-h-screen">
+            <ConvexClientProvider>
+              <Suspense>
+                <PresenceProvider>
+                  <ColorProvider>
+                    <GlobalModals />
+                    <main className="flex-1 font-sans">{children}</main>
+                    <Toaster theme="dark" position="top-center" />
+                  </ColorProvider>
+                </PresenceProvider>
+              </Suspense>
+            </ConvexClientProvider>
+          </div>
+        </ClerkProvider>
       </body>
     </html>
   );

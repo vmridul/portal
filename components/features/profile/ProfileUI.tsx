@@ -22,7 +22,7 @@ export const ProfileUI = ({
       <div className="flex gap-4 items-center">
         <div className="relative">
           <Image
-            src={user?.avatar || "/default-avatar.png"}
+            src={user?.avatar || "/defaultAvatar.png"}
             alt="Avatar"
             width={40}
             height={40}

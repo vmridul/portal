@@ -2,8 +2,8 @@
 import Room from "@/components/features/rooms/Room";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useRoomMembers } from "@/hooks";
+import { useAuth } from "@clerk/nextjs";
 import { use } from "react";
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 
@@ -15,28 +15,26 @@ export default function Page({
   const { room_id } = use(params);
   const router = useRouter();
   const members = useRoomMembers(room_id);
+  const { userId, isLoaded: isAuthLoaded } = useAuth();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.replace(`/`);
-        return;
-      }
+    if (!isAuthLoaded) return;
+    
+    if (!userId) {
+      router.replace(`/`);
+      return;
+    }
 
-      if (members !== undefined) {
-        const isMember = members.some((m: { user_id: string }) => m.user_id === user.uid);
-        if (!isMember) {
-          router.replace('/portal');
-        } else {
-          setChecking(false);
-        }
+    if (members !== undefined) {
+      const isMember = members.some((m: { user_id: string }) => m.user_id === userId);
+      if (!isMember) {
+        router.replace('/portal');
+      } else {
+        setChecking(false);
       }
-    });
-
-    return () => unsubscribe();
-  }, [room_id, router, members]);
+    }
+  }, [room_id, router, members, userId, isAuthLoaded]);
 
   if (checking) return <ChatSkeleton />;
 

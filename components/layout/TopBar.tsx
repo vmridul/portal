@@ -149,7 +149,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-400"}`} />
+            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`} />
           </div>
           <div
             onClick={(e) => {
@@ -159,7 +159,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-400"}`} />
+            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`} />
           </div>
           <button
             onClick={(e) => {

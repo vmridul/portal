@@ -147,7 +147,7 @@ export const MessageList = React.memo(({
            }}
            className={cn(
              "absolute z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-90 transition-all duration-200 ease-out",
-             { "bottom": `${inputBarHeightOffset}px" }
+             { bottom: `${inputBarHeightOffset}px` }
            )}
          >
            <ArrowDown className={cn("h-6 w-6")} />

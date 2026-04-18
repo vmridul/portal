@@ -1,17 +1,17 @@
 import { useRouter } from "next/navigation";
-import { getAuth, signOut } from "firebase/auth";
+import { useClerk } from "@clerk/nextjs";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
 
 export function LogoutModal() {
   const { closeModal } = useUIStore();
   const { color, textColor } = useColor();
+  const { signOut } = useClerk();
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      const auth = getAuth();
-      await signOut(auth);
+      await signOut();
       closeModal();
       router.push("/");
     } catch (e) {

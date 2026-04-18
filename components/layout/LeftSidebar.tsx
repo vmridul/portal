@@ -7,23 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
-import { getAuth, signOut } from "firebase/auth";
 import { RoomsList } from "@/components/features/rooms/RoomsList";
-import { useRoomActions } from "@/hooks";
 import { toast } from "sonner";
-import { generateRoomCode } from "@/app/actions/randomID";
 import { usePresence } from "@/contexts/presenceContext";
 import { ProfileUI } from "@/components/features/profile/ProfileUI";
-import { Press_Start_2P } from "next/font/google";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
 
-export const pixelFont = Press_Start_2P({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-pixel",
-  display: "swap",
-});
 
 type LeftSidebarProps = {
   className?: string;
@@ -42,14 +32,12 @@ export default function LeftSidebar({
   const { rooms, isLoading: isRoomsLoading } = useRooms();
   const user = useUserStore((s) => s.user);
   const { color, textColor } = useColor();
-  const { awayUsers, setStatus } = usePresence();
+  const { awayUsers } = usePresence();
   const {
-    activeFriendPage,
     setModal,
     leftMobileMenu,
     setLeftMobileMenu,
   } = useUIStore();
-  const { joinRoom, createRoom } = useRoomActions();
 
 
 
@@ -92,14 +80,14 @@ export default function LeftSidebar({
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
                 onClick={() => router.push("/portal")}
-                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover" : "bg-theme-surface"} ease-in-out text-white/90 hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
+                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
                 <Users className="w-4 h-4" />
                 <span>Friends</span>
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}
-                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
+                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-gray-200 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Room</span>
@@ -107,7 +95,7 @@ export default function LeftSidebar({
 
               <button
                 onClick={() => setModal("JOIN_ROOM")}
-                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-white/90 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
+                className="ease-in-out bg-theme-surface hover:bg-theme-hover text-gray-200 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
                 <UserPlus className="w-4 h-4" />
                 <span>Join Room</span>

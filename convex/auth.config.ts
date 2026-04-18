@@ -1,8 +1,8 @@
 const authConfig = {
   providers: [
     {
-      domain: "https://securetoken.google.com/portal-433a1",
-      applicationID: "portal-433a1",
+      domain: "https://funny-tiger-24.clerk.accounts.dev",
+      applicationID: "convex",
     },
   ],
 };

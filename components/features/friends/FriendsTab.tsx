@@ -19,7 +19,6 @@ import Image from "next/image";
 import { useFriends, useFriendActions } from "@/hooks";
 import { usePresence } from "@/contexts/presenceContext";
 import { getDirectConversationId } from "@/lib/utils/message";
-import { useColor } from "@/contexts/colorContext";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { useRef } from "react";
 
@@ -32,7 +31,6 @@ export default function FriendsTab() {
     setActiveFriendPage,
     menuOpen,
     setMenuOpen,
-    setModal,
     isSidebarOpen,
     sidebarTab,
     toggleSidebar,
@@ -45,7 +43,6 @@ export default function FriendsTab() {
     (friend) => friend?.friend?.user_id === activeFriendPage,
   );
 
-  const { color, setColor } = useColor();
   const menuRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(menuRef, () => {
@@ -104,7 +101,7 @@ export default function FriendsTab() {
             />
             <div className="relative flex flex-1 items-center gap-3">
               <Image
-                src={friend?.friend?.avatar || "@/assets/default-avatar.png"}
+                src={friend?.friend?.avatar || "@/assets/defaultAvatar.png"}
                 alt="pic"
                 width={6}
                 height={6}

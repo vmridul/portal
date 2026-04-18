@@ -6,7 +6,7 @@ import {
   Image as ImageIcon, Info, Send, Moon, Plus as PlusIcon,
   BadgeX, LogOut
 } from "lucide-react";
-import { Galindo, Lexend, Press_Start_2P } from "next/font/google";
+import { Galindo, Lexend } from "next/font/google";
 import Image from "next/image";
 
 const galindo = Galindo({
@@ -17,12 +17,6 @@ const galindo = Galindo({
 
 const lexend = Lexend({
   weight: "600",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const pixelFont = Press_Start_2P({
-  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });

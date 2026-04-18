@@ -110,7 +110,7 @@ export default function FriendsList({
                     <div className="relative">
                       <Image
                         src={
-                          friend?.friend?.avatar || "/assets/default-avatar.png"
+                          friend?.friend?.avatar || "/assets/defaultAvatar.png"
                         }
                         alt=""
                         width={12}
@@ -162,9 +162,9 @@ export default function FriendsList({
             <div className="flex h-full mt-[30%] justify-center">
               <div className={`${isLoading ? "hidden" : "block"} rounded-[14px] text-center`}>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-                  <Users className="h-5 w-5 text-white/45" />
+                  <Users className="h-5 w-5 text-gray-400" />
                 </div>
-                <p className="mt-4 text-sm text-white/40">No friends yet</p>
+                <p className="mt-4 text-xs text-gray-400">No friends yet</p>
               </div>
             </div>
           )}

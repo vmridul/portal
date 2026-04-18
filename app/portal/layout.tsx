@@ -9,6 +9,7 @@ import { ColorProvider, useColor } from "@/contexts/colorContext";
 import NotificationListener from "@/components/features/notifications/NotificationListener";
 import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
 import { useCurrentUser } from "@/hooks";
+import { OnboardingDialog } from "@/components/features/auth/OnboardingDialog";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -33,8 +34,13 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [profile, setUser]);
 
-  if ((isLoading || !isThemeReady || isProfileLoading || !profile || !user?.user_id) && !isRoomPage) {
+  if ((isLoading || !isThemeReady || isProfileLoading) && !isRoomPage) {
     return <PortalShellSkeleton />;
+  }
+
+  // Show onboarding if authenticated but no profile exists in Convex
+  if (isAuthenticated && !isProfileLoading && !profile) {
+    return <OnboardingDialog onComplete={() => window.location.reload()} />;
   }
 
   if (!user?.user_id) {

@@ -39,9 +39,9 @@ export const RoomMembersList = ({
                   <Image
                     src={
                       member?.Users?.user_id === user?.user_id
-                        ? (user?.avatar ?? "/assets/default-avatar.png")
+                        ? (user?.avatar ?? "/assets/defaultAvatar.png")
                         : (member?.Users?.avatar ??
-                          "/assets/default-avatar.png")
+                          "/assets/defaultAvatar.png")
                     }
                     alt="Avatar"
                     width={30}

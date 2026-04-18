@@ -45,11 +45,10 @@ export default function PendingRequestMenu({
 
   return (
     <div
-      className={`${
-        pendingRequestMenu
-          ? "translate-y-0 scale-100 opacity-100 pointer-events-auto"
-          : "translate-y-1 scale-95 opacity-0 pointer-events-none"
-      } duration-200 transition-all ease-in-out z-[9000] absolute p-2 rounded-[8px] h-[35%] min-w-[250px] top-10 right-4 bg-theme-base border border-theme-border`}
+      className={`${pendingRequestMenu
+        ? "translate-y-0 scale-100 opacity-100 pointer-events-auto"
+        : "translate-y-1 scale-95 opacity-0 pointer-events-none"
+        } duration-200 transition-all ease-in-out z-[9000] absolute p-2 rounded-[8px] h-[35%] min-w-[250px] top-10 right-4 bg-theme-base border border-theme-border`}
     >
       <div className="bg-theme-surface text-sm text-white h-9 rounded-[8px] w-fit p-1 flex items-center gap-1">
         <button
@@ -78,7 +77,7 @@ export default function PendingRequestMenu({
                 className="flex items-center gap-2 p-2 rounded-[6px]"
               >
                 <Image
-                  src={request.sender?.avatar || "/assets/default-avatar.png"}
+                  src={request.sender?.avatar || "/assets/defaultAvatar.png"}
                   width={32}
                   height={32}
                   unoptimized
@@ -119,7 +118,7 @@ export default function PendingRequestMenu({
               className="flex items-center gap-2 p-2 rounded-[6px]"
             >
               <Image
-                src={request.receiver?.avatar || "/assets/default-avatar.png"}
+                src={request.receiver?.avatar || "/assets/defaultAvatar.png"}
                 width={32}
                 height={32}
                 unoptimized

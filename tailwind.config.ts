@@ -12,7 +12,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        pixel: ["var(--font-pixel)"],
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
         pop: ["var(--font-poppins)", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"], // optional
@@ -74,7 +73,7 @@ export default {
       keyframes: {
         "fade-slow": {
           "0%, 100%": { opacity: "0.2" },
-          "50%": { opacity: "0.5" },
+          "50%": { opacity: "0.7" },
         },
       },
       animation: {

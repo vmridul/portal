@@ -81,11 +81,11 @@ export default function NotificationTab() {
               <Skeleton className="h-[92px] rounded-[14px]" />
             </>
           ) : notifications.length === 0 ? (
-            <div className="rounded-[14px] mt-[82%] text-center">
+            <div className="rounded-[14px] text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-                <Bell className="h-5 w-5 text-white/45" />
+                <Bell className="h-5 w-5 text-gray-400" />
               </div>
-              <p className="mt-4 text-sm text-white/40">
+              <p className="mt-4 text-xs text-gray-400">
                 No notifications yet
               </p>{" "}
             </div>

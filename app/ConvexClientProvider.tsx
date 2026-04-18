@@ -1,27 +1,20 @@
 "use client";
 
-import { ConvexProviderWithAuth, ConvexReactClient } from "convex/react";
-import { ReactNode, useEffect, useState, useMemo } from "react";
-import { auth } from "@/lib/firebase";
-import { onIdTokenChanged, User } from "firebase/auth";
+import { ReactNode } from "react";
+import { ConvexReactClient } from "convex/react";
+import { useAuth } from "@clerk/nextjs";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-import { useAuthFromFirebase } from "@/hooks/useAuthFromFirebase";
-
 export default function ConvexClientProvider({
-    children,
+  children,
 }: {
-    children: ReactNode;
+  children: ReactNode;
 }) {
-    const { isLoading, isAuthenticated, fetchAccessToken } = useAuthFromFirebase();
-
-    return (
-        <ConvexProviderWithAuth
-            client={convex}
-            useAuth={() => ({ isLoading, isAuthenticated, fetchAccessToken })}
-        >
-            {children}
-        </ConvexProviderWithAuth>
-    );
+  return (
+    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      {children}
+    </ConvexProviderWithClerk>
+  );
 }

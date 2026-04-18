@@ -2,10 +2,8 @@
 
 import { Galindo, Lexend } from "next/font/google";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
-import { useAuthFromFirebase } from "@/hooks/useAuthFromFirebase";
+import { UserButton, SignOutButton, Show, useAuth } from "@clerk/nextjs";
 import {
   LandingTopGradient,
   LandingHeroIllustration,
@@ -31,7 +29,8 @@ const lexend = Lexend({
 export default function Page() {
   const router = useRouter();
   const { setModal } = useUIStore();
-  const { isAuthenticated } = useAuthFromFirebase();
+  const { userId, isLoaded } = useAuth();
+  const isAuthenticated = !!userId;
 
   const handleEnter = () => {
     if (isAuthenticated) {
@@ -53,6 +52,19 @@ export default function Page() {
 
   return (
     <section className="h-screen bg-[#0f0d15] overflow-y-auto overflow-x-hidden relative flex flex-col text-white">
+      <Show when="signed-in">
+        <div className="absolute top-8 right-8 flex items-center gap-4 z-[100] px-4 py-2 rounded-full shadow-xl transition-all group">
+          <div className="flex items-center gap-3 pr-2 ">
+            <UserButton />
+          </div>
+          <SignOutButton>
+            <button className="px-3 py-1  text-xs font-semibold rounded-full transition-all border border-white/5 text-gray-300 hover:text-white">
+              Sign Out
+            </button>
+          </SignOutButton>
+        </div>
+      </Show>
+
       <div className="flex flex-col items-center">
         {/* <LandingTopGradient /> */}
         <Image

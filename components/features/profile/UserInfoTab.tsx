@@ -1,5 +1,5 @@
 import { Upload, Moon, Circle, Copy, LogOut, Camera } from "lucide-react";
-import { getAuth, signOut } from "firebase/auth";
+import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useUserStore } from "@/store/useUserStore";
@@ -12,6 +12,7 @@ import { usePresence } from "@/contexts/presenceContext";
 
 export const UserInfoTab = () => {
   const router = useRouter();
+  const { signOut } = useClerk();
   const user = useUserStore((s) => s.user);
   const [presenceMenu, setPresenceMenu] = useState(false);
   const [logoutConfirm, setLogoutConfirm] = useState(false);
@@ -74,7 +75,7 @@ export const UserInfoTab = () => {
           <span className="text-xs text-gray-300 pl-1">Avatar</span>
           <div className="group relative">
             <Image
-              src={user?.avatar || "/assets/default-avatar.png"}
+              src={user?.avatar || "/assets/defaultAvatar.png"}
               alt="Profile"
               width={120}
               height={120}
@@ -246,8 +247,7 @@ export const UserInfoTab = () => {
               </button>
               <button
                 onClick={async () => {
-                  const auth = getAuth();
-                  await signOut(auth);
+                  await signOut();
                   setLogoutConfirm(false);
                   router.push("/");
                 }}
