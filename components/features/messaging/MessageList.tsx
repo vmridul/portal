@@ -4,6 +4,7 @@ import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { ArrowDown } from "lucide-react";
 import type { User, MessageWithSender } from "@/lib/types";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
+import { cn } from "@/lib/utils";
 
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 
@@ -136,32 +137,36 @@ export const MessageList = React.memo(({
 
   return (
     <>
-      {showScrollDown && messages.length > 0 && (
-        <button
-          onClick={() => {
-            virtuosoRef.current?.scrollToIndex({
-              index: messages.length - 1 + firstItemIndex,
-              behavior: "smooth",
-            });
-          }}
-          className={`absolute z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-90 transition-all duration-200 ease-out`}
-          style={{ bottom: `${inputBarHeightOffset}px` }}
-        >
-          <ArrowDown className="h-6 w-6" />
-        </button>
-      )}
+       {showScrollDown && messages.length > 0 && (
+         <button
+           onClick={() => {
+             virtuosoRef.current?.scrollToIndex({
+               index: messages.length - 1 + firstItemIndex,
+               behavior: "smooth",
+             });
+           }}
+           className={cn(
+             "absolute z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-300 border border-theme-border border-opacity-90 bg-theme-hover bg-opacity-90 transition-all duration-200 ease-out",
+             { "bottom": `${inputBarHeightOffset}px" }
+           )}
+         >
+           <ArrowDown className={cn("h-6 w-6")} />
+         </button>
+       )}
 
       <div
         ref={pinnedHeaderRef}
         className="absolute top-[5px] left-0 right-0 z-20 flex items-center justify-center pointer-events-none"
         style={{ visibility: "hidden" }}
       >
-        <span className="px-3 py-1 rounded-full bg-theme-base bg-opacity-95 text-xs text-gray-400 border border-theme-border shadow-sm">
+         <span className={cn(
+           "px-3 py-1 rounded-full bg-theme-base bg-opacity-95 text-xs text-gray-400 border border-theme-border shadow-sm"
+         )}>
           {/* Content managed by usePinnedDate for performance */}
         </span>
       </div>
 
-      <div ref={viewportRef} className="flex-1 w-full relative h-full">
+       <div ref={viewportRef} className={cn("flex-1 w-full relative h-full")}>
         <Virtuoso<MessageWithSender>
           ref={virtuosoRef}
           data={messages}

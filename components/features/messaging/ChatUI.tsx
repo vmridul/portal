@@ -6,6 +6,7 @@ import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageAction
 import type { User } from "@/lib/types";
 import { MediaLightbox } from "@/components/shared/MediaLightbox";
 import { useUIStore } from "@/store/uiStore";
+import { cn } from "@/lib/utils";
 
 interface ChatUIProps {
   type: "room" | "direct";
@@ -59,10 +60,12 @@ export function ChatUI({
   }, [messages, openLightbox]);
 
   return (
-    <div
-      className={`flex flex-col items-center relative overflow-hidden ${type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
-        }`}
-    >
+      <div
+        className={cn(
+          "flex flex-col items-center relative overflow-hidden",
+          type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
+        )}
+      >
       <MediaLightbox />
 
       <MessageList
