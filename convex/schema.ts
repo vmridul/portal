@@ -92,4 +92,10 @@ messages: defineTable({
     .index("by_room_id", ["room_id"])
     .index("by_user_id", ["user_id"])
     .index("by_user_room", ["user_id", "room_id"]),
+
+  reactions: defineTable({
+    message_id: v.id("messages"),
+    user_id: v.string(),
+    emoji: v.string(),
+  }).index("by_message_id", ["message_id"]),
 });

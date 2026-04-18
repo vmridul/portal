@@ -30,14 +30,24 @@ export const getMessagesPaginated = query({
           finalUrl = await ctx.storage.getUrl(msg.file_storage_id);
         }
 
+        const reactions = await ctx.db
+          .query("reactions")
+          .withIndex("by_message_id", (q) => q.eq("message_id", msg._id))
+          .collect();
+
         return {
           ...msg,
           file_url: finalUrl,
           sender: {
             user_id: msg.sender_id,
-            username: msg.sender_username || 'Unknown',
+            username: msg.sender_username || "Unknown",
             avatar: msg.sender_avatar,
           },
+          reactions: reactions.map((r) => ({
+            _id: r._id,
+            user_id: r.user_id,
+            emoji: r.emoji,
+          })),
         };
       })
     );

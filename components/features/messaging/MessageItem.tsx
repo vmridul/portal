@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FileText } from "lucide-react";
 import { VideoMessage } from "./VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
+import { MessageReactions } from "./MessageReactions";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
 import React, { useEffect, useState } from "react";
@@ -217,15 +218,20 @@ export const MessageItem = React.memo(({
                 <div className={`whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}>{message.content}</div>
               )}
             </div>
+            
+            <MessageReactions 
+              messageId={message._id as string} 
+              reactions={(message as any).reactions || []} 
+              currentUserId={user?.user_id || ""}
+            />
           </div>
         </div>
-        {isCurrentUser && (
-          <MessageToolbar
-            content={message.content}
-            messageId={message._id as string}
-            onDeleteRequest={onDeleteRequest}
-          />
-        )}
+        <MessageToolbar
+          content={message.content}
+          messageId={message._id as string}
+          onDeleteRequest={onDeleteRequest}
+          isCurrentUser={isCurrentUser}
+        />
       </div>
     </div>
   );

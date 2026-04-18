@@ -7,30 +7,43 @@ interface ChatEmojiPickerProps {
   onEmojiSelect: (emoji: any) => void;
   disabled?: boolean;
   inputRef?: React.RefObject<HTMLTextAreaElement | HTMLInputElement | null>;
+  trigger?: React.ReactNode;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
+  sideOffset?: number;
+  alignOffset?: number;
 }
 
 export function ChatEmojiPicker({
   onEmojiSelect,
   disabled,
   inputRef,
+  trigger,
+  side = "top",
+  align = "start",
+  sideOffset = 60,
+  alignOffset = 0,
 }: ChatEmojiPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <button
-          className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
-          disabled={disabled}
-        >
-          <Smile className="text-gray-400 w-4 h-4" />
-        </button>
+        {trigger || (
+          <button
+            className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+            disabled={disabled}
+          >
+            <Smile className="text-gray-400 w-4 h-4" />
+          </button>
+        )}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          side="top"
-          align="start"
-          sideOffset={60}
+          side={side}
+          align={align}
+          sideOffset={sideOffset}
+          alignOffset={alignOffset}
           className="z-[1001] animate-in fade-in duration-200"
           onPointerDownOutside={(e) => {
             if (inputRef?.current && e.target === inputRef.current) {

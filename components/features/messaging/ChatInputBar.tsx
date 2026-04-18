@@ -260,7 +260,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
     >
       <div className={`overflow-hidden transition-all duration-300 ease-in-out ${selectedFile ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}>
         {selectedFile && (
-          <div className="flex items-center gap-3 p-2 bg-theme-surface/40 rounded-xl  relative group">
+          <div className="flex items-center gap-3 pb-1 bg-theme-surface/40 rounded-xl  relative group">
             <div className="relative w-12 h-12 flex-shrink-0">
               {previewUrl ? (
                 <div className="w-full h-full rounded-lg overflow-hidden relative border border-theme-hover">
