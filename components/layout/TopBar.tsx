@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Search, Image as ImageIcon, Info, Menu, Users } from "lucide-react";
+import { Search, Image as ImageIcon, Info, Menu, Users, Phone } from "lucide-react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { useRoom, useRoomMembers } from "@/hooks";
@@ -160,6 +160,16 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }`}
           >
             <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`} />
+          </div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSidebar("calls");
+            }}
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "bg-theme-hover" : "hover:bg-theme-hover"
+              }`}
+          >
+            <Phone className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"}`} />
           </div>
           <button
             onClick={(e) => {
