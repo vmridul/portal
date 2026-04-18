@@ -3,8 +3,9 @@ import { formatFileSize } from "@/lib/utils/file";
 import { shouldShowMeta, shouldShowDateDivider, isOnlyEmojis } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
-import { BadgeX, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { VideoMessage } from "./VideoMessage";
+import { MessageToolbar } from "./MessageToolbar";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
 import React, { useEffect, useState } from "react";
@@ -84,6 +85,7 @@ export const MessageItem = React.memo(({
     }
   }, [jumpedMessageId, message._id, setJumpedMessageId]);
 
+
   if (isSystem) {
     return (
       <div className="w-full px-4 md:px-10">
@@ -127,7 +129,7 @@ export const MessageItem = React.memo(({
           </div>
         </div>
       )}
-      <div className={`px-4 md:px-10 hover:bg-theme-border group/row transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""}`}>
+      <div className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""}`}>
         <div
           data-msg-id={message._id}
           className={`flex gap-2 ${showMeta ? "mt-3" : "pt-[0]"} flex-row`}
@@ -161,17 +163,6 @@ export const MessageItem = React.memo(({
               style={{ color: isImage || isVideo ? undefined : textColor }}
               className={`text-sm relative group ${isFile ? "px-0.5 py-0.5" : !showMeta ? "px-1 py-0" : "px-1 py-1"} rounded-[6px] ${isImage || isVideo ? "bg-transparent" : isCurrentUser ? "" : "text-white"}`}
             >
-              {isCurrentUser && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteRequest(message._id as string);
-                  }}
-                  className="absolute -top-3 -left-3 z-[60] w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-theme-base border border-white/5"
-                >
-                  <BadgeX className="w-4 h-4 text-white/50" />
-                </button>
-              )}
 
               {isImage && message.file_url && (
                 <div className="flex flex-col gap-1">
@@ -228,6 +219,13 @@ export const MessageItem = React.memo(({
             </div>
           </div>
         </div>
+        {isCurrentUser && (
+          <MessageToolbar
+            content={message.content}
+            messageId={message._id as string}
+            onDeleteRequest={onDeleteRequest}
+          />
+        )}
       </div>
     </div>
   );

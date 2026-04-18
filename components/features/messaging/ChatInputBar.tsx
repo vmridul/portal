@@ -4,11 +4,12 @@ import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
-import { Send, Plus, X as CloseIcon, Paperclip, Smile, ArrowRight } from "lucide-react";
+import { Send, Plus, X as CloseIcon, Paperclip, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";
 import Image from "next/image";
+import { ChatEmojiPicker } from "./ChatEmojiPicker";
 
 interface ChatInputBarProps {
   room_id: string;
@@ -28,6 +29,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
   const { setTyping, clearTyping } = useTypingIndicators(room_id);
   const { sendMessage, generateUploadUrl } = useMessageActions();
@@ -162,6 +164,37 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
       toast.error("Failed to send message");
     }
   }, [msg, selectedFile, uploadedStorageId, uploading, room_id, type, sendMessage, startUpload, clearTyping, scrollToBottom]);
+
+  const onEmojiClick = useCallback((emojiData: any) => {
+    const emoji = emojiData.emoji;
+    const textarea = inputRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = msg;
+    const newText = text.substring(0, start) + emoji + text.substring(end);
+
+    setMsg(newText);
+
+    // Set cursor position after emoji
+    const newCursorPos = start + emoji.length;
+    setCursorPosition(newCursorPos);
+
+    // Auto-focus back to textarea
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  }, [msg]);
+
+  // Keep focus and cursor position after state update
+  useEffect(() => {
+    if (cursorPosition !== null && inputRef.current) {
+      inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+      setCursorPosition(null);
+    }
+  }, [cursorPosition]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -319,13 +352,11 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
             >
               <Paperclip className="text-gray-400 w-4 h-4" />
             </button>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+            <ChatEmojiPicker
+              onEmojiSelect={onEmojiClick}
               disabled={uploading && !msg.trim()}
-            >
-              <Smile className="text-gray-400 w-4 h-4" />
-            </button>
+              inputRef={inputRef}
+            />
           </div>
           <button
             onClick={handleSendMessage}
