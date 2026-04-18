@@ -16,13 +16,16 @@ export const UserInfoTab = () => {
   const user = useUserStore((s) => s.user);
   const [presenceMenu, setPresenceMenu] = useState(false);
   const [logoutConfirm, setLogoutConfirm] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const setUser = useUserStore((s) => s.setUser);
   const fileRef = useRef<HTMLInputElement>(null);
   const [newUsername, setNewUsername] = useState(user?.username || "");
   const [isUploading, setIsUploading] = useState(false);
   const { color, textColor } = useColor();
 
-  const { changeName, changeAvatar, generateUploadUrl, getUrl } = useUserProfileActions();
+  const { changeName, changeAvatar, generateUploadUrl, getUrl, deleteUserAccount } = useUserProfileActions();
   const { awayUsers, setStatus } = usePresence();
 
   useEffect(() => {
@@ -220,7 +223,10 @@ export const UserInfoTab = () => {
       </div>
 
       <div className="flex md:flex-row flex-col gap-2 md:gap-3 items-center w-full mt-5">
-        <button className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-2 md:px-4 text-sm rounded-[6px]">
+        <button
+          onClick={() => setDeleteConfirm(true)}
+          className="ease-in-out bg-red-800 w-full hover:text-gray-200 py-2 px-2 md:px-4 text-sm rounded-[6px]"
+        >
           Delete Account
         </button>
         <button
@@ -255,6 +261,57 @@ export const UserInfoTab = () => {
                 className="ease-in-out hover:brightness-110 py-2 px-6 rounded-xl"
               >
                 Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-35 z-[9999] flex items-center justify-center">
+          <div className="w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
+            <div className="text-white mb-2">Delete Account</div>
+            <div className="text-[#a0a0a0] mt-2 text-sm">
+              This will permanently delete your account and remove you from all rooms. Your messages will remain but will show as from a deleted user.
+            </div>
+            <div className="mt-4">
+              <label className="text-xs text-gray-400">Type <span className="text-red-400">DELETE</span> to confirm</label>
+              <input
+                type="text"
+                value={deleteInput}
+                onChange={(e) => setDeleteInput(e.target.value)}
+                className="w-full text-sm mt-1 outline-none border border-theme-border rounded-[8px] text-white bg-theme-hover py-2 px-3 placeholder-[#666]"
+                placeholder="DELETE"
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-6 text-sm">
+              <button
+                onClick={() => {
+                  setDeleteConfirm(false);
+                  setDeleteInput("");
+                }}
+                className="ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (deleteInput !== "DELETE") return;
+                  setIsDeleting(true);
+                  try {
+                    await deleteUserAccount();
+                    sessionStorage.setItem("accountDeleted", "true");
+                    await signOut();
+                    router.push("/");
+                  } catch (e) {
+                    toast.error((e as Error).message || "Failed to delete account");
+                    setIsDeleting(false);
+                  }
+                }}
+                disabled={deleteInput !== "DELETE" || isDeleting}
+                className="ease-in-out bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed py-2 px-6 rounded-xl"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

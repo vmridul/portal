@@ -45,7 +45,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }} />
       </head>
       <body suppressHydrationWarning className={`body`}>
-        <ClerkProvider>
+        <ClerkProvider afterSignInUrl="/portal" afterSignUpUrl="/portal">
           <header className="fixed top-4 right-4 z-50 flex gap-2">
             <Show when="signed-out">
               <SignInButton mode="modal">

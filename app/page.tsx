@@ -1,7 +1,7 @@
 "use client";
 
 import { Galindo, Lexend } from "next/font/google";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { UserButton, SignOutButton, Show, useAuth } from "@clerk/nextjs";
 import {
@@ -11,6 +11,7 @@ import {
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
 import { RoomMockup } from "@/components/marketing/RoomMockup";
+import { toast } from "sonner";
 
 const galindo = Galindo({
   weight: "400",
@@ -28,9 +29,17 @@ const lexend = Lexend({
 
 export default function Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setModal } = useUIStore();
   const { userId, isLoaded } = useAuth();
   const isAuthenticated = !!userId;
+
+  useEffect(() => {
+    if (searchParams.get("deleted") === "true") {
+      toast.success("Account deleted successfully");
+      router.replace("/");
+    }
+  }, [searchParams, router]);
 
   const handleEnter = () => {
     if (isAuthenticated) {

@@ -27,6 +27,7 @@ interface UseUserProfileActionsResult {
   changeAvatar: (avatarUrl: string) => Promise<void>;
   generateUploadUrl: () => Promise<string>;
   getUrl: (storageId: string) => Promise<string | null>;
+  deleteUserAccount: () => Promise<void>;
 }
 
 export function useUserProfileActions(): UseUserProfileActionsResult & { createUser: (args: { username: string; avatar?: string }) => Promise<any> } {
@@ -35,6 +36,7 @@ export function useUserProfileActions(): UseUserProfileActionsResult & { createU
   const createUserMutation = useMutation(api.users.createUser);
   const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
   const getUrlMutation = useMutation(api.storage.getUrlMutation);
+  const deleteUserAccountMutation = useMutation(api.users.deleteUserAccount);
 
   const createUser = useCallback(
     async (args: { username: string; avatar?: string }) => {
@@ -70,11 +72,19 @@ export function useUserProfileActions(): UseUserProfileActionsResult & { createU
     [getUrlMutation]
   );
 
+  const deleteUserAccount = useCallback(
+    async () => {
+      await deleteUserAccountMutation();
+    },
+    [deleteUserAccountMutation]
+  );
+
   return {
     changeName,
     changeAvatar,
     generateUploadUrl,
     getUrl,
     createUser,
+    deleteUserAccount,
   };
 }
