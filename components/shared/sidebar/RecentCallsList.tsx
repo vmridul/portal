@@ -1,13 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Phone, Users } from "lucide-react";
-import { useCalls, useJitsi } from "@/hooks";
+import { useCalls } from "@/hooks";
+import { useJitsiStore } from "@/store/jitsiStore";
 
 interface Call {
   participants: string[];
   startedAt: number;
   endedAt?: number;
   isActive: boolean;
+  roomId: string;
 }
 
 function formatCallTime(timestamp: number): string {
@@ -44,9 +47,11 @@ interface RecentCallsListProps {
   inCall?: boolean;
 }
 
-export default function RecentCallsList({ roomId, calls, inCall = false }: RecentCallsListProps) {
+export default function RecentCallsList({ roomId, calls, inCall: propInCall }: RecentCallsListProps) {
   const { startCall: startConvexCall } = useCalls(roomId);
-  const { join: joinJitsi } = useJitsi();
+  const { isJoined: isJitsiJoined, joinRoom } = useJitsiStore();
+  
+  const inCall = propInCall || isJitsiJoined;
   const grouped = groupCallsByDate(calls);
 
   const handleStartNewCall = async () => {

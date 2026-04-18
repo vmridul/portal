@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Mic, MicOff, PhoneOff, PhoneCall, Users } from "lucide-react";
-import { useCalls, useJitsi } from "@/hooks";
+import { useCalls } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
+import { useJitsiStore } from "@/store/jitsiStore";
 import { Id } from "@/convex/_generated/dataModel";
 
 interface Call {
@@ -26,30 +27,14 @@ function formatDuration(startMs: number): string {
 }
 
 export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps) {
-  const { joinCall, leaveCall } = useCalls(call.roomId);
   const user = useUserStore((s) => s.user);
-  const [isConnecting, setIsConnecting] = useState(false);
   const [duration, setDuration] = useState(formatDuration(call.startedAt));
-  const jitsiContainerRef = useRef<HTMLDivElement>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  
+  const { joinCall } = useCalls(call.roomId);
+  const { isJoined: isJitsiJoined, isMuted, participantCount, joinRoom, leaveRoom, toggleMute } = useJitsiStore();
   
   const isInCall = user && call.participants.includes(user.user_id);
-
-  const {
-    isJoined: isJitsiJoined,
-    isMuted,
-    participantCount,
-    join: joinJitsi,
-    leave: leaveJitsi,
-    toggleMute: toggleJitsiMute,
-  } = useJitsi({
-    onJoin: () => {
-      joinCall(call._id);
-    },
-    onLeave: () => {
-      leaveCall(call._id);
-      onLeave();
-    },
-  });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,11 +43,17 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
     return () => clearInterval(interval);
   }, [call.startedAt]);
 
+  useEffect(() => {
+    if (isJitsiJoined && !isInCall) {
+      joinCall(call._id);
+    }
+  }, [isJitsiJoined]);
+
   const handleJoin = async () => {
     setIsConnecting(true);
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      await joinJitsi(call.roomId);
+      await joinRoom(call.roomId);
     } catch (err) {
       console.error("Failed to join call:", err);
     } finally {
@@ -71,11 +62,8 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
   };
 
   const handleLeave = async () => {
-    leaveJitsi();
-  };
-
-  const handleToggleMute = () => {
-    toggleJitsiMute();
+    leaveRoom();
+    onLeave();
   };
 
   if (!isJitsiJoined && !isInCall) {
@@ -123,7 +111,7 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
 
       <div className="flex gap-2">
         <button
-          onClick={handleToggleMute}
+          onClick={toggleMute}
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${
             isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
           }`}
