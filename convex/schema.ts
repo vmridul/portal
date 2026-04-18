@@ -98,4 +98,15 @@ messages: defineTable({
     user_id: v.string(),
     emoji: v.string(),
   }).index("by_message_id", ["message_id"]),
+
+  calls: defineTable({
+    roomId: v.string(),
+    startedAt: v.number(),
+    endedAt: v.optional(v.number()),
+    participants: v.array(v.string()),
+    initiatorId: v.string(),
+    isActive: v.boolean(),
+  })
+    .index("by_room_id", ["roomId"])
+    .index("by_active", ["roomId", "isActive"]),
 });
