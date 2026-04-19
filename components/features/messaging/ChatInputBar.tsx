@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
-import { Send, Plus, X as CloseIcon, Paperclip, ArrowRight } from "lucide-react";
+import { PaperPlaneRight, Plus, X as CloseIcon, Paperclip, ArrowRight } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";

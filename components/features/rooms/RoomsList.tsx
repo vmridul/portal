@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useRooms } from "@/contexts/roomContext";
 import { RoomItem } from "./RoomItem";
-import { House } from "lucide-react";
+import { House } from "@phosphor-icons/react";
 import { useVisibleActiveCalls } from "@/hooks";
 
 interface RoomWithNested {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
-import { Image as ImageIcon, FileText } from "lucide-react";
+import { Image as ImageIcon, FileText } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useColor } from "@/contexts/colorContext";
 import { formatFileSize } from "@/lib/utils/file";

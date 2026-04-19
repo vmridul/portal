@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BadgeX, Bell, Hash } from "lucide-react";
+import { XCircle as BadgeX, Bell, Hash } from "@phosphor-icons/react";
 import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

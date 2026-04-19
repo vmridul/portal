@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, MicOff, PhoneOff } from "lucide-react";
+import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneSlash as PhoneOff } from "@phosphor-icons/react";
 import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
-import { Phone } from "lucide-react";
+import { Phone } from "@phosphor-icons/react";
 
 interface RoomWithNested {
   room_id: string;
@@ -59,7 +59,7 @@ export function RoomItem({
           {roomName?.charAt(0).toUpperCase()}
         </div>
         {hasActiveCall && (
-          <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4 fill-current" />
+          <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" weight="fill" />
         )}
       </div>
 

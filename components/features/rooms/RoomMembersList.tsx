@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { User as UserIcon, Moon } from "lucide-react";
+import { User as UserIcon, Moon } from "@phosphor-icons/react";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 
@@ -53,7 +53,8 @@ export const RoomMembersList = ({
                     <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
                   ) : isUserAway ? (
                     <Moon
-                      className="absolute text-yellow-400 fill-current right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+                      className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+                      weight="fill"
                     />
                   ) : (
                     <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />

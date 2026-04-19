@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MessageItem } from "./MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown } from "@phosphor-icons/react";
 import type { User, MessageWithSender } from "@/lib/types";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { cn } from "@/lib/utils";

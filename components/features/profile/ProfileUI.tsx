@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { Moon } from "lucide-react";
-import { LogOut } from "lucide-react";
+import { Moon, SignOut } from "@phosphor-icons/react";
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -32,7 +31,8 @@ export const ProfileUI = ({
 
           {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
             <Moon
-              className="absolute text-yellow-400 fill-current right-0 bottom-0 w-3 h-3 opacity-90"
+              className="absolute text-yellow-400 right-0 bottom-0 w-3 h-3 opacity-90"
+              weight="fill"
             />
           ) : (
             <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full"></div>
@@ -49,7 +49,7 @@ export const ProfileUI = ({
           )}
         </div>
       </div>
-      <LogOut
+      <SignOut
         onClick={(e) => {
           e.stopPropagation();
           import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LOGOUT"));

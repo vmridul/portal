@@ -1,7 +1,7 @@
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import Image from "next/image";
-import { Check, X } from "lucide-react";
+import { Check, X } from "@phosphor-icons/react";
 import {
   useFriendActions,
   type PendingRequest,

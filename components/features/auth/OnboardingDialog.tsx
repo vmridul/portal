@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Upload, X, ArrowRight, Check } from "lucide-react";
+import { UploadSimple as Upload, X, ArrowRight, Check } from "@phosphor-icons/react";
 import { useUserProfileActions } from "@/hooks";
 import { toast } from "sonner";
 import { Galindo } from "next/font/google";

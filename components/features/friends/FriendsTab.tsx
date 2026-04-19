@@ -1,14 +1,14 @@
 import {
   Users,
   Clock,
-  ArrowLeft,
-  Ellipsis,
-  UserX,
+  CaretLeft as ArrowLeft,
+  DotsThree as Ellipsis,
+  UserMinus as UserX,
   Moon,
   Image as ImageIcon,
   Info,
   Phone,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useUIStore } from "@/store/uiStore";
 import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
 
@@ -117,8 +117,8 @@ export default function FriendsTab() {
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-green-500 border border-[#59ab44] rounded-full"></div>
               ) : friend?.friend?.user_id && awayUsers.has(friend.friend.user_id) ? (
                 <Moon
-                  fill="yellow"
                   className="absolute text-yellow-400 left-5 bottom-0 w-[10px] h-[10px] opacity-90"
+                  weight="fill"
                 />
               ) : (
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-gray-500 border border-[#858585] rounded-full"></div>

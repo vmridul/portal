@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Smile, Pencil, MoreHorizontal, Copy, Trash2 } from "lucide-react";
+import { Smiley, PencilSimple, DotsThree, Copy, Trash } from "@phosphor-icons/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { useMutation } from "convex/react";
@@ -52,7 +52,7 @@ export const MessageToolbar = ({
       >
         <HoverCard.Trigger asChild>
           <button className={`p-1.5 rounded-[6px] transition-colors ${hoverCardOpen ? "bg-theme-hover text-white" : "text-gray-400 hover:text-white hover:bg-theme-hover"}`}>
-            <Smile className="w-4 h-4" />
+            <Smiley className="w-4 h-4" />
           </button>
         </HoverCard.Trigger>
 
@@ -70,7 +70,7 @@ export const MessageToolbar = ({
 
       {isCurrentUser && (
         <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
-          <Pencil className="w-4 h-4" />
+          <PencilSimple className="w-4 h-4" />
         </button>
       )}
 
@@ -81,7 +81,7 @@ export const MessageToolbar = ({
               className={`p-1.5 rounded-[6px] transition-colors ${open ? "bg-theme-hover text-white" : "hover:bg-theme-hover text-gray-400 hover:text-white"
                 }`}
             >
-              <MoreHorizontal className="w-4 h-4" />
+              <DotsThree className="w-4 h-4" />
             </button>
           </DropdownMenu.Trigger>
 
@@ -112,7 +112,7 @@ export const MessageToolbar = ({
                   }}
                   className="px-3 py-1.5 text-xs text-left text-red-400 hover:bg-theme-hover flex items-center gap-2 transition-colors outline-none cursor-pointer"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash className="w-3.5 h-3.5" />
                   Delete
                 </DropdownMenu.Item>
               )}

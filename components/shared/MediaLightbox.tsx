@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, Download, ExternalLink, Maximize2, Minimize2 } from "lucide-react";
+import { X, CaretLeft as ChevronLeft, CaretRight as ChevronRight, DownloadSimple as Download } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";

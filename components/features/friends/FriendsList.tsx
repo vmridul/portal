@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { usePresence } from "@/contexts/presenceContext";
-import { Moon, Phone, Search, UserPlus, Users } from "lucide-react";
+import { Moon, Phone, MagnifyingGlass as Search, UserPlus, Users } from "@phosphor-icons/react";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import { useState, useEffect } from "react";
@@ -133,13 +133,13 @@ export default function FriendsList({
                         className="w-10 h-10 rounded-[12px]"
                       />
                       {hasActiveCall ? (
-                        <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4 fill-current" />
+                        <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" weight="fill" />
                       ) : isUserOnline ? (
                         <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
                       ) : isUserAway ? (
                         <Moon
-                          fill="yellow"
                           className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+                          weight="fill"
                         />
                       ) : (
                         <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />

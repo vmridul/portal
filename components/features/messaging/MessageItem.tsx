@@ -3,7 +3,7 @@ import { formatFileSize } from "@/lib/utils/file";
 import { shouldShowMeta, shouldShowDateDivider, isOnlyEmojis } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
-import { FileText } from "lucide-react";
+import { FileText } from "@phosphor-icons/react";
 import { VideoMessage } from "./VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
 import { MessageReactions } from "./MessageReactions";

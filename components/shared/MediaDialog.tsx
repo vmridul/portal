@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, FileText } from "lucide-react";
+import { X, FileText } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useColor } from "@/contexts/colorContext";
 import { useMediaFiles } from "@/hooks";

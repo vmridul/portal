@@ -1,4 +1,4 @@
-import { Upload, Moon, Circle, Copy, LogOut, Camera } from "lucide-react";
+import { UploadSimple as Upload, Moon, Circle, Copy, SignOut as LogOut, Camera } from "@phosphor-icons/react";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -96,12 +96,12 @@ export const UserInfoTab = () => {
             >
               {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
                 <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Moon className="w-3 h-3 text-yellow-400 fill-current" />
+                  <Moon className="w-3 h-3 text-yellow-400" weight="fill" />
                   <span className={``}>Away</span>
                 </div>
               ) : (
                 <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Circle className="w-3 h-3 text-green-600 fill-current" />
+                  <Circle className="w-3 h-3 text-green-600" weight="fill" />
                   <span className={``}>Online</span>
                 </div>
               )}
@@ -116,7 +116,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-green-500"
                     >
-                      <Circle className="w-3 h-3 text-green-600 fill-current" />
+                      <Circle className="w-3 h-3 text-green-600" weight="fill" />
                       <span className="">Online</span>
                     </li>
                     <li
@@ -127,7 +127,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-yellow-400"
                     >
-                      <Moon className="w-3 h-3 text-yellow-400 fill-current" />
+                      <Moon className="w-3 h-3 text-yellow-400" weight="fill" />
                       <span>Away</span>
                     </li>
                   </ul>

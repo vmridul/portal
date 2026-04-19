@@ -8,7 +8,7 @@ import {
   FileArchive,
   FileCode,
   File as FileIcon,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 export function getFileIcon(fileType: string) {
   if (fileType.startsWith("image/")) return FileImage;

@@ -2,7 +2,7 @@
 
 import { useUIStore } from "@/store/uiStore";
 import { useNotifications, useNotificationActions, useCallSessionActions } from "@/hooks";
-import { Bell, Hash, Phone } from "lucide-react";
+import { Bell, Hash, Phone } from "@phosphor-icons/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useCallback, useRef } from "react";

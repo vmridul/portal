@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus } from "lucide-react";
+import { Plus } from "@phosphor-icons/react";
 import { ChatEmojiPicker } from "./ChatEmojiPicker";
 
 interface ReactionToolbarProps {

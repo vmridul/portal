@@ -1,6 +1,6 @@
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
-import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
+import { List, CaretLeft, CaretRight } from "@phosphor-icons/react";
 
 export default function Sidebar() {
   const { toggleSidebar, isSidebarOpen } = useUIStore();
@@ -29,7 +29,7 @@ export default function Sidebar() {
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-theme-border">
         <div className="flex items-center space-x-2">
-          <Menu className="h-5 w-5 text-gray-400 hover:text-white" />
+          <List className="h-5 w-5 text-gray-400 hover:text-white" />
           <span className="font-semibold text-white whitespace-nowrap">
             Portal
           </span>
@@ -40,9 +40,9 @@ export default function Sidebar() {
           aria-label="Toggle sidebar"
         >
           {isSidebarOpen ? (
-            <ChevronRight className="h-4 w-4 text-gray-400 hover:text-white" />
+            <CaretRight className="h-4 w-4 text-gray-400 hover:text-white" />
           ) : (
-            <ChevronLeft className="h-4 w-4 text-gray-400 hover:text-white" />
+            <CaretLeft className="h-4 w-4 text-gray-400 hover:text-white" />
           )}
         </button>
       </div>

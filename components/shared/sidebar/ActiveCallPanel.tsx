@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mic, MicOff, PhoneOff, PhoneCall } from "lucide-react";
+import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneSlash as PhoneOff, PhoneCall } from "@phosphor-icons/react";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useCallStore } from "@/store/callStore";

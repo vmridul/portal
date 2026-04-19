@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { User, CircleUser, Settings, X } from "lucide-react";
+import { User, UserCircle, Gear, X, GearSixIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { UserInfoTab } from "./UserInfoTab";
 import { PreferencesTab } from "./PreferencesTab";
@@ -34,14 +34,14 @@ export default function ProfilePage() {
             onClick={() => setCurrentTab("Info")}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
-            <CircleUser className="w-4 h-4" />
+            <UserCircle className="w-4 h-4" />
             <span>User Info</span>
           </button>
           <button
             onClick={() => setCurrentTab("Preferences")}
             className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
-            <Settings className="w-4 h-4" />
+            <Gear className="w-4 h-4" />
             <span>Preferences</span>
           </button>
         </div>
@@ -52,14 +52,14 @@ export default function ProfilePage() {
             onClick={() => setCurrentTab("Info")}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
           >
-            <CircleUser className="w-4 h-4" />
+            <UserCircle className="w-4 h-4" />
             <span>User Info</span>
           </button>
           <button
             onClick={() => setCurrentTab("Preferences")}
             className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} gap-1 px-3 py-1 rounded-[8px]`}
           >
-            <Settings className="w-4 h-4" />
+            <GearSixIcon className="w-4 h-4" />
             <span>Preferences</span>
           </button>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Play } from "lucide-react";
+import { Play } from "@phosphor-icons/react";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 
 export const VideoMessage = ({
@@ -39,7 +39,7 @@ export const VideoMessage = ({
             {!isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover/video:bg-black/20 transition-colors">
                     <div className="w-12 h-12 rounded-full bg-theme-base/80 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-xl transform group-hover/video:scale-110 transition-transform">
-                        <Play className="w-6 h-6 text-white ml-1" fill="currentColor" />
+                        <Play className="w-6 h-6 text-white ml-1" weight="fill" />
                     </div>
                 </div>
             )}

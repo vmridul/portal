@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { UserPlus, Plus, HouseIcon, Users } from "lucide-react";
+import { UserPlus, Plus, House, Users } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -137,7 +137,7 @@ export default function LeftSidebar({
               <div className="flex justify-between items-center px-3 text-[#aaaaaa] mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Rooms</span>
                 <div className="bg-theme-hover rounded-[6px] px-2 py-0.5 flex text-white/60 text-[10px] items-center gap-1 border border-theme-border/50">
-                  <HouseIcon className="w-3 h-3" />
+                  <House className="w-3 h-3" />
                   {rooms.length ?? 0}
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Search, Image as ImageIcon, Info, Menu, Users, Phone } from "lucide-react";
+import { MagnifyingGlass, Image as ImageIcon, Info, List, Users, Phone } from "@phosphor-icons/react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { useRoom, useRoomMembers, useCalls } from "@/hooks";
@@ -73,7 +73,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
           }}
           className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
         >
-          <Menu className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
+          <List className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
         </button>
 
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
@@ -102,7 +102,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             onClick={(e) => e.stopPropagation()}
             className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden"
           >
-            <Search className="flex-none w-4 h-4 text-gray-400" />
+            <MagnifyingGlass className="flex-none w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search messages"

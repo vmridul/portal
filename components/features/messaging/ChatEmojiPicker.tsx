@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import EmojiPicker, { Theme, EmojiStyle } from "emoji-picker-react";
-import { Smile } from "lucide-react";
+import { Smiley } from "@phosphor-icons/react";
 
 interface ChatEmojiPickerProps {
   onEmojiSelect: (emoji: any) => void;
@@ -34,7 +34,7 @@ export function ChatEmojiPicker({
             className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
             disabled={disabled}
           >
-            <Smile className="text-gray-400 w-4 h-4" />
+            <Smiley className="text-gray-400 w-4 h-4" />
           </button>
         )}
       </Popover.Trigger>
