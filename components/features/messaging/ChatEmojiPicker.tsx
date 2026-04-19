@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import EmojiPicker, { Theme, EmojiStyle } from "emoji-picker-react";
-import { Smiley } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Happy01Icon } from "@hugeicons/core-free-icons";
 
 interface ChatEmojiPickerProps {
   onEmojiSelect: (emoji: any) => void;
@@ -34,7 +35,7 @@ export function ChatEmojiPicker({
             className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
             disabled={disabled}
           >
-            <Smiley className="text-gray-400 w-4 h-4" />
+            <HugeiconsIcon icon={Happy01Icon} className="text-gray-400 w-4 h-4" />
           </button>
         )}
       </Popover.Trigger>

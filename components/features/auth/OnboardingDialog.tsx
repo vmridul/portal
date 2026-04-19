@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { UploadSimple as Upload, X, ArrowRight, Check } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Upload01Icon, Cancel01Icon, ArrowRight01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { useUserProfileActions } from "@/hooks";
 import { toast } from "sonner";
 import { Galindo } from "next/font/google";
@@ -104,7 +105,7 @@ export const OnboardingDialog = ({ onComplete }: OnboardingDialogProps) => {
                 }}
                 className="bg-purple-700 hover:bg-purple-800 shadow-sm shadow-purple-700/50 hover:text-gray-200 duration-200 transition-all text-white py-4 px-8 flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 rounded-xl"
               >
-                <ArrowRight className="w-4 h-4" />
+                <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -147,7 +148,7 @@ export const OnboardingDialog = ({ onComplete }: OnboardingDialogProps) => {
                       </div>
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                      <Upload className="w-6 h-6 text-white" />
+                      <HugeiconsIcon icon={Upload01Icon} className="w-6 h-6 text-white" />
                     </div>
                   </div>
                   <input

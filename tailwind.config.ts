@@ -21,6 +21,10 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         theme: {
+          DEFAULT: "var(--theme-accent-color)",
+          primary: "var(--theme-accent-color)",
+          accent: "var(--theme-accent-color)",
+          "accent-color": "var(--theme-accent-color)",
           base: "hsl(var(--theme-bg-base))",
           surface: "hsl(var(--theme-bg-surface))",
           hover: "hsl(var(--theme-bg-hover))",

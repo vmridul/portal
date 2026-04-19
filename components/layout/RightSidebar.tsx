@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { UserMinus, ClipboardText, Users, List } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserRemove01Icon, Menu01Icon, CopyIcon } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -68,7 +69,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 }}
                 className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
               >
-                <List className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
+                <HugeiconsIcon icon={Menu01Icon} className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
               </div>
               <div
                 className={`
@@ -91,7 +92,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   }}
                   className="border-b cursor-pointer border-theme-border flex items-center hover:bg-theme-hover"
                 >
-                  <ClipboardText className="w-4 h-4 ml-3 mr-2 text-white/90" />
+                  <HugeiconsIcon icon={CopyIcon} className="w-4 h-4 ml-3 mr-2 text-white/90" />
                   <button className="w-32 text-start py-3">Copy Room ID</button>
                 </div>
                 <div
@@ -100,7 +101,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   }}
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >
-                  <UserMinus className="w-4 h-4 ml-3 mr-2" />
+                  <HugeiconsIcon icon={UserRemove01Icon} className="w-4 h-4 ml-3 mr-2" />
                   <button className="w-32 text-start py-3">
                     {owner_id === (user?.user_id ?? "")
                       ? "Delete Room"

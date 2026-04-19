@@ -4,7 +4,14 @@ import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
-import { PaperPlaneRight, Plus, X as CloseIcon, Paperclip, ArrowRight } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  SentIcon, 
+  Add01Icon, 
+  Cancel01Icon, 
+  Attachment01Icon, 
+  ArrowRight01Icon 
+} from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";
@@ -268,7 +275,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
                 </div>
               ) : (
                 <div className="w-full h-full rounded-lg bg-theme-base flex items-center justify-center border border-theme-hover">
-                  {FileIcon && <FileIcon className="w-6 h-6 text-gray-400" />}
+                  {FileIcon && <HugeiconsIcon icon={FileIcon} className="w-6 h-6 text-gray-400" />}
                 </div>
               )}
 
@@ -295,7 +302,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
               }}
               className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
             >
-              <CloseIcon className="w-4 h-4" />
+              <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -350,7 +357,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
               className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
               disabled={uploading && !msg.trim()}
             >
-              <Paperclip className="text-gray-400 w-4 h-4" />
+              <HugeiconsIcon icon={Attachment01Icon} className="text-gray-400 w-4 h-4" />
             </button>
             <ChatEmojiPicker
               onEmojiSelect={onEmojiClick}
@@ -364,7 +371,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
             className="py-3 px-3 rounded-[12px] disabled:opacity-50"
             disabled={(!msg.trim() && !selectedFile)}
           >
-            <ArrowRight className="w-3 h-3" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
           </button>
         </div>
       </div>

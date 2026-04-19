@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { Smiley, PencilSimple, DotsThree, Copy, Trash } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Happy01Icon,
+  PencilEdit01Icon,
+  MoreHorizontalIcon,
+  CopyIcon,
+  Delete01Icon
+} from "@hugeicons/core-free-icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { useMutation } from "convex/react";
@@ -44,22 +51,22 @@ export const MessageToolbar = ({
       className={`absolute -top-4 right-4 md:right-10 z-[70] transition-opacity flex items-center gap-0.5 bg-theme-base border border-theme-border rounded-[8px] p-0.5 shadow-lg ${open || hoverCardOpen ? "opacity-100" : "opacity-0 group-hover/row:opacity-100"
         }`}
     >
-      <HoverCard.Root 
-        openDelay={100} 
+      <HoverCard.Root
+        openDelay={100}
         closeDelay={300}
         open={hoverCardOpen}
         onOpenChange={setHoverCardOpen}
       >
         <HoverCard.Trigger asChild>
           <button className={`p-1.5 rounded-[6px] transition-colors ${hoverCardOpen ? "bg-theme-hover text-white" : "text-gray-400 hover:text-white hover:bg-theme-hover"}`}>
-            <Smiley className="w-4 h-4" />
+            <HugeiconsIcon icon={Happy01Icon} className="w-4 h-4" />
           </button>
         </HoverCard.Trigger>
 
         <HoverCard.Portal>
-          <HoverCard.Content 
-            side="top" 
-            align="center" 
+          <HoverCard.Content
+            side="top"
+            align="center"
             sideOffset={8}
             className="z-[100] outline-none"
           >
@@ -70,7 +77,7 @@ export const MessageToolbar = ({
 
       {isCurrentUser && (
         <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
-          <PencilSimple className="w-4 h-4" />
+          <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
         </button>
       )}
 
@@ -81,7 +88,7 @@ export const MessageToolbar = ({
               className={`p-1.5 rounded-[6px] transition-colors ${open ? "bg-theme-hover text-white" : "hover:bg-theme-hover text-gray-400 hover:text-white"
                 }`}
             >
-              <DotsThree className="w-4 h-4" />
+              <HugeiconsIcon icon={MoreHorizontalIcon} className="w-4 h-4" />
             </button>
           </DropdownMenu.Trigger>
 
@@ -89,7 +96,7 @@ export const MessageToolbar = ({
             <DropdownMenu.Content
               sideOffset={8}
               align="end"
-              className="w-32 bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in zoom-in duration-100 outline-none"
+              className="w-32 bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
             >
               {content && (
                 <DropdownMenu.Item
@@ -99,7 +106,7 @@ export const MessageToolbar = ({
                   }}
                   className="px-3 py-1.5 text-xs text-left text-gray-300 hover:bg-theme-hover flex items-center gap-2 transition-colors outline-none cursor-pointer"
                 >
-                  <Copy className="w-3.5 h-3.5" />
+                  <HugeiconsIcon icon={CopyIcon} className="w-3.5 h-3.5" />
                   Copy
                 </DropdownMenu.Item>
               )}
@@ -112,7 +119,7 @@ export const MessageToolbar = ({
                   }}
                   className="px-3 py-1.5 text-xs text-left text-red-400 hover:bg-theme-hover flex items-center gap-2 transition-colors outline-none cursor-pointer"
                 >
-                  <Trash className="w-3.5 h-3.5" />
+                  <HugeiconsIcon icon={Delete01Icon} className="w-3.5 h-3.5" />
                   Delete
                 </DropdownMenu.Item>
               )}

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X, FileText } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, File02Icon } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { useColor } from "@/contexts/colorContext";
 import { useMediaFiles } from "@/hooks";
@@ -52,7 +53,7 @@ export function MediaDialog() {
               </button>
             ))}
           </div>
-          <button onClick={closeModal}><X className="w-6 h-6 text-white/50 hover:text-white" /></button>
+          <button onClick={closeModal}><HugeiconsIcon icon={Cancel01Icon} className="w-6 h-6 text-white/50 hover:text-white" /></button>
         </div>
 
         <div className={`w-full flex-1 overflow-y-auto ${activeTab === "files" ? "flex flex-col gap-2" : "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 auto-rows-[120px]"}`}>
@@ -62,7 +63,7 @@ export function MediaDialog() {
             activeData.map((media, index) => (
               activeTab === "files" ? (
                 <a key={media._id} href={media.file_url!} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl bg-theme-base hover:bg-theme-hover border border-white/5 transition-all w-full md:w-1/2">
-                  <div className="w-10 h-10 rounded-[8px] bg-white/5 flex items-center justify-center"><FileText className="w-5 h-5 text-white/50" /></div>
+                  <div className="w-10 h-10 rounded-[8px] bg-white/5 flex items-center justify-center"><HugeiconsIcon icon={File02Icon} className="w-5 h-5 text-white/50" /></div>
                   <div className="flex flex-col overflow-hidden"><span className="text-sm text-white/90 font-medium truncate">{media.file_name || "Document"}</span><span className="text-xs text-white/40">Click to download</span></div>
                 </a>
               ) : (

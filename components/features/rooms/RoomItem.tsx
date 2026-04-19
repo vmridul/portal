@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
-import { Phone } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CallIcon } from "@hugeicons/core-free-icons";
 
 interface RoomWithNested {
   room_id: string;
@@ -59,7 +60,7 @@ export function RoomItem({
           {roomName?.charAt(0).toUpperCase()}
         </div>
         {hasActiveCall && (
-          <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" weight="fill" />
+          <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
         )}
       </div>
 

@@ -1,5 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { MagnifyingGlass, Image as ImageIcon, Info, List, Users, Phone } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  Search01Icon, 
+  Image01Icon, 
+  InformationCircleIcon, 
+  Menu01Icon, 
+  UserGroupIcon, 
+  CallIcon 
+} from "@hugeicons/core-free-icons";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
 import { useRoom, useRoomMembers, useCalls } from "@/hooks";
@@ -73,7 +81,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
           }}
           className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
         >
-          <List className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
+          <HugeiconsIcon icon={Menu01Icon} className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
         </button>
 
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
@@ -102,7 +110,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             onClick={(e) => e.stopPropagation()}
             className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden"
           >
-            <MagnifyingGlass className="flex-none w-4 h-4 text-gray-400" />
+            <HugeiconsIcon icon={Search01Icon} className="flex-none w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search messages"
@@ -152,7 +160,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`} />
+            <HugeiconsIcon icon={Image01Icon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`} />
           </div>
           <div
             onClick={(e) => {
@@ -162,7 +170,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <Phone className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"
+            <HugeiconsIcon icon={CallIcon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"
               }`} />
             {activeCalls.length > 0 && (
               <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
@@ -179,7 +187,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-hover" : "hover:bg-theme-hover"
               }`}
           >
-            <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`} />
+            <HugeiconsIcon icon={InformationCircleIcon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`} />
           </div>
           <button
             onClick={(e) => {
@@ -188,7 +196,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             }}
             className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
           >
-            <Users className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-400"}`} />
+            <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-400"}`} />
           </button>
         </div>
       </div>

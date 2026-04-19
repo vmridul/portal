@@ -2,6 +2,7 @@ import React from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useColor } from "@/contexts/colorContext";
 
 interface Reaction {
   _id: string;
@@ -23,6 +24,7 @@ export const MessageReactions = ({
   const toggleReaction = useMutation(api.reactions.toggleReaction);
 
   if (!reactions || reactions.length === 0) return null;
+  const { color } = useColor();
 
   // Group reactions by emoji
   const groupedReactions = reactions.reduce((acc, reaction) => {
@@ -55,17 +57,17 @@ export const MessageReactions = ({
           key={emoji}
           onClick={() => handleReactionClick(emoji)}
           className={`
-            flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-all
+            flex items-center gap-1 px-2 py-1 rounded-md text-xs
             ${data.hasUserReacted
-              ? "bg-theme-hover hover:bg-theme-base border border-theme-border text-white shadow-sm"
-              : "bg-theme-surface/50 border border-theme-border  text-gray-400 hover:bg-theme-hover hover:text-white"
+              ? "bg-theme-accent-color text-white border border-transparent"
+              : "bg-theme-surface border border-theme-border  text-gray-400"
             }
           `}
           title={emoji}
         >
           <span>{emoji}</span>
           {data.count > 0 && (
-            <span className={data.hasUserReacted ? "text-white font-medium" : "text-gray-500"}>
+            <span className={data.hasUserReacted ? "text-white" : "text-gray-500"}>
               {data.count}
             </span>
           )}

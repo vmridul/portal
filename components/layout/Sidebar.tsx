@@ -1,6 +1,7 @@
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
-import { List, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Menu01Icon, ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 export default function Sidebar() {
   const { toggleSidebar, isSidebarOpen } = useUIStore();
@@ -29,7 +30,7 @@ export default function Sidebar() {
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-theme-border">
         <div className="flex items-center space-x-2">
-          <List className="h-5 w-5 text-gray-400 hover:text-white" />
+          <HugeiconsIcon icon={Menu01Icon} className="h-5 w-5 text-gray-400 hover:text-white" />
           <span className="font-semibold text-white whitespace-nowrap">
             Portal
           </span>
@@ -40,9 +41,9 @@ export default function Sidebar() {
           aria-label="Toggle sidebar"
         >
           {isSidebarOpen ? (
-            <CaretRight className="h-4 w-4 text-gray-400 hover:text-white" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4 text-gray-400 hover:text-white" />
           ) : (
-            <CaretLeft className="h-4 w-4 text-gray-400 hover:text-white" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 text-gray-400 hover:text-white" />
           )}
         </button>
       </div>

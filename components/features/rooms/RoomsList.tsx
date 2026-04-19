@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useRooms } from "@/contexts/roomContext";
 import { RoomItem } from "./RoomItem";
-import { House } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Home01Icon } from "@hugeicons/core-free-icons";
 import { useVisibleActiveCalls } from "@/hooks";
 
 interface RoomWithNested {
@@ -39,7 +40,7 @@ export const RoomsList = ({
         {rooms.length === 0 ? (
           <div className="rounded-[14px] text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-              <House className="h-5 w-5 text-gray-400" />
+              <HugeiconsIcon icon={Home01Icon} className="h-5 w-5 text-gray-400" />
             </div>
             <p className="mt-4 text-xs text-gray-400">
               No rooms yet

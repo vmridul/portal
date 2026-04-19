@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { UserPlus, Plus, House, Users } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserAdd01Icon, Add01Icon, Home01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -58,15 +59,15 @@ export default function LeftSidebar({
           {!user?.user_id || !rooms ? (
             <div className="flex flex-col gap-1 mt-2 text-sm items-center">
               <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
-                <Users className="w-4 h-4" />
+                <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4" />
                 <span>Friends</span>
               </div>
               <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
-                <Plus className="w-4 h-4" />
+                <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
                 <span>Create Room</span>
               </div>
               <div className="ease-in-out bg-theme-base text-white/90 duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]">
-                <UserPlus className="w-4 h-4" />
+                <HugeiconsIcon icon={UserAdd01Icon} className="w-4 h-4" />
                 <span>Join Room</span>
               </div>
             </div>
@@ -76,14 +77,14 @@ export default function LeftSidebar({
                 onClick={() => router.push("/portal")}
                 className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
-                <Users className="w-4 h-4" />
+                <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4" />
                 <span>Friends</span>
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}
                 className="ease-in-out bg-theme-surface hover:bg-theme-hover text-gray-200 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
-                <Plus className="w-4 h-4" />
+                <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
                 <span>Create Room</span>
               </button>
 
@@ -91,7 +92,7 @@ export default function LeftSidebar({
                 onClick={() => setModal("JOIN_ROOM")}
                 className="ease-in-out bg-theme-surface hover:bg-theme-hover text-gray-200 hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]"
               >
-                <UserPlus className="w-4 h-4" />
+                <HugeiconsIcon icon={UserAdd01Icon} className="w-4 h-4" />
                 <span>Join Room</span>
               </button>
             </div>
@@ -137,7 +138,7 @@ export default function LeftSidebar({
               <div className="flex justify-between items-center px-3 text-[#aaaaaa] mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wider">Rooms</span>
                 <div className="bg-theme-hover rounded-[6px] px-2 py-0.5 flex text-white/60 text-[10px] items-center gap-1 border border-theme-border/50">
-                  <House className="w-3 h-3" />
+                  <HugeiconsIcon icon={Home01Icon} className="w-3 h-3" />
                   {rooms.length ?? 0}
                 </div>
               </div>

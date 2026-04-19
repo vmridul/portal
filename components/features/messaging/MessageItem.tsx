@@ -3,7 +3,8 @@ import { formatFileSize } from "@/lib/utils/file";
 import { shouldShowMeta, shouldShowDateDivider, isOnlyEmojis } from "@/lib/utils/message";
 import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
-import { FileText } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { File02Icon } from "@hugeicons/core-free-icons";
 import { VideoMessage } from "./VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
 import { MessageReactions } from "./MessageReactions";
@@ -53,12 +54,12 @@ export const MessageItem = React.memo(({
     timeString: formatTimeOnly(message._creationTime),
   }), [message._creationTime, message._id, prevMessage?._id]);
 
-  const senderAvatar = React.useMemo(() => 
+  const senderAvatar = React.useMemo(() =>
     getSenderAvatar(message.sender_id, user?.user_id, message.sender, user ?? undefined),
     [message.sender_id, message.sender, user]
   );
 
-  const displayName = React.useMemo(() => 
+  const displayName = React.useMemo(() =>
     getDisplayName(message.sender_id, user?.user_id, message.sender),
     [message.sender_id, message.sender, user?.user_id]
   );
@@ -96,14 +97,14 @@ export const MessageItem = React.memo(({
             data-date-string={messageDate}
             className="flex items-center justify-center py-4"
           >
-            <span className="px-3 py-1 rounded-full bg-theme-base text-xs text-gray-400 border border-theme-border">
+            <span className="px-4 py-1 rounded-full bg-theme-border text-xs text-gray-300">
               {messageDate}
             </span>
           </div>
         )}
         <div
           data-msg-id={message._id}
-          className={`px-3 py-1 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-2 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
+          className={`px-3 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-1 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
         >
           <span className="font-medium">{message.sender?.username}</span>
           <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
@@ -124,7 +125,7 @@ export const MessageItem = React.memo(({
             data-date-string={messageDate}
             className="flex items-center justify-center py-4"
           >
-            <span className="px-3 py-1 rounded-full bg-theme-surface text-xs text-gray-400 border border-theme-border">
+            <span className="px-4 py-1 rounded-full bg-theme-border text-xs text-gray-300">
               {messageDate}
             </span>
           </div>
@@ -199,7 +200,7 @@ export const MessageItem = React.memo(({
                   className="flex items-center gap-3 py-1 transition-colors duration-200 mb-1 group/file"
                 >
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/5">
-                    <FileText className="w-5 h-5 text-gray-400" />
+                    <HugeiconsIcon icon={File02Icon} className="w-5 h-5 text-gray-400" />
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm break-words opacity-90">
@@ -218,10 +219,10 @@ export const MessageItem = React.memo(({
                 <div className={`whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}>{message.content}</div>
               )}
             </div>
-            
-            <MessageReactions 
-              messageId={message._id as string} 
-              reactions={(message as any).reactions || []} 
+
+            <MessageReactions
+              messageId={message._id as string}
+              reactions={(message as any).reactions || []}
               currentUserId={user?.user_id || ""}
             />
           </div>

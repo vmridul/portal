@@ -7,7 +7,8 @@ import RecentCallsList from "./RecentCallsList";
 import { useUserStore } from "@/store/useUserStore";
 import { useColor } from "@/contexts/colorContext";
 import { useRooms } from "@/contexts/roomContext";
-import { Phone } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CallIcon } from "@hugeicons/core-free-icons";
 
 interface CallSidebarProps {
   roomId: string;
@@ -78,7 +79,7 @@ export default function CallSidebar({
             style={{ backgroundColor: color, color: textColor }}
             className="w-full py-2 flex items-center justify-center gap-3 rounded-[12px] hover:brightness-110 active:scale-[0.98] transition-all"
           >
-            <Phone className="w-3 h-3" weight="fill" />
+            <HugeiconsIcon icon={CallIcon} className="w-3 h-3" />
             Start New Call
           </button>
         </div>

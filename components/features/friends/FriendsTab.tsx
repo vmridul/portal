@@ -1,14 +1,15 @@
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Users,
-  Clock,
-  CaretLeft as ArrowLeft,
-  DotsThree as Ellipsis,
-  UserMinus as UserX,
-  Moon,
-  Image as ImageIcon,
-  Info,
-  Phone,
-} from "@phosphor-icons/react";
+  UserGroupIcon,
+  Clock01Icon,
+  ArrowLeft01Icon,
+  MoreVerticalIcon,
+  UserRemove01Icon,
+  Moon02Icon,
+  Image02Icon,
+  InformationCircleIcon,
+  CallIcon
+} from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
 
@@ -87,7 +88,7 @@ export default function FriendsTab() {
           }}
           className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
         >
-          <UserX className="w-4 h-4 ml-3 mr-2" />
+          <HugeiconsIcon icon={UserRemove01Icon} className="w-4 h-4 ml-3 mr-2" />
           <button className="w-32 text-start py-2">Remove Friend</button>
         </div>
       </div>
@@ -97,7 +98,8 @@ export default function FriendsTab() {
             className={`
  flex shrink-0 items-center p-3 w-full gap-4 border-b border-theme-border bg-theme-hover bg-opacity-100`}
           >
-            <ArrowLeft
+            <HugeiconsIcon
+              icon={ArrowLeft01Icon}
               onClick={() => {
                 setActiveFriendPage(null);
                 setMenuOpen(false);
@@ -116,9 +118,10 @@ export default function FriendsTab() {
               {friend?.friend?.user_id && onlineUsers.has(friend.friend.user_id) ? (
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-green-500 border border-[#59ab44] rounded-full"></div>
               ) : friend?.friend?.user_id && awayUsers.has(friend.friend.user_id) ? (
-                <Moon
+                <HugeiconsIcon
+                  icon={Moon02Icon}
+                  fill="currentColor"
                   className="absolute text-yellow-400 left-5 bottom-0 w-[10px] h-[10px] opacity-90"
-                  weight="fill"
                 />
               ) : (
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-gray-500 border border-[#858585] rounded-full"></div>
@@ -133,35 +136,33 @@ export default function FriendsTab() {
                   e.stopPropagation();
                   toggleSidebar("media");
                 }}
-                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-base" : "hover:bg-theme-base"
+                className={`w-7 select-none h-7 cursor-pointer duration-100  ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-base" : "hover:bg-theme-base"
                   }`}
               >
-                <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/70"}`} />
+                <HugeiconsIcon icon={Image02Icon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/70"}`} />
               </div>
               <div
                 onClick={() => {
                   toggleSidebar("calls");
                 }}
-                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${
-                  isSidebarOpen && sidebarTab === "calls"
-                    ? "bg-theme-base"
-                    : "hover:bg-theme-base"
-                }`}
-              >
-                <Phone
-                  className={`w-4 h-4 transition-colors ${
-                    isSidebarOpen && sidebarTab === "calls"
-                      ? "text-white"
-                      : "text-white/70"
+                className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
+                  ? "bg-theme-base"
+                  : "hover:bg-theme-base"
                   }`}
+              >
+                <HugeiconsIcon
+                  icon={CallIcon}
+                  className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
+                    ? "text-white"
+                    : "text-white/70"
+                    }`}
                 />
                 {activeCalls.length > 0 && (
                   <span
-                    className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
-                      isInCall && actualRoomId === directConversationId
-                        ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
-                        : "bg-green-500"
-                    }`}
+                    className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === directConversationId
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                      : "bg-green-500"
+                      }`}
                   />
                 )}
               </div>
@@ -170,14 +171,14 @@ export default function FriendsTab() {
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center"
               >
-                <Ellipsis className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70" />
+                <HugeiconsIcon icon={MoreVerticalIcon} className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70" />
               </div>
             </div>
           </div>
         ) : (
           <div className="flex justify-between md:px-2 px-7 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
             <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
-              <Users className="w-4 h-4" />
+              <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4" />
               <h1 className="text-md">Friends</h1>
             </div>
             <div className="ml-3 md:hidden flex items-center gap-2 text-white/90">
@@ -190,7 +191,7 @@ export default function FriendsTab() {
                 }}
                 className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
               >
-                <Clock className="w-4 h-4" />
+                <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
                 <div
                   className={`${pendingRequests.length > 0 ? "block" : "hidden"
                     } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneSlash as PhoneOff, PhoneCall } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Mic01Icon, MicOff01Icon, CallEnd01Icon, CallIncoming01Icon } from "@hugeicons/core-free-icons";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useCallStore } from "@/store/callStore";
@@ -174,7 +175,7 @@ export default function ActiveCallPanel({
           disabled={isThisCallConnecting || isCallJoined}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
         >
-          <PhoneCall className={`w-4 h-4 ${isThisCallConnecting ? "animate-bounce" : ""}`} />
+          <HugeiconsIcon icon={CallIncoming01Icon} className={`w-4 h-4 ${isThisCallConnecting ? "animate-bounce" : ""}`} />
           <span className="text-sm">{isThisCallConnecting ? "Connecting to call..." : "Join Call"}</span>
         </button>
       </div>
@@ -201,7 +202,7 @@ export default function ActiveCallPanel({
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
             }`}
         >
-          {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          {isMuted ? <HugeiconsIcon icon={MicOff01Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic01Icon} className="w-4 h-4" />}
           <span className="text-sm">{isMuted ? "Unmute" : "Mute"}</span>
         </button>
         <button
@@ -209,7 +210,7 @@ export default function ActiveCallPanel({
           disabled={isLeaving}
           className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500/20 text-red-400 transition-colors hover:bg-red-500/30"
         >
-          <PhoneOff className="w-4 h-4" />
+          <HugeiconsIcon icon={CallEnd01Icon} className="w-4 h-4" />
           <span className="text-sm">Leave</span>
         </button>
       </div>

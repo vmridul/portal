@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Moon, SignOut } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Moon02Icon, Logout01Icon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -30,9 +31,10 @@ export const ProfileUI = ({
           />
 
           {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
-            <Moon
+            <HugeiconsIcon
+              icon={Moon02Icon}
+              fill="currentColor"
               className="absolute text-yellow-400 right-0 bottom-0 w-3 h-3 opacity-90"
-              weight="fill"
             />
           ) : (
             <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full"></div>
@@ -49,7 +51,8 @@ export const ProfileUI = ({
           )}
         </div>
       </div>
-      <SignOut
+      <HugeiconsIcon
+        icon={Logout01Icon}
         onClick={(e) => {
           e.stopPropagation();
           import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LOGOUT"));

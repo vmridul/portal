@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { X, CaretLeft as ChevronLeft, CaretRight as ChevronRight, DownloadSimple as Download } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  Cancel01Icon, 
+  ArrowLeft01Icon, 
+  ArrowRight01Icon, 
+  Download01Icon 
+} from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
@@ -103,14 +109,14 @@ export function MediaLightbox() {
             onClick={handleDownload}
             className="p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
           >
-            <Download className="w-4 h-4" />
+            <HugeiconsIcon icon={Download01Icon} className="w-4 h-4" />
           </button>
 
           <button
             onClick={closeLightbox}
             className="p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
           >
-            <X className="w-4 h-4" />
+            <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -126,7 +132,7 @@ export function MediaLightbox() {
             onClick={handlePrev}
             className="absolute left-4 z-50 p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
           </button>
         )}
 
@@ -135,7 +141,7 @@ export function MediaLightbox() {
             onClick={handleNext}
             className="absolute right-4 z-50 p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
           >
-            <ChevronRight className="w-4 h-4" />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4" />
           </button>
         )}
 

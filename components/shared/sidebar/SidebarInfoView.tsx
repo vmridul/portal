@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Hash } from "@phosphor-icons/react";
+
 import { useRoomActions } from "@/hooks";
 import { formatDateFull } from "@/lib/utils/date";
 import { toast } from "sonner";

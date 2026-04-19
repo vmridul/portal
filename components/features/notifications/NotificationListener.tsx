@@ -2,7 +2,8 @@
 
 import { useUIStore } from "@/store/uiStore";
 import { useNotifications, useNotificationActions, useCallSessionActions } from "@/hooks";
-import { Bell, Hash, Phone } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Notification01Icon, HashtagIcon, CallIcon } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useCallback, useRef } from "react";
@@ -124,7 +125,7 @@ export default function NotificationListener() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Bell className="h-4 w-4 text-white/65" />
+                  <HugeiconsIcon icon={Notification01Icon} className="h-4 w-4 text-white/65" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -134,7 +135,7 @@ export default function NotificationListener() {
                   </p>
                   {item.sourceType === "room" && (
                     <div className="ml-auto flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
-                      <Hash className="h-3.5 w-3.5 flex-shrink-0" />
+                      <HugeiconsIcon icon={HashtagIcon} className="h-3.5 w-3.5 flex-shrink-0" />
                       <span className="max-w-[140px] truncate text-sm text-white/75">
                         {item.sourceName}
                       </span>

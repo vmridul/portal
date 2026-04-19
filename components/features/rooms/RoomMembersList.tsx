@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { User as UserIcon, Moon } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserIcon, Moon02Icon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 
@@ -23,7 +24,7 @@ export const RoomMembersList = ({
       <div className="flex items-center gap-40">
         <span className="text-xs ml-2 text-[#aaaaaa]">Members</span>
         <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-xs items-center gap-0.5">
-          <UserIcon className="w-3 h-3 cursor-pointer" />
+          <HugeiconsIcon icon={UserIcon} className="w-3 h-3 cursor-pointer" />
           {memberCount}
         </div>
       </div>
@@ -52,9 +53,10 @@ export const RoomMembersList = ({
                   {isUserOnline ? (
                     <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
                   ) : isUserAway ? (
-                    <Moon
+                    <HugeiconsIcon
+                      icon={Moon02Icon}
+                      fill="currentColor"
                       className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
-                      weight="fill"
                     />
                   ) : (
                     <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />

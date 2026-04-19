@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { XCircle as BadgeX, Bell, Hash } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CancelCircleIcon, Notification01Icon, HashtagIcon } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -58,12 +59,22 @@ function NotificationCard({
         className="absolute -top-0 right-0 z-[60] flex h-4 w-4 items-center justify-center rounded-full border border-white/5 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:scale-110 group-hover:opacity-100"
         aria-label="Clear notification"
       >
-        <BadgeX className="h-4 w-4 text-white/50" />
+        <HugeiconsIcon icon={CancelCircleIcon} className="h-4 w-4 text-white/50" />
       </button>
 
       {isEndedCall ? (
         <button onClick={onOpen} className="w-full text-left">
-          <div className="text-sm font-medium text-white/90">Call ended</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-medium text-white/90">Call ended</div>
+            <div className="flex items-center gap-1 text-xs text-white/55">
+              {notification.sourceType === "room" && (
+                <HugeiconsIcon icon={HashtagIcon} className="h-3.5 w-3.5 flex-shrink-0" />
+              )}
+              <span className="max-w-[130px] truncate text-sm text-white/75">
+                {notification.sourceName}
+              </span>
+            </div>
+          </div>
           <div className="mt-3">
             <AvatarStack users={participantProfiles} size={26} limit={5} />
           </div>
@@ -84,7 +95,7 @@ function NotificationCard({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <Bell className="h-4 w-4 text-white/45" />
+              <HugeiconsIcon icon={Notification01Icon} className="h-4 w-4 text-white/45" />
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -95,7 +106,7 @@ function NotificationCard({
                 </p>
                 {notification.sourceType === "room" && (
                   <div className="ml-auto pr-1 flex flex-shrink-0 items-center gap-1.5 text-xs text-white/55">
-                    <Hash className="h-3.5 w-3.5 flex-shrink-0" />
+                    <HugeiconsIcon icon={HashtagIcon} className="h-3.5 w-3.5 flex-shrink-0" />
                     <span className="max-w-[130px] truncate text-sm text-white/75">
                       {notification.sourceName}
                     </span>
@@ -193,7 +204,7 @@ export default function NotificationTab() {
         onClick={() => setMobileMenu(!mobileMenu)}
         className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
       >
-        <Bell className="text-white/90 ml-1 w-4 h-4" />
+        <HugeiconsIcon icon={Notification01Icon} className="text-white/90 ml-1 w-4 h-4" />
       </button>
       <div
         className={`md:w-[360px] w-[300px] select-none
@@ -207,7 +218,7 @@ export default function NotificationTab() {
       >
         <div className="flex justify-between px-2 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
           <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
-            <Bell className="w-4 h-4" />
+            <HugeiconsIcon icon={Notification01Icon} className="w-4 h-4" />
             <h1 className="text-md">Notifications</h1>
           </div>
           <div className="ml-3 md:hidden flex items-center gap-2 text-white/90">
@@ -240,7 +251,7 @@ export default function NotificationTab() {
           ) : notifications.length === 0 ? (
             <div className="rounded-[14px] text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-                <Bell className="h-5 w-5 text-gray-400" />
+                <HugeiconsIcon icon={Notification01Icon} className="h-5 w-5 text-gray-400" />
               </div>
               <p className="mt-4 text-xs text-gray-400">
                 No notifications yet

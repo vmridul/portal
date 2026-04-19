@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Image from "next/image";
-import { Image as ImageIcon, FileText } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Image02Icon, File02Icon } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useColor } from "@/contexts/colorContext";
 import { formatFileSize } from "@/lib/utils/file";
@@ -73,7 +74,7 @@ export function SidebarMediaView({ mediaFiles, isLoading }: SidebarMediaViewProp
                 className="flex items-center gap-3 p-3 hover:bg-theme-border rounded-lg transition-all"
               >
                 <div className="w-10 h-10 rounded-lg bg-theme-base flex items-center justify-center  border border-white/5">
-                  <FileText className="w-5 h-5 text-white/40" />
+                  <HugeiconsIcon icon={File02Icon} className="w-5 h-5 text-white/40" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
                   <span className="text-sm text-gray-300 truncate">{media.file_name}</span>

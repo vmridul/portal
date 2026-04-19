@@ -1,7 +1,8 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MessageItem } from "./MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
-import { ArrowDown } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { User, MessageWithSender } from "@/lib/types";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { cn } from "@/lib/utils";
@@ -151,7 +152,7 @@ export const MessageList = React.memo(({
             { bottom: `${inputBarHeightOffset}px` }
           )}
         >
-          <ArrowDown className={cn("h-6 w-6")} />
+          <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-6 w-6")} />
         </button>
       )}
 
@@ -161,9 +162,8 @@ export const MessageList = React.memo(({
         style={{ visibility: "hidden" }}
       >
         <span className={cn(
-          "px-3 py-1 rounded-full bg-theme-base bg-opacity-95 text-xs text-gray-400 border border-theme-border shadow-sm"
+          "px-4 py-1 rounded-full bg-theme-border text-xs text-gray-300"
         )}>
-          {/* Content managed by usePinnedDate for performance */}
         </span>
       </div>
 

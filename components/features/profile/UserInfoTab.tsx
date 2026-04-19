@@ -1,4 +1,12 @@
-import { UploadSimple as Upload, Moon, Circle, Copy, SignOut as LogOut, Camera } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Upload01Icon,
+  Moon02Icon,
+  CircleIcon,
+  CopyIcon,
+  Logout01Icon,
+  Camera01Icon
+} from "@hugeicons/core-free-icons";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -96,12 +104,12 @@ export const UserInfoTab = () => {
             >
               {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
                 <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Moon className="w-3 h-3 text-yellow-400" weight="fill" />
+                  <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="w-3 h-3 text-yellow-400" />
                   <span className={``}>Away</span>
                 </div>
               ) : (
                 <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Circle className="w-3 h-3 text-green-600" weight="fill" />
+                  <div className="w-2 h-2 bg-green-600 rounded-full" />
                   <span className={``}>Online</span>
                 </div>
               )}
@@ -116,7 +124,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-green-500"
                     >
-                      <Circle className="w-3 h-3 text-green-600" weight="fill" />
+                      <div className="w-2 h-2 bg-green-600 rounded-full" />
                       <span className="">Online</span>
                     </li>
                     <li
@@ -127,7 +135,7 @@ export const UserInfoTab = () => {
                       }}
                       className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-yellow-400"
                     >
-                      <Moon className="w-3 h-3 text-yellow-400" weight="fill" />
+                      <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="w-3 h-3 text-yellow-400" />
                       <span>Away</span>
                     </li>
                   </ul>
@@ -145,7 +153,7 @@ export const UserInfoTab = () => {
             {isUploading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Upload className="w-4 h-4" />
+              <HugeiconsIcon icon={Upload01Icon} className="w-4 h-4" />
             )}
           </button>
           <input
@@ -197,7 +205,7 @@ export const UserInfoTab = () => {
             }}
             className="cursor-pointer flex items-center justify-center w-7 h-7 rounded-[8px] hover:bg-theme-base"
           >
-            <Copy className="w-4 h-4 text-gray-300" />
+            <HugeiconsIcon icon={CopyIcon} className="w-4 h-4 text-gray-300" />
           </div>
         </div>
       </div>

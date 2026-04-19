@@ -1,5 +1,6 @@
 import React from "react";
-import { Plus } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon } from "@hugeicons/core-free-icons";
 import { ChatEmojiPicker } from "./ChatEmojiPicker";
 
 interface ReactionToolbarProps {
@@ -35,7 +36,7 @@ export const ReactionToolbar = ({ onSelect, className }: ReactionToolbarProps) =
           alignOffset={-130}
           trigger={
             <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
-              <Plus className="w-4 h-4" />
+              <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
             </button>
           }
         />

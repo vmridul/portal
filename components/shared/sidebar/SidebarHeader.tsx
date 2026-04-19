@@ -1,6 +1,7 @@
 "use client";
 
-import { X } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 interface SidebarHeaderProps {
   title: string;
@@ -17,7 +18,7 @@ export function SidebarHeader({ title, onClose }: SidebarHeaderProps) {
         onClick={onClose}
         className="p-2 hover:bg-theme-hover rounded-xl text-gray-400 hover:text-white transition-colors"
       >
-        <X className="w-4 h-4" />
+        <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
       </button>
     </div>
   );

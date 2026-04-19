@@ -1,7 +1,8 @@
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import Image from "next/image";
-import { Check, X } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import {
   useFriendActions,
   type PendingRequest,
@@ -96,13 +97,13 @@ export default function PendingRequestMenu({
                   onClick={() => handleAccept(request.id)}
                   className="p-1 rounded-[6px] hover:bg-theme-hover"
                 >
-                  <Check className="w-4 h-4 text-green-500" />
+                  <HugeiconsIcon icon={Tick01Icon} className="w-4 h-4 text-green-500" />
                 </button>
                 <button
                   onClick={() => handleReject(request.id, true)}
                   className="p-1 rounded-[6px] hover:bg-theme-hover"
                 >
-                  <X className="w-4 h-4 text-gray-300" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4 text-gray-300" />
                 </button>
               </div>
             ))
@@ -138,7 +139,7 @@ export default function PendingRequestMenu({
                   onClick={() => handleReject(request.id, false)}
                   className="cursor-pointer"
                 >
-                  <X className="text-gray-300 hover:bg-theme-hover p-1 rounded-[8px]" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="text-gray-300 hover:bg-theme-hover p-1 rounded-[8px]" />
                 </div>
               </div>
             </div>

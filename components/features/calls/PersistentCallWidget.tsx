@@ -1,6 +1,7 @@
 "use client";
 
-import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneSlash as PhoneOff } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Mic01Icon, MicOff01Icon, CallEnd01Icon } from "@hugeicons/core-free-icons";
 import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";
@@ -78,7 +79,7 @@ const PersistentCallWidget = () => {
             : "text-gray-300 hover:text-white"
             }`}
         >
-          {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          {isMuted ? <HugeiconsIcon icon={MicOff01Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic01Icon} className="w-4 h-4" />}
         </button>
 
         <button
@@ -86,7 +87,7 @@ const PersistentCallWidget = () => {
           className="p-2 rounded-xl bg-red-800 text-red-100 hover:bg-red-900 transition-all duration-200"
           title="Leave Call"
         >
-          <PhoneOff className="w-4 h-4" />
+          <HugeiconsIcon icon={CallEnd01Icon} className="w-4 h-4" />
         </button>
       </div>
     </div>

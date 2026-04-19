@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { usePresence } from "@/contexts/presenceContext";
-import { Moon, Phone, MagnifyingGlass as Search, UserPlus, Users } from "@phosphor-icons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Moon02Icon,
+  CallIcon,
+  Search01Icon,
+  UserAdd01Icon,
+  UserGroupIcon
+} from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import { useState, useEffect } from "react";
@@ -74,7 +81,7 @@ export default function FriendsList({
             onClick={(e) => e.stopPropagation()}
             className=" flex text-sm px-3 w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
           >
-            <Search className="w-4 h-4 text-white/40" />
+            <HugeiconsIcon icon={Search01Icon} className="w-4 h-4 text-white/40" />
             <input
               type="text"
               placeholder="Search friend"
@@ -89,7 +96,7 @@ export default function FriendsList({
             style={{ backgroundColor: color, color: textColor }}
             className="flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px]"
           >
-            <UserPlus className="w-4 h-4" />
+            <HugeiconsIcon icon={UserAdd01Icon} className="w-4 h-4" />
             <span>Add friend</span>
           </button>
         </div>
@@ -133,16 +140,17 @@ export default function FriendsList({
                         className="w-10 h-10 rounded-[12px]"
                       />
                       {hasActiveCall ? (
-                        <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" weight="fill" />
+                        <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
                       ) : isUserOnline ? (
-                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
+                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
                       ) : isUserAway ? (
-                        <Moon
+                        <HugeiconsIcon
+                          icon={Moon02Icon}
+                          fill="currentColor"
                           className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
-                          weight="fill"
                         />
                       ) : (
-                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />
+                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
                       )}
                     </div>
                     <div className="flex-1 flex flex-col min-w-0">
@@ -178,7 +186,7 @@ export default function FriendsList({
             <div className="flex h-full mt-[30%] justify-center">
               <div className={`${isLoading ? "hidden" : "block"} rounded-[14px] text-center`}>
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-                  <Users className="h-5 w-5 text-gray-400" />
+                  <HugeiconsIcon icon={UserGroupIcon} className="h-5 w-5 text-gray-400" />
                 </div>
                 <p className="mt-4 text-xs text-gray-400">No friends yet</p>
               </div>
