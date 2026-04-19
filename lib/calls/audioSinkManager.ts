@@ -1,5 +1,6 @@
 import { CallTrack } from "./types";
 
+
 interface AudioSinkEntry {
   element: HTMLAudioElement;
   trackId: string;
@@ -9,7 +10,7 @@ function createAudioElement(trackId: string): HTMLAudioElement {
   const element = document.createElement("audio");
   element.autoplay = true;
   element.setAttribute("playsinline", "true");
-  element.setAttribute("controls", "false");
+  element.controls = false;
   element.dataset.callTrackId = trackId;
   element.style.position = "absolute";
   element.style.top = "0";
@@ -25,14 +26,40 @@ function createAudioElement(trackId: string): HTMLAudioElement {
   return element;
 }
 
+
 export class RemoteAudioSinkManager {
   private readonly entries = new Map<string, AudioSinkEntry>();
+  private interactionListenerActive = false;
+
+  private ensureInteractionListener(): void {
+    if (this.interactionListenerActive || typeof document === "undefined") return;
+
+    this.interactionListenerActive = true;
+    const resumeAll = () => {
+      this.entries.forEach((entry) => {
+        if (entry.element.paused) {
+          entry.element.play().catch(() => undefined);
+        }
+      });
+      document.removeEventListener("click", resumeAll);
+      document.removeEventListener("touchstart", resumeAll);
+      this.interactionListenerActive = false;
+    };
+
+    document.addEventListener("click", resumeAll);
+    document.addEventListener("touchstart", resumeAll);
+  }
 
   attach(track: CallTrack): void {
+
     const trackId = track.id;
-    
-    const existing = this.entries.get(trackId);
-    if (existing) return;
+    if (this.entries.has(trackId)) {
+      const entry = this.entries.get(trackId)!;
+      if (track.stream && entry.element.srcObject !== track.stream) {
+        entry.element.srcObject = track.stream;
+      }
+      return;
+    }
 
     const element = createAudioElement(trackId);
     
@@ -42,11 +69,10 @@ export class RemoteAudioSinkManager {
 
     element.play().catch((err) => {
       if (err.name === "NotAllowedError") {
-        const resumeAudio = () => {
-          element.play().catch(() => undefined);
-          document.removeEventListener("click", resumeAudio);
-        };
-        document.addEventListener("click", resumeAudio);
+        console.warn("[RemoteAudioSinkManager] Autoplay blocked for track:", trackId);
+        this.ensureInteractionListener();
+      } else {
+        console.error("[RemoteAudioSinkManager] Error playing audio:", err);
       }
     });
 

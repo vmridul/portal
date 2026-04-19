@@ -1,25 +1,23 @@
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
+
+interface CallParticipant {
+  _id: Id<"calls">;
+  participants: string[];
+  activePeerIds?: { userId: string; peerId: string }[];
+  startedAt: number;
+  roomId: string;
+  isActive: boolean;
+}
 
 export function useCalls(roomId: string) {
-  const startCall = useMutation(api.calls.startCall);
-  const joinCall = useMutation(api.calls.joinCall);
-  const leaveCall = useMutation(api.calls.leaveCall);
-  const endCall = useMutation(api.calls.endCall);
   const activeCalls = useQuery(api.calls.getActiveCalls, { roomId });
   const recentCalls = useQuery(api.calls.getRecentCalls, { roomId, limit: 20 });
 
   return {
-    startCall: async () => {
-      const callId = await startCall({ roomId });
-      return callId;
-    },
-    joinCall: (callId: Id<"calls">) => joinCall({ callId }),
-    leaveCall: (callId: Id<"calls">) => leaveCall({ callId }),
-    endCall: (callId: Id<"calls">) => endCall({ callId }),
-    activeCalls: activeCalls ?? [],
-    recentCalls: recentCalls ?? [],
+    activeCalls: (activeCalls ?? []) as CallParticipant[],
+    recentCalls: (recentCalls ?? []) as CallParticipant[],
     isLoading: activeCalls === undefined || recentCalls === undefined,
   };
 }
@@ -28,7 +26,7 @@ export function useVisibleActiveCalls() {
   const activeCallsQuery = useQuery(api.calls.listAllActiveCalls, {});
 
   return {
-    activeCalls: activeCallsQuery ?? [],
+    activeCalls: (activeCallsQuery ?? []) as CallParticipant[],
     isLoading: activeCallsQuery === undefined,
   };
 }

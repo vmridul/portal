@@ -248,7 +248,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col z-[1000] md:w-[50%] w-[80%] absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
+      className="flex flex-col z-[1000] md:w-[50%] md:min-w-[400px] w-[80%] absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
       style={
         isMobile
           ? {

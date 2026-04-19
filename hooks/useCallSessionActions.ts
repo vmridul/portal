@@ -12,10 +12,11 @@ interface StartAndJoinCallInput {
 }
 
 export function useCallSessionActions() {
-  const startCall = useMutation(api.calls.startCall);
-  const joinCall = useMutation(api.calls.joinCall);
   const leaveCall = useMutation(api.calls.leaveCall);
-  const endCall = useMutation(api.calls.endCall);
+  const startCallMutation = useMutation(api.calls.startCall);
+  const joinCallMutation = useMutation(api.calls.joinCall);
+  const endCallMutation = useMutation(api.calls.endCall);
+
   const setModal = useUIStore((state) => state.setModal);
   const joinExistingCall = useCallStore((state) => state.joinExistingCall);
   const leaveActiveCall = useCallStore((state) => state.leaveActiveCall);
@@ -28,33 +29,13 @@ export function useCallSessionActions() {
     roomName,
     user,
   }: StartAndJoinCallInput): Promise<Id<"calls">> => {
-    // 1. We must generate the peerId first by connecting to the client
-    // but startCall needs it too. So we insert a placeholder or we do it in reverse.
-    // Actually, joinExistingCall returns a peerId.
-    
-    const targetBase: Partial<CallSessionTarget> = {
-      room: { id: roomId, name: roomName },
-      user,
-    };
-
-    // We can't joinExistingCall without a callId.
-    // So we'll update startCall to be nullable peerId if needed? 
-    // No, I already updated the mutation to REQUIRE it.
-    // So we need to generate it locally or update the flow.
-    
-    // We'll use a temporary "peerId" just for the handshake if needed, 
-    // but the best way is to keep the client's generated one.
-    
-    // Let's create a temporary target with a dummy callId to get the peerId
     const peerId = await joinExistingCall({
-      callId: "temp" as any,
+      callId: "temp" as unknown as Id<"calls">,
       room: { id: roomId, name: roomName },
       user,
     });
 
-    const callId = await startCall({ roomId, peerId });
-    
-    // Now we update the actual callId in the store
+    const callId = await startCallMutation({ roomId, peerId });
     useCallStore.setState({ callId });
 
     return callId;
@@ -64,7 +45,7 @@ export function useCallSessionActions() {
     const peerId = await joinExistingCall(target);
 
     try {
-      await joinCall({ callId: target.callId, peerId });
+      await joinCallMutation({ callId: target.callId, peerId });
     } catch (error) {
       await leaveActiveCall();
       throw error;
@@ -85,7 +66,7 @@ export function useCallSessionActions() {
 
     try {
       const peerId = await joinExistingCall(nextTarget);
-      await joinCall({ callId: nextTarget.callId, peerId });
+      await joinCallMutation({ callId: nextTarget.callId, peerId });
     } catch (error) {
       await leaveActiveCall();
       throw error;
@@ -117,6 +98,6 @@ export function useCallSessionActions() {
     joinOrSwitchSession,
     leaveCurrentSession,
     switchSession,
-    endCall,
+    endCall: endCallMutation,
   };
 }

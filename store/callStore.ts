@@ -25,9 +25,9 @@ interface CallStoreState extends CallSessionSnapshot {
   joinExistingCall: (target: CallSessionTarget) => Promise<string>;
   leaveActiveCall: () => Promise<void>;
   switchActiveCall: (target: CallSessionTarget) => Promise<string>;
-  toggleMute: () => Promise<void>;
+  toggleMute: () => Promise<boolean | void>;
   clearError: () => void;
-  syncParticipants: (participants: any[]) => void;
+  syncParticipants: (participants: { userId: string; peerId: string }[]) => void;
 }
 
 function snapshotToStore(snapshot: Partial<CallSessionSnapshot>) {
@@ -53,14 +53,15 @@ export const useCallStore = create<CallStoreState>((set, get) => ({
   isJoined: false,
   isConnecting: false,
 
-  async joinExistingCall(target) {
+  async joinExistingCall(target): Promise<string> {
     const currentCallId = get().callId;
+
     if (get().status === "joining" && currentCallId === target.callId) {
-      return;
+      return "";
     }
 
     if (get().isJoined && currentCallId === target.callId) {
-      return;
+      return "";
     }
 
     if (currentCallId && currentCallId !== target.callId) {
@@ -106,8 +107,7 @@ export const useCallStore = create<CallStoreState>((set, get) => ({
       });
       return peerId;
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to join call";
+      const message = error instanceof Error ? error.message : "Failed to join call";
       set({
         ...resetSessionState(),
         callId: target.callId,

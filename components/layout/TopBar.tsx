@@ -166,7 +166,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
               }`} />
             {activeCalls.length > 0 && (
               <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
-                ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                ? "bg-red-500"
                 : "bg-green-500"
                 }`} />
             )}

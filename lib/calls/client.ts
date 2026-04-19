@@ -3,6 +3,7 @@
 import type { CallSessionTarget, CallSessionSnapshot } from "@/lib/types/call";
 import { RemoteAudioSinkManager } from "./audioSinkManager";
 import { CallTrack } from "./types";
+
 import type PeerType from "peerjs";
 
 interface PeerCallbacks {
@@ -22,6 +23,7 @@ export class CallClient {
   private isDisconnecting = false;
   private isPeerOpen = false;
   private pendingCalls = new Set<string>();
+  private lastPeerMappings: { userId: string; peerId: string }[] | null = null;
   private syncDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   async connect(
@@ -33,6 +35,7 @@ export class CallClient {
     this.isDisconnecting = false;
     this.isPeerOpen = false;
     this.pendingCalls.clear();
+    this.lastPeerMappings = null;
 
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia({
@@ -41,7 +44,8 @@ export class CallClient {
       });
 
       const { default: Peer } = await import("peerjs");
-      
+
+      // Generate a unique peer ID to avoid collisions on reconnect
       const uniquePeerId = `${target.user.userId}_${Math.random().toString(36).substring(2, 9)}`;
 
       this.peer = new Peer(uniquePeerId, {
@@ -49,7 +53,7 @@ export class CallClient {
         port: 443,
         path: "/",
         secure: true,
-        debug: 0,
+        debug: 1, // Increased debug level slightly for better diagnostics
         config: {
           iceServers: [
             { urls: "stun:stun.l.google.com:19302" },
@@ -61,21 +65,28 @@ export class CallClient {
       });
 
       this.setupPeerListeners();
-
       callbacks.onJoined();
       return uniquePeerId;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to initialize call";
+      const message =
+        error instanceof Error ? error.message : "Failed to initialize call";
       callbacks.onError(message);
       await this.disconnect();
-      return "";
+      throw error;
     }
   }
 
   async disconnect(): Promise<void> {
     this.isDisconnecting = true;
+    this.lastPeerMappings = null;
 
-    this.connections.forEach((conn) => conn.close());
+    this.connections.forEach((conn) => {
+      try {
+        conn.close();
+      } catch (e) {
+        // Ignore close errors during disconnect
+      }
+    });
     this.connections.clear();
 
     if (this.peer) {
@@ -104,8 +115,17 @@ export class CallClient {
     return false;
   }
 
-  public syncParticipants(peerMappings: { userId: string, peerId: string }[]): void {
-    if (!this.peer || !this.target || !this.localStream || !this.isPeerOpen) return;
+  public syncParticipants(
+    peerMappings: { userId: string; peerId: string }[],
+  ): void {
+    if (!this.peer || !this.target || !this.localStream) return;
+
+    // Cache the latest mappings so we can sync as soon as the peer opens
+    this.lastPeerMappings = peerMappings;
+
+    if (!this.isPeerOpen) {
+      return;
+    }
 
     if (this.syncDebounceTimer) clearTimeout(this.syncDebounceTimer);
     this.syncDebounceTimer = setTimeout(() => {
@@ -113,10 +133,13 @@ export class CallClient {
     }, 1000);
   }
 
-  private doSyncParticipants(peerMappings: { userId: string, peerId: string }[]): void {
+  private doSyncParticipants(
+    peerMappings: { userId: string; peerId: string }[],
+  ): void {
     if (!this.peer || !this.target || !this.localStream) return;
 
     const currentUserId = this.target.user.userId;
+    if (!currentUserId) return;
 
     peerMappings.forEach(({ userId, peerId }) => {
       if (userId === currentUserId) return;
@@ -133,8 +156,13 @@ export class CallClient {
   private setupPeerListeners(): void {
     if (!this.peer) return;
 
-    this.peer.on("open", () => {
+    this.peer.on("open", (id) => {
       this.isPeerOpen = true;
+
+      // Automatically sync if we had mappings waiting
+      if (this.lastPeerMappings) {
+        this.doSyncParticipants(this.lastPeerMappings);
+      }
     });
 
     this.peer.on("disconnected", () => {
@@ -142,7 +170,10 @@ export class CallClient {
     });
 
     this.peer.on("call", (incomingCall) => {
-      if (!this.localStream) return;
+      if (!this.localStream) {
+        console.warn("[CallClient] Received call but local stream is missing");
+        return;
+      }
 
       incomingCall.answer(this.localStream);
       this.setupCallHandlers(incomingCall);
@@ -150,35 +181,55 @@ export class CallClient {
 
     this.peer.on("error", (err) => {
       if (err.type === "peer-unavailable") return;
+      console.error("[CallClient] Peer error:", err.type, err);
       this.callbacks?.onError(`Call system error: ${err.type}`);
     });
   }
 
   private initiateCall(remotePeerId: string, retryCount = 0): void {
-    if (!this.peer || !this.localStream) return;
+    if (!this.peer || !this.localStream || this.isDisconnecting) return;
 
-    const outgoingCall = this.peer.call(remotePeerId, this.localStream);
-    this.setupCallHandlers(outgoingCall);
-
-    outgoingCall.on("close", () => {
-      this.handleCallRetry(remotePeerId, retryCount);
-    });
-
-    outgoingCall.on("error", (err: any) => {
-      if (err?.type === "peer-unavailable" || err?.msg?.includes("unavailable")) {
-        this.handleCallRetry(remotePeerId, retryCount);
+    try {
+      const outgoingCall = this.peer.call(remotePeerId, this.localStream);
+      if (!outgoingCall) {
+        throw new Error("PeerJS failed to create outgoing call object");
       }
-    });
+      this.setupCallHandlers(outgoingCall);
+
+      outgoingCall.on("close", () => {
+        this.handleCallRetry(remotePeerId, retryCount);
+      });
+
+      outgoingCall.on("error", (err: any) => {
+        if (
+          err?.type === "peer-unavailable" ||
+          err?.msg?.includes("unavailable")
+        ) {
+          this.handleCallRetry(remotePeerId, retryCount);
+        }
+      });
+    } catch (error) {
+      console.error("[CallClient] Failed to initiate call:", error);
+      this.handleCallRetry(remotePeerId, retryCount);
+    }
   }
 
   private handleCallRetry(remotePeerId: string, retryCount: number): void {
+    if (this.connections.has(remotePeerId)) return;
+
     const maxRetries = 3;
-    if (retryCount >= maxRetries) return;
+    if (retryCount >= maxRetries) {
+      this.pendingCalls.delete(remotePeerId);
+      return;
+    }
     if (!this.peer || this.isDisconnecting) return;
 
-    setTimeout(() => {
-      this.initiateCall(remotePeerId, retryCount + 1);
-    }, 2000 + retryCount * 1000);
+    setTimeout(
+      () => {
+        this.initiateCall(remotePeerId, retryCount + 1);
+      },
+      2000 + retryCount * 1000,
+    );
   }
 
   private setupCallHandlers(call: any): void {
@@ -188,6 +239,7 @@ export class CallClient {
 
     call.on("stream", (remoteStream: MediaStream) => {
       this.pendingCalls.delete(remotePeerId);
+
       this.audioSinkManager.attach({
         id: remotePeerId,
         participantId: remotePeerId,
@@ -195,8 +247,14 @@ export class CallClient {
         stream: remoteStream,
         track: remoteStream.getAudioTracks()[0],
         isMuted: () => !remoteStream.getAudioTracks()[0]?.enabled,
-        mute: async () => { if (remoteStream.getAudioTracks()[0]) remoteStream.getAudioTracks()[0].enabled = false; },
-        unmute: async () => { if (remoteStream.getAudioTracks()[0]) remoteStream.getAudioTracks()[0].enabled = true; },
+        mute: async () => {
+          if (remoteStream.getAudioTracks()[0])
+            remoteStream.getAudioTracks()[0].enabled = false;
+        },
+        unmute: async () => {
+          if (remoteStream.getAudioTracks()[0])
+            remoteStream.getAudioTracks()[0].enabled = true;
+        },
         dispose: () => {},
       });
       this.updateStatus();
@@ -208,7 +266,8 @@ export class CallClient {
       this.updateStatus();
     });
 
-    call.on("error", () => {
+    call.on("error", (err: any) => {
+      console.error("[CallClient] Call error with:", remotePeerId, err);
       this.audioSinkManager.detach(remotePeerId);
       this.connections.delete(remotePeerId);
       this.updateStatus();
