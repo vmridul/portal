@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-  Search01Icon, 
-  Image01Icon, 
-  InformationCircleIcon, 
-  Menu01Icon, 
-  UserGroupIcon, 
-  CallIcon 
+import {
+  Search01Icon,
+  Image01Icon,
+  InformationCircleIcon,
+  Menu01Icon,
+  UserGroupIcon,
+  CallIcon
 } from "@hugeicons/core-free-icons";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
@@ -196,7 +196,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             }}
             className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
           >
-            <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-400"}`} />
+            <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-300"}`} />
           </button>
         </div>
       </div>

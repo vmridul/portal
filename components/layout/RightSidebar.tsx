@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserRemove01Icon, Menu01Icon, CopyIcon } from "@hugeicons/core-free-icons";
+import { UserRemove01Icon, Menu01Icon, Delete02Icon, CopyIcon } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -101,7 +101,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   }}
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >
-                  <HugeiconsIcon icon={UserRemove01Icon} className="w-4 h-4 ml-3 mr-2" />
+                  <HugeiconsIcon icon={owner_id === (user?.user_id ?? "") ? Delete02Icon : UserRemove01Icon} className="w-4 h-4 ml-3 mr-2" />
                   <button className="w-32 text-start py-3">
                     {owner_id === (user?.user_id ?? "")
                       ? "Delete Room"

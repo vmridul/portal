@@ -103,26 +103,26 @@ export function SidebarInfoView({ id, type, room, members, currentUser, isLoadin
         </div>
       </div>
 
-      {/* Bottom Actions for Rooms */}
-      {isOwner && editedName !== room?.room_name && (
-        <div className="p-4 bg-theme-base flex justify-end gap-2 text-xs">
+      {/* Bottom Actions for Rooms - Always Visible */}
+      <div className="shrink-0 border-t border-theme-border/50 px-4 py-4 text-sm bg-theme-base">
+        <div className="flex gap-3">
           <button
             onClick={() => setEditedName(room?.room_name || "")}
-            disabled={isSubmitting}
-            className="px-6 py-2 rounded-[8px] border border-theme-border text-gray-300 hover:bg-theme-surface transition-colors"
+            disabled={isSubmitting || editedName === room?.room_name || !editedName.trim()}
+            className="flex-1 py-2 flex items-center justify-center gap-3 rounded-[12px] border border-theme-border text-gray-300 hover:bg-theme-surface transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleRename}
-            disabled={isSubmitting || editedName.length < 3 || editedName.length > 16}
+            disabled={isSubmitting || !isOwner || editedName === room?.room_name || !editedName.trim() || editedName.length < 3 || editedName.length > 16}
             style={{ backgroundColor: color, color: textColor }}
-            className="px-6 py-2 rounded-[8px] hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="flex-1 py-2 flex items-center justify-center gap-3 rounded-[12px] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {isSubmitting ? "Saving..." : "Save"}
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
