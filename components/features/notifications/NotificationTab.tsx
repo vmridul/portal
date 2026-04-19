@@ -4,7 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CancelCircleIcon, Notification01Icon, HashtagIcon } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useNotifications, useNotificationActions, useFriends, useCallSessionActions } from "@/hooks";
 import { useRooms } from "@/contexts/roomContext";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
@@ -13,10 +13,6 @@ import { useUserStore } from "@/store/useUserStore";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AvatarStack from "@/components/shared/AvatarStack";
-
-type ActiveFriendId = ReturnType<
-  typeof useUIStore.getState
->["activeFriendPage"];
 
 type NotificationItem = ReturnType<typeof useNotifications>["notifications"][number];
 
@@ -146,7 +142,8 @@ function NotificationCard({
 export default function NotificationTab() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const router = useRouter();
-  const { activeFriendPage, setActiveFriendPage, setSidebarOpen, setSidebarTab } = useUIStore();
+  const pathname = usePathname();
+  const { setSidebarOpen, setSidebarTab } = useUIStore();
   const {
     notifications,
     isLoading: isNotificationsLoading,
@@ -159,15 +156,13 @@ export default function NotificationTab() {
   const { friends } = useFriends();
   const { joinOrSwitchSession } = useCallSessionActions();
   const user = useUserStore((state) => state.user);
+  const isOnFriendPage = pathname.startsWith("/portal/friend");
 
   const isLoading = isNotificationsLoading && notifications.length === 0;
 
   const openNotification = async (notification: (typeof notifications)[number]) => {
     if (notification.sourceType === 'direct') {
-      setActiveFriendPage(
-        notification.sourceId as ActiveFriendId,
-      );
-      router.push('/portal');
+      router.push(`/portal/friend/${notification.sourceId}`);
     } else {
       router.push(`/portal/room/${notification.sourceId}`);
     }
@@ -202,7 +197,7 @@ export default function NotificationTab() {
     <>
       <button
         onClick={() => setMobileMenu(!mobileMenu)}
-        className={`z-[9999] ${activeFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
+        className={`z-[9999] ${isOnFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
       >
         <HugeiconsIcon icon={Notification01Icon} className="text-white/90 ml-1 w-4 h-4" />
       </button>

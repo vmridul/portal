@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { create } from "zustand";
 
 export type ModalType =
@@ -24,13 +23,11 @@ type UIState = {
 
   // General App State
   pendingRequestMenu: boolean;
-  activeFriendPage: UUID | null;
   selectedPendingMenu: boolean;
   menuOpen: boolean;
   leftMobileMenu: boolean;
   rightMobileMenu: boolean;
   setPendingRequestMenu: (v: boolean) => void;
-  setActiveFriendPage: (v: UUID | null) => void;
   setSelectedPendingMenu: (v: boolean) => void;
   setMenuOpen: (v: boolean) => void;
   setLeftMobileMenu: (v: boolean) => void;
@@ -79,7 +76,6 @@ export const useUIStore = create<UIState>((set, get) => ({
   closeModal: () => set({ activeModal: null, modalData: null }),
 
   pendingRequestMenu: false,
-  activeFriendPage: null,
   selectedPendingMenu: true,
   menuOpen: false,
   leftMobileMenu: false,
@@ -92,7 +88,6 @@ export const useUIStore = create<UIState>((set, get) => ({
   setActiveCall: (call) => set({ activeCall: call }),
 
   setPendingRequestMenu: (v) => set({ pendingRequestMenu: v }),
-  setActiveFriendPage: (v) => set({ activeFriendPage: v }),
   setSelectedPendingMenu: (v) => set({ selectedPendingMenu: v }),
   setMenuOpen: (v) => set({ menuOpen: v }),
   setLeftMobileMenu: (v) => set({ leftMobileMenu: v }),

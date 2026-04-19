@@ -1,5 +1,5 @@
-import { useUIStore } from "@/store/uiStore";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "../messaging/ChatUI";
@@ -10,15 +10,16 @@ import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
 
 export default function ActiveFriendPage() {
-  const { activeFriendPage } = useUIStore();
+  const params = useParams();
+  const friendId = params.friend_id as string | undefined;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const { color, textColor } = useColor();
   const user = useUserStore((s) => s.user);
   const { deleteMessage } = useMessageActions();
 
-  const conversationId = activeFriendPage && user?.user_id
-    ? getDirectConversationId(activeFriendPage, user.user_id)
+  const conversationId = friendId && user?.user_id
+    ? getDirectConversationId(friendId, user.user_id)
     : null;
 
   const onDelete = async () => {
@@ -72,7 +73,7 @@ export default function ActiveFriendPage() {
       </div>
 
       <div className="h-full min-h-0">
-        {!user || !activeFriendPage ? (
+        {!user || !friendId ? (
           <ChatSkeleton />
         ) : (
           <div className="h-full min-h-0 w-full">

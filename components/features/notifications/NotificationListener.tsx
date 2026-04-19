@@ -10,17 +10,13 @@ import { useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useUserStore } from "@/store/useUserStore";
 
-type ActiveFriendId = ReturnType<
-  typeof useUIStore.getState
->["activeFriendPage"];
-
 /**
  * NotificationListener handles incoming real-time notifications by showing toasts
  * and ensuring they are marked as seen on the backend.
  */
 export default function NotificationListener() {
   const router = useRouter();
-  const { setActiveFriendPage, setSidebarOpen, setSidebarTab } = useUIStore();
+  const { setSidebarOpen, setSidebarTab } = useUIStore();
   const { notifications: convexNotifications } = useNotifications();
   const { markAsShown } = useNotificationActions();
   const { joinOrSwitchSession } = useCallSessionActions();
@@ -46,8 +42,7 @@ export default function NotificationListener() {
 
   const handleNotificationClick = useCallback((item: (typeof notifications)[0]) => {
     if (item.sourceType === "direct") {
-      setActiveFriendPage(item.sourceId as ActiveFriendId);
-      router.push("/portal");
+      router.push(`/portal/friend/${item.sourceId}`);
     } else {
       router.push(`/portal/room/${item.sourceId}`);
     }
@@ -55,7 +50,7 @@ export default function NotificationListener() {
       setSidebarOpen(true);
       setSidebarTab("calls");
     }
-  }, [router, setActiveFriendPage, setSidebarOpen, setSidebarTab]);
+  }, [router, setSidebarOpen, setSidebarTab]);
 
   const handleJoinCall = useCallback(async (item: (typeof notifications)[0]) => {
     if (!item.callId || item.callStatus !== "active" || !user) {
