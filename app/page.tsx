@@ -10,7 +10,6 @@ import {
 } from "@/components/landing/LandingDecorations";
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
-import { RoomMockup } from "@/components/marketing/RoomMockup";
 import { toast } from "sonner";
 
 const galindo = Galindo({
@@ -108,7 +107,6 @@ export default function Page() {
             src="/assets/macSS.png"
             alt="macSS"
           />
-
         </div>
       </div>
 
@@ -151,7 +149,6 @@ export default function Page() {
             <span className="text-2xl text-gray-300 mt-6 ml-6">
               Beautifully crafted interface
             </span>
-
           </div>
           <div className="row-span-4 bg-[#0f0d14] border border-[#231b30] rounded-xl">
             {" "}
@@ -161,7 +158,7 @@ export default function Page() {
               </span>
             </div>
           </div>
-          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+          <div className="row-span-2 bg-[#0f0d14] border border-[#231b30] rounded-xl">
             <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
               <span className="text-2xl text-gray-300 mt-6 ml-6">
                 Realtime notifications
@@ -169,7 +166,7 @@ export default function Page() {
             </div>
             <div />
           </div>
-          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl">
             <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
               <span className="text-2xl text-gray-300 mt-6 ml-6">
                 Typing Indicators
@@ -177,7 +174,7 @@ export default function Page() {
             </div>
             <div />
           </div>
-          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl" >
+          <div className="row-span-1 bg-[#0f0d14] border border-[#231b30] rounded-xl">
             <div className="row-span-2 col-span-2 flex flex-col items-start bg-[#0f0d14] rounded-xl overflow-hidden relative">
               <span className="text-2xl text-gray-300 mt-6 ml-6">
                 Online Presense

@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import type { User } from "@/lib/types";
-import { timeAgo } from "@/lib/utils/date";
+import { Phone } from "lucide-react";
 
 interface RoomWithNested {
   room_id: string;
@@ -51,18 +50,23 @@ export function RoomItem({
         setMobileMenu?.(false);
         router.push(`/portal/room/${roomId}`);
       }}
-      className={`cursor-pointer relative flex items-center gap-3 mt-2 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === roomId &&
+      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === roomId &&
         "bg-theme-hover"
         }`}
       key={roomId}
     >
-      <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10 flex-shrink-0">
-        {roomName?.charAt(0).toUpperCase()}
+      <div className="relative flex-shrink-0">
+        <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
+          {roomName?.charAt(0).toUpperCase()}
+        </div>
       </div>
+
       <div className="flex items-center flex-1 min-w-0">
         <div className="flex flex-col min-w-0 flex-1">
           <div className="flex items-center justify-between">
-            <span className="truncate max-w-[100px]">{roomName}</span>
+            <span className={`truncate max-w-[100px] text-white`}>
+              {roomName}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">

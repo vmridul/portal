@@ -104,9 +104,11 @@ messages: defineTable({
     startedAt: v.number(),
     endedAt: v.optional(v.number()),
     participants: v.array(v.string()),
+    allParticipants: v.array(v.string()),
     initiatorId: v.string(),
     isActive: v.boolean(),
   })
     .index("by_room_id", ["roomId"])
-    .index("by_active", ["roomId", "isActive"]),
+    .index("by_active", ["roomId", "isActive"])
+    .index("by_status", ["isActive"]),
 });

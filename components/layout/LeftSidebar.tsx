@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { UserPlus, Plus, Menu, HouseIcon, Users } from "lucide-react";
+import { useEffect } from "react";
+import { UserPlus, Plus, HouseIcon, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -8,11 +8,10 @@ import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { RoomsList } from "@/components/features/rooms/RoomsList";
-import { toast } from "sonner";
 import { usePresence } from "@/contexts/presenceContext";
 import { ProfileUI } from "@/components/features/profile/ProfileUI";
 import { useUIStore } from "@/store/uiStore";
-import { useColor } from "@/contexts/colorContext";
+import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
 
 
 type LeftSidebarProps = {
@@ -29,19 +28,14 @@ export default function LeftSidebar({
   const searchParams = useSearchParams();
   const joinParam = searchParams.get("join");
   const currentRoom = pathname.match(/\/portal\/room\/([^/]+)/)?.[1] || null;
-  const { rooms, isLoading: isRoomsLoading } = useRooms();
+  const { rooms } = useRooms();
   const user = useUserStore((s) => s.user);
-  const { color, textColor } = useColor();
   const { awayUsers } = usePresence();
   const {
     setModal,
     leftMobileMenu,
     setLeftMobileMenu,
   } = useUIStore();
-
-
-
-
 
   //open join dialog when path name have search params: join
   useEffect(() => {
@@ -57,7 +51,7 @@ export default function LeftSidebar({
         <div
           className={`bg-theme-surface ${className} md:translate-y-0 translate-y-10 fixed md:static top-0 left-0 md:h-screen h-[calc(100dvh-40px)]
     border-theme-border border-r select-none transition-transform duration-300
-    flex flex-col py-2 px-4 md:p-2 text-white items-center font-sans z-[1500]
+    flex flex-col py-2 px-1 md:px-1 text-white items-center font-sans z-[1500]
     ${leftMobileMenu ? "translate-x-0" : "-translate-x-full"}
     md:translate-x-0`}
         >
@@ -139,29 +133,37 @@ export default function LeftSidebar({
               </div>
             ) : null
           ) : (
-            <div className="mt-3">
-              <div className="flex gap-36 items-center ml-3 text-[#aaaaaa]">
-                <span className="text-xs">Rooms</span>
-                <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-xs items-center gap-0.5">
-                  <HouseIcon className="w-3 h-3 cursor-pointer" />
+            <div className="mt-3 flex-1 flex flex-col min-h-0 w-full overflow-hidden">
+              <div className="flex justify-between items-center px-3 text-[#aaaaaa] mb-2">
+                <span className="text-xs font-semibold uppercase tracking-wider">Rooms</span>
+                <div className="bg-theme-hover rounded-[6px] px-2 py-0.5 flex text-white/60 text-[10px] items-center gap-1 border border-theme-border/50">
+                  <HouseIcon className="w-3 h-3" />
                   {rooms.length ?? 0}
                 </div>
               </div>
-              <RoomsList
-                router={router}
-                setMobileMenu={setLeftMobileMenu}
-                currentRoom={currentRoom}
-              />
+              <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                <RoomsList
+                  router={router}
+                  setMobileMenu={setLeftMobileMenu}
+                  currentRoom={currentRoom}
+                />
+              </div>
             </div>
           )}
-          {!user?.username || !user?.user_id || !user?.avatar ? (
-            <Skeleton className="h-16 w-60 absolute bottom-2 z-[9999]  rounded-[8px]" />
-          ) : (
-            <ProfileUI
-              user={user}
-              awayUsers={awayUsers}
-            />
-          )}
+
+          <div className="mt-auto w-full flex flex-col gap-2 p-1 bg-theme-surface/50">
+            {!user?.username || !user?.user_id || !user?.avatar ? (
+              <Skeleton className="h-16 w-full rounded-[12px]" />
+            ) : (
+              <>
+                <PersistentCallWidget />
+                <ProfileUI
+                  user={user}
+                  awayUsers={awayUsers}
+                />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>

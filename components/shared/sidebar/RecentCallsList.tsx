@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Phone, Users } from "lucide-react";
-import { useCalls } from "@/hooks";
 import { useJitsiStore } from "@/store/jitsiStore";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import AvatarStack from "../AvatarStack";
 
 interface Call {
   participants: string[];
+  allParticipants?: string[];
   startedAt: number;
   endedAt?: number;
   isActive: boolean;
@@ -42,65 +43,63 @@ function groupCallsByDate(calls: Call[]): Record<string, Call[]> {
 }
 
 interface RecentCallsListProps {
-  roomId: string;
   calls: Call[];
-  inCall?: boolean;
 }
 
-export default function RecentCallsList({ roomId, calls, inCall: propInCall }: RecentCallsListProps) {
-  const { startCall: startConvexCall } = useCalls(roomId);
-  const { isJoined: isJitsiJoined, joinRoom } = useJitsiStore();
-  
-  const inCall = propInCall || isJitsiJoined;
+export default function RecentCallsList({ calls }: RecentCallsListProps) {
+  const jitsiError = useJitsiStore((state) => state.error);
+
   const grouped = groupCallsByDate(calls);
 
-  const handleStartNewCall = async () => {
-    try {
-      await startConvexCall();
-    } catch (err) {
-      console.error("Failed to start call:", err);
-    }
-  };
+  // Collect all unique participant IDs to fetch profiles in one batch
+  const allParticipantIds = Array.from(new Set(
+    calls.flatMap(c => c.allParticipants || c.participants)
+  ));
+
+  const participantProfiles = useQuery(api.users.getUsersByExternalIds, {
+    user_ids: allParticipantIds
+  }) || [];
+
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {!inCall && (
+      {jitsiError && (
         <div className="p-3">
-          <button
-            onClick={handleStartNewCall}
-            className="w-full py-2 px-4 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
-          >
-            Start New Call
-          </button>
+          <div className="p-2 text-xs bg-red-500/10 text-red-400 rounded border border-red-500/20 text-center">
+            {jitsiError}
+          </div>
         </div>
       )}
 
       {Object.entries(grouped).map(([date, dateCalls]) => (
-        <div key={date} className="border-t border-theme-border">
-          <div className="px-3 py-2 text-xs text-gray-500 uppercase">{date}</div>
+        <div key={date} className="border-t border-theme-border/50">
+          <div className="px-3 py-2 text-xs font-bold text-gray-500">{date}</div>
           {dateCalls.map((call, idx) => (
             <div
               key={idx}
-              className="px-3 py-2 hover:bg-theme-hover cursor-pointer"
+              className="px-3 py-3 hover:bg-theme-hover/50 cursor-pointer transition-colors border-b border-theme-border/30 last:border-0"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-theme-base flex items-center justify-center">
-                  <Phone className="w-4 h-4 text-gray-400" />
-                </div>
+              <div className="flex items-center gap-3 px-2">
+
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 text-sm text-white">
-                    <Users className="w-3 h-3" />
-                    <span>{call.participants.length} participants</span>
+                  <div className="flex items-center">
+                    <AvatarStack
+                      users={participantProfiles.filter(p =>
+                        (call.allParticipants || call.participants).includes(p.user_id)
+                      )}
+                      size={24}
+                      showCount
+                    />
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 flex items-center gap-2">
                     {formatCallTime(call.startedAt)}
+                    {call.endedAt && (
+                      <span className="flex items-center gap-1">
+                        • {Math.round((call.endedAt - call.startedAt) / 60000)}m
+                      </span>
+                    )}
                   </div>
                 </div>
-                {call.endedAt && (
-                  <div className="text-xs text-gray-500">
-                    {Math.round((call.endedAt - call.startedAt) / 60000)}m
-                  </div>
-                )}
               </div>
             </div>
           ))}

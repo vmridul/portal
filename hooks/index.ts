@@ -10,4 +10,4 @@ export * from "./useGlobalPresence";
 export * from "./useMobile";
 export * from "./useRoomInfo";
 export * from "./useCalls";
-export * from "./useJitsi";
+export * from "./useCallSessionActions";

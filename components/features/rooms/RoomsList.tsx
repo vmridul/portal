@@ -3,6 +3,8 @@ import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { RoomItem } from "./RoomItem";
 import { House } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface RoomWithNested {
   room_id: string;
@@ -31,6 +33,7 @@ export const RoomsList = ({
 }: RoomListProps) => {
   const user = useUserStore((s) => s.user);
   const { rooms } = useRooms();
+
   return (
     <>
       <div className="flex flex-col max-h-[450px] md:max-h-[498px] rounded-b-[8px] text-sm overflow-y-scroll no-scrollbar text-white">
@@ -44,16 +47,18 @@ export const RoomsList = ({
             </p>{" "}
           </div>
         ) : (
-          rooms.map((room: RoomWithNested) => (
-            <RoomItem
-              key={room?.Rooms?.room_id}
-              room={room}
-              router={router}
-              setMobileMenu={setMobileMenu}
-              currentRoom={currentRoom}
-              user={user}
-            />
-          )))}
+          rooms.map((room: RoomWithNested) => {
+            return (
+              <RoomItem
+                key={room?.Rooms?.room_id}
+                room={room}
+                router={router}
+                setMobileMenu={setMobileMenu}
+                currentRoom={currentRoom}
+                user={user}
+              />
+            );
+          }))}
       </div>
     </>
   );

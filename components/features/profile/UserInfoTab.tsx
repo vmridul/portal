@@ -96,12 +96,12 @@ export const UserInfoTab = () => {
             >
               {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
                 <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Moon fill="yellow" className="w-3 h-3 text-yellow-200" />
+                  <Moon className="w-3 h-3 text-yellow-400 fill-current" />
                   <span className={``}>Away</span>
                 </div>
               ) : (
                 <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <Circle fill="green" className="w-3 h-3 text-green-700" />
+                  <Circle className="w-3 h-3 text-green-600 fill-current" />
                   <span className={``}>Online</span>
                 </div>
               )}
@@ -114,9 +114,9 @@ export const UserInfoTab = () => {
                         setStatus("online");
                         setPresenceMenu(false);
                       }}
-                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-green-500"
+                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-green-500"
                     >
-                      <Circle fill="green" className="w-3 h-3 text-green-700 border-none" />
+                      <Circle className="w-3 h-3 text-green-600 fill-current" />
                       <span className="">Online</span>
                     </li>
                     <li
@@ -125,9 +125,9 @@ export const UserInfoTab = () => {
                         setStatus("away");
                         setPresenceMenu(false);
                       }}
-                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[10px] gap-2 text-yellow-400"
+                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-yellow-400"
                     >
-                      <Moon fill="yellow" className="w-3 h-3 border-none text-yellow-200" />
+                      <Moon className="w-3 h-3 text-yellow-400 fill-current" />
                       <span>Away</span>
                     </li>
                   </ul>

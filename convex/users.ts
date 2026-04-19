@@ -97,6 +97,21 @@ export const getUserById = query({
   },
 });
 
+export const getUsersByExternalIds = query({
+  args: { user_ids: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    const results = [];
+    for (const userId of args.user_ids) {
+      const user = await ctx.db
+        .query("users")
+        .withIndex("by_user_id", (q) => q.eq("user_id", userId))
+        .first();
+      if (user) results.push(user);
+    }
+    return results;
+  },
+});
+
 export const deleteUserAccount = mutation({
   args: {},
   handler: async (ctx) => {

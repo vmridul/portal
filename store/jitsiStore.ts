@@ -1,130 +1,158 @@
 "use client";
 
 import { create } from "zustand";
+import { JitsiClient } from "@/lib/jitsi/client";
+import type {
+  CallSessionSnapshot,
+  CallSessionTarget,
+} from "@/lib/types/call";
 
-interface JitsiState {
-  roomId: string | null;
+const jitsiClient = new JitsiClient();
+
+const initialSnapshot: CallSessionSnapshot = {
+  status: "idle",
+  callId: null,
+  actualRoomId: null,
+  roomName: null,
+  isMuted: false,
+  participantCount: 0,
+  error: null,
+};
+
+interface JitsiStoreState extends CallSessionSnapshot {
   isJoined: boolean;
-  isMuted: boolean;
-  participantCount: number;
-  api: any | null;
-  joinRoom: (roomId: string) => Promise<void>;
-  leaveRoom: () => void;
-  toggleMute: () => void;
+  isConnecting: boolean;
+  joinExistingCall: (target: CallSessionTarget) => Promise<void>;
+  leaveActiveCall: () => Promise<void>;
+  switchActiveCall: (target: CallSessionTarget) => Promise<void>;
+  toggleMute: () => Promise<void>;
+  clearError: () => void;
 }
 
-declare global {
-  interface Window {
-    JitsiMeetExternalModule: any;
-  }
+function snapshotToStore(snapshot: Partial<CallSessionSnapshot>) {
+  return (state: JitsiStoreState): Partial<JitsiStoreState> => {
+    return {
+      ...snapshot,
+      isJoined: (snapshot.status ?? state.status) === "joined",
+      isConnecting: (snapshot.status ?? state.status) === "joining",
+    };
+  };
 }
 
-let jitsiScriptLoaded = false;
+function resetSessionState(): Partial<JitsiStoreState> {
+  return {
+    ...initialSnapshot,
+    isJoined: false,
+    isConnecting: false,
+  };
+}
 
-function loadJitsiScript(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (jitsiScriptLoaded) {
-      resolve();
+export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
+  ...initialSnapshot,
+  isJoined: false,
+  isConnecting: false,
+
+  async joinExistingCall(target) {
+    const currentCallId = get().callId;
+    if (get().status === "joining" && currentCallId === target.callId) {
       return;
     }
 
-    const script = document.createElement("script");
-    script.src = "https://meet.jit.si/external_api.js";
-    script.async = true;
-    script.onload = () => {
-      jitsiScriptLoaded = true;
-      resolve();
-    };
-    script.onerror = () => reject(new Error("Failed to load Jitsi"));
-    document.body.appendChild(script);
-  });
-}
+    if (get().isJoined && currentCallId === target.callId) {
+      return;
+    }
 
-export const useJitsiStore = create<JitsiState>((set, get) => ({
-  roomId: null,
-  isJoined: false,
-  isMuted: false,
-  participantCount: 0,
-  api: null,
+    if (currentCallId && currentCallId !== target.callId) {
+      await get().leaveActiveCall();
+    }
 
-  joinRoom: async (roomId: string) => {
-    const state = get();
-    if (state.isJoined) return;
+    set({
+      status: "joining",
+      callId: target.callId,
+      actualRoomId: target.room.id,
+      roomName: target.room.name,
+      isConnecting: true,
+      error: null,
+      participantCount: 0,
+    });
 
     try {
-      await loadJitsiScript();
-
-      const domain = "meet.jit.si";
-      const roomName = `portal-call-${roomId}-${Date.now().toString().slice(-6)}`;
-
-      const api = new window.JitsiMeetExternalModule(domain, {
-        roomName,
-        parentNode: document.getElementById("jitsi-hidden-container") || createHiddenContainer(),
-        width: "100%",
-        height: "100%",
-        configOverwrite: {
-          startWithAudioMuted: false,
-          startWithVideoMuted: true,
-          prejoinPageEnabled: false,
-          disableDeepLinking: true,
-          hideConferenceTimer: true,
-          hideParticipantsStats: true,
+      await jitsiClient.connect(target, {
+        onStatusChange(snapshot) {
+          set(snapshotToStore(snapshot));
         },
-        interfaceConfigOverwrite: {
-          SHOW_JITSI_WATERMARK: false,
-          SHOW_WATERMARK_FOR_GHOSTS: false,
-          SHOW_BRAND_WATERMARK: false,
-          TOOLBAR_BUTTONS: [],
+        onJoined() {
+          set({
+            status: "joined",
+            isJoined: true,
+            isConnecting: false,
+            error: null,
+          });
+        },
+        onDisconnected() {
+          set(resetSessionState());
+        },
+        onError(message) {
+          set({
+            ...resetSessionState(),
+            callId: target.callId,
+            actualRoomId: target.room.id,
+            roomName: target.room.name,
+            status: "error",
+            error: message,
+          });
         },
       });
-
-      api.on("videoConferenceJoined", () => {
-        set({ isJoined: true, roomId });
-        api.executeCommand("toggleAudio");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to join call";
+      set({
+        ...resetSessionState(),
+        callId: target.callId,
+        actualRoomId: target.room.id,
+        roomName: target.room.name,
+        status: "error",
+        error: message,
       });
-
-      api.on("videoConferenceLeft", () => {
-        set({ isJoined: false, roomId: null, isMuted: false, participantCount: 0 });
-      });
-
-      api.on("participantJoined", () => {
-        const participants = api.getParticipantsInfo();
-        set({ participantCount: participants.length });
-      });
-
-      api.on("participantLeft", () => {
-        const participants = api.getParticipantsInfo();
-        set({ participantCount: participants.length });
-      });
-
-      set({ api, roomId, isJoined: true });
-    } catch (err) {
-      console.error("Failed to join Jitsi room:", err);
-      throw err;
+      throw error;
     }
   },
 
-  leaveRoom: () => {
-    const { api, isJoined } = get();
-    if (api && isJoined) {
-      api.dispose();
+  async leaveActiveCall() {
+    if (get().status === "idle") {
+      return;
     }
-    set({ api: null, isJoined: false, roomId: null, isMuted: false, participantCount: 0 });
+
+    set({
+      status: "leaving",
+      isConnecting: false,
+      error: null,
+    });
+
+    try {
+      await jitsiClient.disconnect();
+    } finally {
+      set(resetSessionState());
+    }
   },
 
-  toggleMute: () => {
-    const { api, isMuted } = get();
-    if (api) {
-      api.executeCommand("toggleAudio");
-      set({ isMuted: !isMuted });
-    }
+  async switchActiveCall(target) {
+    await get().leaveActiveCall();
+    await get().joinExistingCall(target);
+  },
+
+  async toggleMute() {
+    const isMuted = await jitsiClient.toggleMute();
+    set({ isMuted, error: null });
+  },
+
+  clearError() {
+    const status = get().isJoined ? "joined" : "idle";
+    set({
+      error: null,
+      status,
+      isJoined: status === "joined",
+      isConnecting: false,
+    });
   },
 }));
-
-function createHiddenContainer(): HTMLElement {
-  const container = document.createElement("div");
-  container.id = "jitsi-hidden-container";
-  container.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;";
-  document.body.appendChild(container);
-  return container;
-}

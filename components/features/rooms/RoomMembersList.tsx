@@ -50,14 +50,13 @@ export const RoomMembersList = ({
                     className="w-10 h-10 rounded-[12px]"
                   />
                   {isUserOnline ? (
-                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
+                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
                   ) : isUserAway ? (
                     <Moon
-                      fill="yellow"
-                      className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+                      className="absolute text-yellow-400 fill-current right-0 bottom-0 w-[10px] h-[10px] opacity-90"
                     />
                   ) : (
-                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 border border-[#858585] rounded-full" />
+                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
                   )}
                 </div>
                 <div className="flex flex-col">

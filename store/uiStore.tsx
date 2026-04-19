@@ -12,6 +12,7 @@ export type ModalType =
   | "MEDIA"
   | "PROFILE"
   | "ROOM_SETTINGS"
+  | "SWITCH_CALL"
   | null;
 
 type UIState = {

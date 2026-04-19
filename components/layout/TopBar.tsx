@@ -2,12 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { Search, Image as ImageIcon, Info, Menu, Users, Phone } from "lucide-react";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
-import { useRoom, useRoomMembers } from "@/hooks";
+import { useRoom, useRoomMembers, useCalls } from "@/hooks";
 import { useSearchMessages } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 
 import { useUIStore } from "@/store/uiStore";
+import { useJitsiStore } from "@/store/jitsiStore";
 
 interface SearchResult {
   _id: string;
@@ -19,6 +20,8 @@ interface SearchResult {
 export default function TopBar({ room_id }: { room_id: string }) {
   const { room } = useRoom(room_id);
   const members = useRoomMembers(room_id);
+  const { activeCalls } = useCalls(room_id);
+  const { isJoined: isInJitsiCall, actualRoomId } = useJitsiStore();
   const [query, setQuery] = useState("");
   const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
   const user = useUserStore((s) => s.user);
@@ -166,10 +169,20 @@ export default function TopBar({ room_id }: { room_id: string }) {
               e.stopPropagation();
               toggleSidebar("calls");
             }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "bg-theme-hover" : "hover:bg-theme-hover"
-              }`}
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${
+              isSidebarOpen && sidebarTab === "calls" ? "bg-theme-hover" : "hover:bg-theme-hover"
+            }`}
           >
-            <Phone className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"}`} />
+            <Phone className={`w-4 h-4 transition-colors ${
+              isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"
+            }`} />
+            {activeCalls.length > 0 && (
+              <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
+                isInJitsiCall && actualRoomId === room_id 
+                  ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" 
+                  : "bg-green-500"
+              }`} />
+            )}
           </div>
           <button
             onClick={(e) => {

@@ -8,6 +8,7 @@ import { LeaveDialog } from "@/components/features/rooms/LeaveDialog";
 import { RoomInfoDialog } from "@/components/features/rooms/RoomInfoDialog";
 import { MediaDialog } from "@/components/shared/MediaDialog";
 import { AddFriendDialog } from "@/components/features/friends/AddFriendDialog";
+import { CallSwitchModal } from "@/components/ui/modals/CallSwitchModal";
 
 export function GlobalModals() {
   const { activeModal, modalData, closeModal } = useUIStore();
@@ -29,6 +30,7 @@ export function GlobalModals() {
           {activeModal === "INFO" && <RoomInfoDialog key={modalData?.room_id} />}
           {activeModal === "MEDIA" && <MediaDialog key={modalData?.room_id} />}
           {activeModal === "ADD_FRIEND" && <AddFriendDialog key="add_friend" />}
+          {activeModal === "SWITCH_CALL" && <CallSwitchModal key="switch_call" />}
         </div>
       </div>
     </>

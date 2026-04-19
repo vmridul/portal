@@ -17,7 +17,7 @@ export const ProfileUI = ({
   return (
     <div
       onClick={() => router.push("/portal/profile")}
-      className={`${/^\/portal\/profile$/.test(pathname) ? "bg-theme-hover" : ""} flex justify-between absolute bottom-2 items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
+      className={`${/^\/portal\/profile$/.test(pathname) ? "bg-theme-hover" : ""} flex justify-between items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
     >
       <div className="flex gap-4 items-center">
         <div className="relative">
@@ -32,11 +32,10 @@ export const ProfileUI = ({
 
           {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
             <Moon
-              fill="yellow"
-              className="absolute text-yellow-400 right-0 bottom-0 w-[12px] h-[12px] opacity-90"
+              className="absolute text-yellow-400 fill-current right-0 bottom-0 w-3 h-3 opacity-90"
             />
           ) : (
-            <div className="z-[9999] absolute right-0 bottom-0 w-[10px] h-[10px] opacity-90 bg-green-500 border border-[#59ab44] rounded-full"></div>
+            <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full"></div>
           )}
         </div>
         <div className="flex flex-col text-sm">

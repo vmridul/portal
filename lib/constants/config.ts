@@ -18,6 +18,13 @@ export const APP_CONFIG = {
   messagePageSize: 10,
   typingDebounceMs: 1000,
   presenceUpdateIntervalMs: 60 * 1000,
+  jitsi: {
+    domain: process.env.NEXT_PUBLIC_JITSI_DOMAIN || "meet.ffmuc.net",
+    conferenceHost: process.env.NEXT_PUBLIC_JITSI_CONFERENCE_HOST,
+    focusHost: process.env.NEXT_PUBLIC_JITSI_FOCUS_HOST,
+    websocketUrl: process.env.NEXT_PUBLIC_JITSI_WEBSOCKET_URL,
+    sdkUrl: process.env.NEXT_PUBLIC_JITSI_SDK_URL,
+  },
 } as const;
 
 export const CONVEX_DEPLOYMENT = process.env.NEXT_PUBLIC_CONVEX_DEPLOYMENT;

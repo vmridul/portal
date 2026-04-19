@@ -7,6 +7,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { usePathname } from "next/navigation";
 import { ColorProvider, useColor } from "@/contexts/colorContext";
 import NotificationListener from "@/components/features/notifications/NotificationListener";
+import CallCleanupListener from "@/components/features/calls/CallCleanupListener";
 import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
 import { useCurrentUser } from "@/hooks";
 import { OnboardingDialog } from "@/components/features/auth/OnboardingDialog";
@@ -80,6 +81,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
       <section className="flex font-sans bg-theme-surface">
         <Suspense fallback={null}></Suspense>
         <NotificationListener />
+        <CallCleanupListener />
         <div className="flex-1">{children}</div>
       </section>
     </RoomsProvider>

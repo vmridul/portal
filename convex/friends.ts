@@ -15,25 +15,19 @@ export const getFriends = query({
 
     const result = await Promise.all(
       friendships.map(async (f) => {
-        let username = f.friend_username;
-        let avatar = f.friend_avatar;
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", f.friend_id))
+          .first();
 
-        if (!username) {
-          const user = await ctx.db
-            .query("users")
-            .withIndex("by_user_id", (q) => q.eq("user_id", f.friend_id))
-            .first();
-          if (user) {
-            username = user.username;
-            avatar = user.avatar;
-          }
-        }
+        const username = user?.username || f.friend_username || "Unknown";
+        const avatar = user?.avatar || f.friend_avatar;
 
         return {
           id: f._id,
           friend: {
             user_id: f.friend_id,
-            username: username || "Unknown",
+            username,
             avatar,
           },
           last_msg: f.last_msg,
@@ -63,27 +57,18 @@ export const getPendingRequests = query({
 
     const result = await Promise.all(
       requests.map(async (r) => {
-        let username = r.friend_username;
-        let avatar = r.friend_avatar;
-
-        if (!username) {
-          const user = await ctx.db
-            .query("users")
-            .withIndex("by_user_id", (q) => q.eq("user_id", r.user_id))
-            .first();
-          if (user) {
-            username = user.username;
-            avatar = user.avatar;
-          }
-        }
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", r.user_id))
+          .first();
 
         return {
           id: r._id,
           _creationTime: r._creationTime,
           sender: {
             user_id: r.user_id,
-            username: username || "Unknown",
-            avatar,
+            username: user?.username || "Unknown",
+            avatar: user?.avatar,
           },
         };
       })
@@ -107,26 +92,20 @@ export const getSentRequests = query({
 
     const result = await Promise.all(
       requests.map(async (r) => {
-        let username = r.friend_username;
-        let avatar = r.friend_avatar;
+        const user = await ctx.db
+          .query("users")
+          .withIndex("by_user_id", (q) => q.eq("user_id", r.friend_id))
+          .first();
 
-        if (!username) {
-          const user = await ctx.db
-            .query("users")
-            .withIndex("by_user_id", (q) => q.eq("user_id", r.friend_id))
-            .first();
-          if (user) {
-            username = user.username;
-            avatar = user.avatar;
-          }
-        }
+        const username = user?.username || r.friend_username || "Unknown";
+        const avatar = user?.avatar || r.friend_avatar;
 
         return {
           id: r._id,
           _creationTime: r._creationTime,
           receiver: {
             user_id: r.friend_id,
-            username: username || "Unknown",
+            username,
             avatar,
           },
         };
