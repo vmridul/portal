@@ -16,6 +16,7 @@ export default defineSchema({
     friend_avatar: v.optional(v.string()),
     status: v.union(v.literal("pending"), v.literal("accepted")),
     last_msg: v.optional(v.string()),
+    last_msg_sender: v.optional(v.string()),
     updated_at: v.optional(v.number()),
     unread_count: v.optional(v.number()),
     last_read_time: v.optional(v.number()),

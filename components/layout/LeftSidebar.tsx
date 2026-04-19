@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { UserAdd01Icon, Add01Icon, Home01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,8 @@ import { RoomsList } from "@/components/features/rooms/RoomsList";
 import { usePresence } from "@/contexts/presenceContext";
 import { ProfileUI } from "@/components/features/profile/ProfileUI";
 import { useUIStore } from "@/store/uiStore";
+import { useColor } from "@/contexts/colorContext";
+import { useFriends } from "@/hooks";
 import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
 
 
@@ -37,6 +39,16 @@ export default function LeftSidebar({
     leftMobileMenu,
     setLeftMobileMenu,
   } = useUIStore();
+  const { color, textColor } = useColor();
+  const { friends } = useFriends();
+  const [mounted, setMounted] = useState(false);
+
+  const totalFriendsUnread = friends.reduce((sum, f) => sum + (f.unread_count || 0), 0);
+  const isOnFriendsPage = /^\/portal$/.test(pathname);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   //open join dialog when path name have search params: join
   useEffect(() => {
@@ -75,10 +87,20 @@ export default function LeftSidebar({
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
                 onClick={() => router.push("/portal")}
-                className={`${/^\/portal$/.test(pathname) ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
+                className={`${isOnFriendsPage ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
-                <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4" />
+                <HugeiconsIcon icon={UserGroupIcon} className={`${isOnFriendsPage ? "fill-gray-100" : ""} w-4 h-4`} />
                 <span>Friends</span>
+                {mounted && totalFriendsUnread > 0 && (
+                  <div
+                    className="ml-auto flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex"
+                    style={{ backgroundColor: color, color: textColor }}
+                  >
+                    <span className="text-[8px] font-medium">
+                      {totalFriendsUnread > 99 ? "99+" : totalFriendsUnread}
+                    </span>
+                  </div>
+                )}
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}
@@ -136,8 +158,8 @@ export default function LeftSidebar({
           ) : (
             <div className="mt-3 flex-1 flex flex-col min-h-0 w-full overflow-hidden">
               <div className="flex justify-between items-center px-3 text-[#aaaaaa] mb-2">
-                <span className="text-xs font-semibold uppercase tracking-wider">Rooms</span>
-                <div className="bg-theme-hover rounded-[6px] px-2 py-0.5 flex text-white/60 text-[10px] items-center gap-1 border border-theme-border/50">
+                <span className="text-xs">Rooms</span>
+                <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-[10px] items-center gap-1">
                   <HugeiconsIcon icon={Home01Icon} className="w-3 h-3" />
                   {rooms.length ?? 0}
                 </div>

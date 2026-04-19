@@ -24,7 +24,7 @@ export const RoomMembersList = ({
     <div className="mt-3 flex flex-col">
       <div className="flex items-center gap-40">
         <span className="text-xs ml-2 text-[#aaaaaa]">Members</span>
-        <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-xs items-center gap-0.5">
+        <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-[10px] items-center gap-0.5">
           <HugeiconsIcon icon={UserIcon} className="w-3 h-3 cursor-pointer" />
           {memberCount}
         </div>

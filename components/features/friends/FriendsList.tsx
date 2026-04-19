@@ -21,6 +21,7 @@ import { text } from "stream/consumers";
 type FriendItem = {
   id: string;
   last_msg?: string;
+  last_msg_sender?: string;
   updated_at?: string | number;
   _creationTime?: number;
   unread_count?: number;
@@ -118,6 +119,12 @@ export default function FriendsList({
                 const isUserAway = friendId ? awayUsers.has(friendId) : false;
                 const unreadCount = friend?.unread_count || 0;
                 const isActiveFriend = activeFriendPage === friendId;
+                const isLastMsgByMe = friend?.last_msg_sender === user?.user_id;
+                const lastMsgPreview = friend?.last_msg
+                  ? isLastMsgByMe
+                    ? `You: ${friend.last_msg}`
+                    : friend.last_msg
+                  : "";
                 return (
                   <div
                     className="group h-[70px] bg-theme-border hover:bg-theme-hover transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
@@ -171,7 +178,7 @@ export default function FriendsList({
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#aaaaaa] text-xs truncate w-[80px]">
-                          {friend?.last_msg ? friend?.last_msg : ""}
+                          {lastMsgPreview}
                         </span>
                         <span className="text-[#aaaaaa] text-xs whitespace-nowrap mr-2">
                           {timeAgo(friend?.updated_at || friend?._creationTime)}

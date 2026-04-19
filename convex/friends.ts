@@ -31,6 +31,7 @@ export const getFriends = query({
             avatar,
           },
           last_msg: f.last_msg,
+          last_msg_sender: f.last_msg_sender,
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
           unread_count: f.unread_count || 0,
