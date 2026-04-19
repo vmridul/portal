@@ -41,7 +41,8 @@ export const UserInfoTab = () => {
   }, [user?.user_id]);
 
   const onChangeName = async () => {
-    if (!newUsername || newUsername === user?.username) return;
+    if (newUsername === user?.username) return;
+    if (newUsername.length < 3 || newUsername.length > 16) return toast.error("Username must be between 3 and 16 characters");
     try {
       await changeName(newUsername);
       setUser({ ...user!, username: newUsername });

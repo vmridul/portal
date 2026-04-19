@@ -8,6 +8,7 @@ import { File02Icon } from "@hugeicons/core-free-icons";
 import { VideoMessage } from "./VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
 import { MessageReactions } from "./MessageReactions";
+import { UserProfilePopup } from "@/components/shared/UserProfilePopup";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
 import React, { useEffect, useState } from "react";
@@ -153,9 +154,21 @@ export const MessageItem = React.memo(({
           <div className="flex flex-col max-w-[60%] items-start">
             {showMeta && (
               <div className="flex items-center gap-1 px-1 flex-row">
-                <span className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left">
-                  {displayName}
-                </span>
+                <UserProfilePopup
+                  user={{
+                    id: message.sender_id,
+                    username: displayName,
+                    avatarUrl: senderAvatar,
+                    joinedAt: message.sender?._creationTime 
+                      ? new Date(message.sender._creationTime).toISOString()
+                      : new Date().toISOString(),
+                  }}
+                  currentUserId={user?.user_id}
+                >
+                  <span className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left">
+                    {displayName}
+                  </span>
+                </UserProfilePopup>
                 <span className="text-[10px] truncate min-w-0 max-w-[150px] text-gray-500">
                   {timeString}
                   {(message as any).edited && <span className="ml-1 opacity-60">(edited)</span>}

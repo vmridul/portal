@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { UserIcon, Moon02Icon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
+import { UserProfilePopup } from "@/components/shared/UserProfilePopup";
 
 interface RoomMembersListProps {
   members: RoomMemberWithUser[];
@@ -63,11 +64,25 @@ export const RoomMembersList = ({
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <span className="truncate max-w-[150px]">
-                    {member?.Users?.user_id == user?.user_id
-                      ? user?.username
-                      : member?.Users?.username}
-                  </span>
+                  <UserProfilePopup
+                    user={{
+                      id: member?.Users?.user_id || "",
+                      username: member?.Users?.user_id == user?.user_id
+                        ? user?.username || ""
+                        : member?.Users?.username || "",
+                      avatarUrl: member?.Users?.avatar,
+                      joinedAt: member?.Users?._creationTime
+                        ? new Date(member.Users._creationTime).toISOString()
+                        : new Date().toISOString(),
+                    }}
+                    currentUserId={user?.user_id}
+                  >
+                    <span className="truncate max-w-[150px]">
+                      {member?.Users?.user_id == user?.user_id
+                        ? user?.username
+                        : member?.Users?.username}
+                    </span>
+                  </UserProfilePopup>
                   {member.role && (
                     <span className="text-[#aaaaaa] font-extralight">
                       {member.role}

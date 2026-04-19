@@ -24,6 +24,7 @@ import { getDirectConversationId } from "@/lib/utils/message";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { useRef } from "react";
 import { useCallStore } from "@/store/callStore";
+import { UserProfilePopup } from "@/components/shared/UserProfilePopup";
 
 
 export default function FriendsTab() {
@@ -126,9 +127,21 @@ export default function FriendsTab() {
               ) : (
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-gray-500 border border-[#858585] rounded-full"></div>
               )}
-              <span className="text-white/80 text-sm">
-                {friend?.friend?.username}
-              </span>
+              <UserProfilePopup
+                user={{
+                  id: friend?.friend?.user_id || "",
+                  username: friend?.friend?.username || "",
+                  avatarUrl: friend?.friend?.avatar,
+                  joinedAt: friend?._creationTime
+                    ? new Date(friend._creationTime).toISOString()
+                    : new Date().toISOString(),
+                }}
+                currentUserId={user?.user_id}
+              >
+                <span className="text-white/80 text-sm hover:text-white cursor-pointer transition-colors">
+                  {friend?.friend?.username}
+                </span>
+              </UserProfilePopup>
             </div>
             <div className="flex items-center gap-2">
               <div

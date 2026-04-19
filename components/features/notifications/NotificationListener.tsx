@@ -33,6 +33,12 @@ export default function NotificationListener() {
   // 2. Track IDs processed in this current lifecycle to prevent duplicate toasts
   const processedIds = useRef(new Set<string>());
 
+  // 3. Track if we've captured initial snapshot
+  const hasCapturedInitialSnapshot = useRef(false);
+
+  // 4. Track when user came online
+  const cameOnlineAt = useRef<number>(0);
+
   const notifications = useMemo(
     () => convexNotifications || [],
     [convexNotifications],
@@ -76,9 +82,17 @@ export default function NotificationListener() {
       return;
     }
 
-    // 1. Initialize initialSnapshot on first load to identify historical notifications
-    if (initialSnapshot.current === null) {
+    // Only show toasts when user is online
+    if (!navigator.onLine) {
+      return;
+    }
+
+    // Capture initial snapshot on first run to mark all existing notifications as historical
+    if (!hasCapturedInitialSnapshot.current) {
+      hasCapturedInitialSnapshot.current = true;
       initialSnapshot.current = new Set(notifications.map(item => item.id));
+      cameOnlineAt.current = Date.now();
+      return;
     }
 
     notifications.forEach((item) => {
@@ -86,7 +100,12 @@ export default function NotificationListener() {
       // 1. Must be marked as 'shouldShowToast' by the backend
       if (!item.shouldShowToast) return;
 
-      // 2. Must not have been already processed by this component instance
+      // 2. Only show toasts for notifications created after we came online
+      if (item.createdAt < cameOnlineAt.current) {
+        return;
+      }
+
+      // 3. Must not have been already processed by this component instance
       if (processedIds.current.has(item.id)) return;
 
       // Optimistically mark as processed locally
