@@ -83,7 +83,7 @@ export const UserInfoTab = () => {
               width={120}
               height={120}
               unoptimized
-              className="rounded-[12px] w-24 h-24 border border-theme-border"
+              className="rounded-[12px] w-24 h-24"
             />
           </div>
           <div className="mt-2">

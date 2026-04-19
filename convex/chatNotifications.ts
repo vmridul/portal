@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getMessageNotifications = query({
@@ -13,20 +13,52 @@ export const getMessageNotifications = query({
       .order("desc")
       .take(100);
 
-    return notifications.map((notification) => ({
-      id: notification._id,
-      messageId: notification.message_id,
-      sourceType: notification.source_type,
-      sourceId: notification.source_id,
-      sourceName: notification.source_name,
-      senderName: notification.sender_name,
-      senderAvatar: notification.sender_avatar || "",
-      message: notification.message,
-      createdAt: notification._creationTime,
-      shouldShowToast: !notification.toast_shown,
-    }));
+    return await Promise.all(
+      notifications.map(async (notification) => {
+        const call = notification.call_id
+          ? await ctx.db.get(notification.call_id)
+          : null;
+
+        return {
+          id: notification._id,
+          messageId: notification.message_id,
+          sourceType: notification.source_type,
+          sourceId: notification.source_id,
+          conversationId: notification.conversation_id ?? notification.source_id,
+          sourceName: notification.source_name,
+          senderId: notification.sender_id,
+          senderName: notification.sender_name,
+          senderAvatar: notification.sender_avatar || "",
+          message: notification.message,
+          notificationType: notification.notification_type ?? "message",
+          callId: notification.call_id ?? null,
+          callStatus: notification.call_status ?? null,
+          participantIds:
+            notification.notification_type === "call"
+              ? call?.allParticipants || call?.participants || []
+              : [],
+          createdAt: notification._creationTime,
+          shouldShowToast: !notification.toast_shown,
+        };
+      }),
+    );
   },
 });
+
+export async function pruneOldNotifications(ctx: MutationCtx, userId: string) {
+  const notifications = await ctx.db
+    .query("chatNotifications")
+    .withIndex("by_user_id", (q) => q.eq("user_id", userId))
+    .order("desc")
+    .collect();
+
+  if (notifications.length > 100) {
+    const toDelete = notifications.slice(100);
+    for (const notification of toDelete) {
+      await ctx.db.delete(notification._id);
+    }
+  }
+}
 
 export const markToastShown = mutation({
   args: { notification_id: v.id("chatNotifications") },

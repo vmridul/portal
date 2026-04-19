@@ -1,6 +1,3 @@
-import { useState, useEffect } from "react";
-import { X, Image as ImageIcon, FileText, Hash } from "lucide-react";
-import Image from "next/image";
 import { useUIStore } from "@/store/uiStore";
 import { useRoom, useRoomMembers, useMediaFiles } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
@@ -12,9 +9,10 @@ import CallSidebar from "./sidebar/CallSidebar";
 interface DetailsSidebarProps {
   id: string;
   type: "room" | "direct";
+  title?: string;
 }
 
-export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
+export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
   const { isSidebarOpen, sidebarTab, setSidebarOpen } = useUIStore();
   const { room, isLoading: isRoomLoading } = useRoom(id);
   const members = useRoomMembers(id);
@@ -26,6 +24,7 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
   const renderContent = () => {
     switch (sidebarTab) {
       case "info":
+        if (type === "direct") return null;
         return (
           <SidebarInfoView
             id={id}
@@ -44,7 +43,7 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
           />
         );
       case "calls":
-        return <CallSidebar roomId={id} />;
+        return <CallSidebar roomId={id} conversationName={title} />;
       default:
         return null;
     }
@@ -53,7 +52,7 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
   const getSidebarTitle = () => {
     switch (sidebarTab) {
       case "info":
-        return `${type === "room" ? "Room" : "Friend"} Info`;
+        return type === "room" ? "Room Info" : "";
       case "media":
         return "Media Gallery";
       case "calls":
@@ -64,13 +63,13 @@ export function DetailsSidebar({ id, type }: DetailsSidebarProps) {
   };
 
   return (
-    <div className="w-[320px] h-full bg-theme-base border-l border-theme-border flex flex-col">
+    <div className="w-[320px] h-full min-h-0 bg-theme-base border-l border-theme-border flex flex-col">
       <SidebarHeader
         title={getSidebarTitle()}
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {renderContent()}
       </div>
     </div>

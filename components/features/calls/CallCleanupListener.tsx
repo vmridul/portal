@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useJitsiStore } from "@/store/jitsiStore";
+import { useCallStore } from "@/store/callStore";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 export default function CallCleanupListener() {
-  const isJoined = useJitsiStore((state) => state.isJoined);
-  const callId = useJitsiStore((state) => state.callId);
-  const leaveActiveCall = useJitsiStore((state) => state.leaveActiveCall);
+  const isJoined = useCallStore((state) => state.isJoined);
+  const callId = useCallStore((state) => state.callId);
+  const leaveActiveCall = useCallStore((state) => state.leaveActiveCall);
   const leaveCall = useMutation(api.calls.leaveCall);
 
   useEffect(() => {

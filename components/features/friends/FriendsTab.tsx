@@ -7,6 +7,7 @@ import {
   Moon,
   Image as ImageIcon,
   Info,
+  Phone,
 } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
@@ -16,11 +17,12 @@ import ActiveFriendPage from "@/components/features/friends/ActiveFriendPage";
 import FriendsList from "@/components/features/friends/FriendsList";
 import { useUserStore } from "@/store/useUserStore";
 import Image from "next/image";
-import { useFriends, useFriendActions } from "@/hooks";
+import { useFriends, useFriendActions, useCalls } from "@/hooks";
 import { usePresence } from "@/contexts/presenceContext";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { useRef } from "react";
+import { useCallStore } from "@/store/callStore";
 
 
 export default function FriendsTab() {
@@ -42,15 +44,18 @@ export default function FriendsTab() {
   const friend = friends.find(
     (friend) => friend?.friend?.user_id === activeFriendPage,
   );
+  const directConversationId =
+    activeFriendPage && user?.user_id
+      ? getDirectConversationId(activeFriendPage, user.user_id)
+      : "";
+  const { activeCalls } = useCalls(directConversationId);
+  const { isJoined: isInCall, actualRoomId } = useCallStore();
 
   const menuRef = useRef<HTMLDivElement>(null);
 
   useOutsideClick(menuRef, () => {
     setMenuOpen(false);
   });
-
-
-
 
   return (
     <>
@@ -73,7 +78,7 @@ export default function FriendsTab() {
   `}
       >
         <div
-          onClick={async (e) => {
+          onClick={async () => {
             if (activeFriendPage) {
               await removeFriend(activeFriendPage);
             }
@@ -86,11 +91,11 @@ export default function FriendsTab() {
           <button className="w-32 text-start py-2">Remove Friend</button>
         </div>
       </div>
-      <div className="relative flex-1 font-sans">
+      <div className="relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden font-sans">
         {activeFriendPage ? (
           <div
             className={`
- flex items-center p-3  w-full gap-4 border-b border-theme-border bg-theme-hover bg-opacity-100`}
+ flex shrink-0 items-center p-3 w-full gap-4 border-b border-theme-border bg-theme-hover bg-opacity-100`}
           >
             <ArrowLeft
               onClick={() => {
@@ -108,9 +113,9 @@ export default function FriendsTab() {
                 unoptimized
                 className="w-7 h-7 rounded-[8px]"
               />
-              {onlineUsers.has(friend?.friend?.user_id!) ? (
+              {friend?.friend?.user_id && onlineUsers.has(friend.friend.user_id) ? (
                 <div className="absolute bottom-0 left-5 h-2 w-2 bg-green-500 border border-[#59ab44] rounded-full"></div>
-              ) : awayUsers.has(friend?.friend?.user_id!) ? (
+              ) : friend?.friend?.user_id && awayUsers.has(friend.friend.user_id) ? (
                 <Moon
                   fill="yellow"
                   className="absolute text-yellow-400 left-5 bottom-0 w-[10px] h-[10px] opacity-90"
@@ -134,15 +139,33 @@ export default function FriendsTab() {
                 <ImageIcon className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-white/70"}`} />
               </div>
               <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleSidebar("info");
+                onClick={() => {
+                  toggleSidebar("calls");
                 }}
-                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-base" : "hover:bg-theme-base"
-                  }`}
+                className={`w-7 select-none h-7 cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${
+                  isSidebarOpen && sidebarTab === "calls"
+                    ? "bg-theme-base"
+                    : "hover:bg-theme-base"
+                }`}
               >
-                <Info className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-white/70"}`} />
+                <Phone
+                  className={`w-4 h-4 transition-colors ${
+                    isSidebarOpen && sidebarTab === "calls"
+                      ? "text-white"
+                      : "text-white/70"
+                  }`}
+                />
+                {activeCalls.length > 0 && (
+                  <span
+                    className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
+                      isInCall && actualRoomId === directConversationId
+                        ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                        : "bg-green-500"
+                    }`}
+                  />
+                )}
               </div>
+
               <div
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center"
@@ -162,7 +185,7 @@ export default function FriendsTab() {
             </div>
             <div className="flex items-center text-sm gap-1">
               <button
-                onClick={(e) => {
+                onClick={() => {
                   setPendingRequestMenu(!pendingRequestMenu);
                 }}
                 className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
@@ -184,8 +207,8 @@ export default function FriendsTab() {
         />
 
         {/* friends list */}
-        <div className="flex h-full overflow-hidden">
-          <div className="flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <div className="min-h-0 flex-1 overflow-hidden">
             {activeFriendPage ? (
               <ActiveFriendPage />
             ) : (
@@ -195,8 +218,9 @@ export default function FriendsTab() {
           {activeFriendPage && isSidebarOpen && (
             <div className="flex-none transition-all duration-300 ease-in-out">
               <DetailsSidebar
-                id={getDirectConversationId(activeFriendPage, user?.user_id || "")}
+                id={directConversationId}
                 type="direct"
+                title={friend?.friend?.username || "Direct Message"}
               />
             </div>
           )}

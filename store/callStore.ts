@@ -1,13 +1,13 @@
 "use client";
 
 import { create } from "zustand";
-import { JitsiClient } from "@/lib/jitsi/client";
+import { CallClient } from "@/lib/calls/client";
 import type {
   CallSessionSnapshot,
   CallSessionTarget,
 } from "@/lib/types/call";
 
-const jitsiClient = new JitsiClient();
+const callClient = new CallClient();
 
 const initialSnapshot: CallSessionSnapshot = {
   status: "idle",
@@ -19,18 +19,19 @@ const initialSnapshot: CallSessionSnapshot = {
   error: null,
 };
 
-interface JitsiStoreState extends CallSessionSnapshot {
+interface CallStoreState extends CallSessionSnapshot {
   isJoined: boolean;
   isConnecting: boolean;
-  joinExistingCall: (target: CallSessionTarget) => Promise<void>;
+  joinExistingCall: (target: CallSessionTarget) => Promise<string>;
   leaveActiveCall: () => Promise<void>;
-  switchActiveCall: (target: CallSessionTarget) => Promise<void>;
+  switchActiveCall: (target: CallSessionTarget) => Promise<string>;
   toggleMute: () => Promise<void>;
   clearError: () => void;
+  syncParticipants: (participants: any[]) => void;
 }
 
 function snapshotToStore(snapshot: Partial<CallSessionSnapshot>) {
-  return (state: JitsiStoreState): Partial<JitsiStoreState> => {
+  return (state: CallStoreState): Partial<CallStoreState> => {
     return {
       ...snapshot,
       isJoined: (snapshot.status ?? state.status) === "joined",
@@ -39,7 +40,7 @@ function snapshotToStore(snapshot: Partial<CallSessionSnapshot>) {
   };
 }
 
-function resetSessionState(): Partial<JitsiStoreState> {
+function resetSessionState(): Partial<CallStoreState> {
   return {
     ...initialSnapshot,
     isJoined: false,
@@ -47,7 +48,7 @@ function resetSessionState(): Partial<JitsiStoreState> {
   };
 }
 
-export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
+export const useCallStore = create<CallStoreState>((set, get) => ({
   ...initialSnapshot,
   isJoined: false,
   isConnecting: false,
@@ -77,7 +78,7 @@ export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
     });
 
     try {
-      await jitsiClient.connect(target, {
+      const peerId = await callClient.connect(target, {
         onStatusChange(snapshot) {
           set(snapshotToStore(snapshot));
         },
@@ -103,6 +104,7 @@ export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
           });
         },
       });
+      return peerId;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to join call";
@@ -130,7 +132,7 @@ export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
     });
 
     try {
-      await jitsiClient.disconnect();
+      await callClient.disconnect();
     } finally {
       set(resetSessionState());
     }
@@ -138,11 +140,11 @@ export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
 
   async switchActiveCall(target) {
     await get().leaveActiveCall();
-    await get().joinExistingCall(target);
+    return await get().joinExistingCall(target);
   },
 
   async toggleMute() {
-    const isMuted = await jitsiClient.toggleMute();
+    const isMuted = await callClient.toggleMute();
     set({ isMuted, error: null });
   },
 
@@ -154,5 +156,11 @@ export const useJitsiStore = create<JitsiStoreState>((set, get) => ({
       isJoined: status === "joined",
       isConnecting: false,
     });
+  },
+
+  syncParticipants(participants) {
+    if (get().status === "joined") {
+      callClient.syncParticipants(participants);
+    }
   },
 }));

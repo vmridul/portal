@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Mic, MicOff, PhoneOff, PhoneCall } from "lucide-react";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
-import { useJitsiStore } from "@/store/jitsiStore";
+import { useCallStore } from "@/store/callStore";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -15,12 +15,14 @@ import AvatarStack from "../AvatarStack";
 interface Call {
   _id: Id<"calls">;
   participants: string[];
+  activePeerIds?: { userId: string; peerId: string }[];
   startedAt: number;
   roomId: string;
 }
 
 interface ActiveCallPanelProps {
   call: Call;
+  conversationName?: string;
   onLeave: () => void;
 }
 
@@ -31,7 +33,11 @@ function formatDuration(startMs: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps) {
+export default function ActiveCallPanel({
+  call,
+  conversationName,
+  onLeave,
+}: ActiveCallPanelProps) {
   const user = useUserStore((s) => s.user);
   const [duration, setDuration] = useState(formatDuration(call.startedAt));
   const [isLeaving, setIsLeaving] = useState(false);
@@ -41,23 +47,31 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
   const { setModal } = useUIStore();
   const { joinExistingSession, leaveCurrentSession } = useCallSessionActions();
   const {
-    isJoined: jitsiStoreJoined,
+    isJoined: callStoreJoined,
     isConnecting,
     callId: activeCallId,
     isMuted,
     toggleMute,
-    error: jitsiError,
-  } = useJitsiStore();
+    error: callError,
+    syncParticipants,
+  } = useCallStore();
 
-  const isJitsiJoined = jitsiStoreJoined && activeCallId === call._id;
+  const isCallJoined = callStoreJoined && activeCallId === call._id;
   const isThisCallConnecting = isConnecting && activeCallId === call._id;
   const hasOtherActiveSession =
-    !!activeCallId && activeCallId !== call._id && (jitsiStoreJoined || isConnecting);
-  const activeError = activeCallId === call._id ? jitsiError : null;
+    !!activeCallId && activeCallId !== call._id && (callStoreJoined || isConnecting);
+  const activeError = activeCallId === call._id ? callError : null;
 
   const participantProfiles = useQuery(api.users.getUsersByExternalIds, {
     user_ids: call.participants
   }) || [];
+
+  // Synchronize participants with PeerJS client whenever the Convex list changes
+  useEffect(() => {
+    if (isCallJoined && call.activePeerIds) {
+      syncParticipants(call.activePeerIds);
+    }
+  }, [isCallJoined, call.activePeerIds, syncParticipants]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -69,29 +83,39 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
   const handleJoin = async () => {
     setLocalError(null);
 
+    // Guard: Already in this exact call - do nothing
+    if (callStoreJoined && isCallJoined) {
+      return;
+    }
+
     if (hasOtherActiveSession) {
-      const roomData = rooms.find(r => r.room_id === call.roomId);
+      const roomData = rooms.find((r) => r.room_id === call.roomId);
+      const resolvedConversationName =
+        conversationName || roomData?.Rooms?.room_name || "Unknown Conversation";
       setModal("SWITCH_CALL", {
         newCallId: call._id,
         newRoomId: call.roomId,
-        newRoomName: roomData?.Rooms?.room_name || "Unknown Room",
+        newRoomName: resolvedConversationName,
         oldCallId: activeCallId,
       });
       return;
     }
 
     try {
-      const roomData = rooms.find(r => r.room_id === call.roomId);
+      const roomData = rooms.find((r) => r.room_id === call.roomId);
       await joinExistingSession({
         callId: call._id,
         user: {
-        userId: user?.user_id,
-        displayName: user?.username || "Guest",
-        avatarUrl: user?.avatar || undefined
+          userId: user?.user_id,
+          displayName: user?.username || "Guest",
+          avatarUrl: user?.avatar || undefined,
         },
         room: {
           id: call.roomId,
-          name: roomData?.Rooms?.room_name || "Unknown Room",
+          name:
+            conversationName ||
+            roomData?.Rooms?.room_name ||
+            "Unknown Conversation",
         },
       });
     } catch (error) {
@@ -124,7 +148,7 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
     });
   };
 
-  if (!isJitsiJoined) {
+  if (!isCallJoined) {
     return (
       <div className="p-3 border-b border-theme-border">
         <div className="flex items-center justify-between mb-3">
@@ -147,7 +171,7 @@ export default function ActiveCallPanel({ call, onLeave }: ActiveCallPanelProps)
 
         <button
           onClick={handleJoin}
-          disabled={isThisCallConnecting || isJitsiJoined}
+          disabled={isThisCallConnecting || isCallJoined}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
         >
           <PhoneCall className={`w-4 h-4 ${isThisCallConnecting ? "animate-bounce" : ""}`} />

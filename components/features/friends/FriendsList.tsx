@@ -1,11 +1,15 @@
 import Image from "next/image";
 import { usePresence } from "@/contexts/presenceContext";
-import { Moon, Search, UserPlus, Users } from "lucide-react";
+import { Moon, Phone, Search, UserPlus, Users } from "lucide-react";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import type { UUID } from "crypto";
+import { useUserStore } from "@/store/useUserStore";
+import { getDirectConversationId } from "@/lib/utils/message";
+import { useVisibleActiveCalls } from "@/hooks";
+import { text } from "stream/consumers";
 
 type FriendItem = {
   id: string;
@@ -37,6 +41,9 @@ export default function FriendsList({
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
   const [mounted, setMounted] = useState(false);
+  const user = useUserStore((state) => state.user);
+  const { activeCalls } = useVisibleActiveCalls();
+  const activeCallConversationIds = new Set(activeCalls.map((call) => call.roomId));
 
   useEffect(() => {
     setMounted(true);
@@ -91,6 +98,13 @@ export default function FriendsList({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {filteredFriends.map((friend) => {
                 const friendId = friend?.friend?.user_id || null;
+                const directConversationId =
+                  friendId && user?.user_id
+                    ? getDirectConversationId(friendId, user.user_id)
+                    : null;
+                const hasActiveCall =
+                  !!directConversationId &&
+                  activeCallConversationIds.has(directConversationId);
                 const isUserOnline = friendId
                   ? onlineUsers.has(friendId)
                   : false;
@@ -113,12 +127,14 @@ export default function FriendsList({
                           friend?.friend?.avatar || "/assets/defaultAvatar.png"
                         }
                         alt=""
-                        width={12}
-                        height={12}
+                        width={40}
+                        height={40}
                         unoptimized
-                        className="w-10 h-10 rounded-[8px] border border-[#080f17]"
+                        className="w-10 h-10 rounded-[12px]"
                       />
-                      {isUserOnline ? (
+                      {hasActiveCall ? (
+                        <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4 fill-current" />
+                      ) : isUserOnline ? (
                         <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 border border-[#59ab44] rounded-full" />
                       ) : isUserAway ? (
                         <Moon

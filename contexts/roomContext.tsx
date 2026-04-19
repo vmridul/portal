@@ -21,6 +21,7 @@ type UserRoom = {
   unread_count?: number;
   last_msg_preview?: string;
   last_msg_time?: number;
+  last_read_time?: number;
 };
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);

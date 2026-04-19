@@ -68,15 +68,20 @@ messages: defineTable({
     message_id: v.string(),
     source_type: v.union(v.literal("room"), v.literal("direct")),
     source_id: v.string(),
+    conversation_id: v.optional(v.string()),
     source_name: v.string(),
     sender_id: v.string(),
     sender_name: v.string(),
     sender_avatar: v.optional(v.string()),
     message: v.string(),
+    notification_type: v.optional(v.union(v.literal("message"), v.literal("call"))),
+    call_id: v.optional(v.id("calls")),
+    call_status: v.optional(v.union(v.literal("active"), v.literal("ended"))),
     toast_shown: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
-    .index("by_message_id", ["message_id"]),
+    .index("by_message_id", ["message_id"])
+    .index("by_call_id", ["call_id"]),
 
   presence: defineTable({
     user_id: v.string(),
@@ -105,6 +110,10 @@ messages: defineTable({
     endedAt: v.optional(v.number()),
     participants: v.array(v.string()),
     allParticipants: v.array(v.string()),
+    activePeerIds: v.optional(v.array(v.object({ 
+      userId: v.string(), 
+      peerId: v.string() 
+    }))),
     initiatorId: v.string(),
     isActive: v.boolean(),
   })

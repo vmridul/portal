@@ -23,3 +23,12 @@ export function useCalls(roomId: string) {
     isLoading: activeCalls === undefined || recentCalls === undefined,
   };
 }
+
+export function useVisibleActiveCalls() {
+  const activeCallsQuery = useQuery(api.calls.listAllActiveCalls, {});
+
+  return {
+    activeCalls: activeCallsQuery ?? [],
+    isLoading: activeCallsQuery === undefined,
+  };
+}

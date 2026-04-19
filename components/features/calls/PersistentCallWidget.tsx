@@ -1,17 +1,31 @@
 "use client";
 
-import { Hash, Mic, MicOff, PhoneOff } from "lucide-react";
-import { useJitsiStore } from "@/store/jitsiStore";
+import { Mic, MicOff, PhoneOff } from "lucide-react";
+import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";
-import { useCallSessionActions } from "@/hooks";
+import { useCallSessionActions, useCalls } from "@/hooks";
 import { memo } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import AvatarStack from "@/components/shared/AvatarStack";
 
 const PersistentCallWidget = () => {
-  const { isJoined, roomName, actualRoomId, callId, isMuted, toggleMute } = useJitsiStore();
+  const { isJoined, roomName, actualRoomId, callId, isMuted, toggleMute } = useCallStore();
   const { setSidebarOpen, setSidebarTab } = useUIStore();
   const { leaveCurrentSession } = useCallSessionActions();
   const router = useRouter();
+  const { activeCalls } = useCalls(actualRoomId || "");
+  const activeCall = activeCalls.find((call) => call._id === callId);
+  const participantProfiles =
+    useQuery(
+      api.users.getUsersByExternalIds,
+      activeCall
+        ? {
+            user_ids: activeCall.participants,
+          }
+        : "skip",
+    ) || [];
 
   // Render logic: Show ONLY if joined
   if (!isJoined) return null;
@@ -29,7 +43,11 @@ const PersistentCallWidget = () => {
 
   const handleClick = () => {
     if (actualRoomId) {
-      router.push(`/portal/room/${actualRoomId}`);
+      if (actualRoomId.startsWith("direct_")) {
+        router.push("/portal");
+      } else {
+        router.push(`/portal/room/${actualRoomId}`);
+      }
       setSidebarOpen(true);
       setSidebarTab("calls");
     }
@@ -40,11 +58,13 @@ const PersistentCallWidget = () => {
       onClick={handleClick}
       className="flex justify-between bg-theme-hover items-center cursor-pointer ease-in-out rounded-lg w-60 px-3 py-2 group"
     >
-      <div className="flex items-center gap-2 text-gray-100 min-w-0">
-        <Hash className="w-4 h-4" />
-        <span className="text-sm font-medium truncate max-w-[100px]">
+      <div className="flex min-w-0 flex-1 items-center gap-2 text-gray-100">
+        <span className="truncate text-sm font-medium max-w-[96px]">
           {roomName || "Current Call"}
         </span>
+        <div className="min-w-0 flex-1">
+          <AvatarStack users={participantProfiles} size={20} limit={3} />
+        </div>
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">

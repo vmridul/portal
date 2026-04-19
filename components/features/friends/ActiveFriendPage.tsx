@@ -71,11 +71,11 @@ export default function ActiveFriendPage() {
         </div>
       </div>
 
-      <div className="">
+      <div className="h-full min-h-0">
         {!user || !activeFriendPage ? (
           <ChatSkeleton />
         ) : (
-          <div className="w-full">
+          <div className="h-full min-h-0 w-full">
             <ChatUI
               type="direct"
               room_id={conversationId || ""}

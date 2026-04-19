@@ -36,6 +36,7 @@ export interface ConvexFriend {
   updated_at?: number;
   _creationTime: number;
   unread_count: number;
+  last_read_time?: number;
 }
 
 export interface UseFriendsResult {

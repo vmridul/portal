@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
-import type { User } from "@/lib/types";
 import { Phone } from "lucide-react";
 
 interface RoomWithNested {
@@ -22,7 +21,7 @@ interface RoomItemProps {
   router: { push: (href: string) => void };
   setMobileMenu?: (value: boolean) => void;
   currentRoom?: string | number | null;
-  user: User | null;
+  hasActiveCall?: boolean;
 }
 
 export function RoomItem({
@@ -30,7 +29,7 @@ export function RoomItem({
   router,
   setMobileMenu,
   currentRoom,
-  user,
+  hasActiveCall = false,
 }: RoomItemProps) {
   const [mounted, setMounted] = useState(false);
   const unreadCount = room?.unread_count || 0;
@@ -59,6 +58,9 @@ export function RoomItem({
         <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
           {roomName?.charAt(0).toUpperCase()}
         </div>
+        {hasActiveCall && (
+          <Phone className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4 fill-current" />
+        )}
       </div>
 
       <div className="flex items-center flex-1 min-w-0">

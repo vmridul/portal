@@ -34,12 +34,10 @@ export function ChatUI({
   const { typingUsers } = useTypingIndicators(room_id);
   const { clearUnreadCount } = useMessageActions();
 
-  // Re-clear unread count whenever new messages arrive while this room is open.
+  // Re-clear unread count whenever this room is open.
   useEffect(() => {
-    if (messages.length > 0) {
-      clearUnreadCount(room_id);
-    }
-  }, [messages.length, room_id, clearUnreadCount]);
+    clearUnreadCount(room_id);
+  }, [room_id, clearUnreadCount]);
 
   const handleScrollToBottomReq = useCallback(() => {
     setShouldScrollToBottom(true);

@@ -1,8 +1,115 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import { pruneOldNotifications } from "./chatNotifications";
+import { extractFriendId } from "./lib/conversations";
+
+function isDirectConversationId(roomId: string): boolean {
+  return roomId.startsWith("direct_");
+}
+
+// Removed naive parseDirectConversationMembers in favor of extractFriendId
+
+function getCallNotificationKey(callId: Id<"calls">): string {
+  return `call:${callId}`;
+}
+
+async function getUserSummary(ctx: MutationCtx, userId: string) {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_user_id", (q) => q.eq("user_id", userId))
+    .first();
+
+  return {
+    name: user?.username || "Unknown user",
+    avatar: user?.avatar || "",
+  };
+}
+
+async function createCallNotifications(
+  ctx: MutationCtx,
+  args: { callId: Id<"calls">; roomId: string; initiatorId: string },
+) {
+  const sender = await getUserSummary(ctx, args.initiatorId);
+  const notificationKey = getCallNotificationKey(args.callId);
+
+  if (isDirectConversationId(args.roomId)) {
+    const recipientId = extractFriendId(args.roomId, args.initiatorId);
+    if (recipientId) {
+      await ctx.db.insert("chatNotifications", {
+        user_id: recipientId,
+        message_id: notificationKey,
+        source_type: "direct",
+        source_id: args.initiatorId,
+        conversation_id: args.roomId,
+        source_name: sender.name,
+        sender_id: args.initiatorId,
+        sender_name: sender.name,
+        sender_avatar: sender.avatar,
+        message: `${sender.name} started a call`,
+        notification_type: "call",
+        call_id: args.callId,
+        call_status: "active",
+      });
+    }
+
+    return;
+  }
+
+  const room = await ctx.db
+    .query("rooms")
+    .withIndex("by_room_id", (q) => q.eq("room_id", args.roomId))
+    .first();
+  const members = await ctx.db
+    .query("roomMembers")
+    .withIndex("by_room_id", (q) => q.eq("room_id", args.roomId))
+    .collect();
+
+  for (const member of members) {
+    if (member.user_id === args.initiatorId) {
+      continue;
+    }
+
+    await ctx.db.insert("chatNotifications", {
+      user_id: member.user_id,
+      message_id: notificationKey,
+      source_type: "room",
+      source_id: args.roomId,
+      conversation_id: args.roomId,
+      source_name: room?.room_name || args.roomId,
+      sender_id: args.initiatorId,
+      sender_name: sender.name,
+      sender_avatar: sender.avatar,
+      message: `${sender.name} started a call`,
+      notification_type: "call",
+      call_id: args.callId,
+      call_status: "active",
+    });
+  }
+}
+
+async function markCallNotificationsEnded(
+  ctx: MutationCtx,
+  callId: Id<"calls">,
+) {
+  const notifications = await ctx.db
+    .query("chatNotifications")
+    .filter((q) => q.eq(q.field("call_id"), callId))
+    .collect();
+
+  await Promise.all(
+    notifications.map(async (notification) => {
+      const senderName = notification.sender_name || "Someone";
+      await ctx.db.patch(notification._id, {
+        message: `${senderName}'s call ended`,
+        call_status: "ended",
+      });
+    }),
+  );
+}
 
 export const startCall = mutation({
-  args: { roomId: v.string() },
+  args: { roomId: v.string(), peerId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
@@ -12,15 +119,23 @@ export const startCall = mutation({
       startedAt: Date.now(),
       participants: [identity.subject],
       allParticipants: [identity.subject],
+      activePeerIds: [{ userId: identity.subject, peerId: args.peerId }],
       initiatorId: identity.subject,
       isActive: true,
     });
+
+    await createCallNotifications(ctx, {
+      callId,
+      roomId: args.roomId,
+      initiatorId: identity.subject,
+    });
+
     return callId;
   },
 });
 
 export const joinCall = mutation({
-  args: { callId: v.id("calls") },
+  args: { callId: v.id("calls"), peerId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
@@ -34,13 +149,30 @@ export const joinCall = mutation({
     const isNewHistorical = !call.allParticipants.includes(identity.subject);
     const isNewActive = !call.participants.includes(identity.subject);
 
+    // Update participants list normally
+    const participants = isNewActive
+      ? [...call.participants, identity.subject]
+      : call.participants;
+
+    const allParticipants = isNewHistorical
+      ? [...call.allParticipants, identity.subject]
+      : call.allParticipants;
+
+    // Update specialized peer ID list for discrete signaling
+    const activePeerIds = call.activePeerIds || [];
+    const entryIndex = activePeerIds.findIndex(p => p.userId === identity.subject);
+    
+    // Always update the peerId to the latest session to handle refreshes
+    if (entryIndex >= 0) {
+      activePeerIds[entryIndex].peerId = args.peerId;
+    } else {
+      activePeerIds.push({ userId: identity.subject, peerId: args.peerId });
+    }
+
     await ctx.db.patch(args.callId, {
-      participants: isNewActive
-        ? [...call.participants, identity.subject]
-        : call.participants,
-      allParticipants: isNewHistorical
-        ? [...call.allParticipants, identity.subject]
-        : call.allParticipants,
+      participants,
+      allParticipants,
+      activePeerIds,
     });
   },
 });
@@ -54,15 +186,26 @@ export const leaveCall = mutation({
     const call = await ctx.db.get(args.callId);
     if (!call) return;
 
-    const newParticipants = call.participants.filter((p) => p !== identity.subject);
+    const newParticipants = call.participants.filter(
+      (p) => p !== identity.subject,
+    );
+    const newActivePeerIds = (call.activePeerIds || []).filter(
+      (p) => p.userId !== identity.subject,
+    );
+
     if (newParticipants.length === 0) {
       await ctx.db.patch(args.callId, {
         isActive: false,
         endedAt: Date.now(),
         participants: [],
+        activePeerIds: [],
       });
+      await markCallNotificationsEnded(ctx, args.callId);
     } else {
-      await ctx.db.patch(args.callId, { participants: newParticipants });
+      await ctx.db.patch(args.callId, { 
+        participants: newParticipants,
+        activePeerIds: newActivePeerIds,
+      });
     }
   },
 });
@@ -79,6 +222,7 @@ export const endCall = mutation({
       endedAt: Date.now(),
       participants: [],
     });
+    await markCallNotificationsEnded(ctx, args.callId);
   },
 });
 
@@ -87,7 +231,9 @@ export const getActiveCalls = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("calls")
-      .withIndex("by_active", (q) => q.eq("roomId", args.roomId).eq("isActive", true))
+      .withIndex("by_active", (q) =>
+        q.eq("roomId", args.roomId).eq("isActive", true),
+      )
       .collect();
   },
 });
@@ -106,9 +252,35 @@ export const getRecentCalls = query({
 export const listAllActiveCalls = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
-      .query("calls")
-      .withIndex("by_status", (q) => q.eq("isActive", true))
-      .collect();
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const [roomMemberships, friendships, activeCalls] = await Promise.all([
+      ctx.db
+        .query("roomMembers")
+        .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+        .collect(),
+      ctx.db
+        .query("friends")
+        .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
+        .filter((q) => q.eq(q.field("status"), "accepted"))
+        .collect(),
+      ctx.db
+        .query("calls")
+        .withIndex("by_status", (q) => q.eq("isActive", true))
+        .collect(),
+    ]);
+
+    const visibleConversationIds = new Set<string>([
+      ...roomMemberships.map((membership) => membership.room_id),
+      ...friendships.map(
+        (friendship) =>
+          `direct_${[identity.subject, friendship.friend_id].sort().join("_")}`,
+      ),
+    ]);
+
+    return activeCalls.filter((call) =>
+      visibleConversationIds.has(call.roomId),
+    );
   },
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useJitsiStore } from "@/store/jitsiStore";
+import { useCallStore } from "@/store/callStore";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AvatarStack from "../AvatarStack";
@@ -47,11 +47,9 @@ interface RecentCallsListProps {
 }
 
 export default function RecentCallsList({ calls }: RecentCallsListProps) {
-  const jitsiError = useJitsiStore((state) => state.error);
-
+  const callError = useCallStore((state) => state.error);
   const grouped = groupCallsByDate(calls);
 
-  // Collect all unique participant IDs to fetch profiles in one batch
   const allParticipantIds = Array.from(new Set(
     calls.flatMap(c => c.allParticipants || c.participants)
   ));
@@ -60,13 +58,12 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
     user_ids: allParticipantIds
   }) || [];
 
-
   return (
     <div className="flex-1 overflow-y-auto">
-      {jitsiError && (
+      {callError && (
         <div className="p-3">
           <div className="p-2 text-xs bg-red-500/10 text-red-400 rounded border border-red-500/20 text-center">
-            {jitsiError}
+            {callError}
           </div>
         </div>
       )}
@@ -80,7 +77,6 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
               className="px-3 py-3 hover:bg-theme-hover/50 cursor-pointer transition-colors border-b border-theme-border/30 last:border-0"
             >
               <div className="flex items-center gap-3 px-2">
-
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center">
                     <AvatarStack

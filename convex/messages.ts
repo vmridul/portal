@@ -8,6 +8,7 @@ import {
   toPreview, 
   updateConversationMetadata 
 } from './lib/conversations';
+import { pruneOldNotifications } from './chatNotifications';
 
 export const getMessagesPaginated = query({
   args: {
@@ -177,11 +178,13 @@ export const sendMessage = mutation({
             message_id: insertedMessageId,
             source_type: 'room',
             source_id: args.conversation_id,
+            conversation_id: args.conversation_id,
             source_name: room?.room_name || args.conversation_id,
             sender_id: identity.subject,
             sender_name: sender?.username || 'Unknown user',
             sender_avatar: sender?.avatar || '',
             message: notificationMessage,
+            notification_type: 'message',
           });
         }
       }
@@ -193,12 +196,15 @@ export const sendMessage = mutation({
           message_id: insertedMessageId,
           source_type: 'direct',
           source_id: identity.subject,
+          conversation_id: args.conversation_id,
           source_name: sender?.username || 'Unknown user',
           sender_id: identity.subject,
           sender_name: sender?.username || 'Unknown user',
           sender_avatar: sender?.avatar || '',
           message: notificationMessage,
+          notification_type: 'message',
         });
+        await pruneOldNotifications(ctx, friendId);
       }
     }
   },

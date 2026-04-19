@@ -45,7 +45,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }} />
       </head>
       <body suppressHydrationWarning className={`body`}>
-        <ClerkProvider afterSignInUrl="/portal" afterSignUpUrl="/portal">
+        <ClerkProvider>
           <header className="fixed top-4 right-4 z-50 flex gap-2">
             <Show when="signed-out">
               <SignInButton mode="modal">
@@ -70,7 +70,7 @@ export default function RootLayout({
                   <ColorProvider>
                     <GlobalModals />
                     <main className="flex-1 font-sans">{children}</main>
-                    <Toaster theme="dark" position="top-center" />
+                    <Toaster theme="dark" position="top-center" gap={12} />
                   </ColorProvider>
                 </PresenceProvider>
               </Suspense>

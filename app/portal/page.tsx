@@ -17,7 +17,7 @@ export default function Page() {
   }, [profile, setUser]);
 
   return (
-    <div className="text-white flex">
+    <div className="flex h-[100dvh] overflow-hidden text-white">
       <LeftSidebar className="w-64" />
       <FriendsTab />
       <NotificationTab />

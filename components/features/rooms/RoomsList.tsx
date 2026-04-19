@@ -1,10 +1,8 @@
 import { useRouter } from "next/navigation";
 import { useRooms } from "@/contexts/roomContext";
-import { useUserStore } from "@/store/useUserStore";
 import { RoomItem } from "./RoomItem";
 import { House } from "lucide-react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useVisibleActiveCalls } from "@/hooks";
 
 interface RoomWithNested {
   room_id: string;
@@ -31,8 +29,9 @@ export const RoomsList = ({
   setMobileMenu,
   currentRoom,
 }: RoomListProps) => {
-  const user = useUserStore((s) => s.user);
   const { rooms } = useRooms();
+  const { activeCalls } = useVisibleActiveCalls();
+  const activeCallRoomIds = new Set(activeCalls.map((call) => call.roomId));
 
   return (
     <>
@@ -55,7 +54,7 @@ export const RoomsList = ({
                 router={router}
                 setMobileMenu={setMobileMenu}
                 currentRoom={currentRoom}
-                user={user}
+                hasActiveCall={activeCallRoomIds.has(room.room_id)}
               />
             );
           }))}

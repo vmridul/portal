@@ -11,9 +11,13 @@ import { Phone } from "lucide-react";
 
 interface CallSidebarProps {
   roomId: string;
+  conversationName?: string;
 }
 
-export default function CallSidebar({ roomId }: CallSidebarProps) {
+export default function CallSidebar({
+  roomId,
+  conversationName,
+}: CallSidebarProps) {
   const { activeCalls, recentCalls, isLoading } = useCalls(roomId);
   const setActiveCall = useUIStore((s) => s.setActiveCall);
   const { startAndJoinCall } = useCallSessionActions();
@@ -33,7 +37,10 @@ export default function CallSidebar({ roomId }: CallSidebarProps) {
       const roomData = rooms.find((room) => room.room_id === roomId);
       await startAndJoinCall({
         roomId,
-        roomName: roomData?.Rooms?.room_name || "Unknown Room",
+        roomName:
+          conversationName ||
+          roomData?.Rooms?.room_name ||
+          "Unknown Conversation",
         user: {
           displayName: user?.username || "Guest",
           userId: user?.user_id,
@@ -46,12 +53,13 @@ export default function CallSidebar({ roomId }: CallSidebarProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-theme-base overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex flex-col h-full min-h-0 bg-theme-base overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto">
         {activeCalls.map((call) => (
           <ActiveCallPanel
             key={call._id}
             call={call}
+            conversationName={conversationName}
             onLeave={() => {
               setActiveCall(null);
             }}
@@ -64,7 +72,7 @@ export default function CallSidebar({ roomId }: CallSidebarProps) {
       </div>
 
       {!userInAnyCall && (
-        <div className="px-4 py-4 text-sm">
+        <div className="shrink-0 border-t border-theme-border/50 px-4 py-4 text-sm bg-theme-base">
           <button
             onClick={handleStartNewCall}
             style={{ backgroundColor: color, color: textColor }}

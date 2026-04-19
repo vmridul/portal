@@ -6,13 +6,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useCallback } from "react";
 import type { User } from "@/lib/types";
 
-export function useUser(userId: string | null) {
-  const user = useQuery(api.users.getUserById, userId ? { user_id: userId } : "skip");
-  return {
-    user: user as User | null,
-    isLoading: user === undefined,
-  };
-}
+
 
 export function useCurrentUser() {
   const user = useQuery(api.users.getCurrentUser);

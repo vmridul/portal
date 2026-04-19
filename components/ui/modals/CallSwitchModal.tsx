@@ -2,14 +2,14 @@
 
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
-import { useJitsiStore } from "@/store/jitsiStore";
+import { useCallStore } from "@/store/callStore";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 
 export function CallSwitchModal() {
   const { closeModal, modalData } = useUIStore();
   const { color, textColor } = useColor();
-  const activeCallId = useJitsiStore((state) => state.callId);
+  const activeCallId = useCallStore((state) => state.callId);
   const { switchSession } = useCallSessionActions();
   const user = useUserStore((s) => s.user);
 

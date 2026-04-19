@@ -1,12 +1,13 @@
 "use client";
 
 import { useUIStore } from "@/store/uiStore";
-import { useNotifications, useNotificationActions } from "@/hooks";
-import { Bell, Hash } from "lucide-react";
+import { useNotifications, useNotificationActions, useCallSessionActions } from "@/hooks";
+import { Bell, Hash, Phone } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { useUserStore } from "@/store/useUserStore";
 
 type ActiveFriendId = ReturnType<
   typeof useUIStore.getState
@@ -18,18 +19,17 @@ type ActiveFriendId = ReturnType<
  */
 export default function NotificationListener() {
   const router = useRouter();
-  const { setActiveFriendPage } = useUIStore();
+  const { setActiveFriendPage, setSidebarOpen, setSidebarTab } = useUIStore();
   const { notifications: convexNotifications } = useNotifications();
   const { markAsShown } = useNotificationActions();
+  const { joinOrSwitchSession } = useCallSessionActions();
+  const user = useUserStore((state) => state.user);
 
   // Production-level session tracking:
-  // 1. Capture the exact millisecond the application/component mounted.
-  //    This allows us to distinguish between historical notifications (missed while offline)
-  //    and real-time notifications (arrived while the app is active).
-  const sessionStartTime = useRef(Date.now());
+  // 1. Snapshot tracking to reliably distinguish historical vs real-time
+  const initialSnapshot = useRef<Set<string> | null>(null);
 
   // 2. Track IDs processed in this current lifecycle to prevent duplicate toasts
-  //    during rapid state updates or re-renders before the backend confirms 'markAsShown'.
   const processedIds = useRef(new Set<string>());
 
   const notifications = useMemo(
@@ -44,12 +44,40 @@ export default function NotificationListener() {
     } else {
       router.push(`/portal/room/${item.sourceId}`);
     }
-  }, [router, setActiveFriendPage]);
+    if (item.notificationType === "call") {
+      setSidebarOpen(true);
+      setSidebarTab("calls");
+    }
+  }, [router, setActiveFriendPage, setSidebarOpen, setSidebarTab]);
+
+  const handleJoinCall = useCallback(async (item: (typeof notifications)[0]) => {
+    if (!item.callId || item.callStatus !== "active" || !user) {
+      return;
+    }
+
+    handleNotificationClick(item);
+    await joinOrSwitchSession({
+      callId: item.callId,
+      room: {
+        id: item.conversationId,
+        name: item.sourceName,
+      },
+      user: {
+        userId: user.user_id,
+        displayName: user.username || "Guest",
+        avatarUrl: user.avatar || undefined,
+      },
+    });
+  }, [handleNotificationClick, joinOrSwitchSession, user]);
 
   useEffect(() => {
-    // Wait for the initial query to load
     if (convexNotifications === undefined) {
       return;
+    }
+
+    // 1. Initialize initialSnapshot on first load to identify historical notifications
+    if (initialSnapshot.current === null) {
+      initialSnapshot.current = new Set(notifications.map(item => item.id));
     }
 
     notifications.forEach((item) => {
@@ -71,9 +99,8 @@ export default function NotificationListener() {
       });
 
       // 4. Verify if it's a real-time event
-      // If the notification was created BEFORE we mounted, it's historical.
-      // We skip the toast for historical messages as per user requirement.
-      const isHistorical = item.createdAt <= sessionStartTime.current;
+      // If the notification was present in our initial snapshot, skip the toast.
+      const isHistorical = initialSnapshot.current?.has(item.id);
       if (isHistorical) {
         return;
       }
@@ -81,13 +108,10 @@ export default function NotificationListener() {
       // 5. Show the toast with a 4-second duration
       toast.custom(
         () => (
-          <button
-            onClick={() => {
-              toast.dismiss(item.id);
-              handleNotificationClick(item);
-            }}
-            className="w-[min(72vw,350px)] rounded-[12px] border border-theme-border bg-theme-surface px-4 py-3 text-left text-white shadow-2xl transition-all hover:border-theme-border-hover/50 active:scale-[0.98]"
-          >
+          <div onClick={() => {
+            toast.dismiss(item.id);
+            handleNotificationClick(item);
+          }} className="cursor-pointer w-[min(72vw,380px)] rounded-[12px] border border-theme-border bg-theme-surface px-4 py-3 text-white shadow-2xl">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-theme-border bg-theme-base">
                 {item.senderAvatar ? (
@@ -120,17 +144,31 @@ export default function NotificationListener() {
                 <p className="mt-1 line-clamp-2 text-sm text-white/65">
                   {item.message}
                 </p>
+                <div className="mt-3 flex items-center justify-end gap-2">
+                  {item.notificationType === "call" && item.callStatus === "active" && (
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        toast.dismiss(item.id);
+                        await handleJoinCall(item);
+                      }}
+                      className="rounded-[10px] bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700"
+                    >
+                      Join
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </button>
+          </div>
         ),
         {
           id: item.id,
-          duration: 4000,
+          duration: 5000,
         },
       );
     });
-  }, [notifications, convexNotifications, markAsShown, handleNotificationClick]);
+  }, [notifications, convexNotifications, markAsShown, handleNotificationClick, handleJoinCall]);
 
   return null;
 }
