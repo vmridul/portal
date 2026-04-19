@@ -5,18 +5,24 @@ import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-  SentIcon, 
-  Add01Icon, 
-  Cancel01Icon, 
-  Attachment01Icon, 
-  ArrowRight01Icon 
+import {
+  SentIcon,
+  Add01Icon,
+  Cancel01Icon,
+  Attachment01Icon,
+  ArrowRight01Icon,
+  Tick01Icon
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";
 import Image from "next/image";
 import { ChatEmojiPicker } from "./ChatEmojiPicker";
+import { useUIStore } from "@/store/uiStore";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { PencilEdit01Icon } from "@hugeicons/core-free-icons";
 
 interface ChatInputBarProps {
   room_id: string;
@@ -40,6 +46,17 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
 
   const { setTyping, clearTyping } = useTypingIndicators(room_id);
   const { sendMessage, generateUploadUrl } = useMessageActions();
+  const { editingMessage, setEditingMessage } = useUIStore();
+  const updateMessage = useMutation(api.messages.updateMessage);
+
+  useEffect(() => {
+    if (editingMessage) {
+      setMsg(editingMessage.content);
+      inputRef.current?.focus();
+    } else {
+      setMsg("");
+    }
+  }, [editingMessage]);
 
   const isMobile =
     typeof window !== "undefined" &&
@@ -125,6 +142,25 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
 
   const handleSendMessage = useCallback(async () => {
     if (!msg.trim() && !selectedFile) return;
+
+    if (editingMessage) {
+      if (!msg.trim() || msg === editingMessage.content) {
+        setEditingMessage(null);
+        return;
+      }
+      try {
+        await updateMessage({
+          msg_id: editingMessage.id as Id<"messages">,
+          content: msg,
+        });
+        setEditingMessage(null);
+        setMsg("");
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to update message");
+      }
+      return;
+    }
 
     let storageId = uploadedStorageId;
 
@@ -255,7 +291,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col z-[1000] md:w-[50%] md:min-w-[400px] w-[80%] absolute bottom-4 md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
+      className="flex flex-col z-[1000] md:w-[50%] md:min-w-[400px] w-[80%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
       style={
         isMobile
           ? {
@@ -308,6 +344,25 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
         )}
       </div>
 
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${editingMessage ? "max-h-20 opacity-100 mb-2" : "max-h-0 opacity-0"}`}>
+        {editingMessage && (
+          <div className="flex items-center rounded-xl relative text-gray-300">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg">
+              <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
+            </div>
+            <div className="flex-1 min-w-0 pr-8">
+              <p className="text-sm">Editing</p>
+            </div>
+            <button
+              onClick={() => setEditingMessage(null)}
+              className="absolute top-2 right-2 p-1 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
+            >
+              <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-col gap-2">
         <input
           {...getInputProps()}
@@ -341,11 +396,13 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSendMessage();
+            } else if (e.key === "Escape" && editingMessage) {
+              setEditingMessage(null);
             }
           }}
           value={msg}
           onBlur={() => clearTyping()}
-          placeholder="Press / to focus"
+          placeholder={editingMessage ? "Editing message..." : "Press / to focus"}
           minRows={1}
           maxRows={6}
           className="w-full rounded-[8px] text-sm bg-transparent text-gray-200 outline-none py-[10px] md:py-2 px-3   placeholder-[#58565f] resize-none overflow-y-auto break-words whitespace-pre-wrap"
@@ -371,7 +428,10 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
             className="py-3 px-3 rounded-[12px] disabled:opacity-50"
             disabled={(!msg.trim() && !selectedFile)}
           >
-            <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              className="w-3 h-3"
+            />
           </button>
         </div>
       </div>

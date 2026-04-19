@@ -250,6 +250,49 @@ export const deleteMessage = mutation({
   },
 });
 
+export const updateMessage = mutation({
+  args: {
+    msg_id: v.id('messages'),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error('Unauthenticated');
+
+    const msg = await ctx.db.get(args.msg_id);
+    if (!msg) throw new Error('Message not found');
+
+    if (msg.sender_id !== identity.subject) {
+      throw new Error('Unauthorized to edit message');
+    }
+
+    await ctx.db.patch(args.msg_id, {
+      content: args.content,
+      edited: true,
+    });
+
+    // Update conversation metadata if this is the latest message
+    const latestMsg = await ctx.db
+      .query('messages')
+      .withIndex('by_conversation', (q) => q.eq('conversation_id', msg.conversation_id))
+      .order('desc')
+      .first();
+
+    if (latestMsg?._id === args.msg_id) {
+      const preview = toPreview(args.content, msg.file_name);
+      await updateConversationMetadata(
+        ctx.db,
+        msg.conversation_id,
+        msg.conversation_type,
+        msg.sender_id,
+        preview,
+        latestMsg._creationTime,
+        { incrementUnread: false }
+      );
+    }
+  },
+});
+
 export const getMedia = query({
   args: { conversation_id: v.string(), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {

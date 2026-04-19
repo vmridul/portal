@@ -1,7 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mic01Icon, MicOff01Icon, CallEnd01Icon } from "@hugeicons/core-free-icons";
+import { Mic02Icon, MicOff02Icon, CallEnd01Icon } from "@hugeicons/core-free-icons";
 import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";
@@ -23,8 +23,8 @@ const PersistentCallWidget = () => {
       api.users.getUsersByExternalIds,
       activeCall
         ? {
-            user_ids: activeCall.participants,
-          }
+          user_ids: activeCall.participants,
+        }
         : "skip",
     ) || [];
 
@@ -75,11 +75,11 @@ const PersistentCallWidget = () => {
             toggleMute();
           }}
           className={`p-2 rounded-xl transition-all ${isMuted
-            ? "text-red-500 scale-110"
+            ? "text-red-400 scale-110"
             : "text-gray-300 hover:text-white"
             }`}
         >
-          {isMuted ? <HugeiconsIcon icon={MicOff01Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic01Icon} className="w-4 h-4" />}
+          {isMuted ? <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />}
         </button>
 
         <button

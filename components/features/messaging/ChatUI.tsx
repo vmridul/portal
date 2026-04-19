@@ -58,36 +58,37 @@ export function ChatUI({
   }, [messages, openLightbox]);
 
   return (
-      <div
-        className={cn(
-          "flex flex-col items-center relative overflow-hidden",
-          type === "direct" ? "h-[calc(100dvh-55px)]" : "h-[calc(100dvh-40px)]"
-        )}
-      >
+    <div
+      className="flex flex-col w-full h-full overflow-hidden"
+    >
       <MediaLightbox />
 
-      <MessageList
-        messages={messages}
-        messagesLoading={messagesLoading}
-        status={status}
-        loadMore={loadMore}
-        typingUsers={typingUsers}
-        user={user}
-        color={color}
-        textColor={textColor}
-        onPreviewMedia={handlePreviewMedia}
-        onDeleteRequest={onDeleteRequest}
-        shouldScrollToBottom={shouldScrollToBottom}
-        setShouldScrollToBottom={setShouldScrollToBottom}
-      />
+      <div className="flex-1 relative min-h-0 overflow-hidden">
+        <MessageList
+          messages={messages}
+          messagesLoading={messagesLoading}
+          status={status}
+          loadMore={loadMore}
+          typingUsers={typingUsers}
+          user={user}
+          color={color}
+          textColor={textColor}
+          onPreviewMedia={handlePreviewMedia}
+          onDeleteRequest={onDeleteRequest}
+          shouldScrollToBottom={shouldScrollToBottom}
+          setShouldScrollToBottom={setShouldScrollToBottom}
+        />
+      </div>
 
-      <ChatInputBar
-        room_id={room_id}
-        type={type}
-        color={color}
-        textColor={textColor}
-        scrollToBottom={handleScrollToBottomReq}
-      />
+      <div className="flex-shrink-0 w-full flex justify-center pb-4 pt-0 px-4">
+        <ChatInputBar
+          room_id={room_id}
+          type={type}
+          color={color}
+          textColor={textColor}
+          scrollToBottom={handleScrollToBottomReq}
+        />
+      </div>
     </div>
   );
 }

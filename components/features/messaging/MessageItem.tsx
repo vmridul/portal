@@ -36,7 +36,8 @@ export const MessageItem = React.memo(({
   onDeleteRequest,
 }: MessageItemProps) => {
   const [highlight, setHighlight] = useState(false);
-  const { jumpedMessageId, setJumpedMessageId } = useUIStore();
+  
+  const { jumpedMessageId, setJumpedMessageId, setEditingMessage } = useUIStore();
 
   // 1. Memoize all derived logic to prevent script execution during scroll
   const { isImage, isVideo, isFile, isSystem, isJumbo } = React.useMemo(() => ({
@@ -157,6 +158,7 @@ export const MessageItem = React.memo(({
                 </span>
                 <span className="text-[10px] truncate min-w-0 max-w-[150px] text-gray-500">
                   {timeString}
+                  {(message as any).edited && <span className="ml-1 opacity-60">(edited)</span>}
                 </span>
               </div>
             )}
@@ -231,6 +233,7 @@ export const MessageItem = React.memo(({
           content={message.content}
           messageId={message._id as string}
           onDeleteRequest={onDeleteRequest}
+          onEditRequest={() => setEditingMessage({ id: message._id, content: message.content || "" })}
           isCurrentUser={isCurrentUser}
         />
       </div>

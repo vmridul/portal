@@ -18,6 +18,7 @@ interface MessageToolbarProps {
   content?: string | null;
   messageId: string;
   onDeleteRequest: (id: string) => void;
+  onEditRequest: () => void;
   isCurrentUser: boolean;
 }
 
@@ -25,6 +26,7 @@ export const MessageToolbar = ({
   content,
   messageId,
   onDeleteRequest,
+  onEditRequest,
   isCurrentUser,
 }: MessageToolbarProps) => {
   const [open, setOpen] = useState(false);
@@ -76,7 +78,13 @@ export const MessageToolbar = ({
       </HoverCard.Root>
 
       {isCurrentUser && (
-        <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditRequest();
+          }}
+          className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white"
+        >
           <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
         </button>
       )}

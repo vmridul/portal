@@ -56,6 +56,7 @@ messages: defineTable({
     type: v.union(v.string(), v.null()),
     file_name: v.union(v.string(), v.null()),
     file_size: v.optional(v.number()),
+    edited: v.optional(v.boolean()),
   })
     .index('by_conversation', ['conversation_id'])
     .searchIndex('search_content', {

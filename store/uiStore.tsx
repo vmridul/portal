@@ -49,7 +49,7 @@ type UIState = {
     isMuted: boolean;
   } | null;
   setActiveCall: (call: { callId: string; isMuted: boolean } | null) => void;
-  
+
   // Jump/Highlight System
   jumpedMessageId: string | null;
   setJumpedMessageId: (id: string | null) => void;
@@ -62,6 +62,13 @@ type UIState = {
   } | null;
   openLightbox: (items: { file_url: string; type: string; file_name?: string | null }[], index?: number) => void;
   closeLightbox: () => void;
+
+  // Editing System
+  editingMessage: {
+    id: string;
+    content: string;
+  } | null;
+  setEditingMessage: (msg: { id: string; content: string } | null) => void;
 };
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -108,12 +115,15 @@ export const useUIStore = create<UIState>((set, get) => ({
   setJumpedMessageId: (id) => set({ jumpedMessageId: id }),
 
   lightboxData: null,
-  openLightbox: (items, index = 0) => set({ 
-    lightboxData: { 
-      isOpen: true, 
-      startIndex: index, 
-      items: items 
-    } 
+  openLightbox: (items, index = 0) => set({
+    lightboxData: {
+      isOpen: true,
+      startIndex: index,
+      items: items
+    }
   }),
   closeLightbox: () => set({ lightboxData: null }),
+
+  editingMessage: null,
+  setEditingMessage: (msg) => set({ editingMessage: msg }),
 }));

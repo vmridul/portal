@@ -22,7 +22,6 @@ interface MessageListProps {
   onDeleteRequest: (id: string) => void;
   shouldScrollToBottom: boolean;
   setShouldScrollToBottom: (val: boolean) => void;
-  inputBarHeightOffset?: number;
 }
 
 const START_INDEX = 10000;
@@ -40,7 +39,6 @@ export const MessageList = React.memo(({
   onDeleteRequest,
   shouldScrollToBottom,
   setShouldScrollToBottom,
-  inputBarHeightOffset = 140
 }: MessageListProps) => {
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -146,11 +144,7 @@ export const MessageList = React.memo(({
               behavior: "smooth",
             });
           }}
-          className={cn(
-            // fix position for files
-            "absolute bottom-32 z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 cursor-pointer border border-theme-border bg-theme-base transition-all duration-200 ease-out",
-            { bottom: `${inputBarHeightOffset}px` }
-          )}
+          className="absolute bottom-5 z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 cursor-pointer border border-theme-border bg-theme-base transition-all duration-200 ease-out hover:bg-theme-hover active:scale-95"
         >
           <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-6 w-6")} />
         </button>
@@ -216,7 +210,6 @@ export const MessageList = React.memo(({
                     </span>
                   </div>
                 )}
-                <div className="h-24" />
               </div>
             ),
           }}

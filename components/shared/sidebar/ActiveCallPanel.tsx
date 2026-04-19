@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mic01Icon, MicOff01Icon, CallEnd01Icon, CallIncoming01Icon } from "@hugeicons/core-free-icons";
+import { Mic02Icon, MicOff02Icon, CallEnd01Icon, CallIncoming01Icon } from "@hugeicons/core-free-icons";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useCallStore } from "@/store/callStore";
@@ -202,13 +202,13 @@ export default function ActiveCallPanel({
           className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
             }`}
         >
-          {isMuted ? <HugeiconsIcon icon={MicOff01Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic01Icon} className="w-4 h-4" />}
+          {isMuted ? <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />}
           <span className="text-sm">{isMuted ? "Unmute" : "Mute"}</span>
         </button>
         <button
           onClick={handleLeave}
           disabled={isLeaving}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500/20 text-red-400 transition-colors hover:bg-red-500/30"
+          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-red-800 text-red-100 hover:bg-red-900  transition-colors"
         >
           <HugeiconsIcon icon={CallEnd01Icon} className="w-4 h-4" />
           <span className="text-sm">Leave</span>
