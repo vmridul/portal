@@ -89,7 +89,7 @@ export default function LeftSidebar({
                 onClick={() => router.push("/portal")}
                 className={`${isOnFriendsPage ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
-                <HugeiconsIcon icon={UserGroupIcon} className={`${isOnFriendsPage ? "fill-gray-100" : ""} w-4 h-4`} />
+                <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4`} />
                 <span>Friends</span>
                 {mounted && totalFriendsUnread > 0 && (
                   <div
