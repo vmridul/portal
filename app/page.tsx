@@ -7,7 +7,7 @@ import { UserButton, SignOutButton, Show, useAuth } from "@clerk/nextjs";
 import {
   LandingTopGradient,
   LandingHeroIllustration,
-} from "@/components/landing/LandingDecorations";
+} from "@/components/shared/landing/LandingDecorations";
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
 import { toast } from "sonner";

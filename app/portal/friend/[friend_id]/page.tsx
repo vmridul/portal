@@ -13,10 +13,10 @@ import {
   CallIcon,
   UserRemove01Icon
 } from "@hugeicons/core-free-icons";
-import LeftSidebar from "@/components/layout/LeftSidebar";
+import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 import ActiveFriendPage from "@/components/features/friends/ActiveFriendPage";
 import NotificationTab from "@/components/features/notifications/NotificationTab";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton"
 import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useFriends, useCalls, useFriendActions } from "@/hooks";
@@ -24,7 +24,7 @@ import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { usePresence } from "@/contexts/presenceContext";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useCallStore } from "@/store/callStore";
-import { UserProfilePopup } from "@/components/shared/UserProfilePopup";
+import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
 import Image from "next/image";
 

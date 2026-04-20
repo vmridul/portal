@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useUserStore";
-import LeftSidebar from "@/components/layout/LeftSidebar";
+import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 import ProfilePage from "@/components/features/profile/ProfilePage";
 import { useCurrentUser } from "@/hooks";
 

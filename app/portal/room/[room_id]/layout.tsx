@@ -1,10 +1,10 @@
 "use client";
-import RightSidebar from "@/components/layout/RightSidebar";
-import TopBar from "@/components/layout/TopBar";
+import RightSidebar from "@/components/shared/layout/RightSidebar";
+import TopBar from "@/components/shared/layout/TopBar";
 import { useParams } from "next/navigation";
 import { Suspense } from "react";
 import React from "react";
-import LeftSidebar from "@/components/layout/LeftSidebar";
+import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 
 import { useUIStore } from "@/store/uiStore";
 import { DetailsSidebar } from "@/components/shared/DetailsSidebar";

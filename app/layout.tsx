@@ -9,7 +9,7 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { cn } from "@/lib/utils";
 import { getThemeBootstrapScript } from "@/lib/theme";
 import { ColorProvider } from "@/contexts/colorContext";
-import { GlobalModals } from "@/components/layout/GlobalModals";
+import { GlobalModals } from "@/components/shared/layout/GlobalModals";
 import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 
 

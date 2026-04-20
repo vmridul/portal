@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useUserStore";
-import LeftSidebar from "@/components/layout/LeftSidebar";
+import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 import FriendsTab from "@/components/features/friends/FriendsTab";
 import NotificationTab from "@/components/features/notifications/NotificationTab";
 import { useCurrentUser } from "@/hooks";

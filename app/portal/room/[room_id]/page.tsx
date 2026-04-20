@@ -1,5 +1,5 @@
 "use client";
-import Room from "@/components/features/rooms/Room";
+import Room from "@/components/features/rooms/RoomChat";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRoomMembers } from "@/hooks";

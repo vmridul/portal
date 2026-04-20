@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { UserIcon, Moon02Icon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
-import { UserProfilePopup } from "@/components/shared/UserProfilePopup";
+import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 
 interface RoomMembersListProps {
   members: RoomMemberWithUser[];
