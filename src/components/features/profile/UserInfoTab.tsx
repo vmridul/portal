@@ -19,7 +19,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@radix-ui/react-dropdown-menu";
 
 export const UserInfoTab = () => {
   const router = useRouter();
@@ -143,19 +151,17 @@ export const UserInfoTab = () => {
                     </div>
                   )}
                 </div>
-              </DropdownMenuTrigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content sideOffset={8} align="end" className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none">
-                  <DropdownMenu.Item onClick={() => setStatus("online")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
-                    <div className="w-2 h-2 bg-green-600 rounded-full" />
-                    Online
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => setStatus("away")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
-                    <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="w-3 h-3 text-yellow-400" />
-                    Away
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
+</DropdownMenuTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuContent sideOffset={8} align="end" className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none">
+                  <DropdownMenuItem onClick={() => setStatus("online")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                    <span>Online</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatus("away")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                    <span>Away</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenuPortal>
             </DropdownMenu>
           </div>
         </div>
