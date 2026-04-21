@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { useKeyboardOffset } from "@/hooks/ui/useKeyboardOffset";
 import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
@@ -6,15 +12,15 @@ import { validateFile, formatFileSize } from "@/lib/utils/file";
 import { getFileIcon } from "@/lib/utils/file-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  SentIcon,
-  Add01Icon,
   Cancel01Icon,
   Attachment01Icon,
   ArrowRight01Icon,
-  Tick01Icon
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
-import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
+import {
+  useMessageActions,
+  useTypingIndicators,
+} from "@/hooks/useMessageActions";
 import { ProgressCircle } from "@/components/shared/ProgressCircle";
 import Image from "next/image";
 import { ChatEmojiPicker } from "./ChatEmojiPicker";
@@ -32,11 +38,19 @@ interface ChatInputBarProps {
   scrollToBottom: () => void;
 }
 
-export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }: ChatInputBarProps) {
+export function ChatInputBar({
+  room_id,
+  type,
+  color,
+  textColor,
+  scrollToBottom,
+}: ChatInputBarProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadedStorageId, setUploadedStorageId] = useState<string | null>(null);
+  const [uploadedStorageId, setUploadedStorageId] = useState<string | null>(
+    null,
+  );
   const [msg, setMsg] = useState("");
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -79,66 +93,74 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
     };
   }, [previewUrl]);
 
-  const startUpload = useCallback(async (file: File) => {
-    setUploading(true);
-    setUploadProgress(0);
-    setUploadedStorageId(null);
+  const startUpload = useCallback(
+    async (file: File) => {
+      setUploading(true);
+      setUploadProgress(0);
+      setUploadedStorageId(null);
 
-    if (abortControllerRef.current) abortControllerRef.current.abort();
-    abortControllerRef.current = new AbortController();
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+      abortControllerRef.current = new AbortController();
 
-    try {
-      const uploadUrl = await generateUploadUrl();
-      const storageId = await new Promise<string>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", uploadUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
+      try {
+        const uploadUrl = await generateUploadUrl();
+        const storageId = await new Promise<string>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", uploadUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
 
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            setUploadProgress((event.loaded / event.total) * 100);
-          }
-        };
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              setUploadProgress((event.loaded / event.total) * 100);
+            }
+          };
 
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(JSON.parse(xhr.responseText).storageId);
-          } else {
-            reject(new Error("Upload failed"));
-          }
-        };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(JSON.parse(xhr.responseText).storageId);
+            } else {
+              reject(new Error("Upload failed"));
+            }
+          };
 
-        xhr.onerror = () => reject(new Error("Upload failed"));
-        xhr.onabort = () => reject(new Error("Upload aborted"));
-        xhr.send(file);
+          xhr.onerror = () => reject(new Error("Upload failed"));
+          xhr.onabort = () => reject(new Error("Upload aborted"));
+          xhr.send(file);
 
-        abortControllerRef.current?.signal.addEventListener("abort", () => xhr.abort());
-      });
+          abortControllerRef.current?.signal.addEventListener("abort", () =>
+            xhr.abort(),
+          );
+        });
 
-      setUploadedStorageId(storageId);
-    } catch (error: any) {
-      if (error.message !== "Upload aborted") {
-        console.error(error);
-        toast.error("File upload failed");
-        setSelectedFile(null);
+        setUploadedStorageId(storageId);
+      } catch (error: any) {
+        if (error.message !== "Upload aborted") {
+          console.error(error);
+          toast.error("File upload failed");
+          setSelectedFile(null);
+        }
+      } finally {
+        setUploading(false);
       }
-    } finally {
-      setUploading(false);
-    }
-  }, [generateUploadUrl]);
+    },
+    [generateUploadUrl],
+  );
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    const validation = validateFile(file);
-    if (!validation.valid) {
-      toast.error(validation.error);
-      return;
-    }
-    setSelectedFile(file);
-    startUpload(file);
-  }, [startUpload]);
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        toast.error(validation.error);
+        return;
+      }
+      setSelectedFile(file);
+      startUpload(file);
+    },
+    [startUpload],
+  );
 
   const handleSendMessage = useCallback(async () => {
     if (!msg.trim() && !selectedFile) return;
@@ -168,14 +190,15 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
       if (uploading) {
         // Wait for upload to catch up
         toast.info("Waiting for upload to finish...");
-        const waitForUpload = () => new Promise<string | null>((resolve) => {
-          const check = setInterval(() => {
-            if (!uploading) {
-              clearInterval(check);
-              resolve(uploadedStorageId);
-            }
-          }, 100);
-        });
+        const waitForUpload = () =>
+          new Promise<string | null>((resolve) => {
+            const check = setInterval(() => {
+              if (!uploading) {
+                clearInterval(check);
+                resolve(uploadedStorageId);
+              }
+            }, 100);
+          });
         storageId = await waitForUpload();
         if (!storageId) return; // Upload failed during wait
       } else {
@@ -206,30 +229,44 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
       console.error(error);
       toast.error("Failed to send message");
     }
-  }, [msg, selectedFile, uploadedStorageId, uploading, room_id, type, sendMessage, startUpload, clearTyping, scrollToBottom]);
+  }, [
+    msg,
+    selectedFile,
+    uploadedStorageId,
+    uploading,
+    room_id,
+    type,
+    sendMessage,
+    startUpload,
+    clearTyping,
+    scrollToBottom,
+  ]);
 
-  const onEmojiClick = useCallback((emojiData: any) => {
-    const emoji = emojiData.emoji;
-    const textarea = inputRef.current;
-    if (!textarea) return;
+  const onEmojiClick = useCallback(
+    (emojiData: any) => {
+      const emoji = emojiData.emoji;
+      const textarea = inputRef.current;
+      if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = msg;
-    const newText = text.substring(0, start) + emoji + text.substring(end);
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = msg;
+      const newText = text.substring(0, start) + emoji + text.substring(end);
 
-    setMsg(newText);
+      setMsg(newText);
 
-    // Set cursor position after emoji
-    const newCursorPos = start + emoji.length;
-    setCursorPosition(newCursorPos);
+      // Set cursor position after emoji
+      const newCursorPos = start + emoji.length;
+      setCursorPosition(newCursorPos);
 
-    // Auto-focus back to textarea
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(newCursorPos, newCursorPos);
-    }, 0);
-  }, [msg]);
+      // Auto-focus back to textarea
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+    },
+    [msg],
+  );
 
   // Keep focus and cursor position after state update
   useEffect(() => {
@@ -291,39 +328,58 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col z-[1000] md:w-[50%] md:min-w-[400px] w-[80%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
+      className="flex flex-col z-[99] md:w-[50%] md:min-w-[400px] w-[80%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
       style={
         isMobile
           ? {
-            transform: "translateY(calc(-1 * var(--keyboard-offset)))",
-            transition: "transform 0.2s ease-out",
-          }
+              transform: "translateY(calc(-1 * var(--keyboard-offset)))",
+              transition: "transform 0.2s ease-out",
+            }
           : undefined
       }
     >
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${selectedFile ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}>
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${selectedFile ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
+      >
         {selectedFile && (
           <div className="flex items-center gap-3 pb-1 bg-theme-surface/40 rounded-xl  relative group">
             <div className="relative w-12 h-12 flex-shrink-0">
               {previewUrl ? (
                 <div className="w-full h-full rounded-lg overflow-hidden relative border border-theme-hover">
-                  <Image src={previewUrl} alt="preview" fill className="object-cover" />
+                  <Image
+                    src={previewUrl}
+                    alt="preview"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               ) : (
                 <div className="w-full h-full rounded-lg bg-theme-base flex items-center justify-center border border-theme-hover">
-                  {FileIcon && <HugeiconsIcon icon={FileIcon} className="w-6 h-6 text-gray-400" />}
+                  {FileIcon && (
+                    <HugeiconsIcon
+                      icon={FileIcon}
+                      className="w-6 h-6 text-gray-400"
+                    />
+                  )}
                 </div>
               )}
 
               {uploading && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-lg z-10">
-                  <ProgressCircle progress={uploadProgress} size={32} strokeWidth={2} color={"white"} />
+                  <ProgressCircle
+                    progress={uploadProgress}
+                    size={32}
+                    strokeWidth={2}
+                    color={"white"}
+                  />
                 </div>
               )}
             </div>
 
             <div className="flex-1 min-w-0 pr-8">
-              <p className="text-sm text-gray-300 truncate font-medium">{selectedFile.name}</p>
+              <p className="text-sm text-gray-300 truncate font-medium">
+                {selectedFile.name}
+              </p>
               <p className="text-[10px] text-gray-400 mt-0.5">
                 {formatFileSize(selectedFile.size)}
               </p>
@@ -344,7 +400,9 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
         )}
       </div>
 
-      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${editingMessage ? "max-h-20 opacity-100 mb-2" : "max-h-0 opacity-0"}`}>
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${editingMessage ? "max-h-20 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
+      >
         {editingMessage && (
           <div className="flex items-center rounded-xl relative text-gray-300">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg">
@@ -384,8 +442,7 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
                   if (validation.valid) {
                     setSelectedFile(file);
                     startUpload(file);
-                  }
-                  else toast.error(validation.error);
+                  } else toast.error(validation.error);
                   break;
                 }
               }
@@ -402,7 +459,9 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
           }}
           value={msg}
           onBlur={() => clearTyping()}
-          placeholder={editingMessage ? "Editing message..." : "Press / to focus"}
+          placeholder={
+            editingMessage ? "Editing message..." : "Press / to focus"
+          }
           minRows={1}
           maxRows={6}
           className="w-full rounded-[8px] text-sm bg-transparent text-gray-200 outline-none py-[10px] md:py-2 px-3   placeholder-[#58565f] resize-none overflow-y-auto break-words whitespace-pre-wrap"
@@ -414,7 +473,10 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
               className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
               disabled={uploading && !msg.trim()}
             >
-              <HugeiconsIcon icon={Attachment01Icon} className="text-gray-400 w-4 h-4" />
+              <HugeiconsIcon
+                icon={Attachment01Icon}
+                className="text-gray-400 w-4 h-4"
+              />
             </button>
             <ChatEmojiPicker
               onEmojiSelect={onEmojiClick}
@@ -426,12 +488,9 @@ export function ChatInputBar({ room_id, type, color, textColor, scrollToBottom }
             onClick={handleSendMessage}
             style={{ backgroundColor: color, color: textColor }}
             className="py-3 px-3 rounded-[12px] disabled:opacity-50"
-            disabled={(!msg.trim() && !selectedFile)}
+            disabled={!msg.trim() && !selectedFile}
           >
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              className="w-3 h-3"
-            />
+            <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
           </button>
         </div>
       </div>

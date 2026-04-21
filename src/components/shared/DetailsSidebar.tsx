@@ -1,9 +1,8 @@
 "use client";
 
 import { useUIStore } from "@/store/uiStore";
-import { useRoom, useRoomMembers, useMediaFiles, useCalls } from "@/hooks";
+import { useRoom, useRoomMembers, useMediaFiles } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
-import { useRooms } from "@/contexts/roomContext";
 import { SidebarInfo } from "./sidebar/sidebar-info/SidebarInfo";
 import { SidebarMedia } from "./sidebar/sidebar-media/SidebarMedia";
 import { SidebarCalls } from "./sidebar/sidebar-calls/SidebarCalls";
@@ -15,14 +14,12 @@ interface DetailsSidebarProps {
 }
 
 export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
-  const { isSidebarOpen, sidebarTab, setSidebarOpen } = useUIStore();
+  const { sidebarTab, setSidebarOpen } = useUIStore();
   const handleClose = () => setSidebarOpen(false);
   const { room, isLoading: isRoomLoading } = useRoom(id);
   const members = useRoomMembers(id);
   const { mediaFiles, isLoading: isMediaLoading } = useMediaFiles({ conversationId: id });
   const user = useUserStore((s) => s.user);
-
-  if (!isSidebarOpen) return null;
 
   switch (sidebarTab) {
     case "info":
@@ -47,7 +44,13 @@ export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
         />
       );
     case "calls":
-      return <SidebarCalls roomId={id} conversationName={title} onClose={handleClose} />;
+      return (
+        <SidebarCalls 
+          roomId={id} 
+          conversationName={title} 
+          onClose={handleClose}
+        />
+      );
     default:
       return null;
   }

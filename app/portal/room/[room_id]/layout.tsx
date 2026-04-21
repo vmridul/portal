@@ -24,11 +24,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex-1 overflow-hidden relative">
               {children}
             </div>
-            {isSidebarOpen && (
-              <div className="flex-none transition-all duration-300 ease-in-out">
-                <DetailsSidebar id={room_id} type="room" />
-              </div>
-            )}
+            {isSidebarOpen && <DetailsSidebar id={room_id} type="room" />}
           </div>
         </div>
         <RightSidebar room_id={room_id} />

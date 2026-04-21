@@ -224,15 +224,11 @@ function FriendPageContent() {
                 <ActiveFriendPage />
               </Suspense>
             </div>
-            {isSidebarOpen && (
-              <div className="flex-none transition-all duration-300 ease-in-out">
-                <DetailsSidebar
+            {isSidebarOpen && <DetailsSidebar
                   id={directConversationId}
                   type="direct"
                   title={friend?.friend?.username || "Direct Message"}
-                />
-              </div>
-            )}
+                />}
           </div>
         </div>
         <NotificationTab />

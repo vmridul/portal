@@ -1,6 +1,11 @@
 import { useState, useRef } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserRemove01Icon, Menu01Icon, Delete02Icon, CopyIcon } from "@hugeicons/core-free-icons";
+import {
+  UserRemove01Icon,
+  Menu01Icon,
+  Delete02Icon,
+  CopyIcon,
+} from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -13,7 +18,6 @@ import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { useUIStore } from "@/store/uiStore";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
-
   const [openMenu, setOpenMenu] = useState(false);
   const user = useUserStore((s) => s.user);
   const { rightMobileMenu } = useUIStore();
@@ -42,7 +46,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     text-white
     select-none
     transition-transform duration-300 ease-in-out
-    fixed top-0 right-0 z-[60] w-70
+    fixed top-0 right-0 z-[99] w-70
     md:translate-y-0 translate-y-10
     ${rightMobileMenu ? "translate-x-0" : "translate-x-full"}
 
@@ -69,7 +73,10 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 }}
                 className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
               >
-                <HugeiconsIcon icon={Menu01Icon} className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer" />
+                <HugeiconsIcon
+                  icon={Menu01Icon}
+                  className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer"
+                />
               </div>
               <div
                 className={`
@@ -79,10 +86,11 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     shadow-lg
     transform transition-all duration-150 select-none
  ease-out
-    ${openMenu
-                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                    : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-                  }
+    ${
+      openMenu
+        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+    }
   `}
               >
                 <div
@@ -92,16 +100,34 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                   }}
                   className="border-b cursor-pointer border-theme-border flex items-center hover:bg-theme-hover"
                 >
-                  <HugeiconsIcon icon={CopyIcon} className="w-4 h-4 ml-3 mr-2 text-white/90" />
+                  <HugeiconsIcon
+                    icon={CopyIcon}
+                    className="w-4 h-4 ml-3 mr-2 text-white/90"
+                  />
                   <button className="w-32 text-start py-3">Copy Room ID</button>
                 </div>
                 <div
                   onClick={() => {
-                    import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LEAVE_ROOM", { roomName, owner_id, room_id }))
+                    import("@/store/uiStore").then((m) =>
+                      m.useUIStore
+                        .getState()
+                        .setModal("LEAVE_ROOM", {
+                          roomName,
+                          owner_id,
+                          room_id,
+                        }),
+                    );
                   }}
                   className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
                 >
-                  <HugeiconsIcon icon={owner_id === (user?.user_id ?? "") ? Delete02Icon : UserRemove01Icon} className="w-4 h-4 ml-3 mr-2" />
+                  <HugeiconsIcon
+                    icon={
+                      owner_id === (user?.user_id ?? "")
+                        ? Delete02Icon
+                        : UserRemove01Icon
+                    }
+                    className="w-4 h-4 ml-3 mr-2"
+                  />
                   <button className="w-32 text-start py-3">
                     {owner_id === (user?.user_id ?? "")
                       ? "Delete Room"

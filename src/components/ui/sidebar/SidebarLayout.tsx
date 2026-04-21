@@ -10,7 +10,12 @@ export interface SidebarLayoutProps {
 
 export function SidebarLayout({ children, className }: SidebarLayoutProps) {
   return (
-    <div className={cn("w-[320px] h-full min-h-0 bg-theme-base border-l border-theme-border flex flex-col", className)}>
+    <div
+      className={cn(
+        "w-full md:w-[320px] h-full min-h-0 bg-theme-base md:border-l border-theme-border flex flex-col  z-auto mrelative",
+        className,
+      )}
+    >
       {children}
     </div>
   );
