@@ -3,7 +3,7 @@
 import { useCallStore } from "@/store/callStore";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import AvatarStack from "../AvatarStack";
+import AvatarStack from "@/components/shared/AvatarStack";
 
 interface Call {
   participants: string[];
@@ -58,8 +58,10 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
     user_ids: allParticipantIds
   }) || [];
 
+  if (calls.length === 0) return null;
+
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="overflow-y-auto">
       {callError && (
         <div className="p-3">
           <div className="p-2 text-xs bg-red-500/10 text-red-400 rounded border border-red-500/20 text-center">

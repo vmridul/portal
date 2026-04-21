@@ -6,7 +6,7 @@ import {
   InformationCircleIcon,
   Menu01Icon,
   UserGroupIcon,
-  CallIcon
+  CallIcon,
 } from "@hugeicons/core-free-icons";
 import { formatToIST } from "@/lib/utils/date";
 import { useColor } from "@/contexts/colorContext";
@@ -31,7 +31,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
   const { activeCalls } = useCalls(room_id);
   const { isJoined: isInCall, actualRoomId } = useCallStore();
   const [query, setQuery] = useState("");
-  const { results: searchResults, isLoading } = useSearchMessages({ conversationId: room_id, query });
+  const { results: searchResults, isLoading } = useSearchMessages({
+    conversationId: room_id,
+    query,
+  });
   const user = useUserStore((s) => s.user);
   const searchRef = useRef<HTMLDivElement>(null);
   const {
@@ -42,7 +45,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
     leftMobileMenu,
     setLeftMobileMenu,
     rightMobileMenu,
-    setRightMobileMenu
+    setRightMobileMenu,
   } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
@@ -73,7 +76,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
   return (
     <div className="h-12">
-      <div className="z-[2000] relative text-white/60 text-sm px-2 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
+      <div className="z-[60] relative text-white/60 text-sm px-2 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -81,7 +84,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
           }}
           className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
         >
-          <HugeiconsIcon icon={Menu01Icon} className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`} />
+          <HugeiconsIcon
+            icon={Menu01Icon}
+            className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`}
+          />
         </button>
 
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
@@ -110,7 +116,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
             onClick={(e) => e.stopPropagation()}
             className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden"
           >
-            <HugeiconsIcon icon={Search01Icon} className="flex-none w-4 h-4 text-gray-400" />
+            <HugeiconsIcon
+              icon={Search01Icon}
+              className="flex-none w-4 h-4 text-gray-400"
+            />
             <input
               type="text"
               placeholder="Search messages"
@@ -132,8 +141,9 @@ export default function TopBar({ room_id }: { room_id: string }) {
                     e.preventDefault();
                     handleSearchClick(index, result._id, result._creationTime);
                   }}
-                  className={`hover:bg-[white/10] ${selectedResult == index ? "bg-theme-hover" : ""
-                    } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
+                  className={`hover:bg-[white/10] ${
+                    selectedResult == index ? "bg-theme-hover" : ""
+                  } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-white/40">
@@ -157,26 +167,44 @@ export default function TopBar({ room_id }: { room_id: string }) {
               e.stopPropagation();
               toggleSidebar("media");
             }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media" ? "bg-theme-hover" : "hover:bg-theme-hover"
-              }`}
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
+              isSidebarOpen && sidebarTab === "media"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+            }`}
           >
-            <HugeiconsIcon icon={Image01Icon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`} />
+            <HugeiconsIcon
+              icon={Image01Icon}
+              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`}
+            />
           </div>
           <div
             onClick={(e) => {
               e.stopPropagation();
               toggleSidebar("calls");
             }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls" ? "bg-theme-hover" : "hover:bg-theme-hover"
-              }`}
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${
+              isSidebarOpen && sidebarTab === "calls"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+            }`}
           >
-            <HugeiconsIcon icon={CallIcon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls" ? "text-white" : "text-gray-300"
-              }`} />
+            <HugeiconsIcon
+              icon={CallIcon}
+              className={`w-4 h-4 transition-colors ${
+                isSidebarOpen && sidebarTab === "calls"
+                  ? "text-white"
+                  : "text-gray-300"
+              }`}
+            />
             {activeCalls.length > 0 && (
-              <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
-                ? "bg-red-500"
-                : "bg-green-500"
-                }`} />
+              <span
+                className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
+                  isInCall && actualRoomId === room_id
+                    ? "bg-red-500"
+                    : "bg-green-500"
+                }`}
+              />
             )}
           </div>
           <div
@@ -184,10 +212,16 @@ export default function TopBar({ room_id }: { room_id: string }) {
               e.stopPropagation();
               toggleSidebar("info");
             }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info" ? "bg-theme-hover" : "hover:bg-theme-hover"
-              }`}
+            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
+              isSidebarOpen && sidebarTab === "info"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+            }`}
           >
-            <HugeiconsIcon icon={InformationCircleIcon} className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`} />
+            <HugeiconsIcon
+              icon={InformationCircleIcon}
+              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`}
+            />
           </div>
           <button
             onClick={(e) => {
@@ -196,7 +230,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
             }}
             className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
           >
-            <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-300"}`} />
+            <HugeiconsIcon
+              icon={UserGroupIcon}
+              className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-300"}`}
+            />
           </button>
         </div>
       </div>

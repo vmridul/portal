@@ -7,6 +7,7 @@ import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 import { useMessageActions } from "@/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/dialog";
 import type { Id } from "@/convex/_generated/dataModel";
 
 export default function ActiveFriendPage() {
@@ -44,33 +45,18 @@ export default function ActiveFriendPage() {
 
   return (
     <>
-      <div
-        className={`fixed ${deleteDialogOpen ? "opacity-100 pointer-events-auto scale-100" : "opacity-0 pointer-events-none scale-95"} inset-0 bg-black bg-opacity-35 z-[9999] flex items-center justify-center transition-all duration-200`}
-      >
-        <div className="md:scale-100 scale-[80%] w-96 rounded-xl text-lg font-regular bg-theme-surface border-theme-border border p-6 text-white">
-          Are you sure you want to Delete this message?
-          <div className="text-[#676767] mt-2 text-sm">
-            You won&apos;t be able to revert this action.
-          </div>
-          <div className="flex justify-end gap-2 mt-6 text-sm">
-            <button
-              onClick={() => {
-                setDeleteDialogOpen(false);
-                setMessageToDelete(null);
-              }}
-              className=" ease-in-out hover:bg-theme-surface hover:text-white/90 border border-theme-border text-white py-2 px-6 rounded-xl"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onDelete}
-              className="bg-[#ae4347] ease-in-out hover:bg-gray-100 text-white py-2 px-6 rounded-xl"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </div>
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setMessageToDelete(null);
+        }}
+        title="Delete Message?"
+        description="You won't be able to revert this action."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={onDelete}
+      />
 
       <div className="h-full min-h-0">
         {!user || !friendId ? (

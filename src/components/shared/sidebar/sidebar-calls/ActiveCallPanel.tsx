@@ -11,7 +11,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUIStore } from "@/store/uiStore";
 import { useRooms } from "@/contexts/roomContext";
-import AvatarStack from "../AvatarStack";
+import AvatarStack from "@/components/shared/AvatarStack";
 
 interface Call {
   _id: Id<"calls">;
