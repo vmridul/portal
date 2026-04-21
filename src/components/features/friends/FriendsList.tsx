@@ -12,11 +12,9 @@ import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
-import type { UUID } from "crypto";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls } from "@/hooks";
-import { text } from "stream/consumers";
 import { useRouter } from "next/navigation";
 
 type FriendItem = {
@@ -42,10 +40,7 @@ export default function FriendsList({
 }) {
   const { onlineUsers, awayUsers } = usePresence();
   const router = useRouter();
-  const {
-    setPendingRequestMenu,
-    setModal
-  } = useUIStore();
+  const { setPendingRequestMenu, setModal } = useUIStore();
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
   const [mounted, setMounted] = useState(false);
@@ -69,18 +64,12 @@ export default function FriendsList({
         <div className="flex mt-3 ml-3 mr-3 gap-0 items-center justify-between">
           <div
             onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === "ArrowDown") {
-                e.preventDefault();
-              }
-              if (e.key === "ArrowUp") {
-                e.preventDefault();
-              }
-              if (e.key === "Enter") {
-                e.preventDefault();
-              }
+              if (e.key === "ArrowDown") e.preventDefault();
+              if (e.key === "ArrowUp") e.preventDefault();
+              if (e.key === "Enter") e.preventDefault();
             }}
             onClick={(e) => e.stopPropagation()}
-            className=" flex text-sm px-3 w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
+            className="flex text-sm px-3 w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
           >
             <HugeiconsIcon icon={Search01Icon} className="w-4 h-4 text-white/40" />
             <input
@@ -91,9 +80,7 @@ export default function FriendsList({
             />
           </div>
           <button
-            onClick={() => {
-              setModal("ADD_FRIEND");
-            }}
+            onClick={() => setModal("ADD_FRIEND")}
             style={{ backgroundColor: color, color: textColor }}
             className="flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px]"
           >
@@ -124,10 +111,11 @@ export default function FriendsList({
                     ? `You: ${friend.last_msg}`
                     : friend.last_msg
                   : "";
+
                 return (
                   <div
-                    className="group h-[70px] bg-theme-border hover:bg-theme-hover transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
                     key={friend.id}
+                    className="group h-[70px] bg-theme-border hover:bg-theme-hover transition-all duration-100 ease-in-out rounded-[8px] gap-3 flex items-center px-3 p-2 cursor-pointer"
                     onClick={() => {
                       if (!friendId) return;
                       router.push(`/portal/friend/${friendId}`);
@@ -136,9 +124,7 @@ export default function FriendsList({
                   >
                     <div className="relative">
                       <Image
-                        src={
-                          friend?.friend?.avatar || "/assets/defaultAvatar.png"
-                        }
+                        src={friend?.friend?.avatar || "/assets/defaultAvatar.png"}
                         alt=""
                         width={40}
                         height={40}
@@ -150,11 +136,7 @@ export default function FriendsList({
                       ) : isUserOnline ? (
                         <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
                       ) : isUserAway ? (
-                        <HugeiconsIcon
-                          icon={Moon02Icon}
-                          fill="currentColor"
-                          className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
-                        />
+                        <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90" />
                       ) : (
                         <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
                       )}

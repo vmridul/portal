@@ -5,6 +5,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { getAvatarUrl } from "@/lib/utils/avatar";
 import { useFriendActions, useFriends } from "@/hooks";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export interface User {
   id: string;
@@ -45,17 +46,18 @@ export function UserProfilePopup({
 }: UserProfilePopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { sendRequest, removeFriend: removeFriendMutation } = useFriendActions();
+  const { sendRequest, removeFriend: removeFriendMutation } =
+    useFriendActions();
   const { friends, sentRequests } = useFriends();
 
   const isCurrentUser = currentUserId === user.id;
-  const isAlreadyFriend = useMemo(() =>
-    friends.some(f => f.friend?.user_id === user.id),
-    [friends, user.id]
+  const isAlreadyFriend = useMemo(
+    () => friends.some((f) => f.friend?.user_id === user.id),
+    [friends, user.id],
   );
-  const hasSentRequest = useMemo(() =>
-    sentRequests.some(s => s.receiver?.user_id === user.id),
-    [sentRequests, user.id]
+  const hasSentRequest = useMemo(
+    () => sentRequests.some((s) => s.receiver?.user_id === user.id),
+    [sentRequests, user.id],
   );
   const isFriend = isFriendProp ?? isAlreadyFriend;
 
@@ -66,7 +68,9 @@ export function UserProfilePopup({
       await sendRequest(user.id);
       toast.success("Friend request sent");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to send request");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to send request",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +84,9 @@ export function UserProfilePopup({
       setIsOpen(false);
       toast.success("Friend removed");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to remove friend");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to remove friend",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +101,7 @@ export function UserProfilePopup({
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <span className="cursor-pointer hover:underline">{children}</span>
+        <span className="cursor-pointer hover:text-gray-300">{children}</span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
@@ -107,7 +113,10 @@ export function UserProfilePopup({
           onEscapeKeyDown={() => setIsOpen(false)}
           onPointerDownOutside={(e) => {
             const target = e.target as HTMLElement;
-            if (target.closest('button[data-friend-request]') || target.closest('button[data-remove-friend]')) {
+            if (
+              target.closest("button[data-friend-request]") ||
+              target.closest("button[data-remove-friend]")
+            ) {
               e.preventDefault();
             }
           }}
@@ -115,8 +124,10 @@ export function UserProfilePopup({
           <div className="flex flex-col items-center p-4 gap-3">
             <div className="relative">
               {user.avatarUrl ? (
-                <img
+                <Image
                   src={avatarSrc}
+                  width={40}
+                  height={40}
                   alt={user.username}
                   className="w-16 h-16 rounded-full object-cover ring-2 ring-theme-border"
                 />

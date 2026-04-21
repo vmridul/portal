@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 export const UserInfoTab = () => {
   const router = useRouter();
   const { signOut } = useClerk();
   const user = useUserStore((s) => s.user);
-  const [presenceMenu, setPresenceMenu] = useState(false);
   const [logoutConfirm, setLogoutConfirm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
@@ -124,61 +124,39 @@ export const UserInfoTab = () => {
             />
           </div>
           <div className="mt-2">
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setPresenceMenu(true);
-              }}
-              className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
-            >
-              {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
-                <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <HugeiconsIcon
-                    icon={Moon02Icon}
-                    fill="currentColor"
-                    className="w-3 h-3 text-yellow-400"
-                  />
-                  <span className={``}>Away</span>
-                </div>
-              ) : (
-                <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                  <div className="w-2 h-2 bg-green-600 rounded-full" />
-                  <span className={``}>Online</span>
-                </div>
-              )}
-              {presenceMenu && (
-                <div className="absolute w-[105px] border border-theme-border cursor-pointer md:-right-[108px] md:-top-[4px] top-7 z-10 bg-theme-base text-xs text-white rounded-[10px] shadow-md shadow-theme-base">
-                  <ul className="py-0">
-                    <li
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setStatus("online");
-                        setPresenceMenu(false);
-                      }}
-                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-green-500"
-                    >
-                      <div className="w-2 h-2 bg-green-600 rounded-full" />
-                      <span className="">Online</span>
-                    </li>
-                    <li
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setStatus("away");
-                        setPresenceMenu(false);
-                      }}
-                      className="px-4 py-2 flex items-center hover:bg-theme-border rounded-[6px] gap-2 text-yellow-400"
-                    >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}>
+                  {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
+                    <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
                       <HugeiconsIcon
                         icon={Moon02Icon}
                         fill="currentColor"
                         className="w-3 h-3 text-yellow-400"
                       />
-                      <span>Away</span>
-                    </li>
-                  </ul>
+                      <span className={``}>Away</span>
+                    </div>
+                  ) : (
+                    <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
+                      <div className="w-2 h-2 bg-green-600 rounded-full" />
+                      <span className={``}>Online</span>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content sideOffset={8} align="end" className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none">
+                  <DropdownMenu.Item onClick={() => setStatus("online")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                    <div className="w-2 h-2 bg-green-600 rounded-full" />
+                    Online
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => setStatus("away")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                    <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="w-3 h-3 text-yellow-400" />
+                    Away
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu>
           </div>
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start w-full">

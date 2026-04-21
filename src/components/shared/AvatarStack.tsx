@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import { getAvatarUrl } from "@/lib/utils/avatar";
+import Image from "next/image";
 
 interface UserProfile {
   user_id: string;
@@ -16,7 +17,12 @@ interface AvatarStackProps {
   limit?: number;
 }
 
-const AvatarStack = ({ users, limit = 4, size = 32, showCount = false }: AvatarStackProps) => {
+const AvatarStack = ({
+  users,
+  limit = 4,
+  size = 32,
+  showCount = false,
+}: AvatarStackProps) => {
   const displayUsers = users.slice(0, limit);
   const remainingCount = users.length > limit ? users.length - limit : 0;
 
@@ -32,11 +38,13 @@ const AvatarStack = ({ users, limit = 4, size = 32, showCount = false }: AvatarS
             style={{ zIndex: i }}
             title={user.username}
           >
-            <img
+            <Image
               src={getAvatarUrl(user.avatar, user.username)}
               alt={user.username}
+              quality={40}
+              width={size}
+              height={size}
               className="rounded-full ring-2 ring-theme-base object-cover bg-theme-base"
-              style={{ width: size, height: size }}
             />
           </div>
         ))}

@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Happy01Icon,
   PencilEdit01Icon,
   MoreHorizontalIcon,
   CopyIcon,
-  Delete01Icon
+  Delete01Icon,
 } from "@hugeicons/core-free-icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
@@ -29,14 +29,13 @@ export const MessageToolbar = ({
   onEditRequest,
   isCurrentUser,
 }: MessageToolbarProps) => {
-  const [open, setOpen] = useState(false);
   const [hoverCardOpen, setHoverCardOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const toggleReaction = useMutation(api.reactions.toggleReaction);
 
   const handleCopy = () => {
     if (content) {
       navigator.clipboard.writeText(content);
-      setOpen(false);
     }
   };
 
@@ -50,8 +49,7 @@ export const MessageToolbar = ({
 
   return (
     <div
-      className={`absolute -top-4 right-4 md:right-10 z-[70] transition-opacity flex items-center gap-0.5 bg-theme-base border border-theme-border rounded-[8px] p-0.5 shadow-lg ${open || hoverCardOpen ? "opacity-100" : "opacity-0 group-hover/row:opacity-100"
-        }`}
+      className={`absolute -top-4 right-4 md:right-10 z-[70] transition-opacity flex items-center gap-0.5 bg-theme-base border border-theme-border rounded-[8px] p-0.5 shadow-lg group-hover/row:opacity-100 ${menuOpen || hoverCardOpen ? "opacity-100" : "opacity-0"}`}
     >
       <HoverCard.Root
         openDelay={100}
@@ -60,7 +58,9 @@ export const MessageToolbar = ({
         onOpenChange={setHoverCardOpen}
       >
         <HoverCard.Trigger asChild>
-          <button className={`p-1.5 rounded-[6px] transition-colors ${hoverCardOpen ? "bg-theme-hover text-white" : "text-gray-400 hover:text-white hover:bg-theme-hover"}`}>
+          <button
+            className={`p-1.5 rounded-[6px] transition-colors ${hoverCardOpen ? "bg-theme-hover text-white" : "text-gray-400 hover:text-white hover:bg-theme-hover"}`}
+          >
             <HugeiconsIcon icon={Happy01Icon} className="w-4 h-4" />
           </button>
         </HoverCard.Trigger>
@@ -78,7 +78,7 @@ export const MessageToolbar = ({
       </HoverCard.Root>
 
       {isCurrentUser && (
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onEditRequest();
@@ -90,12 +90,9 @@ export const MessageToolbar = ({
       )}
 
       {(content || isCurrentUser) && (
-        <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+        <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenu.Trigger asChild>
-            <button
-              className={`p-1.5 rounded-[6px] transition-colors ${open ? "bg-theme-hover text-white" : "hover:bg-theme-hover text-gray-400 hover:text-white"
-                }`}
-            >
+            <button className="p-1.5 rounded-[6px] transition-colors hover:bg-theme-hover text-gray-400 hover:text-white">
               <HugeiconsIcon icon={MoreHorizontalIcon} className="w-4 h-4" />
             </button>
           </DropdownMenu.Trigger>
@@ -104,15 +101,12 @@ export const MessageToolbar = ({
             <DropdownMenu.Content
               sideOffset={8}
               align="end"
-              className="w-32 bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
+              className="w-auto min-w-[120px] bg-theme-base border border-theme-border rounded-[8px] py-1 z-[100] animate-in fade-in duration-200 outline-none"
             >
               {content && (
                 <DropdownMenu.Item
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy();
-                  }}
-                  className="px-3 py-1.5 text-xs text-left text-gray-300 hover:bg-theme-hover flex items-center gap-2 transition-colors outline-none cursor-pointer"
+                  onClick={handleCopy}
+                  className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={CopyIcon} className="w-3.5 h-3.5" />
                   Copy
@@ -120,12 +114,8 @@ export const MessageToolbar = ({
               )}
               {isCurrentUser && (
                 <DropdownMenu.Item
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpen(false);
-                    onDeleteRequest(messageId);
-                  }}
-                  className="px-3 py-1.5 text-xs text-left text-red-400 hover:bg-theme-hover flex items-center gap-2 transition-colors outline-none cursor-pointer"
+                  onClick={() => onDeleteRequest(messageId)}
+                  className="px-3 py-1.5 text-xs text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={Delete01Icon} className="w-3.5 h-3.5" />
                   Delete

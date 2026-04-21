@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   UserRemove01Icon,
@@ -6,6 +6,7 @@ import {
   Delete02Icon,
   CopyIcon,
 } from "@hugeicons/core-free-icons";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
@@ -14,17 +15,12 @@ import { RoomMembersList } from "@/components/features/rooms/RoomMembersList";
 import { ListSkeleton } from "@/components/shared/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/hooks";
-import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 import { useUIStore } from "@/store/uiStore";
 
 export default function RightSidebar({ room_id }: { room_id: string }) {
-  const [openMenu, setOpenMenu] = useState(false);
   const user = useUserStore((s) => s.user);
   const { rightMobileMenu } = useUIStore();
   const { onlineUsers, awayUsers } = usePresence();
-
-  const menuRef = useRef<HTMLDivElement>(null);
-  useOutsideClick(menuRef, () => setOpenMenu(false));
 
   const {
     rooms,
@@ -65,77 +61,58 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 <span className="text-white/40 text-xs">ID: {room_id}</span>
               </div>
             </div>
-            <div ref={menuRef} className="flex gap-1 items-center">
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenMenu((v) => !v);
-                }}
-                className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]"
-              >
-                <HugeiconsIcon
-                  icon={Menu01Icon}
-                  className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer"
-                />
-              </div>
-              <div
-                className={`
-    absolute right-0 text-white/90 flex flex-col text-xs overflow-hidden items-start top-[48px] mt-1
-    min-w-[80px]
-    rounded-[8px] bg-theme-surface border border-theme-border
-    shadow-lg
-    transform transition-all duration-150 select-none
- ease-out
-    ${
-      openMenu
-        ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-        : "opacity-0 scale-95 translate-y-1 pointer-events-none"
-    }
-  `}
-              >
-                <div
-                  onClick={() => {
-                    navigator.clipboard.writeText(room_id);
-                    toast.success("Room ID copied to clipboard");
-                  }}
-                  className="border-b cursor-pointer border-theme-border flex items-center hover:bg-theme-hover"
-                >
+
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <div className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-theme-hover rounded-[12px]">
                   <HugeiconsIcon
-                    icon={CopyIcon}
-                    className="w-4 h-4 ml-3 mr-2 text-white/90"
+                    icon={Menu01Icon}
+                    className="w-4 h-4 text-white/90 hover:text-gray-200 cursor-pointer"
                   />
-                  <button className="w-32 text-start py-3">Copy Room ID</button>
                 </div>
-                <div
-                  onClick={() => {
-                    import("@/store/uiStore").then((m) =>
-                      m.useUIStore
-                        .getState()
-                        .setModal("LEAVE_ROOM", {
-                          roomName,
-                          owner_id,
-                          room_id,
-                        }),
-                    );
-                  }}
-                  className="flex items-center cursor-pointer hover:bg-theme-hover text-red-200"
+              </DropdownMenu.Trigger>
+
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  sideOffset={8}
+                  align="end"
+                  className="w-auto min-w-[120px] bg-theme-surface border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
                 >
-                  <HugeiconsIcon
-                    icon={
-                      owner_id === (user?.user_id ?? "")
-                        ? Delete02Icon
-                        : UserRemove01Icon
-                    }
-                    className="w-4 h-4 ml-3 mr-2"
-                  />
-                  <button className="w-32 text-start py-3">
+                  <DropdownMenu.Item
+                    onClick={() => {
+                      navigator.clipboard.writeText(room_id);
+                      toast.success("Room ID copied to clipboard");
+                    }}
+                    className="px-3 py-2 text-sm min-w-[160px] text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  >
+                    <HugeiconsIcon icon={CopyIcon} className="w-4 h-4" />
+                    Copy Room ID
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onClick={() => {
+                      useUIStore.getState().setModal("LEAVE_ROOM", {
+                        roomName,
+                        owner_id,
+                        room_id,
+                      });
+                    }}
+                    className="px-3 py-2 text-sm text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  >
+                    <HugeiconsIcon
+                      icon={
+                        owner_id === (user?.user_id ?? "")
+                          ? Delete02Icon
+                          : UserRemove01Icon
+                      }
+                      className="w-4 h-4"
+                    />
                     {owner_id === (user?.user_id ?? "")
                       ? "Delete Room"
                       : "Leave Room"}
-                  </button>
-                </div>
-              </div>
-            </div>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           </div>
         )}
         {!user?.user_id || !members || members.length === 0 ? (

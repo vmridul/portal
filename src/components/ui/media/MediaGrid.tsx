@@ -62,6 +62,7 @@ export function MediaItem({
       ) : (
         <Image
           src={fileUrl}
+          quality={40}
           alt="media"
           fill
           sizes="100px"
