@@ -262,7 +262,7 @@ export const MessageItem = React.memo(
 
                 {message.content && (
                   <div
-                    className={`whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
+                    className={`text-white whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
                   >
                     {message.content}
                   </div>
