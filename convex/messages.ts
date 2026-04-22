@@ -1,31 +1,33 @@
-import { mutation, query } from './_generated/server';
-import { v } from 'convex/values';
-import { paginationOptsValidator } from 'convex/server';
-import { 
-  extractFriendId, 
-  findFriendshipPair, 
-  findMembership, 
-  toPreview, 
-  updateConversationMetadata 
-} from './lib/conversations';
-import { pruneOldNotifications } from './chatNotifications';
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import {
+  extractFriendId,
+  findFriendshipPair,
+  findMembership,
+  toPreview,
+  updateConversationMetadata,
+} from "./lib/conversations";
+import { pruneOldNotifications } from "./chatNotifications";
 
-export const getMessagesPaginated = query({
+
+export const getAllMessages = query({
   args: {
     conversation_id: v.string(),
-    paginationOpts: paginationOptsValidator,
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const messagesPage = await ctx.db
-      .query('messages')
-      .withIndex('by_conversation', (q) =>
-        q.eq('conversation_id', args.conversation_id)
+    const limit = args.limit ?? 1000; // Large limit to effectively get all messages
+
+    const messages = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", args.conversation_id),
       )
-      .order('desc')
-      .paginate(args.paginationOpts);
+      .order("desc")
+      .take(limit);
 
     const result = await Promise.all(
-      messagesPage.page.map(async (msg) => {
+      messages.map(async (msg) => {
         let finalUrl = msg.file_url;
         if (msg.file_storage_id) {
           finalUrl = await ctx.storage.getUrl(msg.file_storage_id);
@@ -50,13 +52,10 @@ export const getMessagesPaginated = query({
             emoji: r.emoji,
           })),
         };
-      })
+      }),
     );
 
-    return {
-      ...messagesPage,
-      page: result,
-    };
+    return result;
   },
 });
 
@@ -64,12 +63,16 @@ export const clearUnreadCount = mutation({
   args: { conversation_id: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthenticated');
+    if (!identity) throw new Error("Unauthenticated");
 
     const now = Date.now();
 
     // Try room membership first (O(1) compound index)
-    const member = await findMembership(ctx.db, identity.subject, args.conversation_id);
+    const member = await findMembership(
+      ctx.db,
+      identity.subject,
+      args.conversation_id,
+    );
     if (member) {
       await ctx.db.patch(member._id, { unread_count: 0, last_read_time: now });
       return;
@@ -78,7 +81,11 @@ export const clearUnreadCount = mutation({
     // Try direct conversation
     const friendId = extractFriendId(args.conversation_id, identity.subject);
     if (friendId) {
-      const { mine } = await findFriendshipPair(ctx.db, identity.subject, friendId);
+      const { mine } = await findFriendshipPair(
+        ctx.db,
+        identity.subject,
+        friendId,
+      );
       if (mine) {
         await ctx.db.patch(mine._id, { unread_count: 0, last_read_time: now });
       }
@@ -92,9 +99,11 @@ export const searchMessages = query({
     if (!args.query) return [];
 
     const messages = await ctx.db
-      .query('messages')
-      .withSearchIndex('search_content', (q) =>
-        q.search('content', args.query).eq('conversation_id', args.conversation_id)
+      .query("messages")
+      .withSearchIndex("search_content", (q) =>
+        q
+          .search("content", args.query)
+          .eq("conversation_id", args.conversation_id),
       )
       .take(20);
 
@@ -102,7 +111,7 @@ export const searchMessages = query({
       ...msg,
       sender: {
         user_id: msg.sender_id,
-        username: msg.sender_username || 'Unknown',
+        username: msg.sender_username || "Unknown",
         avatar: msg.sender_avatar,
       },
     }));
@@ -114,26 +123,27 @@ export const searchMessages = query({
 export const sendMessage = mutation({
   args: {
     conversation_id: v.string(),
-    conversation_type: v.union(v.literal('room'), v.literal('direct')),
+    conversation_type: v.union(v.literal("room"), v.literal("direct")),
     msg: v.union(v.string(), v.null()),
-    file_storage_id: v.optional(v.id('_storage')),
+    file_storage_id: v.optional(v.id("_storage")),
     file_type: v.union(v.string(), v.null()),
     file_name: v.union(v.string(), v.null()),
     file_size: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthenticated');
+    if (!identity) throw new Error("Unauthenticated");
 
     const sender = await ctx.db
-      .query('users')
-      .withIndex('by_user_id', (q) => q.eq('user_id', identity.subject))
+      .query("users")
+      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
       .first();
 
     const notificationMessage =
-      args.msg || (args.file_name ? `Attachment: ${args.file_name}` : 'Attachment');
+      args.msg ||
+      (args.file_name ? `Attachment: ${args.file_name}` : "Attachment");
 
-    const insertedMessageId = await ctx.db.insert('messages', {
+    const insertedMessageId = await ctx.db.insert("messages", {
       conversation_id: args.conversation_id,
       conversation_type: args.conversation_type,
       sender_id: identity.subject,
@@ -157,52 +167,52 @@ export const sendMessage = mutation({
       identity.subject,
       preview,
       now,
-      { incrementUnread: true }
+      { incrementUnread: true },
     );
 
-    if (args.conversation_type === 'room') {
+    if (args.conversation_type === "room") {
       const room = await ctx.db
-        .query('rooms')
-        .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
+        .query("rooms")
+        .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
         .first();
 
       const members = await ctx.db
-        .query('roomMembers')
-        .withIndex('by_room_id', (q) => q.eq('room_id', args.conversation_id))
+        .query("roomMembers")
+        .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
         .collect();
 
       for (const member of members) {
         if (member.user_id !== identity.subject) {
-          await ctx.db.insert('chatNotifications', {
+          await ctx.db.insert("chatNotifications", {
             user_id: member.user_id,
             message_id: insertedMessageId,
-            source_type: 'room',
+            source_type: "room",
             source_id: args.conversation_id,
             conversation_id: args.conversation_id,
             source_name: room?.room_name || args.conversation_id,
             sender_id: identity.subject,
-            sender_name: sender?.username || 'Unknown user',
-            sender_avatar: sender?.avatar || '',
+            sender_name: sender?.username || "Unknown user",
+            sender_avatar: sender?.avatar || "",
             message: notificationMessage,
-            notification_type: 'message',
+            notification_type: "message",
           });
         }
       }
     } else {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
-        await ctx.db.insert('chatNotifications', {
+        await ctx.db.insert("chatNotifications", {
           user_id: friendId,
           message_id: insertedMessageId,
-          source_type: 'direct',
+          source_type: "direct",
           source_id: identity.subject,
           conversation_id: args.conversation_id,
-          source_name: sender?.username || 'Unknown user',
+          source_name: sender?.username || "Unknown user",
           sender_id: identity.subject,
-          sender_name: sender?.username || 'Unknown user',
-          sender_avatar: sender?.avatar || '',
+          sender_name: sender?.username || "Unknown user",
+          sender_avatar: sender?.avatar || "",
           message: notificationMessage,
-          notification_type: 'message',
+          notification_type: "message",
         });
         await pruneOldNotifications(ctx, friendId);
       }
@@ -211,16 +221,16 @@ export const sendMessage = mutation({
 });
 
 export const deleteMessage = mutation({
-  args: { msg_id: v.id('messages') },
+  args: { msg_id: v.id("messages") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthenticated');
+    if (!identity) throw new Error("Unauthenticated");
 
     const msg = await ctx.db.get(args.msg_id);
-    if (!msg) throw new Error('Message not found');
+    if (!msg) throw new Error("Message not found");
 
     if (msg.sender_id !== identity.subject) {
-      throw new Error('Unauthorized to delete message');
+      throw new Error("Unauthorized to delete message");
     }
 
     await ctx.db.delete(args.msg_id);
@@ -230,12 +240,17 @@ export const deleteMessage = mutation({
 
     // Update last_msg_preview to the previous message after deletion
     const latestMsg = await ctx.db
-      .query('messages')
-      .withIndex('by_conversation', (q) => q.eq('conversation_id', msg.conversation_id))
-      .order('desc')
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", msg.conversation_id),
+      )
+      .order("desc")
       .first();
 
-    const preview = toPreview(latestMsg?.content ?? null, latestMsg?.file_name ?? null);
+    const preview = toPreview(
+      latestMsg?.content ?? null,
+      latestMsg?.file_name ?? null,
+    );
     const timestamp = latestMsg?._creationTime || 0;
 
     await updateConversationMetadata(
@@ -245,25 +260,25 @@ export const deleteMessage = mutation({
       msg.sender_id,
       preview,
       timestamp,
-      { incrementUnread: false }
+      { incrementUnread: false },
     );
   },
 });
 
 export const updateMessage = mutation({
   args: {
-    msg_id: v.id('messages'),
+    msg_id: v.id("messages"),
     content: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Unauthenticated');
+    if (!identity) throw new Error("Unauthenticated");
 
     const msg = await ctx.db.get(args.msg_id);
-    if (!msg) throw new Error('Message not found');
+    if (!msg) throw new Error("Message not found");
 
     if (msg.sender_id !== identity.subject) {
-      throw new Error('Unauthorized to edit message');
+      throw new Error("Unauthorized to edit message");
     }
 
     await ctx.db.patch(args.msg_id, {
@@ -273,9 +288,11 @@ export const updateMessage = mutation({
 
     // Update conversation metadata if this is the latest message
     const latestMsg = await ctx.db
-      .query('messages')
-      .withIndex('by_conversation', (q) => q.eq('conversation_id', msg.conversation_id))
-      .order('desc')
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", msg.conversation_id),
+      )
+      .order("desc")
       .first();
 
     if (latestMsg?._id === args.msg_id) {
@@ -287,7 +304,7 @@ export const updateMessage = mutation({
         msg.sender_id,
         preview,
         latestMsg._creationTime,
-        { incrementUnread: false }
+        { incrementUnread: false },
       );
     }
   },
@@ -302,10 +319,12 @@ export const getMedia = query({
     const limit = args.limit ?? 100;
 
     const messages = await ctx.db
-      .query('messages')
-      .withIndex('by_conversation', (q) => q.eq('conversation_id', args.conversation_id))
-      .filter((q) => q.neq(q.field('file_storage_id'), undefined))
-      .order('desc')
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", args.conversation_id),
+      )
+      .filter((q) => q.neq(q.field("file_storage_id"), undefined))
+      .order("desc")
       .take(limit);
 
     const result = await Promise.all(
@@ -319,11 +338,11 @@ export const getMedia = query({
           file_url: finalUrl,
           sender: {
             user_id: msg.sender_id,
-            username: msg.sender_username || 'Unknown',
+            username: msg.sender_username || "Unknown",
             avatar: msg.sender_avatar,
           },
         };
-      })
+      }),
     );
 
     return result.filter((m) => m.file_url && m.type);

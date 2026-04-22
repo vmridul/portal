@@ -4,7 +4,6 @@ import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { User, MessageWithSender } from "@/lib/types";
-import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { cn } from "@/lib/utils";
 
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
@@ -12,8 +11,7 @@ import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
 interface MessageListProps {
   messages: MessageWithSender[];
   messagesLoading: boolean;
-  status: "LoadingFirstPage" | "CanLoadMore" | "LoadingMore" | "Exhausted";
-  loadMore: () => void;
+  status: "Loaded" | "Loading";
   typingUsers: { username: string }[];
   user: User | null;
   color: string;
@@ -24,14 +22,11 @@ interface MessageListProps {
   setShouldScrollToBottom: (val: boolean) => void;
 }
 
-const START_INDEX = 10000;
-
 export const MessageList = React.memo(
   ({
     messages,
     messagesLoading,
     status,
-    loadMore,
     typingUsers,
     user,
     color,
@@ -41,132 +36,71 @@ export const MessageList = React.memo(
     shouldScrollToBottom,
     setShouldScrollToBottom,
   }: MessageListProps) => {
-    const virtuosoRef = useRef<VirtuosoHandle>(null);
-    const scrollerRef = useRef<HTMLDivElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
     const viewportRef = useRef<HTMLDivElement>(null);
     const pinnedHeaderRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
     const [showScrollDown, setShowScrollDown] = useState(false);
     const isAtBottomRef = useRef(true);
-    const prevMessagesLengthRefForScroll = useRef(messages.length);
-    const prevFirstMsgIdRefForScroll = useRef<string | null>(
-      messages[0]?._id || null,
-    );
+    const prevMessagesLength = useRef(messages.length);
 
-    // We use a stable firstItemIndex for Virtuoso. Index corrections must happen synchronously
-    // during the render phase to avoid the "double-render" jank/flicker.
-    const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-    const [prevFirstMsgId, setPrevFirstMsgId] = useState<string | null>(null);
-    const [prevLength, setPrevLength] = useState(0);
-
-    if (
-      messages.length > 0 &&
-      (messages[0]._id !== prevFirstMsgId || messages.length !== prevLength)
-    ) {
-      const isPrepend =
-        prevFirstMsgId !== null && messages[0]._id !== prevFirstMsgId;
-      if (isPrepend) {
-        const diff = messages.length - prevLength;
-        setFirstItemIndex((prev) => prev - diff);
-      } else if (prevFirstMsgId === null) {
-        // Initial load: calibrate the starting index
-        setFirstItemIndex(START_INDEX - messages.length);
-      }
-      setPrevFirstMsgId(messages[0]._id);
-      setPrevLength(messages.length);
-    }
-
-    const initialIndex = React.useMemo(() => {
-      return messages.length > 0 ? messages.length - 1 : 0;
-    }, [messagesLoading]);
-
-    const computeItemKey = useCallback(
-      (index: number, message: MessageWithSender) => {
-        return message?._id || index;
-      },
-      [],
-    );
-
+    // Re-enable pinned date headers
     usePinnedDate({
       messages,
-      containerRef: scrollerRef,
+      containerRef: scrollRef,
       viewportRef,
       pinnedHeaderRef,
       headerHeight: 40,
     });
 
-    const handleScroll = useCallback((atBottom: boolean) => {
-      isAtBottomRef.current = atBottom;
-      setShowScrollDown(!atBottom);
+    const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+      bottomRef.current?.scrollIntoView({ behavior });
     }, []);
 
-    const handleLoadMore = useCallback(() => {
-      if (status === "CanLoadMore") {
-        loadMore();
-      }
-    }, [status, loadMore]);
+    const handleScroll = useCallback(() => {
+      if (!scrollRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 100;
+      isAtBottomRef.current = isAtBottom;
+      setShowScrollDown(!isAtBottom);
+    }, []);
 
-    // Handle automatic and explicit scroll requests
     useEffect(() => {
-      const currentFirstMsgId = messages[0]?._id || null;
-      const isAppend =
-        messages.length > prevMessagesLengthRefForScroll.current &&
-        currentFirstMsgId === prevFirstMsgIdRefForScroll.current;
+      if (shouldScrollToBottom) {
+        scrollToBottom();
+        setShouldScrollToBottom(false);
+      }
+    }, [shouldScrollToBottom, scrollToBottom, setShouldScrollToBottom]);
 
-      if (isAppend) {
+    useEffect(() => {
+      const isNewMessageAppend = messages.length > prevMessagesLength.current;
+      if (isNewMessageAppend) {
         const lastMsg = messages[messages.length - 1];
         const sentByMe = lastMsg.sender_id === user?.user_id;
 
-        // Rule: Always scroll if I sent it OR if I was already at the bottom.
-        // shouldScrollToBottom is the explicit trigger from ChatInputBar.
-        if (sentByMe || isAtBottomRef.current || shouldScrollToBottom) {
-          virtuosoRef.current?.scrollToIndex({
-            index: messages.length - 1 + firstItemIndex,
-            behavior: "smooth",
-          });
+        if (sentByMe || isAtBottomRef.current) {
+          scrollToBottom();
         }
       }
-
-      // Always handle shouldScrollToBottom if it's explicitly set true
-      if (shouldScrollToBottom && !isAppend) {
-        virtuosoRef.current?.scrollToIndex({
-          index: messages.length - 1 + firstItemIndex,
-          behavior: "smooth",
-        });
-        setShouldScrollToBottom(false);
-      } else if (shouldScrollToBottom && isAppend) {
-        setShouldScrollToBottom(false);
-      }
-
-      prevMessagesLengthRefForScroll.current = messages.length;
-      prevFirstMsgIdRefForScroll.current = currentFirstMsgId;
-    }, [
-      messages,
-      user?.user_id,
-      firstItemIndex,
-      shouldScrollToBottom,
-      setShouldScrollToBottom,
-    ]);
+      prevMessagesLength.current = messages.length;
+    }, [messages, user?.user_id, scrollToBottom]);
 
     if (messagesLoading && messages.length === 0) {
       return <ChatSkeleton />;
     }
 
     return (
-      <>
+      <div ref={viewportRef} className="flex-1 w-full relative h-full flex flex-col overflow-hidden">
         {showScrollDown && messages.length > 0 && (
           <button
-            onClick={() => {
-              virtuosoRef.current?.scrollToIndex({
-                index: messages.length - 1 + firstItemIndex,
-                behavior: "smooth",
-              });
-            }}
+            onClick={() => scrollToBottom()}
             className="absolute bottom-5 z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 cursor-pointer border border-theme-border bg-theme-base transition-all duration-200 ease-out hover:bg-theme-hover active:scale-95"
           >
             <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-6 w-6")} />
           </button>
         )}
 
+        {/* Pinned Date Header Overlay */}
         <div
           ref={pinnedHeaderRef}
           className="absolute top-[5px] left-0 right-0 z-20 flex items-center justify-center pointer-events-none"
@@ -174,92 +108,66 @@ export const MessageList = React.memo(
         >
           <span
             className={cn(
-              "px-4 py-1 rounded-full bg-theme-border text-xs text-gray-300",
+              "px-4 py-1 rounded-full bg-theme-border/80 backdrop-blur-md border border-theme-border text-xs text-gray-300 shadow-lg",
             )}
           ></span>
         </div>
 
-        <div ref={viewportRef} className={cn("flex-1 w-full relative h-full")}>
-          <Virtuoso<MessageWithSender>
-            ref={virtuosoRef}
-            data={messages}
-            firstItemIndex={firstItemIndex}
-            initialTopMostItemIndex={initialIndex}
-            computeItemKey={computeItemKey}
-            alignToBottom={true}
-            increaseViewportBy={1400}
-            atBottomThreshold={300}
-            atBottomStateChange={handleScroll}
-            startReached={handleLoadMore}
-            followOutput={false}
-            className="flex-1 w-full h-full"
-            style={{ backgroundColor: "transparent" }}
-            scrollerRef={(el) => {
-              if (el instanceof HTMLDivElement) {
-                (scrollerRef as any).current = el;
-              }
-            }}
-            components={{
-              Header: () => (
-                <div className="flex items-center justify-center p-4">
-                  {status === "LoadingMore" && (
-                    <div className="w-5 h-5 border-2 border-theme-border border-t-white rounded-full animate-spin" />
-                  )}
-                </div>
-              ),
-              Footer: () => (
-                <div className="flex flex-col gap-2 pl-4 md:pl-10 py-6">
-                  {typingUsers.length > 0 && (
-                    <div className="flex items-center gap-2 pt-2">
-                      <div className="w-10 h-10 rounded-[12px] border border-[#2a2a2a] flex items-center justify-center bg-theme-surface">
-                        <span className="flex gap-1">
-                          <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                          <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                          <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce"></span>
-                        </span>
-                      </div>
-                      <span className="text-xs text-white/50 italic">
-                        {typingUsers
-                          .filter(Boolean)
-                          .map((u) => u?.username)
-                          .filter(Boolean)
-                          .join(", ")}{" "}
-                        {typingUsers.length === 1 ? "is" : "are"} typing...
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ),
-            }}
-            itemContent={(index, message) => {
-              const dataIndex = index - firstItemIndex;
-              const prevMessage =
-                dataIndex > 0 ? messages[dataIndex - 1] : null;
-              const nextMessage =
-                dataIndex < messages.length - 1
-                  ? messages[dataIndex + 1]
-                  : null;
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex-1 w-full overflow-y-auto scroll-smooth px-4"
+        >
+          <div className="flex flex-col min-h-full">
+            <div className="flex-1" />
+            
+            <div className="flex flex-col py-4">
+              {messages.map((message, index) => {
+                const prevMessage = index > 0 ? messages[index - 1] : null;
+                const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
 
-              return (
-                <div data-index={index} className="py-0">
-                  <MessageItem
-                    key={message._id}
-                    message={message}
-                    prevMessage={prevMessage}
-                    nextMessage={nextMessage}
-                    user={user}
-                    isCurrentUser={message.sender_id === user?.user_id}
-                    color={color}
-                    textColor={textColor}
-                    onPreviewMedia={onPreviewMedia}
-                    onDeleteRequest={onDeleteRequest}
-                  />
+                return (
+                  <div key={message._id} data-index={index}>
+                    <MessageItem
+                      message={message}
+                      prevMessage={prevMessage}
+                      nextMessage={nextMessage}
+                      user={user}
+                      isCurrentUser={message.sender_id === user?.user_id}
+                      color={color}
+                      textColor={textColor}
+                      onPreviewMedia={onPreviewMedia}
+                      onDeleteRequest={onDeleteRequest}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+
+            {typingUsers.length > 0 && (
+              <div className="flex items-center gap-2 pt-2 pb-6 pl-4 md:pl-10">
+                <div className="w-10 h-10 rounded-[12px] border border-[#2a2a2a] flex items-center justify-center bg-theme-surface">
+                  <span className="flex gap-1">
+                    <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1 h-1 bg-white/50 rounded-full animate-bounce"></span>
+                  </span>
                 </div>
-              );
-            }}
-          />
+                <span className="text-xs text-white/50 italic">
+                  {typingUsers
+                    .filter(Boolean)
+                    .map((u) => u?.username)
+                    .filter(Boolean)
+                    .join(", ")}{" "}
+                  {typingUsers.length === 1 ? "is" : "are"} typing...
+                </span>
+              </div>
+            )}
+            
+            <div ref={bottomRef} className="h-4 w-full" />
+          </div>
         </div>
-      </>
+      </div>
     );
   },
 );
