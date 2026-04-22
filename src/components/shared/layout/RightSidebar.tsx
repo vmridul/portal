@@ -76,14 +76,14 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                 <DropdownMenu.Content
                   sideOffset={8}
                   align="end"
-                  className="w-auto min-w-[120px] bg-theme-surface border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
+                  className="w-auto min-w-[120px] bg-theme-surface border border-theme-border rounded-[8px]  shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
                 >
                   <DropdownMenu.Item
                     onClick={() => {
                       navigator.clipboard.writeText(room_id);
                       toast.success("Room ID copied to clipboard");
                     }}
-                    className="px-3 py-2 text-sm min-w-[160px] text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2.5 text-sm min-w-[160px] text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon icon={CopyIcon} className="w-4 h-4" />
                     Copy Room ID
@@ -96,7 +96,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                         room_id,
                       });
                     }}
-                    className="px-3 py-2 text-sm text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2.5 text-sm text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon
                       icon={

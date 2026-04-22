@@ -134,7 +134,9 @@ export const UserInfoTab = () => {
           <div className="mt-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}>
+                <div
+                  className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
+                >
                   {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
                     <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
                       <HugeiconsIcon
@@ -151,13 +153,29 @@ export const UserInfoTab = () => {
                     </div>
                   )}
                 </div>
-</DropdownMenuTrigger>
+              </DropdownMenuTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuContent sideOffset={8} align="end" className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] py-1 shadow-xl z-[100] animate-in fade-in duration-100 outline-none">
-                  <DropdownMenuItem onClick={() => setStatus("online")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                <DropdownMenuContent
+                  sideOffset={8}
+                  align="end"
+                  className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
+                >
+                  <DropdownMenuItem
+                    onClick={() => setStatus("online")}
+                    className="px-3 py-2 text-xs text-green-500 hover:bg-theme-border flex items-center gap-2 cursor-pointer outline-none"
+                  >
+                    <div className="w-2 h-2 bg-green-600 rounded-full" />
                     <span>Online</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatus("away")} className="px-3 py-1.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none">
+                  <DropdownMenuItem
+                    onClick={() => setStatus("away")}
+                    className="px-3 py-2 text-xs text-yellow-500 hover:bg-theme-border flex items-center gap-2 cursor-pointer outline-none"
+                  >
+                    <HugeiconsIcon
+                      icon={Moon02Icon}
+                      fill="currentColor"
+                      className="w-3 h-3 text-yellow-400"
+                    />
                     <span>Away</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

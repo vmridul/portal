@@ -50,16 +50,11 @@ export function usePinnedDate({
 
       // 2. Visibility Logic: Hide sticky header if at the extreme start
       let isVisible = true;
-      let opacity = 1;
 
       if (activeIndex === 0 && activeItemRect) {
         const relativeTop = activeItemRect.top - viewportTop;
 
-        // If the first message is still mostly visible at the top, we fade out the sticky header
-        if (relativeTop > -20) {
-           opacity = Math.max(0, Math.min(1, -relativeTop / 20));
-           if (relativeTop >= 0) isVisible = false;
-        }
+        if (relativeTop >= 0) isVisible = false;
       }
 
       let newDate: string | null = null;
@@ -94,7 +89,7 @@ export function usePinnedDate({
         }
 
         pinnedHeader.style.transform = `translateY(${newTranslateY}px)`;
-        pinnedHeader.style.opacity = opacity.toString();
+        pinnedHeader.style.opacity = "1";
         pinnedHeader.style.visibility = (isVisible && newDate) ? "visible" : "hidden";
       }
     });
