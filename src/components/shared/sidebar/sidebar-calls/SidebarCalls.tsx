@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { SidebarLayout, SidebarHeader, SidebarFooter } from "@/components/ui/sidebar";
+import {
+  SidebarLayout,
+  SidebarHeader,
+  SidebarFooter,
+} from "@/components/ui/sidebar";
 import { useCalls, useCallSessionActions } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import ActiveCallPanel from "./ActiveCallPanel";
@@ -18,7 +22,11 @@ interface SidebarCallsProps {
   onClose: () => void;
 }
 
-export function SidebarCalls({ roomId, conversationName, onClose }: SidebarCallsProps) {
+export function SidebarCalls({
+  roomId,
+  conversationName,
+  onClose,
+}: SidebarCallsProps) {
   const { activeCalls, recentCalls, isLoading } = useCalls(roomId);
   const setActiveCall = useUIStore((s) => s.setActiveCall);
   const { startAndJoinCall } = useCallSessionActions();
@@ -35,14 +43,18 @@ export function SidebarCalls({ roomId, conversationName, onClose }: SidebarCalls
   }
 
   const endedCalls = recentCalls.filter((c) => !c.isActive);
-  const userInAnyCall = user && activeCalls.some(c => c.participants.includes(user.user_id));
+  const userInAnyCall =
+    user && activeCalls.some((c) => c.participants.includes(user.user_id));
 
   const handleStartNewCall = async () => {
     try {
       const roomData = rooms.find((room) => room.room_id === roomId);
       await startAndJoinCall({
         roomId,
-        roomName: conversationName || roomData?.Rooms?.room_name || "Unknown Conversation",
+        roomName:
+          conversationName ||
+          roomData?.Rooms?.room_name ||
+          "Unknown Conversation",
         user: {
           displayName: user?.username || "Guest",
           userId: user?.user_id,
@@ -82,8 +94,12 @@ export function SidebarCalls({ roomId, conversationName, onClose }: SidebarCalls
       </div>
       {!userInAnyCall && (
         <SidebarFooter>
-          <Button variant="other" onClick={handleStartNewCall} className="w-full">
-            <HugeiconsIcon icon={CallIcon} className="w-3 h-3 mr-2" />
+          <Button
+            variant="other"
+            onClick={handleStartNewCall}
+            className="w-full"
+          >
+            <HugeiconsIcon icon={CallIcon} className="w-4 h-4 mr-2" />
             Start New Call
           </Button>
         </SidebarFooter>
