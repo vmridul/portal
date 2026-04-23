@@ -29,14 +29,25 @@ import {
   DropdownMenuLabel,
 } from "@radix-ui/react-dropdown-menu";
 
+interface DeleteDialogState {
+  isOpen: boolean;
+  input: string;
+  isDeleting: boolean;
+}
+
+const initialDeleteDialog: DeleteDialogState = {
+  isOpen: false,
+  input: "",
+  isDeleting: false,
+};
+
 export const UserInfoTab = () => {
   const router = useRouter();
   const { signOut } = useClerk();
   const user = useUserStore((s) => s.user);
-  const [logoutConfirm, setLogoutConfirm] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [deleteInput, setDeleteInput] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const [deleteDialog, setDeleteDialog] =
+    useState<DeleteDialogState>(initialDeleteDialog);
   const setUser = useUserStore((s) => s.setUser);
   const fileRef = useRef<HTMLInputElement>(null);
   const [newUsername, setNewUsername] = useState(user?.username || "");
@@ -98,13 +109,13 @@ export const UserInfoTab = () => {
 
   const handleLogout = async () => {
     await signOut();
-    setLogoutConfirm(false);
+    setIsLogoutDialogOpen(false);
     router.push("/");
   };
 
   const handleDeleteAccount = async () => {
-    if (deleteInput !== "DELETE") return;
-    setIsDeleting(true);
+    if (deleteDialog.input !== "DELETE") return;
+    setDeleteDialog((prev) => ({ ...prev, isDeleting: true }));
     try {
       await deleteUserAccount();
       sessionStorage.setItem("accountDeleted", "true");
@@ -112,9 +123,15 @@ export const UserInfoTab = () => {
       router.push("/");
     } catch (e) {
       toast.error((e as Error).message || "Failed to delete account");
-      setIsDeleting(false);
+      setDeleteDialog((prev) => ({ ...prev, isDeleting: false }));
     }
   };
+
+  const openDeleteDialog = () =>
+    setDeleteDialog({ ...initialDeleteDialog, isOpen: true });
+  const closeDeleteDialog = () => setDeleteDialog(initialDeleteDialog);
+  const updateDeleteInput = (input: string) =>
+    setDeleteDialog((prev) => ({ ...prev, input }));
 
   return (
     <div className="flex flex-col items-center justify-center pt-2 overflow-y-auto md:pt-10 w-[80%] md:w-[47%] mx-auto">
@@ -255,14 +272,14 @@ export const UserInfoTab = () => {
       <div className="flex md:flex-row flex-col gap-2 md:gap-3 items-center w-full mt-5">
         <Button
           variant="destructive"
-          onClick={() => setDeleteConfirm(true)}
+          onClick={openDeleteDialog}
           className="w-full"
         >
           Delete Account
         </Button>
         <Button
           variant="secondary"
-          onClick={() => setLogoutConfirm(true)}
+          onClick={() => setIsLogoutDialogOpen(true)}
           className="w-full"
         >
           Logout
@@ -270,15 +287,18 @@ export const UserInfoTab = () => {
       </div>
 
       <ConfirmDialog
-        open={logoutConfirm}
-        onOpenChange={setLogoutConfirm}
+        open={isLogoutDialogOpen}
+        onOpenChange={setIsLogoutDialogOpen}
         title="Log Out"
         description="Are you sure you want to log out? You can sign in back anytime."
         confirmText="Log Out"
         onConfirm={handleLogout}
       />
 
-      <Dialog open={deleteConfirm} onOpenChange={setDeleteConfirm}>
+      <Dialog
+        open={deleteDialog.isOpen}
+        onOpenChange={(open) => !open && closeDeleteDialog()}
+      >
         <DialogContent className="w-96">
           <DialogHeader>
             <DialogTitle>Delete Account</DialogTitle>
@@ -293,27 +313,23 @@ export const UserInfoTab = () => {
               Type <span className="text-red-400">DELETE</span> to confirm
             </label>
             <Input
-              value={deleteInput}
-              onChange={(e) => setDeleteInput(e.target.value)}
+              value={deleteDialog.input}
+              onChange={(e) => updateDeleteInput(e.target.value)}
               placeholder="DELETE"
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setDeleteConfirm(false);
-                setDeleteInput("");
-              }}
-            >
+            <Button variant="secondary" onClick={closeDeleteDialog}>
               Cancel
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteAccount}
-              disabled={deleteInput !== "DELETE" || isDeleting}
+              disabled={
+                deleteDialog.input !== "DELETE" || deleteDialog.isDeleting
+              }
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {deleteDialog.isDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

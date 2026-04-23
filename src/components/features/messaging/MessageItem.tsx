@@ -15,7 +15,7 @@ import { MessageReactions } from "./MessageReactions";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface MessageItemProps {
   message: MessageWithSender;
@@ -27,7 +27,6 @@ interface MessageItemProps {
   textColor: string;
   onPreviewMedia: (url: string) => void;
   onDeleteRequest: (id: string) => void;
-  /** External highlight trigger (e.g., from jump-to-message). Merged with internal highlight state. */
   highlighted?: boolean;
 }
 
@@ -42,17 +41,10 @@ export const MessageItem = React.memo(
     textColor,
     onPreviewMedia,
     onDeleteRequest,
-    highlighted: externalHighlighted = false,
+    highlighted = false,
   }: MessageItemProps) => {
-    const [highlight, setHighlight] = useState(false);
+    const { setEditingMessage } = useUIStore();
 
-    // Merge external highlight (from useMessageWindow) with internal highlight (from jump-to-msg event)
-    const isHighlighted = highlight || externalHighlighted;
-
-    const { jumpedMessageId, setJumpedMessageId, setEditingMessage } =
-      useUIStore();
-
-    // 1. Memoize all derived logic to prevent script execution during scroll
     const { isImage, isVideo, isFile, isSystem, isJumbo } = React.useMemo(
       () => ({
         isImage: message.type?.startsWith("image/"),
@@ -95,29 +87,6 @@ export const MessageItem = React.memo(
       [message.sender_id, message.sender, user?.user_id],
     );
 
-    useEffect(() => {
-      const handleJump = (e: Event) => {
-        const customEvent = e as CustomEvent;
-        if (customEvent.detail.id === message._id) {
-          setHighlight(true);
-          setTimeout(() => setHighlight(false), 3000);
-        }
-      };
-      window.addEventListener("jump-to-msg", handleJump);
-      return () => window.removeEventListener("jump-to-msg", handleJump);
-    }, [message._id]);
-
-    useEffect(() => {
-      if (jumpedMessageId === message._id) {
-        setHighlight(true);
-        const timer = setTimeout(() => {
-          setHighlight(false);
-          setJumpedMessageId(null);
-        }, 3000);
-        return () => clearTimeout(timer);
-      }
-    }, [jumpedMessageId, message._id, setJumpedMessageId]);
-
     if (isSystem) {
       return (
         <div className="w-full px-4 md:px-10" data-message-id={message._id}>
@@ -134,7 +103,7 @@ export const MessageItem = React.memo(
           )}
           <div
             data-msg-id={message._id}
-            className={`px-3 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-1 transition-colors duration-500 ${isHighlighted ? "bg-yellow-500/20" : ""}`}
+            className={`px-3 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-1 transition-colors duration-500 ${highlighted ? "bg-yellow-500/20" : ""}`}
           >
             <span className="font-medium">{message.sender?.username}</span>
             <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
@@ -160,7 +129,7 @@ export const MessageItem = React.memo(
           </div>
         )}
         <div
-          className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${isHighlighted ? "bg-yellow-500/10" : ""}`}
+          className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${highlighted ? "bg-yellow-500/10" : ""}`}
         >
           <div
             data-msg-id={message._id}

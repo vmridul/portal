@@ -38,6 +38,20 @@ interface ChatInputBarProps {
   scrollToBottom: () => void;
 }
 
+interface UploadState {
+  file: File | null;
+  isUploading: boolean;
+  progress: number;
+  storageId: string | null;
+}
+
+const initialUploadState: UploadState = {
+  file: null,
+  isUploading: false,
+  progress: 0,
+  storageId: null,
+};
+
 export function ChatInputBar({
   room_id,
   type,
@@ -45,18 +59,12 @@ export function ChatInputBar({
   textColor,
   scrollToBottom,
 }: ChatInputBarProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadedStorageId, setUploadedStorageId] = useState<string | null>(
-    null,
-  );
   const [msg, setMsg] = useState("");
+  const [upload, setUpload] = useState<UploadState>(initialUploadState);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
   const { setTyping, clearTyping } = useTypingIndicators(room_id);
   const { sendMessage, generateUploadUrl } = useMessageActions();
@@ -72,21 +80,23 @@ export function ChatInputBar({
     }
   }, [editingMessage]);
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+  const isMobile = useMemo(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches,
+    [],
+  );
 
   useKeyboardOffset();
 
   const previewUrl = useMemo(() => {
-    if (!selectedFile) return null;
-    if (selectedFile.type.startsWith("image/")) {
-      return URL.createObjectURL(selectedFile);
+    if (!upload.file) return null;
+    if (upload.file.type.startsWith("image/")) {
+      return URL.createObjectURL(upload.file);
     }
     return null;
-  }, [selectedFile]);
+  }, [upload.file]);
 
-  // Clean up ObjectURL
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -95,9 +105,12 @@ export function ChatInputBar({
 
   const startUpload = useCallback(
     async (file: File) => {
-      setUploading(true);
-      setUploadProgress(0);
-      setUploadedStorageId(null);
+      setUpload((prev) => ({
+        ...prev,
+        isUploading: true,
+        progress: 0,
+        storageId: null,
+      }));
 
       if (abortControllerRef.current) abortControllerRef.current.abort();
       abortControllerRef.current = new AbortController();
@@ -111,7 +124,10 @@ export function ChatInputBar({
 
           xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
-              setUploadProgress((event.loaded / event.total) * 100);
+              setUpload((prev) => ({
+                ...prev,
+                progress: (event.loaded / event.total) * 100,
+              }));
             }
           };
 
@@ -132,15 +148,15 @@ export function ChatInputBar({
           );
         });
 
-        setUploadedStorageId(storageId);
+        setUpload((prev) => ({ ...prev, storageId }));
       } catch (error: any) {
         if (error.message !== "Upload aborted") {
           console.error(error);
           toast.error("File upload failed");
-          setSelectedFile(null);
+          setUpload(initialUploadState);
         }
       } finally {
-        setUploading(false);
+        setUpload((prev) => ({ ...prev, isUploading: false }));
       }
     },
     [generateUploadUrl],
@@ -156,14 +172,14 @@ export function ChatInputBar({
         toast.error(validation.error);
         return;
       }
-      setSelectedFile(file);
+      setUpload((prev) => ({ ...prev, file }));
       startUpload(file);
     },
     [startUpload],
   );
 
   const handleSendMessage = useCallback(async () => {
-    if (!msg.trim() && !selectedFile) return;
+    if (!msg.trim() && !upload.file) return;
 
     if (editingMessage) {
       if (!msg.trim() || msg === editingMessage.content) {
@@ -184,26 +200,28 @@ export function ChatInputBar({
       return;
     }
 
-    let storageId = uploadedStorageId;
+    let storageId = upload.storageId;
 
-    if (selectedFile && !storageId) {
-      if (uploading) {
-        // Wait for upload to catch up
+    if (upload.file && !storageId) {
+      if (upload.isUploading) {
         toast.info("Waiting for upload to finish...");
         const waitForUpload = () =>
           new Promise<string | null>((resolve) => {
             const check = setInterval(() => {
-              if (!uploading) {
-                clearInterval(check);
-                resolve(uploadedStorageId);
-              }
+              setUpload((prev) => {
+                if (!prev.isUploading) {
+                  clearInterval(check);
+                  resolve(prev.storageId);
+                }
+                return prev;
+              });
             }, 100);
           });
         storageId = await waitForUpload();
-        if (!storageId) return; // Upload failed during wait
+        if (!storageId) return;
       } else {
-        await startUpload(selectedFile);
-        storageId = uploadedStorageId;
+        await startUpload(upload.file);
+        storageId = upload.storageId;
       }
     }
 
@@ -213,15 +231,13 @@ export function ChatInputBar({
         conversation_type: type,
         msg: msg || null,
         file_storage_id: storageId || undefined,
-        file_type: selectedFile?.type || null,
-        file_name: selectedFile?.name || null,
-        file_size: selectedFile?.size,
+        file_type: upload.file?.type || null,
+        file_name: upload.file?.name || null,
+        file_size: upload.file?.size,
       });
 
       setMsg("");
-      setSelectedFile(null);
-      setUploadedStorageId(null);
-      setUploadProgress(0);
+      setUpload(initialUploadState);
       if (fileInputRef.current) fileInputRef.current.value = "";
       scrollToBottom();
       await clearTyping();
@@ -231,15 +247,16 @@ export function ChatInputBar({
     }
   }, [
     msg,
-    selectedFile,
-    uploadedStorageId,
-    uploading,
+    upload,
     room_id,
     type,
     sendMessage,
     startUpload,
     clearTyping,
     scrollToBottom,
+    editingMessage,
+    setEditingMessage,
+    updateMessage,
   ]);
 
   const onEmojiClick = useCallback(
@@ -255,26 +272,14 @@ export function ChatInputBar({
 
       setMsg(newText);
 
-      // Set cursor position after emoji
       const newCursorPos = start + emoji.length;
-      setCursorPosition(newCursorPos);
-
-      // Auto-focus back to textarea
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         textarea.focus();
         textarea.setSelectionRange(newCursorPos, newCursorPos);
-      }, 0);
+      });
     },
     [msg],
   );
-
-  // Keep focus and cursor position after state update
-  useEffect(() => {
-    if (cursorPosition !== null && inputRef.current) {
-      inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
-      setCursorPosition(null);
-    }
-  }, [cursorPosition]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -313,7 +318,7 @@ export function ChatInputBar({
       if (file) {
         const validation = validateFile(file);
         if (validation.valid) {
-          setSelectedFile(file);
+          setUpload((prev) => ({ ...prev, file }));
           startUpload(file);
         } else {
           toast.error(validation.error);
@@ -323,7 +328,7 @@ export function ChatInputBar({
     noClick: true,
   });
 
-  const FileIcon = selectedFile ? getFileIcon(selectedFile.type) : null;
+  const FileIcon = upload.file ? getFileIcon(upload.file.type) : null;
 
   return (
     <div
@@ -339,9 +344,9 @@ export function ChatInputBar({
       }
     >
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${selectedFile ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${upload.file ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
       >
-        {selectedFile && (
+        {upload.file && (
           <div className="flex items-center gap-3 pb-1 bg-theme-surface/40 rounded-xl  relative group">
             <div className="relative w-12 h-12 flex-shrink-0">
               {previewUrl ? (
@@ -364,10 +369,10 @@ export function ChatInputBar({
                 </div>
               )}
 
-              {uploading && (
+              {upload.isUploading && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-lg z-10">
                   <ProgressCircle
-                    progress={uploadProgress}
+                    progress={upload.progress}
                     size={32}
                     strokeWidth={2}
                     color={"white"}
@@ -378,18 +383,17 @@ export function ChatInputBar({
 
             <div className="flex-1 min-w-0 pr-8">
               <p className="text-sm text-gray-300 truncate font-medium">
-                {selectedFile.name}
+                {upload.file.name}
               </p>
               <p className="text-[10px] text-gray-400 mt-0.5">
-                {formatFileSize(selectedFile.size)}
+                {formatFileSize(upload.file.size)}
               </p>
             </div>
 
             <button
               onClick={() => {
                 abortControllerRef.current?.abort();
-                setSelectedFile(null);
-                setUploadedStorageId(null);
+                setUpload(initialUploadState);
                 if (fileInputRef.current) fileInputRef.current.value = "";
               }}
               className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
@@ -440,7 +444,7 @@ export function ChatInputBar({
                 if (file) {
                   const validation = validateFile(file);
                   if (validation.valid) {
-                    setSelectedFile(file);
+                    setUpload((prev) => ({ ...prev, file }));
                     startUpload(file);
                   } else toast.error(validation.error);
                   break;
@@ -471,7 +475,7 @@ export function ChatInputBar({
             <button
               onClick={() => fileInputRef.current?.click()}
               className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
-              disabled={uploading && !msg.trim()}
+              disabled={upload.isUploading && !msg.trim()}
             >
               <HugeiconsIcon
                 icon={Attachment01Icon}
@@ -480,7 +484,7 @@ export function ChatInputBar({
             </button>
             <ChatEmojiPicker
               onEmojiSelect={onEmojiClick}
-              disabled={uploading && !msg.trim()}
+              disabled={upload.isUploading && !msg.trim()}
               inputRef={inputRef}
             />
           </div>
@@ -488,7 +492,7 @@ export function ChatInputBar({
             onClick={handleSendMessage}
             style={{ backgroundColor: color, color: textColor }}
             className="py-3 px-3 rounded-[12px] disabled:opacity-50"
-            disabled={!msg.trim() && !selectedFile}
+            disabled={!msg.trim() && !upload.file}
           >
             <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
           </button>

@@ -24,16 +24,13 @@ interface UseMessageActionsResult {
   deleteMessage: (args: DeleteMessageArgs) => Promise<void>;
   clearUnreadCount: (conversation_id: string) => Promise<void>;
   generateUploadUrl: () => Promise<string>;
-  error: Error | null;
 }
 
 export function useMessageActions(): UseMessageActionsResult {
-  const [error, setError] = useState<Error | null>(null);
-
   const sendMessageMutation = useMutation(api.messages.sendMessage);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
   const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
-  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
 
   const sendMessage = useCallback(
     async (args: SendMessageArgs) => {
@@ -43,20 +40,14 @@ export function useMessageActions(): UseMessageActionsResult {
       };
       await sendMessageMutation(convexArgs);
     },
-    [sendMessageMutation]
+    [sendMessageMutation],
   );
 
   const deleteMessage = useCallback(
     async (args: DeleteMessageArgs) => {
-      setError(null);
-      try {
-        await deleteMessageMutation(args);
-      } catch (e) {
-        setError(e as Error);
-        throw e;
-      }
+      await deleteMessageMutation(args);
     },
-    [deleteMessageMutation]
+    [deleteMessageMutation],
   );
 
   const clearUnreadCount = useCallback(
@@ -67,27 +58,27 @@ export function useMessageActions(): UseMessageActionsResult {
         console.error("Failed to clear unread count:", e);
       }
     },
-    [clearUnreadCountMutation]
+    [clearUnreadCountMutation],
   );
 
-  const generateUploadUrlFn = useCallback(async () => {
-    const url = await generateUploadUrl();
-    return url;
-  }, [generateUploadUrl]);
+  const generateUploadUrl = useCallback(async () => {
+    return generateUploadUrlMutation();
+  }, [generateUploadUrlMutation]);
 
   return {
     sendMessage,
     deleteMessage,
     clearUnreadCount,
-    generateUploadUrl: generateUploadUrlFn,
-    error,
+    generateUploadUrl,
   };
 }
 
 export function useTypingIndicators(roomId: string) {
   const updateTyping = useMutation(api.typing.updateTyping);
   const removeTyping = useMutation(api.typing.removeTyping);
-  const typingUsersQuery = useQuery(api.typing.getTypingUsers, { room_id: roomId });
+  const typingUsersQuery = useQuery(api.typing.getTypingUsers, {
+    room_id: roomId,
+  });
 
   const setTyping = useCallback(async () => {
     try {

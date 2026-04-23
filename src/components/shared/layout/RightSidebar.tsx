@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   UserRemove01Icon,
@@ -17,23 +17,33 @@ import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 
-export default function RightSidebar({ room_id }: { room_id: string }) {
-  const user = useUserStore((s) => s.user);
-  const { rightMobileMenu } = useUIStore();
-  const { onlineUsers, awayUsers } = usePresence();
-
+function useRoomDetails(roomId: string) {
   const {
     rooms,
     membersCount: allMembersCount,
     isLoading: isRoomsLoading,
   } = useRooms();
 
-  const room = rooms.find((r) => r.room_id === room_id);
-  const roomName = room?.Rooms?.room_name ?? "";
-  const memberCount = room ? (allMembersCount[room_id] ?? 0) : 0;
+  return useMemo(() => {
+    const room = rooms.find((r) => r.room_id === roomId);
+    const roomName = room?.Rooms?.room_name ?? "";
+    const memberCount = room ? (allMembersCount[roomId] ?? 0) : 0;
+
+    return { room, roomName, memberCount, isRoomsLoading };
+  }, [rooms, roomId, allMembersCount, isRoomsLoading]);
+}
+
+export default function RightSidebar({ room_id }: { room_id: string }) {
+  const user = useUserStore((s) => s.user);
+  const { rightMobileMenu } = useUIStore();
+  const { onlineUsers, awayUsers } = usePresence();
+
+  const { roomName, memberCount, isRoomsLoading } = useRoomDetails(room_id);
   const members = useRoomMembers(room_id);
+
   const owner = members?.find((m) => m.role === "owner");
   const owner_id = owner?.user_id ?? "";
+  const isOwner = owner_id === (user?.user_id ?? "");
 
   return (
     <>
@@ -99,16 +109,10 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                     className="px-3 py-2.5 text-sm text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon
-                      icon={
-                        owner_id === (user?.user_id ?? "")
-                          ? Delete02Icon
-                          : UserRemove01Icon
-                      }
+                      icon={isOwner ? Delete02Icon : UserRemove01Icon}
                       className="w-4 h-4"
                     />
-                    {owner_id === (user?.user_id ?? "")
-                      ? "Delete Room"
-                      : "Leave Room"}
+                    {isOwner ? "Delete Room" : "Leave Room"}
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>

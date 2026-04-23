@@ -10,9 +10,40 @@ import {
   type PendingRequest,
   type SentRequest,
 } from "@/hooks";
-import { useColor } from "@/contexts/colorContext";
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
+import React from "react";
+
+interface RequestUser {
+  avatar?: string;
+  username?: string;
+}
+
+interface RequestItemProps {
+  user: RequestUser;
+  createdAt: number;
+  actions: React.ReactNode;
+}
+
+function RequestItem({ user, createdAt, actions }: RequestItemProps) {
+  return (
+    <div className="flex items-center gap-2 p-2 rounded-[6px]">
+      <Image
+        src={user.avatar || "/assets/defaultAvatar.png"}
+        width={32}
+        height={32}
+        unoptimized
+        alt=""
+        className="w-8 h-8 rounded-[6px]"
+      />
+      <div className="flex-1 min-w-0">
+        <div className="text-white text-sm truncate">{user.username}</div>
+        <div className="text-white/40 text-xs">{timeAgo(createdAt)}</div>
+      </div>
+      {actions}
+    </div>
+  );
+}
 
 interface PendingRequestMenuProps {
   pendingRequests: PendingRequest[];
@@ -85,47 +116,33 @@ export default function PendingRequestMenu({
                 </div>
               ) : (
                 pendingRequests.map((request) => (
-                  <div
+                  <RequestItem
                     key={request.id}
-                    className="flex items-center gap-2 p-2 rounded-[6px]"
-                  >
-                    <Image
-                      src={
-                        request.sender?.avatar || "/assets/defaultAvatar.png"
-                      }
-                      width={32}
-                      height={32}
-                      unoptimized
-                      alt=""
-                      className="w-8 h-8 rounded-[6px]"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-white text-sm truncate">
-                        {request.sender?.username}
-                      </div>
-                      <div className="text-white/40 text-xs">
-                        {timeAgo(request._creationTime)}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleAccept(request.id)}
-                      className="p-1 rounded-[6px] hover:bg-theme-hover"
-                    >
-                      <HugeiconsIcon
-                        icon={Tick01Icon}
-                        className="w-4 h-4 text-green-500"
-                      />
-                    </button>
-                    <button
-                      onClick={() => handleReject(request.id, true)}
-                      className="p-1 rounded-[6px] hover:bg-theme-hover"
-                    >
-                      <HugeiconsIcon
-                        icon={Cancel01Icon}
-                        className="w-4 h-4 text-gray-300"
-                      />
-                    </button>
-                  </div>
+                    user={request.sender ?? {}}
+                    createdAt={request._creationTime}
+                    actions={
+                      <>
+                        <button
+                          onClick={() => handleAccept(request.id)}
+                          className="p-1 rounded-[6px] hover:bg-theme-hover"
+                        >
+                          <HugeiconsIcon
+                            icon={Tick01Icon}
+                            className="w-4 h-4 text-green-500"
+                          />
+                        </button>
+                        <button
+                          onClick={() => handleReject(request.id, true)}
+                          className="p-1 rounded-[6px] hover:bg-theme-hover"
+                        >
+                          <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            className="w-4 h-4 text-gray-300"
+                          />
+                        </button>
+                      </>
+                    }
+                  />
                 ))
               )}
             </Tabs.Content>
@@ -140,40 +157,22 @@ export default function PendingRequestMenu({
                 </div>
               ) : (
                 sentRequests.map((request) => (
-                  <div
+                  <RequestItem
                     key={request.id}
-                    className="flex items-center gap-2 p-2 rounded-[6px]"
-                  >
-                    <Image
-                      src={
-                        request.receiver?.avatar || "/assets/defaultAvatar.png"
-                      }
-                      width={32}
-                      height={32}
-                      unoptimized
-                      alt=""
-                      className="w-8 h-8 rounded-[6px]"
-                    />
-                    <div className="flex-1 flex flex-col justify-center">
-                      <span className="text-sm text-white/90 truncate max-w-[120px]">
-                        {request.receiver?.username}
-                      </span>
-                      <span className="text-xs text-white/60">
-                        {timeAgo(request._creationTime)}
-                      </span>
-                    </div>
-                    <div className="flex gap-1">
-                      <div
+                    user={request.receiver ?? {}}
+                    createdAt={request._creationTime}
+                    actions={
+                      <button
                         onClick={() => handleReject(request.id, false)}
-                        className="cursor-pointer"
+                        className="p-1 rounded-[6px] hover:bg-theme-hover"
                       >
                         <HugeiconsIcon
                           icon={Cancel01Icon}
-                          className="text-gray-300 hover:bg-theme-hover p-1 rounded-[8px]"
+                          className="w-4 h-4 text-gray-300"
                         />
-                      </div>
-                    </div>
-                  </div>
+                      </button>
+                    }
+                  />
                 ))
               )}
             </Tabs.Content>

@@ -5,6 +5,58 @@ import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 
+interface MemberStatusIndicatorProps {
+  isOnline: boolean;
+  isAway: boolean;
+}
+
+function MemberStatusIndicator({
+  isOnline,
+  isAway,
+}: MemberStatusIndicatorProps) {
+  if (isOnline) {
+    return (
+      <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
+    );
+  }
+
+  if (isAway) {
+    return (
+      <HugeiconsIcon
+        icon={Moon02Icon}
+        fill="currentColor"
+        className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
+      />
+    );
+  }
+
+  return (
+    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
+  );
+}
+
+function getMemberAvatar(
+  member: RoomMemberWithUser,
+  currentUser: User | null,
+): string {
+  const isCurrentUser = member?.Users?.user_id === currentUser?.user_id;
+  if (isCurrentUser) {
+    return currentUser?.avatar ?? "/assets/defaultAvatar.png";
+  }
+  return member?.Users?.avatar ?? "/assets/defaultAvatar.png";
+}
+
+function getMemberDisplayName(
+  member: RoomMemberWithUser,
+  currentUser: User | null,
+): string {
+  const isCurrentUser = member?.Users?.user_id === currentUser?.user_id;
+  if (isCurrentUser) {
+    return currentUser?.username || "";
+  }
+  return member?.Users?.username || "";
+}
+
 interface RoomMembersListProps {
   members: RoomMemberWithUser[];
   memberCount: number;
@@ -34,42 +86,31 @@ export const RoomMembersList = ({
         {members?.map((member) => {
           const isUserOnline = onlineUsers.has(member.user_id.toString());
           const isUserAway = awayUsers.has(member.user_id.toString());
+          const avatar = getMemberAvatar(member, user);
+          const displayName = getMemberDisplayName(member, user);
+
           return (
             <div className="text-sm ml-2 mb-3" key={member.user_id}>
               <div className="flex gap-4 items-center">
                 <div className="relative">
                   <Image
-                    src={
-                      member?.Users?.user_id === user?.user_id
-                        ? (user?.avatar ?? "/assets/defaultAvatar.png")
-                        : (member?.Users?.avatar ??
-                          "/assets/defaultAvatar.png")
-                    }
+                    src={avatar}
                     alt="Avatar"
                     width={30}
                     height={30}
                     unoptimized
                     className="w-10 h-10 rounded-[12px]"
                   />
-                  {isUserOnline ? (
-                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
-                  ) : isUserAway ? (
-                    <HugeiconsIcon
-                      icon={Moon02Icon}
-                      fill="currentColor"
-                      className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
-                    />
-                  ) : (
-                    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
-                  )}
+                  <MemberStatusIndicator
+                    isOnline={isUserOnline}
+                    isAway={isUserAway}
+                  />
                 </div>
                 <div className="flex flex-col">
                   <UserProfilePopup
                     user={{
                       id: member?.Users?.user_id || "",
-                      username: member?.Users?.user_id == user?.user_id
-                        ? user?.username || ""
-                        : member?.Users?.username || "",
+                      username: displayName,
                       avatarUrl: member?.Users?.avatar,
                       joinedAt: member?.Users?._creationTime
                         ? new Date(member.Users._creationTime).toISOString()
@@ -78,9 +119,7 @@ export const RoomMembersList = ({
                     currentUserId={user?.user_id}
                   >
                     <span className="truncate max-w-[150px]">
-                      {member?.Users?.user_id == user?.user_id
-                        ? user?.username
-                        : member?.Users?.username}
+                      {displayName}
                     </span>
                   </UserProfilePopup>
                   {member.role && (

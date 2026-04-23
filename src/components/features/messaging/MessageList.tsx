@@ -1,4 +1,10 @@
-import React, { useRef, useCallback, useEffect, useLayoutEffect } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import { MessageItem } from "./MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -174,12 +180,12 @@ export const MessageList = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [returnToLiveTrigger]);
 
-    // ── Media preview handler (Option A — lightbox logic in MessageList) ──
+    // ── Media preview handler ─────────────────────────────────────────────
     const { openLightbox } = useUIStore();
 
-    const handlePreviewMedia = useCallback(
-      (url: string) => {
-        const mediaItems = messageWindow.messages
+    const mediaItems = useMemo(
+      () =>
+        messageWindow.messages
           .filter(
             (message) =>
               (message.type?.startsWith("image/") ||
@@ -190,12 +196,18 @@ export const MessageList = React.memo(
             file_url: message.file_url as string,
             type: message.type as string,
             file_name: message.file_name,
-          }));
+          })),
+      [messageWindow.messages],
+    );
 
-        const index = mediaItems.findIndex((item) => item.file_url === url);
+    const handlePreviewMedia = useCallback(
+      (url: string) => {
+        const index = mediaItems.findIndex(
+          (item: { file_url: string }) => item.file_url === url,
+        );
         openLightbox(mediaItems, index >= 0 ? index : 0);
       },
-      [messageWindow.messages, openLightbox],
+      [mediaItems, openLightbox],
     );
 
     // ── Badge button handler ──────────────────────────────────────────────
