@@ -7,7 +7,6 @@ export * from "./useSearchMessages";
 export * from "./useMediaFiles";
 export * from "./useUserProfile";
 export * from "./useGlobalPresence";
-export * from "./useMobile";
 export * from "./useRoomInfo";
 export * from "./useCalls";
 export * from "./useCallSessionActions";
