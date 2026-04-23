@@ -27,6 +27,8 @@ interface MessageItemProps {
   textColor: string;
   onPreviewMedia: (url: string) => void;
   onDeleteRequest: (id: string) => void;
+  /** External highlight trigger (e.g., from jump-to-message). Merged with internal highlight state. */
+  highlighted?: boolean;
 }
 
 export const MessageItem = React.memo(
@@ -40,8 +42,12 @@ export const MessageItem = React.memo(
     textColor,
     onPreviewMedia,
     onDeleteRequest,
+    highlighted: externalHighlighted = false,
   }: MessageItemProps) => {
     const [highlight, setHighlight] = useState(false);
+
+    // Merge external highlight (from useMessageWindow) with internal highlight (from jump-to-msg event)
+    const isHighlighted = highlight || externalHighlighted;
 
     const { jumpedMessageId, setJumpedMessageId, setEditingMessage } =
       useUIStore();
@@ -114,7 +120,7 @@ export const MessageItem = React.memo(
 
     if (isSystem) {
       return (
-        <div className="w-full px-4 md:px-10">
+        <div className="w-full px-4 md:px-10" data-message-id={message._id}>
           {showDateDivider && (
             <div
               data-date-header="true"
@@ -128,7 +134,7 @@ export const MessageItem = React.memo(
           )}
           <div
             data-msg-id={message._id}
-            className={`px-3 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-1 transition-colors duration-500 ${highlight ? "bg-yellow-500/20" : ""}`}
+            className={`px-3 mx-auto rounded-[6px] items-center text-gray-400 text-xs flex justify-center py-1 transition-colors duration-500 ${isHighlighted ? "bg-yellow-500/20" : ""}`}
           >
             <span className="font-medium">{message.sender?.username}</span>
             <span className="ml-2 whitespace-pre-wrap">{message.content}</span>
@@ -139,7 +145,7 @@ export const MessageItem = React.memo(
     }
 
     return (
-      <div className="w-full">
+      <div className="w-full" data-message-id={message._id}>
         {showDateDivider && (
           <div className="px-4 md:px-10">
             <div
@@ -154,7 +160,7 @@ export const MessageItem = React.memo(
           </div>
         )}
         <div
-          className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${highlight ? "bg-yellow-500/10" : ""}`}
+          className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${isHighlighted ? "bg-yellow-500/10" : ""}`}
         >
           <div
             data-msg-id={message._id}

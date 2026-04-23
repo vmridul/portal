@@ -1,4 +1,5 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type QueryCtx } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 import { v } from "convex/values";
 import {
   extractFriendId,
@@ -346,5 +347,235 @@ export const getMedia = query({
     );
 
     return result.filter((m) => m.file_url && m.type);
+  },
+});
+
+
+// ─── Pagination Queries ───────────────────────────────────────────────────────
+//
+// These queries power the windowed pagination system in the chat UI.
+// They use _creationTime as a cursor via the `by_conversation` index, which
+// implicitly appends _creationTime after the `conversation_id` prefix field.
+// This gives us efficient range scans without needing a separate compound index.
+// ───────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Resolves file storage URLs and joins reactions for a list of raw messages.
+ * Produces the same shape as getAllMessages so that frontend types stay compatible.
+ * This is an internal helper — not exported as a Convex function.
+ */
+async function enrichMessagesWithSenderAndReactions(
+  ctx: QueryCtx,
+  rawMessages: Doc<"messages">[],
+) {
+  return Promise.all(
+    rawMessages.map(async (message) => {
+      let resolvedFileUrl = message.file_url;
+      if (message.file_storage_id) {
+        resolvedFileUrl =
+          (await ctx.storage.getUrl(message.file_storage_id)) ?? null;
+      }
+
+      const reactions = await ctx.db
+        .query("reactions")
+        .withIndex("by_message_id", (q) => q.eq("message_id", message._id))
+        .collect();
+
+      return {
+        ...message,
+        file_url: resolvedFileUrl,
+        sender: {
+          user_id: message.sender_id,
+          username: message.sender_username || "Unknown",
+          avatar: message.sender_avatar,
+        },
+        reactions: reactions.map((reaction) => ({
+          _id: reaction._id,
+          user_id: reaction.user_id,
+          emoji: reaction.emoji,
+        })),
+      };
+    }),
+  );
+}
+
+/**
+ * Real-time subscription for LIVE mode.
+ * Returns the latest N messages in ascending (chronological) order.
+ * Mount this with useQuery() — it automatically pushes new messages as they arrive.
+ */
+export const subscribeLive = query({
+  args: {
+    conversation_id: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+
+    // Fetch newest-first, then reverse for chronological display order
+    const newestFirst = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", args.conversation_id),
+      )
+      .order("desc")
+      .take(limit);
+
+    const chronological = newestFirst.reverse();
+    return enrichMessagesWithSenderAndReactions(ctx, chronological);
+  },
+});
+
+/**
+ * One-shot fetch of the latest N messages.
+ * Same result shape as subscribeLive but intended for imperative (non-reactive) use
+ * via convexClient.query() when initializing or catching up.
+ */
+export const getLatest = query({
+  args: {
+    conversation_id: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+
+    const newestFirst = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("conversation_id", args.conversation_id),
+      )
+      .order("desc")
+      .take(limit);
+
+    const chronological = newestFirst.reverse();
+    return enrichMessagesWithSenderAndReactions(ctx, chronological);
+  },
+});
+
+/**
+ * Cursor-based backward pagination.
+ * Returns up to `limit` messages OLDER than `before_creation_time`, in ascending order.
+ * The caller passes the _creationTime of the oldest message in its current window.
+ */
+export const getBefore = query({
+  args: {
+    conversation_id: v.string(),
+    before_creation_time: v.number(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+
+    // Range scan: conversation_id = X AND _creationTime < before_creation_time
+    // Ordered desc so .take(limit) grabs the N closest to the cursor, then reverse
+    const newestFirst = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q
+          .eq("conversation_id", args.conversation_id)
+          .lt("_creationTime", args.before_creation_time),
+      )
+      .order("desc")
+      .take(limit);
+
+    const chronological = newestFirst.reverse();
+    return enrichMessagesWithSenderAndReactions(ctx, chronological);
+  },
+});
+
+/**
+ * Cursor-based forward pagination.
+ * Returns up to `limit` messages NEWER than `after_creation_time`, in ascending order.
+ * The caller passes the _creationTime of the newest message in its current window.
+ */
+export const getAfter = query({
+  args: {
+    conversation_id: v.string(),
+    after_creation_time: v.number(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const limit = args.limit ?? 50;
+
+    // Range scan: conversation_id = X AND _creationTime > after_creation_time
+    // Already ascending, so .take(limit) gets the N closest to the cursor
+    const chronological = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q
+          .eq("conversation_id", args.conversation_id)
+          .gt("_creationTime", args.after_creation_time),
+      )
+      .order("asc")
+      .take(limit);
+
+    return enrichMessagesWithSenderAndReactions(ctx, chronological);
+  },
+});
+
+/**
+ * Fetches a window of messages centered around a target message.
+ * Returns `half_limit` messages before + the target + `half_limit` messages after,
+ * all in ascending order. Also returns the index of the target within the array.
+ *
+ * Used by jump-to-message (from search results or linked messages).
+ */
+export const getAround = query({
+  args: {
+    conversation_id: v.string(),
+    target_message_id: v.id("messages"),
+    half_limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const halfLimit = args.half_limit ?? 25;
+
+    const targetMessage = await ctx.db.get(args.target_message_id);
+    if (!targetMessage) {
+      return { messages: [], targetIndex: -1 };
+    }
+
+    // Verify the message belongs to the expected conversation
+    if (targetMessage.conversation_id !== args.conversation_id) {
+      return { messages: [], targetIndex: -1 };
+    }
+
+    // Fetch messages before the target (newest-first, then reverse)
+    const beforeNewestFirst = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q
+          .eq("conversation_id", args.conversation_id)
+          .lt("_creationTime", targetMessage._creationTime),
+      )
+      .order("desc")
+      .take(halfLimit);
+    const beforeChronological = beforeNewestFirst.reverse();
+
+    // Fetch messages after the target (already ascending)
+    const afterChronological = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q
+          .eq("conversation_id", args.conversation_id)
+          .gt("_creationTime", targetMessage._creationTime),
+      )
+      .order("asc")
+      .take(halfLimit);
+
+    // Combine: before + target + after
+    const allMessages = [
+      ...beforeChronological,
+      targetMessage,
+      ...afterChronological,
+    ];
+    const enrichedMessages = await enrichMessagesWithSenderAndReactions(
+      ctx,
+      allMessages,
+    );
+
+    return {
+      messages: enrichedMessages,
+      targetIndex: beforeChronological.length,
+    };
   },
 });

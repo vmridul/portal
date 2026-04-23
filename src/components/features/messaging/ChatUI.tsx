@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { MessageList } from "./MessageList";
 import { ChatInputBar } from "./ChatInputBar";
-import { useMessages } from "@/hooks/useMessages";
 import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
 import type { User } from "@/lib/types";
 import { MediaLightbox } from "@/components/shared/MediaLightbox";
-import { useUIStore } from "@/store/uiStore";
 import { cn } from "@/lib/utils";
 
 interface ChatUIProps {
@@ -15,6 +13,8 @@ interface ChatUIProps {
   color: string;
   textColor: string;
   onDeleteRequest: (messageId: string) => void;
+  /** Optional message ID to jump to on mount (from search results or linked messages) */
+  initialMessageId?: string;
 }
 
 export function ChatUI({
@@ -24,13 +24,13 @@ export function ChatUI({
   color,
   textColor,
   onDeleteRequest,
+  initialMessageId,
 }: ChatUIProps) {
-  const { openLightbox } = useUIStore();
-  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
+  // ── Return-to-live trigger ────────────────────────────────────────────
+  // Incremented when the user sends a message via ChatInputBar. MessageList
+  // watches this number and returns to LIVE mode + scrolls to bottom.
+  const [returnToLiveTrigger, setReturnToLiveTrigger] = useState(0);
 
-  const { messages, status, isLoading: messagesLoading } = useMessages({
-    conversationId: room_id,
-  });
   const { typingUsers } = useTypingIndicators(room_id);
   const { clearUnreadCount } = useMessageActions();
 
@@ -39,23 +39,9 @@ export function ChatUI({
     clearUnreadCount(room_id);
   }, [room_id, clearUnreadCount]);
 
-  const handleScrollToBottomReq = useCallback(() => {
-    setShouldScrollToBottom(true);
+  const handleScrollToBottomRequest = useCallback(() => {
+    setReturnToLiveTrigger((previous) => previous + 1);
   }, []);
-
-  const handlePreviewMedia = useCallback((url: string) => {
-    // Collect all media from current messages for the lightbox gallery
-    const mediaItems = messages
-      .filter(m => (m.type?.startsWith("image/") || m.type?.startsWith("video/")) && m.file_url)
-      .map(m => ({
-        file_url: m.file_url as string,
-        type: m.type as string,
-        file_name: m.file_name
-      }));
-
-    const index = mediaItems.findIndex(m => m.file_url === url);
-    openLightbox(mediaItems, index >= 0 ? index : 0);
-  }, [messages, openLightbox]);
 
   return (
     <div
@@ -65,17 +51,15 @@ export function ChatUI({
 
       <div className="flex-1 relative min-h-0 overflow-hidden">
         <MessageList
-          messages={messages}
-          messagesLoading={messagesLoading}
-          status={status}
+          conversationId={room_id}
+          conversationType={type}
+          initialMessageId={initialMessageId}
           typingUsers={typingUsers}
           user={user}
           color={color}
           textColor={textColor}
-          onPreviewMedia={handlePreviewMedia}
           onDeleteRequest={onDeleteRequest}
-          shouldScrollToBottom={shouldScrollToBottom}
-          setShouldScrollToBottom={setShouldScrollToBottom}
+          returnToLiveTrigger={returnToLiveTrigger}
         />
       </div>
 
@@ -85,7 +69,7 @@ export function ChatUI({
           type={type}
           color={color}
           textColor={textColor}
-          scrollToBottom={handleScrollToBottomReq}
+          scrollToBottom={handleScrollToBottomRequest}
         />
       </div>
     </div>
