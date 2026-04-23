@@ -45,7 +45,10 @@ export default function PendingRequestMenu({
   };
 
   return (
-    <Popover.Root open={pendingRequestMenu} onOpenChange={setPendingRequestMenu}>
+    <Popover.Root
+      open={pendingRequestMenu}
+      onOpenChange={setPendingRequestMenu}
+    >
       <Popover.Anchor asChild>
         <div />
       </Popover.Anchor>
@@ -54,6 +57,7 @@ export default function PendingRequestMenu({
           className="z-[9000] p-2 rounded-[8px] h-[35%] min-w-[250px] bg-theme-base border border-theme-border"
           sideOffset={8}
           align="end"
+          onEscapeKeyDown={() => setPendingRequestMenu(false)}
         >
           <Tabs.Root defaultValue="received" className="flex flex-col h-full">
             <Tabs.List className="bg-theme-surface text-sm text-white h-9 rounded-[8px] w-fit p-1 flex items-center gap-1">
@@ -71,7 +75,10 @@ export default function PendingRequestMenu({
               </Tabs.Trigger>
             </Tabs.List>
 
-            <Tabs.Content value="received" className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto">
+            <Tabs.Content
+              value="received"
+              className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto"
+            >
               {pendingRequests.length === 0 ? (
                 <div className="text-white/40 text-xs p-2 mx-auto my-[30%]">
                   No pending requests
@@ -83,7 +90,9 @@ export default function PendingRequestMenu({
                     className="flex items-center gap-2 p-2 rounded-[6px]"
                   >
                     <Image
-                      src={request.sender?.avatar || "/assets/defaultAvatar.png"}
+                      src={
+                        request.sender?.avatar || "/assets/defaultAvatar.png"
+                      }
                       width={32}
                       height={32}
                       unoptimized
@@ -102,20 +111,29 @@ export default function PendingRequestMenu({
                       onClick={() => handleAccept(request.id)}
                       className="p-1 rounded-[6px] hover:bg-theme-hover"
                     >
-                      <HugeiconsIcon icon={Tick01Icon} className="w-4 h-4 text-green-500" />
+                      <HugeiconsIcon
+                        icon={Tick01Icon}
+                        className="w-4 h-4 text-green-500"
+                      />
                     </button>
                     <button
                       onClick={() => handleReject(request.id, true)}
                       className="p-1 rounded-[6px] hover:bg-theme-hover"
                     >
-                      <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4 text-gray-300" />
+                      <HugeiconsIcon
+                        icon={Cancel01Icon}
+                        className="w-4 h-4 text-gray-300"
+                      />
                     </button>
                   </div>
                 ))
               )}
             </Tabs.Content>
 
-            <Tabs.Content value="sent" className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto">
+            <Tabs.Content
+              value="sent"
+              className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto"
+            >
               {sentRequests.length === 0 ? (
                 <div className="text-white/40 text-xs p-2 mx-auto my-[30%]">
                   No sent requests
@@ -127,7 +145,9 @@ export default function PendingRequestMenu({
                     className="flex items-center gap-2 p-2 rounded-[6px]"
                   >
                     <Image
-                      src={request.receiver?.avatar || "/assets/defaultAvatar.png"}
+                      src={
+                        request.receiver?.avatar || "/assets/defaultAvatar.png"
+                      }
                       width={32}
                       height={32}
                       unoptimized
@@ -147,7 +167,10 @@ export default function PendingRequestMenu({
                         onClick={() => handleReject(request.id, false)}
                         className="cursor-pointer"
                       >
-                        <HugeiconsIcon icon={Cancel01Icon} className="text-gray-300 hover:bg-theme-hover p-1 rounded-[8px]" />
+                        <HugeiconsIcon
+                          icon={Cancel01Icon}
+                          className="text-gray-300 hover:bg-theme-hover p-1 rounded-[8px]"
+                        />
                       </div>
                     </div>
                   </div>

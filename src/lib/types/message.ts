@@ -47,3 +47,25 @@ export interface MessageSearchResult {
   sender?: User;
   _creationTime: number;
 }
+
+// ─── Scroll & Pagination Types ────────────────────────────────────────────────
+
+export type WindowMode = "LIVE" | "HISTORY" | "JUMPING";
+
+export interface SavedScrollAnchor {
+  /** The first visible message element's ID at the time of save */
+  firstVisibleMessageId: string | null;
+  /** The offset of that message's top edge from the viewport top */
+  offsetFromTop: number;
+  /** The container's scrollTop at save time */
+  scrollTop: number;
+  /** The container's scrollHeight at save time */
+  scrollHeight: number;
+}
+
+export interface UseScrollManagerOptions {
+  /** Called when user scrolls near the top of the container */
+  onNearTop?: () => void;
+  /** Called when user scrolls near the bottom of the container (for catch-up) */
+  onNearBottom?: () => void;
+}

@@ -16,46 +16,13 @@
  */
 
 import { useCallback, useRef, useState } from "react";
+import { SCROLL_CONFIG } from "@/lib/constants/config";
+import type {
+  SavedScrollAnchor,
+  UseScrollManagerOptions,
+} from "@/lib/types/message";
 
-// ─── Configuration ────────────────────────────────────────────────────────────
-
-const CONFIG = {
-  // px from bottom — within this range, user is considered "at bottom" and
-  // new messages will auto-scroll. 100px feels instant but avoids false
-  // triggers when the user is mid-scroll.
-  NEAR_BOTTOM_THRESHOLD: 100,
-
-  // px from top — when scrollTop drops below this, fire the onNearTop callback.
-  // 300px gives enough runway to fetch before the user actually hits the top.
-  NEAR_TOP_THRESHOLD: 300,
-
-  // ms to wait after a scroll-to-message before re-enabling scroll checks.
-  // Prevents the programmatic scroll from immediately triggering near-top/near-bottom fetch logic.
-  SCROLL_SETTLE_DELAY_MS: 200,
-
-  // ms to debounce near-top / near-bottom callbacks to prevent rapid-fire triggers
-  SCROLL_CALLBACK_DEBOUNCE_MS: 150,
-} as const;
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface UseScrollManagerOptions {
-  /** Called when user scrolls near the top of the container */
-  onNearTop?: () => void;
-  /** Called when user scrolls near the bottom of the container (for catch-up) */
-  onNearBottom?: () => void;
-}
-
-interface SavedScrollAnchor {
-  /** The first visible message element's ID at the time of save */
-  firstVisibleMessageId: string | null;
-  /** The offset of that message's top edge from the viewport top */
-  offsetFromTop: number;
-  /** The container's scrollTop at save time */
-  scrollTop: number;
-  /** The container's scrollHeight at save time */
-  scrollHeight: number;
-}
+const CONFIG = SCROLL_CONFIG;
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -97,11 +64,11 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
   function calculateIsNearBottom(container: HTMLElement): boolean {
     const distanceFromBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight;
-    return distanceFromBottom < CONFIG.NEAR_BOTTOM_THRESHOLD;
+    return distanceFromBottom < CONFIG.nearBottomThreshold;
   }
 
   function calculateIsNearTop(container: HTMLElement): boolean {
-    return container.scrollTop < CONFIG.NEAR_TOP_THRESHOLD;
+    return container.scrollTop < CONFIG.nearTopThreshold;
   }
 
   /**
@@ -169,7 +136,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
           hasFiredNearTopRef.current = true;
           onNearTopRef.current?.();
         }
-      }, CONFIG.SCROLL_CALLBACK_DEBOUNCE_MS);
+      }, CONFIG.scrollCallbackDebounceMs);
     }
 
     // Debounced near-bottom callback
@@ -185,7 +152,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
           hasFiredNearBottomRef.current = true;
           onNearBottomRef.current?.();
         }
-      }, CONFIG.SCROLL_CALLBACK_DEBOUNCE_MS);
+      }, CONFIG.scrollCallbackDebounceMs);
     }
   }, []);
 
@@ -225,7 +192,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
     // Re-enable scroll checks after the scroll settles
     setTimeout(() => {
       isScrollingProgrammaticallyRef.current = false;
-    }, CONFIG.SCROLL_SETTLE_DELAY_MS);
+    }, CONFIG.scrollSettleDelayMs);
   }, []);
 
   // ── Scroll anchoring for prepend operations ─────────────────────────────
@@ -239,7 +206,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
   //
   // This two-step dance (save → restore) must be coordinated by the caller:
   //   1. Call saveScrollAnchor() before triggering the fetch
-  //   2. Call restoreScrollAnchor() in a useLayoutEffect watching the messages array
+  //   2. Call restoreScrollAnchor() in a useLayoutEffect after prepend re-renders
 
   const saveScrollAnchor = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -263,13 +230,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
     // Disable smooth scrolling and native scroll anchoring during restore
     // so the adjustment is instant and invisible to the user
     const originalScrollBehavior = container.style.scrollBehavior;
-    const originalOverflowAnchor = (container.style as any).overflowAnchor;
     container.style.scrollBehavior = "auto";
-    (container.style as any).overflowAnchor = "none";
-
-    // Force a synchronous layout read to ensure we have fresh measurements
-    // before modifying scrollTop (prevents the browser from painting intermediate state)
-    void container.scrollHeight;
 
     // Strategy 1: Element-based anchoring (preferred — immune to async content)
     if (savedAnchor.firstVisibleMessageId) {
@@ -289,12 +250,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
         }
 
         savedAnchorRef.current = null;
-
-        // Restore styles in the next frame to avoid affecting other scroll operations
-        requestAnimationFrame(() => {
-          container.style.scrollBehavior = originalScrollBehavior;
-          (container.style as any).overflowAnchor = originalOverflowAnchor;
-        });
+        container.style.scrollBehavior = originalScrollBehavior;
         return;
       }
     }
@@ -307,40 +263,7 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
     }
 
     savedAnchorRef.current = null;
-
-    requestAnimationFrame(() => {
-      container.style.scrollBehavior = originalScrollBehavior;
-      (container.style as any).overflowAnchor = originalOverflowAnchor;
-    });
-  }, []);
-
-  /**
-   * Re-restores the scroll anchor after async content (like images) loads.
-   * This should be called when images finish loading to correct any drift.
-   */
-  const reRestoreScrollAnchor = useCallback(() => {
-    const container = scrollContainerRef.current;
-    const savedAnchor = savedAnchorRef.current;
-    if (!container || !savedAnchor) return;
-
-    // Only re-restore if we still have a pending anchor (restore hasn't succeeded yet)
-    // and if the element-based anchor is still applicable
-    if (savedAnchor.firstVisibleMessageId) {
-      const messageElement = container.querySelector(
-        `[data-message-id="${savedAnchor.firstVisibleMessageId}"]`,
-      ) as HTMLElement | null;
-
-      if (messageElement) {
-        const containerRect = container.getBoundingClientRect();
-        const messageRect = messageElement.getBoundingClientRect();
-        const currentOffset = messageRect.top - containerRect.top;
-        const adjustment = currentOffset - savedAnchor.offsetFromTop;
-
-        if (Math.abs(adjustment) > 1) {
-          container.scrollTop += adjustment;
-        }
-      }
-    }
+    container.style.scrollBehavior = originalScrollBehavior;
   }, []);
 
   // ── Public API ──────────────────────────────────────────────────────────
@@ -359,7 +282,6 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
     scrollToMessage,
     saveScrollAnchor,
     restoreScrollAnchor,
-    reRestoreScrollAnchor,
     handleScroll,
   };
 }

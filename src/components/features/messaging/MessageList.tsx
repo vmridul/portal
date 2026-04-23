@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-} from "react";
+import React, { useRef, useCallback, useEffect, useLayoutEffect } from "react";
 import { MessageItem } from "./MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -116,36 +110,6 @@ export const MessageList = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [messageWindow.messages]);
 
-    // ── Re-restore scroll anchor after images load ────────────────────────
-    // Images load asynchronously after useLayoutEffect runs, which can cause
-    // scroll position drift. We listen for image load events and re-apply the
-    // scroll anchor if it's still pending.
-    useEffect(() => {
-      const container = scrollManager.scrollContainerRef.current;
-      if (!container) return;
-
-      const handleImageLoad = () => {
-        // Small delay to let all concurrent image loads settle
-        requestAnimationFrame(() => {
-          scrollManager.reRestoreScrollAnchor();
-        });
-      };
-
-      const images = container.querySelectorAll("img");
-      images.forEach((img) => {
-        if (!img.complete) {
-          img.addEventListener("load", handleImageLoad, { once: true });
-        }
-      });
-
-      return () => {
-        images.forEach((img) => {
-          img.removeEventListener("load", handleImageLoad);
-        });
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [messageWindow.messages]);
-
     // ── Auto-scroll on new messages in LIVE mode ──────────────────────────
     // Only scrolls when a genuinely NEW message arrives (tracked by ID),
     // not on every re-render. This prevents the scroll-to-bottom from
@@ -177,15 +141,11 @@ export const MessageList = React.memo(
     // The search bar in TopBar sets jumpedMessageId in the UI store.
     // We need to trigger the full jumpToMessage flow (fetch window + scroll).
     const { jumpedMessageId, setJumpedMessageId } = useUIStore();
-    const hasHandledJumpRef = useRef<string | null>(null);
 
     useEffect(() => {
       if (!jumpedMessageId) return;
-      if (hasHandledJumpRef.current === jumpedMessageId) return;
 
-      hasHandledJumpRef.current = jumpedMessageId;
       messageWindow.jumpToMessage(jumpedMessageId);
-
       // Clear the store value so subsequent searches with the same ID still work
       setJumpedMessageId(null);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -321,7 +281,7 @@ export const MessageList = React.memo(
             {/* Spacer pushes messages to the bottom when there are few of them */}
             <div className="flex-1" />
 
-            {/* ── Top loading spinner (older messages) ────────────── */}
+            {/* ── Top loading indicator (older messages) ────────────── */}
             {messageWindow.isLoadingOlder && (
               <div className="flex items-center justify-center py-4">
                 <div className="flex gap-1">

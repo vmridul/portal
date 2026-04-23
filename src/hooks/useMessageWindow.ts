@@ -17,20 +17,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
-import type { MessageWithSender } from "@/lib/types";
+import type { MessageWithSender, WindowMode } from "@/lib/types";
+import { PAGINATION_CONFIG } from "@/lib/constants/config";
 
-// ─── Configuration ────────────────────────────────────────────────────────────
-
-const CONFIG = {
-  MESSAGES_PER_PAGE: 50, // Balances load time vs scroll frequency — 50 fits ~2 screens
-  MAX_WINDOW_SIZE: 150, // Beyond this, DOM rendering starts degrading on mid-range devices
-  NEAR_BOTTOM_THRESHOLD: 100, // px — user must be within this range to auto-scroll on new messages
-  HIGHLIGHT_DURATION_MS: 2000, // How long the yellow highlight persists after jump-to-message
-} as const;
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export type WindowMode = "LIVE" | "HISTORY" | "JUMPING";
+const CONFIG = PAGINATION_CONFIG;
 
 interface ChannelAnchor {
   messageId: string;
@@ -79,7 +69,7 @@ export function useMessageWindow(
   // We cannot conditionally call hooks, so this subscription always runs.
   const liveQueryResult = useQuery(api.messages.subscribeLive, {
     conversation_id: conversationId,
-    limit: CONFIG.MESSAGES_PER_PAGE,
+    limit: CONFIG.messagesPerPage,
   });
 
   const liveMessages = useMemo(() => {
@@ -113,13 +103,13 @@ export function useMessageWindow(
     messageList: MessageWithSender[],
     evictFrom: "start" | "end",
   ): MessageWithSender[] {
-    if (messageList.length <= CONFIG.MAX_WINDOW_SIZE) {
+    if (messageList.length <= CONFIG.maxWindowSize) {
       return messageList;
     }
     if (evictFrom === "start") {
-      return messageList.slice(messageList.length - CONFIG.MAX_WINDOW_SIZE);
+      return messageList.slice(messageList.length - CONFIG.maxWindowSize);
     }
-    return messageList.slice(0, CONFIG.MAX_WINDOW_SIZE);
+    return messageList.slice(0, CONFIG.maxWindowSize);
   }
 
   // ── Transition: LIVE → HISTORY ──────────────────────────────────────────
@@ -162,10 +152,10 @@ export function useMessageWindow(
       const olderMessages = (await convexClient.query(api.messages.getBefore, {
         conversation_id: conversationId,
         before_creation_time: oldestMessage._creationTime,
-        limit: CONFIG.MESSAGES_PER_PAGE,
+        limit: CONFIG.messagesPerPage,
       })) as MessageWithSender[];
 
-      if (olderMessages.length < CONFIG.MESSAGES_PER_PAGE) {
+      if (olderMessages.length < CONFIG.messagesPerPage) {
         setCanLoadOlder(false);
       }
 
@@ -201,10 +191,10 @@ export function useMessageWindow(
       const newerMessages = (await convexClient.query(api.messages.getAfter, {
         conversation_id: conversationId,
         after_creation_time: newestMessage._creationTime,
-        limit: CONFIG.MESSAGES_PER_PAGE,
+        limit: CONFIG.messagesPerPage,
       })) as MessageWithSender[];
 
-      if (newerMessages.length < CONFIG.MESSAGES_PER_PAGE) {
+      if (newerMessages.length < CONFIG.messagesPerPage) {
         // Caught up to the live edge — transition back to LIVE
         setMode("LIVE");
         setCanLoadNewer(false);
@@ -239,7 +229,7 @@ export function useMessageWindow(
         const result = await convexClient.query(api.messages.getAround, {
           conversation_id: conversationId,
           target_message_id: messageId as Id<"messages">,
-          half_limit: Math.floor(CONFIG.MESSAGES_PER_PAGE / 2),
+          half_limit: Math.floor(CONFIG.messagesPerPage / 2),
         });
 
         const aroundMessages = result.messages as MessageWithSender[];
@@ -271,7 +261,7 @@ export function useMessageWindow(
         highlightTimerRef.current = setTimeout(() => {
           setHighlightedMessageId(null);
           highlightTimerRef.current = null;
-        }, CONFIG.HIGHLIGHT_DURATION_MS);
+        }, CONFIG.highlightDurationMs);
       } catch (error) {
         console.error("[useMessageWindow] jumpToMessage failed:", error);
         setMode("LIVE");

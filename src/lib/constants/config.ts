@@ -21,3 +21,23 @@ export const APP_CONFIG = {
 } as const;
 
 export const CONVEX_DEPLOYMENT = process.env.NEXT_PUBLIC_CONVEX_DEPLOYMENT;
+
+export const SCROLL_CONFIG = {
+  // px from bottom — within this range, user is considered "at bottom"
+  nearBottomThreshold: 100,
+  // px from top — when scrollTop drops below this, fire the onNearTop callback
+  nearTopThreshold: 300,
+  // ms to wait after a scroll-to-message before re-enabling scroll checks
+  scrollSettleDelayMs: 200,
+  // ms to debounce near-top / near-bottom callbacks
+  scrollCallbackDebounceMs: 150,
+} as const;
+
+export const PAGINATION_CONFIG = {
+  // Messages per page — balances load time vs scroll frequency
+  messagesPerPage: 50,
+  // Max messages in window — beyond this, DOM rendering degrades
+  maxWindowSize: 150,
+  // How long the yellow highlight persists after jump-to-message
+  highlightDurationMs: 2000,
+} as const;
