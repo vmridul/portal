@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { useKeyboardOffset } from "@/hooks/ui/useKeyboardOffset";
+
 import { useDropzone } from "react-dropzone";
 import TextareaAutosize from "react-textarea-autosize";
 import { validateFile, formatFileSize } from "@/lib/utils/file";
@@ -29,6 +29,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { PencilEdit01Icon } from "@hugeicons/core-free-icons";
+
 
 interface ChatInputBarProps {
   room_id: string;
@@ -80,14 +81,9 @@ export function ChatInputBar({
     }
   }, [editingMessage]);
 
-  const isMobile = useMemo(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(hover: none) and (pointer: coarse)").matches,
-    [],
-  );
 
-  useKeyboardOffset();
+
+
 
   const previewUrl = useMemo(() => {
     if (!upload.file) return null;
@@ -149,7 +145,7 @@ export function ChatInputBar({
         });
 
         setUpload((prev) => ({ ...prev, storageId }));
-      } catch (error: any) {
+      } catch (error: Error) {
         if (error.message !== "Upload aborted") {
           console.error(error);
           toast.error("File upload failed");
@@ -260,7 +256,7 @@ export function ChatInputBar({
   ]);
 
   const onEmojiClick = useCallback(
-    (emojiData: any) => {
+    (emojiData: { emoji: string }) => {
       const emoji = emojiData.emoji;
       const textarea = inputRef.current;
       if (!textarea) return;
@@ -334,14 +330,7 @@ export function ChatInputBar({
     <div
       {...getRootProps()}
       className="flex flex-col z-[99] md:w-[50%] md:min-w-[400px] w-[80%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
-      style={
-        isMobile
-          ? {
-              transform: "translateY(calc(-1 * var(--keyboard-offset)))",
-              transition: "transform 0.2s ease-out",
-            }
-          : undefined
-      }
+
     >
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${upload.file ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"}`}
