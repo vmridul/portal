@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { MessageList } from "./MessageList";
-import { ChatInputBar } from "./ChatInputBar";
-import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
+import { MessageList } from "../MessageList";
+import { ChatInputBar } from "../ChatInputBar";
+import {
+  useMessageActions,
+  useTypingIndicators,
+} from "@/hooks/useMessageActions";
 import type { User } from "@/lib/types";
 import { MediaLightbox } from "@/components/shared/MediaLightbox";
-import { cn } from "@/lib/utils";
 
 interface ChatUIProps {
   type: "room" | "direct";
@@ -44,9 +46,7 @@ export function ChatUI({
   }, []);
 
   return (
-    <div
-      className="flex flex-col w-full h-full overflow-hidden"
-    >
+    <div className="flex flex-col w-full h-full overflow-hidden">
       <MediaLightbox />
 
       <div className="flex-1 relative min-h-0 overflow-hidden">

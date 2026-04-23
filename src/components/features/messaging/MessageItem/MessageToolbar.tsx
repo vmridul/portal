@@ -9,9 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { useToggleReaction } from "@/hooks/useToggleReaction";
 import { ReactionToolbar } from "./ReactionToolbar";
 
 interface MessageToolbarProps {
@@ -31,7 +29,7 @@ export const MessageToolbar = ({
 }: MessageToolbarProps) => {
   const [hoverCardOpen, setHoverCardOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const toggleReaction = useMutation(api.reactions.toggleReaction);
+  const toggleReaction = useToggleReaction();
 
   const handleCopy = () => {
     if (content) {
@@ -40,10 +38,7 @@ export const MessageToolbar = ({
   };
 
   const onReactionSelect = async (emoji: string) => {
-    await toggleReaction({
-      messageId: messageId as Id<"messages">,
-      emoji,
-    });
+    await toggleReaction(messageId, emoji);
     setHoverCardOpen(false);
   };
 

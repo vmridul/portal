@@ -1,7 +1,7 @@
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon } from "@hugeicons/core-free-icons";
-import { ChatEmojiPicker } from "./ChatEmojiPicker";
+import { ChatEmojiPicker } from "../EmojiPicker/index";
 
 interface ReactionToolbarProps {
   onSelect: (emoji: string) => void;
@@ -10,7 +10,10 @@ interface ReactionToolbarProps {
 
 const QUICK_REACTIONS = ["👍", "😂", "❤️", "😭"];
 
-export const ReactionToolbar = ({ onSelect, className }: ReactionToolbarProps) => {
+export const ReactionToolbar = ({
+  onSelect,
+  className,
+}: ReactionToolbarProps) => {
   return (
     <div
       className={`flex items-center gap-1 bg-theme-base border border-theme-border rounded-[8px] p-0.5 shadow-xl animate-in fade-in duration-400 ${className}`}
@@ -25,7 +28,6 @@ export const ReactionToolbar = ({ onSelect, className }: ReactionToolbarProps) =
           {emoji}
         </button>
       ))}
-
 
       <div className="reaction-picker-wrapper">
         <ChatEmojiPicker

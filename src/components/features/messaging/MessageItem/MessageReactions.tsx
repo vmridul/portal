@@ -1,7 +1,5 @@
 import React from "react";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { useToggleReaction } from "@/hooks/useToggleReaction";
 
 interface Reaction {
   _id: string;
@@ -52,20 +50,17 @@ export const MessageReactions = ({
   reactions,
   currentUserId,
 }: MessageReactionsProps) => {
-  const toggleReaction = useMutation(api.reactions.toggleReaction);
-
-  if (!reactions || reactions.length === 0) return null;
+  const toggleReaction = useToggleReaction();
 
   const groupedReactions = React.useMemo(
-    () => groupReactions(reactions, currentUserId),
+    () => groupReactions(reactions || [], currentUserId),
     [reactions, currentUserId],
   );
 
+  if (!reactions || reactions.length === 0) return null;
+
   const handleReactionClick = async (emoji: string) => {
-    await toggleReaction({
-      messageId: messageId as Id<"messages">,
-      emoji,
-    });
+    await toggleReaction(messageId, emoji);
   };
 
   return (
@@ -74,17 +69,10 @@ export const MessageReactions = ({
         <button
           key={emoji}
           onClick={() => handleReactionClick(emoji)}
-          className={`
-            flex items-center gap-1 px-2 py-1 rounded-md text-xs
-            ${
-              data.hasUserReacted
-                ? "bg-theme-accent-color text-white border border-transparent"
-                : "bg-theme-surface border border-theme-border  text-gray-400"
-            }
-          `}
+          className={`${data.hasUserReacted ? "bg-theme-accent-color text-white border border-transparent" : "bg-theme-surface border border-theme-border  text-gray-400"} flex items-center gap-1 px-2 py-0.5 rounded-md text-xs`}
           title={emoji}
         >
-          <span>{emoji}</span>
+          <span className="text-sm">{emoji}</span>
           {data.count > 0 && (
             <span
               className={data.hasUserReacted ? "text-white" : "text-gray-500"}

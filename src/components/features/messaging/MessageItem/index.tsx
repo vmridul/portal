@@ -9,7 +9,7 @@ import { getSenderAvatar, getDisplayName } from "@/lib/utils/avatar";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { File02Icon } from "@hugeicons/core-free-icons";
-import { VideoMessage } from "./VideoMessage";
+import { VideoMessage } from "../VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
 import { MessageReactions } from "./MessageReactions";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
@@ -34,10 +34,8 @@ export const MessageItem = React.memo(
   ({
     message,
     prevMessage,
-    nextMessage,
     user,
     isCurrentUser,
-    color,
     textColor,
     onPreviewMedia,
     onDeleteRequest,

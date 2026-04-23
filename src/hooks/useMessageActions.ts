@@ -24,6 +24,7 @@ interface UseMessageActionsResult {
   deleteMessage: (args: DeleteMessageArgs) => Promise<void>;
   clearUnreadCount: (conversation_id: string) => Promise<void>;
   generateUploadUrl: () => Promise<string>;
+  updateMessage: (args: { msg_id: Id<"messages">; content: string }) => Promise<void>;
 }
 
 export function useMessageActions(): UseMessageActionsResult {
@@ -31,6 +32,7 @@ export function useMessageActions(): UseMessageActionsResult {
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
   const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
   const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
+  const updateMessageMutation = useMutation(api.messages.updateMessage);
 
   const sendMessage = useCallback(
     async (args: SendMessageArgs) => {
@@ -65,11 +67,16 @@ export function useMessageActions(): UseMessageActionsResult {
     return generateUploadUrlMutation();
   }, [generateUploadUrlMutation]);
 
+  const updateMessage = useCallback(async (args: { msg_id: Id<"messages">; content: string }) => {
+    await updateMessageMutation(args);
+  }, [updateMessageMutation]);
+
   return {
     sendMessage,
     deleteMessage,
     clearUnreadCount,
     generateUploadUrl,
+    updateMessage,
   };
 }
 
