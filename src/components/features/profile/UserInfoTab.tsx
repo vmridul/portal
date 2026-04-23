@@ -1,5 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Upload01Icon, Moon02Icon, CopyIcon } from "@hugeicons/core-free-icons";
+import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -61,6 +62,7 @@ export const UserInfoTab = () => {
     deleteUserAccount,
   } = useUserProfileActions();
   const { awayUsers, setStatus } = usePresence();
+  const isAway = user?.user_id ? awayUsers.has(user.user_id.toString()) : false;
 
   useEffect(() => {
     setNewUsername(user?.username || "");
@@ -154,21 +156,7 @@ export const UserInfoTab = () => {
                 <div
                   className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
                 >
-                  {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
-                    <div className="flex w-full justify-center gap-1 items-center text-yellow-400 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                      <HugeiconsIcon
-                        icon={Moon02Icon}
-                        fill="currentColor"
-                        className="w-3 h-3 text-yellow-400"
-                      />
-                      <span className={``}>Away</span>
-                    </div>
-                  ) : (
-                    <div className="flex w-full justify-center gap-1 items-center text-green-500 bg-theme-border p-1 md:px-3 md:py-2 hover:bg-theme-hover rounded-[6px]">
-                      <div className="w-2 h-2 bg-green-600 rounded-full" />
-                      <span className={``}>Online</span>
-                    </div>
-                  )}
+<MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuPortal>

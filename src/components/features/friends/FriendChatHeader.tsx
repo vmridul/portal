@@ -18,6 +18,7 @@ import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useFriendActions } from "@/hooks";
 import type { ConvexFriend } from "@/hooks/useFriends";
+import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
 import { toast } from "sonner";
 
 interface FriendChatHeaderProps {
@@ -42,7 +43,13 @@ export function FriendChatHeader({
   const router = useRouter();
   const user = useUserStore((s) => s.user);
   const { removeFriend } = useFriendActions();
-  const { isSidebarOpen, sidebarTab, toggleSidebar, leftMobileMenu, setLeftMobileMenu } = useUIStore();
+  const {
+    isSidebarOpen,
+    sidebarTab,
+    toggleSidebar,
+    leftMobileMenu,
+    setLeftMobileMenu,
+  } = useUIStore();
 
   const handleRemoveFriend = async () => {
     if (friend?.friend?.user_id) {
@@ -55,6 +62,13 @@ export function FriendChatHeader({
       }
     }
   };
+
+  const isUserOnline = friend?.friend?.user_id
+    ? onlineUsers.has(friend.friend.user_id)
+    : false;
+  const isUserAway = friend?.friend?.user_id
+    ? awayUsers.has(friend.friend.user_id)
+    : false;
 
   return (
     <>
@@ -70,27 +84,20 @@ export function FriendChatHeader({
           className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
         />
         <div className="relative flex flex-1 items-center gap-3">
-          <Image
-            src={friend?.friend?.avatar || "@/assets/defaultAvatar.png"}
-            alt="pic"
-            width={28}
-            height={28}
-            unoptimized
-            className="w-7 h-7 rounded-[8px]"
-          />
-          {friend?.friend?.user_id &&
-          onlineUsers.has(friend.friend.user_id) ? (
-            <div className="absolute bottom-0 left-5 h-2 w-2 bg-green-500 border border-[#59ab44] rounded-full" />
-          ) : friend?.friend?.user_id &&
-            awayUsers.has(friend.friend.user_id) ? (
-            <HugeiconsIcon
-              icon={Moon02Icon}
-              fill="currentColor"
-              className="absolute text-yellow-400 left-5 bottom-0 w-[10px] h-[10px] opacity-90"
+          <div className="relative">
+            <Image
+              src={friend?.friend?.avatar || "@/assets/defaultAvatar.png"}
+              alt="pic"
+              width={28}
+              height={28}
+              unoptimized
+              className="w-7 h-7 rounded-[8px]"
             />
-          ) : (
-            <div className="absolute bottom-0 left-5 h-2 w-2 bg-gray-500 border border-[#858585] rounded-full" />
-          )}
+            <MemberStatusIndicator
+              isOnline={isUserOnline}
+              isAway={isUserAway}
+            />
+          </div>
           <UserProfilePopup
             user={{
               id: friend?.friend?.user_id || "",

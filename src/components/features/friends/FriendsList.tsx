@@ -2,7 +2,6 @@ import Image from "next/image";
 import { usePresence } from "@/contexts/presenceContext";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Moon02Icon,
   CallIcon,
   Search01Icon,
   UserAdd01Icon,
@@ -16,7 +15,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls } from "@/hooks";
 import { useRouter } from "next/navigation";
-
+import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
 type FriendItem = {
   id: string;
   last_msg?: string;
@@ -131,15 +130,11 @@ export default function FriendsList({
                         unoptimized
                         className="w-10 h-10 rounded-[12px]"
                       />
-                      {hasActiveCall ? (
-                        <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
-                      ) : isUserOnline ? (
-                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
-                      ) : isUserAway ? (
-                        <HugeiconsIcon icon={Moon02Icon} fill="currentColor" className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90" />
-                      ) : (
-                        <div className="absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
-                      )}
+{hasActiveCall ? (
+  <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
+) : (
+  <MemberStatusIndicator isOnline={isUserOnline} isAway={isUserAway} />
+)}
                     </div>
                     <div className="flex-1 flex flex-col min-w-0">
                       <div className="flex items-center justify-between">

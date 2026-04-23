@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Moon02Icon, Logout01Icon } from "@hugeicons/core-free-icons";
+import { Logout01Icon } from "@hugeicons/core-free-icons";
+import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -14,6 +15,7 @@ export const ProfileUI = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const isAway = user?.user_id ? awayUsers.has(user.user_id.toString()) : false;
   return (
     <div
       onClick={() => router.push("/portal/profile")}
@@ -30,15 +32,7 @@ export const ProfileUI = ({
             className="rounded-[12px] w-10 h-10"
           />
 
-          {user?.user_id && awayUsers.has(user?.user_id.toString()) ? (
-            <HugeiconsIcon
-              icon={Moon02Icon}
-              fill="currentColor"
-              className="absolute text-yellow-400 right-0 bottom-0 w-3 h-3 opacity-90"
-            />
-          ) : (
-            <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full"></div>
-          )}
+<MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
         </div>
         <div className="flex flex-col text-sm">
           <span className="truncate max-w-[120px]">

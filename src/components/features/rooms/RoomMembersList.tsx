@@ -1,39 +1,11 @@
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserIcon, Moon02Icon } from "@hugeicons/core-free-icons";
+import { UserIcon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 
-interface MemberStatusIndicatorProps {
-  isOnline: boolean;
-  isAway: boolean;
-}
-
-function MemberStatusIndicator({
-  isOnline,
-  isAway,
-}: MemberStatusIndicatorProps) {
-  if (isOnline) {
-    return (
-      <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
-    );
-  }
-
-  if (isAway) {
-    return (
-      <HugeiconsIcon
-        icon={Moon02Icon}
-        fill="currentColor"
-        className="absolute text-yellow-400 right-0 bottom-0 w-[10px] h-[10px] opacity-90"
-      />
-    );
-  }
-
-  return (
-    <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full" />
-  );
-}
+import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
 
 function getMemberAvatar(
   member: RoomMemberWithUser,

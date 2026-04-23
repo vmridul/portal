@@ -106,7 +106,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                         room_id,
                       });
                     }}
-                    className="px-3 py-2.5 text-sm text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2.5 text-sm text-red-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon
                       icon={isOwner ? Delete02Icon : UserRemove01Icon}
