@@ -162,8 +162,13 @@ export function ChatInputBar(props: ChatInputBarProps) {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               actions.onSend();
-            } else if (e.key === "Escape" && file.upload.file) {
-              // No editing mode handling in this component; UI store manages editing state.
+            } else if (e.key === "Escape") {
+              if (editing.message) {
+                e.preventDefault();
+                editing.onCancel();
+              } else if (file.upload.file) {
+                file.onCancel();
+              }
             }
           }}
           value={input.value}
