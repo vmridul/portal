@@ -4,7 +4,11 @@ import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import {
+  Tick01Icon,
+  Cancel01Icon,
+  Clock01Icon,
+} from "@hugeicons/core-free-icons";
 import {
   useFriendActions,
   type PendingRequest,
@@ -80,6 +84,24 @@ export default function PendingRequestMenu({
       open={pendingRequestMenu}
       onOpenChange={setPendingRequestMenu}
     >
+      <Popover.PopoverTrigger asChild>
+        <div className="flex items-center text-sm gap-1">
+          <button
+            onClick={() => {
+              setPendingRequestMenu(!pendingRequestMenu);
+            }}
+            className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
+          >
+            <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
+            <div
+              className={`${
+                pendingRequests.length > 0 ? "block" : "hidden"
+              } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
+                        `}
+            ></div>
+          </button>
+        </div>
+      </Popover.PopoverTrigger>
       <Popover.Anchor asChild>
         <div />
       </Popover.Anchor>

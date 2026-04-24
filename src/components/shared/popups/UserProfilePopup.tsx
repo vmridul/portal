@@ -6,6 +6,7 @@ import { getAvatarUrl } from "@/lib/utils/avatar";
 import { useFriendActions, useFriends } from "@/hooks";
 import { toast } from "sonner";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export interface User {
   id: string;
@@ -139,7 +140,6 @@ export function UserProfilePopup({
                 </div>
               )}
             </div>
-
             <div className="flex flex-col items-center gap-1">
               <h3 className="text-base font-semibold text-white truncate max-w-[200px]">
                 {user.username}
@@ -148,29 +148,31 @@ export function UserProfilePopup({
                 {formatJoinedDate(user.joinedAt)}
               </span>
             </div>
-
+            //TODO: add confirmation to remove sent req.
             {isFriend ? (
               <button
                 data-remove-friend
                 onClick={handleRemoveFriend}
                 disabled={isLoading}
-                className="w-full py-2 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                className="w-full py-2 px-4 rounded-lg bg-red-500/5 hover:bg-red-500/10 text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
               >
                 {isLoading ? "Removing..." : "Remove Friend"}
               </button>
             ) : hasSentRequest ? (
-              <div className="w-full py-2 px-4 rounded-lg bg-theme-hover text-gray-400 text-sm text-center">
+              <div className="w-full py-2 px-4 rounded-lg bg-theme-hover text-gray-300 text-sm text-center">
                 Request Sent
               </div>
             ) : (
-              <button
+              <Button
                 data-friend-request
                 onClick={handleSendRequest}
                 disabled={isLoading}
-                className="w-full py-2 px-4 rounded-lg bg-theme-hover hover:bg-theme-hover/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-200 text-sm"
+                variant="other"
+                size="md"
+                className="w-full"
               >
                 {isLoading ? "Sending..." : "Send Friend Request"}
-              </button>
+              </Button>
             )}
           </div>
         </Popover.Content>

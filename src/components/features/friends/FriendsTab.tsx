@@ -47,28 +47,13 @@ export default function FriendsTab() {
             </button>
             <h1 className="text-md font-semibold">Portal</h1>
           </div>
-          <div className="flex items-center text-sm gap-1">
-            <button
-              onClick={() => {
-                setPendingRequestMenu(!pendingRequestMenu);
-              }}
-              className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
-            >
-              <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
-              <div
-                className={`${
-                  pendingRequests.length > 0 ? "block" : "hidden"
-                } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
-                `}
-              ></div>
-            </button>
+          <div>
+            <PendingRequestMenu
+              pendingRequests={pendingRequests}
+              sentRequests={sentRequests}
+            />
           </div>
         </div>
-
-        <PendingRequestMenu
-          pendingRequests={pendingRequests}
-          sentRequests={sentRequests}
-        />
 
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <div className="min-h-0 flex-1 overflow-hidden">

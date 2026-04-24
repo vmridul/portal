@@ -1,9 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/useUserStore";
-import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 import FriendsTab from "@/components/features/friends/FriendsTab";
-import NotificationTab from "@/components/features/notifications/NotificationTab";
 import { useCurrentUser } from "@/hooks";
 
 export default function Page() {
@@ -16,11 +14,5 @@ export default function Page() {
     }
   }, [profile, setUser]);
 
-  return (
-    <div className="flex h-[100dvh] overflow-hidden text-white">
-      <LeftSidebar className="w-64" />
-      <FriendsTab />
-      <NotificationTab />
-    </div>
-  );
+  return <FriendsTab />;
 }

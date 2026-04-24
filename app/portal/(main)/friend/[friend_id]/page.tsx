@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import LeftSidebar from "@/components/shared/layout/LeftSidebar";
-import NotificationTab from "@/components/features/notifications/NotificationTab";
 import { useFriends } from "@/hooks";
 import { FriendChatContent } from "@/components/features/friends/FriendChatContent";
 
@@ -42,15 +40,7 @@ function FriendPageContent() {
 
   if (checking) return null;
 
-  return (
-    <div className="flex h-[100dvh] overflow-hidden text-white">
-      <LeftSidebar className="w-64" />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <FriendChatContent />
-      </div>
-      <NotificationTab />
-    </div>
-  );
+  return <FriendChatContent />;
 }
 
 export default function Page() {
