@@ -162,7 +162,7 @@ export function FriendChatHeader({
             )}
           </div>
 
-          <DropdownMenu.Root>
+          <DropdownMenu.Root modal={false}>
             <DropdownMenu.Trigger asChild>
               <button className="flex items-center">
                 <HugeiconsIcon
@@ -179,7 +179,7 @@ export function FriendChatHeader({
               >
                 <DropdownMenu.Item
                   onClick={handleRemoveFriend}
-                  className="px-3 py-1 text-xs text-red-400 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  className="px-3 py-1 text-xs text-red-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={UserRemove01Icon} className="w-4 h-4" />
                   Remove Friend

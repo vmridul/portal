@@ -85,7 +85,11 @@ export const MessageToolbar = ({
       )}
 
       {(content || isCurrentUser) && (
-        <DropdownMenu.Root open={menuOpen} onOpenChange={setMenuOpen}>
+        <DropdownMenu.Root
+          modal={false}
+          open={menuOpen}
+          onOpenChange={setMenuOpen}
+        >
           <DropdownMenu.Trigger asChild>
             <button className="p-1.5 rounded-[6px] transition-colors hover:bg-theme-hover text-gray-400 hover:text-white">
               <HugeiconsIcon icon={MoreHorizontalIcon} className="w-4 h-4" />
@@ -96,7 +100,7 @@ export const MessageToolbar = ({
             <DropdownMenu.Content
               sideOffset={8}
               align="end"
-              className="w-auto min-w-[120px] bg-theme-base border border-theme-border rounded-[8px] z-[100] animate-in fade-in duration-100 outline-none"
+              className="w-auto min-w-[120px] pointer-events-auto bg-theme-base border border-theme-border rounded-[8px] z-[100] animate-in fade-in duration-100 outline-none"
             >
               {content && (
                 <DropdownMenu.Item

@@ -2,7 +2,7 @@
 
 import { useNotifications, useNotificationActions } from "@/hooks";
 import { useNotificationHandlers } from "./useNotificationHandlers";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { NotificationToast } from "./NotificationToast";
 import { useNewNotifications } from "./useNewNotifications";
@@ -13,10 +13,11 @@ import { useActiveConversationId } from "@/hooks/useActiveConversationId";
  * and ensuring they are marked as read on the backend.
  */
 export default function NotificationListener() {
-  const { notifications: convexNotifications } = useNotifications();
+  const { notifications: convexNotifications, isLoading } = useNotifications();
   const { markAsRead } = useNotificationActions();
   const { updatePreviousIds, getNewNotifications } = useNewNotifications();
   const activeConversationId = useActiveConversationId();
+  const isFirstRun = useRef(true);
 
   const notifications = useMemo(
     () => convexNotifications || [],
@@ -26,12 +27,17 @@ export default function NotificationListener() {
   const { openNotification, joinNotificationCall } = useNotificationHandlers();
 
   useEffect(() => {
-    if (convexNotifications === undefined) {
+    if (isLoading) {
       return;
     }
 
     // Process notifications to show toasts for new ones
     const notificationIds = notifications.map((n) => n.id);
+    if (isFirstRun.current) {
+      updatePreviousIds(notificationIds);
+      isFirstRun.current = false;
+      return;
+    }
     const newNotificationIds = getNewNotifications(notificationIds);
 
     // Mark all current notifications as "seen" to prevent duplicate toasts
@@ -90,6 +96,7 @@ export default function NotificationListener() {
   }, [
     notifications,
     convexNotifications,
+    isLoading,
     markAsRead,
     openNotification,
     joinNotificationCall,
