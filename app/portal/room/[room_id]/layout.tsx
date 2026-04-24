@@ -7,7 +7,7 @@ import React from "react";
 import LeftSidebar from "@/components/shared/layout/LeftSidebar";
 
 import { useUIStore } from "@/store/uiStore";
-import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
+import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const params = useParams();
@@ -17,13 +17,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <section className="flex h-screen overflow-hidden">
       <div className="flex-1 flex">
-        <LeftSidebar className="w-64 flex-shrink-0" showPortalSkeletons={false} />
+        <LeftSidebar
+          className="w-64 flex-shrink-0"
+          showPortalSkeletons={false}
+        />
         <div className="flex flex-col flex-1 min-w-0 bg-theme-base overflow-hidden relative">
           <TopBar room_id={room_id} />
           <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 overflow-hidden relative">
-              {children}
-            </div>
+            <div className="flex-1 overflow-hidden relative">{children}</div>
             {isSidebarOpen && <DetailsSidebar id={room_id} type="room" />}
           </div>
         </div>

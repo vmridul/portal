@@ -11,7 +11,7 @@ import {
   MoreVerticalIcon,
 } from "@hugeicons/core-free-icons";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
-import { DetailsSidebar } from "@/components/shared/DetailsSidebar";
+import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { UserRemove01Icon } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
@@ -93,10 +93,7 @@ export function FriendChatHeader({
               unoptimized
               className="w-7 h-7 rounded-[8px]"
             />
-            <StatusIndicator
-              isOnline={isUserOnline}
-              isAway={isUserAway}
-            />
+            <StatusIndicator isOnline={isUserOnline} isAway={isUserAway} />
           </div>
           <UserProfilePopup
             user={{

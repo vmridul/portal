@@ -10,7 +10,7 @@ import {
   PencilEdit01Icon,
 } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
-import { ProgressCircle } from "@/components/shared/ProgressCircle";
+import { ProgressCircle } from "@/components/ui/ProgressCircle";
 import Image from "next/image";
 import { ChatEmojiPicker } from "../EmojiPicker";
 import { useChatInput } from "./useChatInput";

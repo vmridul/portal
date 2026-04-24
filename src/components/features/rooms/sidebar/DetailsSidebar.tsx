@@ -3,9 +3,9 @@
 import { useUIStore } from "@/store/uiStore";
 import { useRoom, useRoomMembers, useMediaFiles } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
-import { SidebarInfo } from "./sidebar/sidebar-info/SidebarInfo";
-import { SidebarMedia } from "./sidebar/sidebar-media/SidebarMedia";
-import { SidebarCalls } from "./sidebar/sidebar-calls/SidebarCalls";
+import { SidebarInfo } from "./sidebar-info/SidebarInfo";
+import { SidebarMedia } from "./sidebar-media/SidebarMedia";
+import { SidebarCalls } from "./sidebar-calls/SidebarCalls";
 
 interface DetailsSidebarProps {
   id: string;
@@ -18,7 +18,9 @@ export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
   const handleClose = () => setSidebarOpen(false);
   const { room, isLoading: isRoomLoading } = useRoom(id);
   const members = useRoomMembers(id);
-  const { mediaFiles, isLoading: isMediaLoading } = useMediaFiles({ conversationId: id });
+  const { mediaFiles, isLoading: isMediaLoading } = useMediaFiles({
+    conversationId: id,
+  });
   const user = useUserStore((s) => s.user);
 
   switch (sidebarTab) {
@@ -45,9 +47,9 @@ export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
       );
     case "calls":
       return (
-        <SidebarCalls 
-          roomId={id} 
-          conversationName={title} 
+        <SidebarCalls
+          roomId={id}
+          conversationName={title}
           onClose={handleClose}
         />
       );
