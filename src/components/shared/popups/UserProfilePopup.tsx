@@ -148,7 +148,7 @@ export function UserProfilePopup({
                 {formatJoinedDate(user.joinedAt)}
               </span>
             </div>
-            //TODO: add confirmation to remove sent req.
+            {/* TODO: add confirmation to remove sent req. */}
             {isFriend ? (
               <button
                 data-remove-friend

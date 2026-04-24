@@ -11,7 +11,6 @@ import {
   MoreVerticalIcon,
 } from "@hugeicons/core-free-icons";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
-import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { UserRemove01Icon } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
@@ -186,14 +185,6 @@ export function FriendChatHeader({
           </DropdownMenu.Root>
         </div>
       </div>
-
-      {isSidebarOpen && (
-        <DetailsSidebar
-          id={directConversationId}
-          type="direct"
-          title={friend?.friend?.username || "Direct Message"}
-        />
-      )}
     </>
   );
 }
