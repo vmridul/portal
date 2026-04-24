@@ -18,7 +18,7 @@ import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useFriendActions } from "@/hooks";
 import type { ConvexFriend } from "@/hooks/useFriends";
-import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
+import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { toast } from "sonner";
 
 interface FriendChatHeaderProps {
@@ -93,7 +93,7 @@ export function FriendChatHeader({
               unoptimized
               className="w-7 h-7 rounded-[8px]"
             />
-            <MemberStatusIndicator
+            <StatusIndicator
               isOnline={isUserOnline}
               isAway={isUserAway}
             />

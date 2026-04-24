@@ -1,15 +1,15 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon02Icon } from "@hugeicons/core-free-icons";
 
-interface MemberStatusIndicatorProps {
+interface StatusIndicatorProps {
   isOnline: boolean;
   isAway: boolean;
 }
 
-export function MemberStatusIndicator({
+export function StatusIndicator({
   isOnline,
   isAway,
-}: MemberStatusIndicatorProps) {
+}: StatusIndicatorProps) {
   if (isOnline) {
     return (
       <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />

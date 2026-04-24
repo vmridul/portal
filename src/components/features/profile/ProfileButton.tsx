@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Logout01Icon } from "@hugeicons/core-free-icons";
-import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
+import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
@@ -38,7 +38,7 @@ export const ProfileButton = ({
             className="rounded-[12px] w-10 h-10"
           />
 
-          <MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
+          <StatusIndicator isOnline={!isAway} isAway={isAway} />
         </div>
         <div className="flex flex-col text-sm">
           <span className="truncate max-w-[120px]">

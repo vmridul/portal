@@ -5,7 +5,7 @@ import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 
-import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
+import { StatusIndicator } from "@/components/ui/StatusIndicator";
 
 function getMemberAvatar(
   member: RoomMemberWithUser,
@@ -73,7 +73,7 @@ export const RoomMembersList = ({
                     unoptimized
                     className="w-10 h-10 rounded-[12px]"
                   />
-                  <MemberStatusIndicator
+                  <StatusIndicator
                     isOnline={isUserOnline}
                     isAway={isUserAway}
                   />

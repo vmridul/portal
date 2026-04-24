@@ -1,6 +1,6 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Upload01Icon, Moon02Icon, CopyIcon } from "@hugeicons/core-free-icons";
-import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
+import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -156,7 +156,7 @@ export const UserInfoTab = () => {
                 <div
                   className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
                 >
-                  <MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
+                  <StatusIndicator isOnline={!isAway} isAway={isAway} />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuPortal>

@@ -15,7 +15,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
+import { StatusIndicator } from "@/components/ui/StatusIndicator";
 type FriendItem = {
   id: string;
   last_msg?: string;
@@ -143,7 +143,7 @@ export default function FriendsList({
                           className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4"
                         />
                       ) : (
-                        <MemberStatusIndicator
+                        <StatusIndicator
                           isOnline={isUserOnline}
                           isAway={isUserAway}
                         />
