@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { useFriends } from "@/hooks";
-import { FriendChatContent } from "@/components/features/friends/FriendChatContent";
+import { FriendPage } from "@/components/features/friends/FriendPage";
 
 function FriendPageContent() {
   const params = useParams();
@@ -40,7 +40,7 @@ function FriendPageContent() {
 
   if (checking) return null;
 
-  return <FriendChatContent />;
+  return <FriendPage />;
 }
 
 export default function Page() {

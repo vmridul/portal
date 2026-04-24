@@ -7,10 +7,10 @@ import { useFriends, useCalls } from "@/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useCallStore } from "@/store/callStore";
 import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
-import ActiveFriendPage from "./ActiveFriendPage";
+import FriendChatUI from "./FriendChatUI";
 import { FriendChatHeader } from "./FriendChatHeader";
 
-export function FriendChatContent() {
+export function FriendPage() {
   const params = useParams();
   const friendId = params.friend_id as string;
   const user = useUserStore((s) => s.user);
@@ -21,7 +21,9 @@ export function FriendChatContent() {
 
   const friend = friends.find((f) => f?.friend?.user_id === friendId);
   const directConversationId =
-    friendId && user?.user_id ? getDirectConversationId(friendId, user.user_id) : "";
+    friendId && user?.user_id
+      ? getDirectConversationId(friendId, user.user_id)
+      : "";
 
   return (
     <>
@@ -37,7 +39,7 @@ export function FriendChatContent() {
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 overflow-hidden relative">
           <Suspense fallback={<ChatSkeleton />}>
-            <ActiveFriendPage />
+            <FriendChatUI />
           </Suspense>
         </div>
       </div>

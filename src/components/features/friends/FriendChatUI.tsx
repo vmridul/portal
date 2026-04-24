@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import type { Id } from "@/convex/_generated/dataModel";
 
-export default function ActiveFriendPage() {
+export default function FriendChatUI() {
   const params = useParams();
   const friendId = params.friend_id as string | undefined;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
