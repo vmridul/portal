@@ -21,10 +21,10 @@ export function useNotificationHandlers() {
       } else {
         router.push(`/portal/room/${notification.sourceId}`);
       }
-      if (notification.notificationType === "call") {
-        setSidebarOpen(true);
-        setSidebarTab("calls");
-      }
+if (notification.notificationType === "call") {
+    setSidebarOpen(true);
+    setSidebarTab("calls");
+  }
       if (onAfterOpen) onAfterOpen();
     },
     [router, setSidebarOpen, setSidebarTab]

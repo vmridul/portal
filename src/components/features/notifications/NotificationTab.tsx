@@ -5,20 +5,12 @@ import { Notification01Icon } from "@hugeicons/core-free-icons";
 
 import { usePathname } from "next/navigation";
 
-
 import { useNotifications, useNotificationActions, useFriends } from "@/hooks";
 import { useRooms } from "@/contexts/roomContext";
 import { Skeleton } from "@/components/shared/skeletons/Skeleton";
-import { timeAgo } from "@/lib/utils/date";
-
-
-
 
 import { useNotificationHandlers } from "./useNotificationHandlers";
 import { NotificationCard } from "./NotificationCard";
-
-type NotificationItem = ReturnType<typeof useNotifications>["notifications"][number];
-
 
 export default function NotificationTab() {
   const [mobileMenu, setMobileMenu] = useState(false);

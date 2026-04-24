@@ -5,6 +5,7 @@ import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndica
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useUIStore } from "@/store/uiStore";
 
 export const ProfileUI = ({
   user,
@@ -16,9 +17,14 @@ export const ProfileUI = ({
   const router = useRouter();
   const pathname = usePathname();
   const isAway = user?.user_id ? awayUsers.has(user.user_id.toString()) : false;
+  const { setLeftMobileMenu } = useUIStore();
+
   return (
     <div
-      onClick={() => router.push("/portal/profile")}
+      onClick={() => {
+        router.push("/portal/profile");
+        setLeftMobileMenu?.(false);
+      }}
       className={`${/^\/portal\/profile$/.test(pathname) ? "bg-theme-hover" : ""} flex justify-between items-center cursor-pointer hover:bg-theme-hover ease-in-out rounded-xl w-60 px-2 py-2`}
     >
       <div className="flex gap-4 items-center">
@@ -32,7 +38,7 @@ export const ProfileUI = ({
             className="rounded-[12px] w-10 h-10"
           />
 
-<MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
+          <MemberStatusIndicator isOnline={!isAway} isAway={isAway} />
         </div>
         <div className="flex flex-col text-sm">
           <span className="truncate max-w-[120px]">
@@ -49,7 +55,9 @@ export const ProfileUI = ({
         icon={Logout01Icon}
         onClick={(e) => {
           e.stopPropagation();
-          import("@/store/uiStore").then(m => m.useUIStore.getState().setModal("LOGOUT"));
+          import("@/store/uiStore").then((m) =>
+            m.useUIStore.getState().setModal("LOGOUT"),
+          );
         }}
         className="w-4 h-4 mr-1 text-white hover:text-gray-200 cursor-pointer"
       />

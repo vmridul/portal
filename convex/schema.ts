@@ -79,7 +79,7 @@ messages: defineTable({
     notification_type: v.optional(v.union(v.literal("message"), v.literal("call"))),
     call_id: v.optional(v.id("calls")),
     call_status: v.optional(v.union(v.literal("active"), v.literal("ended"))),
-    toast_shown: v.optional(v.boolean()),
+    sidebar_read: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_message_id", ["message_id"])

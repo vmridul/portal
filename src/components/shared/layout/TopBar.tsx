@@ -9,10 +9,8 @@ import {
   CallIcon,
 } from "@hugeicons/core-free-icons";
 import { formatToIST } from "@/lib/utils/date";
-import { useColor } from "@/contexts/colorContext";
-import { useRoom, useRoomMembers, useCalls } from "@/hooks";
+import { useRoomMembers, useCalls } from "@/hooks";
 import { useSearchMessages } from "@/hooks";
-import { useUserStore } from "@/store/useUserStore";
 import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 
 import { useUIStore } from "@/store/uiStore";
@@ -26,16 +24,14 @@ interface SearchResult {
 }
 
 export default function TopBar({ room_id }: { room_id: string }) {
-  const { room } = useRoom(room_id);
   const members = useRoomMembers(room_id);
   const { activeCalls } = useCalls(room_id);
   const { isJoined: isInCall, actualRoomId } = useCallStore();
   const [query, setQuery] = useState("");
-  const { results: searchResults, isLoading } = useSearchMessages({
+  const { results: searchResults } = useSearchMessages({
     conversationId: room_id,
     query,
   });
-  const user = useUserStore((s) => s.user);
   const searchRef = useRef<HTMLDivElement>(null);
   const {
     toggleSidebar,
@@ -49,15 +45,12 @@ export default function TopBar({ room_id }: { room_id: string }) {
   } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
-  const { color } = useColor();
 
   useOutsideClick(searchRef, () => {
     setQuery("");
   });
 
   const owner = members?.find((m) => m.role === "owner");
-  const ownerId = owner?.user_id ?? "";
-  const ownerName = owner?.Users?.username ?? "";
 
   const handleSearchClick = (index: number, id: string, sent_at: number) => {
     setSelectedResult(index);
@@ -76,7 +69,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
   return (
     <div className="h-12">
-      <div className="z-[60] relative text-white/60 text-sm px-2 md:px-3 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
+      <div className="z-[60] relative text-white/60 text-sm px-3 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
         <button
           onClick={(e) => {
             e.stopPropagation();

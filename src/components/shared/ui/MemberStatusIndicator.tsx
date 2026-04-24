@@ -12,7 +12,7 @@ export function MemberStatusIndicator({
 }: MemberStatusIndicatorProps) {
   if (isOnline) {
     return (
-      <div className="z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
+      <div className="absolute right-0 bottom-0 w-2 h-2 bg-green-500 rounded-full" />
     );
   }
 

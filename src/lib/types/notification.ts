@@ -25,7 +25,7 @@ export interface NotificationItem {
   senderAvatar?: string;
   message: string;
   createdAt: number;
-  shouldShowToast?: boolean;
+  isRead: boolean;
 }
 
 export type { MessageSourceType };

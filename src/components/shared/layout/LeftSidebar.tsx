@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserAdd01Icon, Add01Icon, Home01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import {
+  UserAdd01Icon,
+  Add01Icon,
+  Home01Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -15,7 +20,6 @@ import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
 import { useFriends } from "@/hooks";
 import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
-
 
 type LeftSidebarProps = {
   className?: string;
@@ -34,16 +38,15 @@ export default function LeftSidebar({
   const { rooms } = useRooms();
   const user = useUserStore((s) => s.user);
   const { awayUsers } = usePresence();
-  const {
-    setModal,
-    leftMobileMenu,
-    setLeftMobileMenu,
-  } = useUIStore();
+  const { setModal, leftMobileMenu, setLeftMobileMenu } = useUIStore();
   const { color, textColor } = useColor();
   const { friends } = useFriends();
   const [mounted, setMounted] = useState(false);
 
-  const totalFriendsUnread = friends.reduce((sum, f) => sum + (f.unread_count || 0), 0);
+  const totalFriendsUnread = friends.reduce(
+    (sum, f) => sum + (f.unread_count || 0),
+    0,
+  );
   const isOnFriendsPage = /^\/portal$/.test(pathname);
 
   useEffect(() => {
@@ -86,7 +89,10 @@ export default function LeftSidebar({
           ) : (
             <div className={`flex flex-col gap-1 mt-2 text-sm items-center`}>
               <button
-                onClick={() => router.push("/portal")}
+                onClick={() => {
+                  router.push("/portal");
+                  setLeftMobileMenu?.(false);
+                }}
                 className={`${isOnFriendsPage ? "bg-theme-hover text-white" : "bg-theme-surface text-gray-200"} ease-in-out  hover:bg-theme-hover hover:text-white duration-200 flex items-center px-3 gap-2 w-56 py-2 rounded-[8px]`}
               >
                 <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4`} />
@@ -180,10 +186,7 @@ export default function LeftSidebar({
             ) : (
               <>
                 <PersistentCallWidget />
-                <ProfileUI
-                  user={user}
-                  awayUsers={awayUsers}
-                />
+                <ProfileUI user={user} awayUsers={awayUsers} />
               </>
             )}
           </div>

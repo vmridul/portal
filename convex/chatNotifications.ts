@@ -38,7 +38,7 @@ export const getMessageNotifications = query({
               ? call?.allParticipants || call?.participants || []
               : [],
           createdAt: notification._creationTime,
-          shouldShowToast: !notification.toast_shown,
+          isRead: notification.sidebar_read ?? false,
         };
       }),
     );
@@ -60,7 +60,7 @@ export async function pruneOldNotifications(ctx: MutationCtx, userId: string) {
   }
 }
 
-export const markToastShown = mutation({
+export const markAsRead = mutation({
   args: { notification_id: v.id("chatNotifications") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -70,7 +70,7 @@ export const markToastShown = mutation({
     if (!notification) return;
     if (notification.user_id !== identity.subject) throw new Error("Unauthorized");
 
-    await ctx.db.patch(args.notification_id, { toast_shown: true });
+    await ctx.db.patch(args.notification_id, { sidebar_read: true });
   },
 });
 

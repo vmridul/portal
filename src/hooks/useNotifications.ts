@@ -17,13 +17,13 @@ export function useNotifications() {
 interface UseNotificationActionsResult {
   removeNotification: (notificationId: Id<"chatNotifications">) => Promise<void>;
   clearAllNotifications: () => Promise<void>;
-  markAsShown: (notificationId: Id<"chatNotifications">) => Promise<void>;
+  markAsRead: (notificationId: Id<"chatNotifications">) => Promise<void>;
 }
 
 export function useNotificationActions(): UseNotificationActionsResult {
   const removeNotificationMutation = useMutation(api.chatNotifications.removeNotification);
   const clearAllNotificationsMutation = useMutation(api.chatNotifications.clearAllNotifications);
-  const markToastShownMutation = useMutation(api.chatNotifications.markToastShown);
+  const markAsReadMutation = useMutation(api.chatNotifications.markAsRead);
 
   const removeNotification = useCallback(
     async (notificationId: Id<"chatNotifications">) => {
@@ -39,16 +39,16 @@ export function useNotificationActions(): UseNotificationActionsResult {
     [clearAllNotificationsMutation]
   );
 
-  const markAsShown = useCallback(
+  const markAsRead = useCallback(
     async (notificationId: Id<"chatNotifications">) => {
-      await markToastShownMutation({ notification_id: notificationId });
+      await markAsReadMutation({ notification_id: notificationId });
     },
-    [markToastShownMutation]
+    [markAsReadMutation]
   );
 
   return {
     removeNotification,
     clearAllNotifications,
-    markAsShown,
+    markAsRead,
   };
 }

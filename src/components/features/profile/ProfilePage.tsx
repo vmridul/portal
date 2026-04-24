@@ -1,21 +1,42 @@
 "use client";
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { UserIcon, UserCircleIcon, Settings01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import {
+  UserIcon,
+  UserCircleIcon,
+  Settings01Icon,
+  Cancel01Icon,
+  Menu01Icon,
+} from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
 import { UserInfoTab } from "./UserInfoTab";
 import { PreferencesTab } from "./PreferencesTab";
+import { useUIStore } from "@/store/uiStore";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState("Info");
 
+  const { setLeftMobileMenu, leftMobileMenu } = useUIStore();
+
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex justify-between w-full md:px-2 px-7 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
-        <div className="ml-3 flex items-center w-full justify-between text-white/90">
+      <div className="flex justify-between w-full md:px-2 px-3 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
+        <div className="md:ml-3 flex items-center w-full justify-between text-white/90">
           <div className="flex gap-2 items-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLeftMobileMenu(!leftMobileMenu);
+              }}
+              className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
+            >
+              <HugeiconsIcon
+                icon={Menu01Icon}
+                className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`}
+              />
+            </button>
             <HugeiconsIcon icon={UserIcon} className="w-4 h-4" />
             <h1 className="text-md">Profile</h1>
           </div>
