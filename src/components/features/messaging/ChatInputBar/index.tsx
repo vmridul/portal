@@ -19,12 +19,11 @@ import type { ChatInputBarProps } from "./types";
 export function ChatInputBar(props: ChatInputBarProps) {
   const { room_id, type, color, textColor, scrollToBottom } = props;
 
-  const {
-    input,
-    file,
-    actions,
-    editing,
-  } = useChatInput({ room_id, type, scrollToBottom });
+  const { input, file, actions, editing } = useChatInput({
+    room_id,
+    type,
+    scrollToBottom,
+  });
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (files: File[]) => {
@@ -147,14 +146,14 @@ export function ChatInputBar(props: ChatInputBarProps) {
             const items = e.clipboardData.items;
             for (let i = 0; i < items.length; i++) {
               if (items[i].type.startsWith("image/")) {
-const clipboardFile = items[i].getAsFile();
-                  if (clipboardFile) {
-                    const validation = validateFile(clipboardFile);
-                    if (validation.valid) {
-                      file.onStart(clipboardFile);
-                    } else toast.error(validation.error);
-                    break;
-                  }
+                const clipboardFile = items[i].getAsFile();
+                if (clipboardFile) {
+                  const validation = validateFile(clipboardFile);
+                  if (validation.valid) {
+                    file.onStart(clipboardFile);
+                  } else toast.error(validation.error);
+                  break;
+                }
               }
             }
           }}

@@ -15,11 +15,12 @@ import { useRooms } from "@/contexts/roomContext";
 import { useUserStore } from "@/store/useUserStore";
 import { RoomsList } from "@/components/features/rooms/RoomsList";
 import { usePresence } from "@/contexts/presenceContext";
-import { ProfileUI } from "@/components/features/profile/ProfileUI";
+import { ProfileButton } from "@/components/features/profile/ProfileButton";
 import { useUIStore } from "@/store/uiStore";
 import { useColor } from "@/contexts/colorContext";
 import { useFriends } from "@/hooks";
 import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
+import { useActiveConversationId } from "@/hooks/useActiveConversationId";
 
 type LeftSidebarProps = {
   className?: string;
@@ -34,7 +35,7 @@ export default function LeftSidebar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const joinParam = searchParams.get("join");
-  const currentRoom = pathname.match(/\/portal\/room\/([^/]+)/)?.[1] || null;
+  const currentRoom = useActiveConversationId();
   const { rooms } = useRooms();
   const user = useUserStore((s) => s.user);
   const { awayUsers } = usePresence();
@@ -171,11 +172,7 @@ export default function LeftSidebar({
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                <RoomsList
-                  router={router}
-                  setMobileMenu={setLeftMobileMenu}
-                  currentRoom={currentRoom}
-                />
+                <RoomsList currentRoom={currentRoom} />
               </div>
             </div>
           )}
@@ -186,7 +183,7 @@ export default function LeftSidebar({
             ) : (
               <>
                 <PersistentCallWidget />
-                <ProfileUI user={user} awayUsers={awayUsers} />
+                <ProfileButton user={user} awayUsers={awayUsers} />
               </>
             )}
           </div>

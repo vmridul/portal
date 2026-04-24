@@ -4,6 +4,7 @@ import { RoomItem } from "./RoomItem";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Home01Icon } from "@hugeicons/core-free-icons";
 import { useVisibleActiveCalls } from "@/hooks";
+import { useUIStore } from "@/store/uiStore";
 
 interface RoomWithNested {
   room_id: string;
@@ -20,19 +21,15 @@ interface RoomWithNested {
 }
 
 interface RoomListProps {
-  router: ReturnType<typeof useRouter>;
-  setMobileMenu?: (value: boolean) => void;
   currentRoom?: string | number | null;
 }
 
-export const RoomsList = ({
-  router,
-  setMobileMenu,
-  currentRoom,
-}: RoomListProps) => {
+export const RoomsList = ({ currentRoom }: RoomListProps) => {
   const { rooms } = useRooms();
   const { activeCalls } = useVisibleActiveCalls();
   const activeCallRoomIds = new Set(activeCalls.map((call) => call.roomId));
+  const { setLeftMobileMenu } = useUIStore();
+  const router = useRouter();
 
   return (
     <>
@@ -40,11 +37,12 @@ export const RoomsList = ({
         {rooms.length === 0 ? (
           <div className="rounded-[14px] text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-              <HugeiconsIcon icon={Home01Icon} className="h-5 w-5 text-gray-400" />
+              <HugeiconsIcon
+                icon={Home01Icon}
+                className="h-5 w-5 text-gray-400"
+              />
             </div>
-            <p className="mt-4 text-xs text-gray-400">
-              No rooms yet
-            </p>{" "}
+            <p className="mt-4 text-xs text-gray-400">No rooms yet</p>{" "}
           </div>
         ) : (
           rooms.map((room: RoomWithNested) => {
@@ -53,12 +51,13 @@ export const RoomsList = ({
                 key={room?.Rooms?.room_id}
                 room={room}
                 router={router}
-                setMobileMenu={setMobileMenu}
+                setMobileMenu={setLeftMobileMenu}
                 currentRoom={currentRoom}
                 hasActiveCall={activeCallRoomIds.has(room.room_id)}
               />
             );
-          }))}
+          })
+        )}
       </div>
     </>
   );

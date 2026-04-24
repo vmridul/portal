@@ -1,7 +1,7 @@
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon } from "@hugeicons/core-free-icons";
-import { ChatEmojiPicker } from "../EmojiPicker/index";
+import { ChatEmojiPicker } from "../EmojiPicker";
 
 interface ReactionToolbarProps {
   onSelect: (emoji: string) => void;

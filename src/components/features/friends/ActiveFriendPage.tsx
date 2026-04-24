@@ -19,9 +19,10 @@ export default function ActiveFriendPage() {
   const user = useUserStore((s) => s.user);
   const { deleteMessage } = useMessageActions();
 
-  const conversationId = friendId && user?.user_id
-    ? getDirectConversationId(friendId, user.user_id)
-    : null;
+  const conversationId =
+    friendId && user?.user_id
+      ? getDirectConversationId(friendId, user.user_id)
+      : null;
 
   const onDelete = async () => {
     if (!messageToDelete) return;

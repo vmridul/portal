@@ -5,7 +5,7 @@ import { useNotificationHandlers } from "./useNotificationHandlers";
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { NotificationToast } from "./NotificationToast";
-import { useNewNotifications } from "@/hooks/useNewNotifications";
+import { useNewNotifications } from "./useNewNotifications";
 import { useActiveConversationId } from "@/hooks/useActiveConversationId";
 
 /**
@@ -17,10 +17,10 @@ export default function NotificationListener() {
   const { markAsRead } = useNotificationActions();
   const { updatePreviousIds, getNewNotifications } = useNewNotifications();
   const activeConversationId = useActiveConversationId();
-  
+
   const notifications = useMemo(
     () => convexNotifications || [],
-    [convexNotifications]
+    [convexNotifications],
   );
 
   const { openNotification, joinNotificationCall } = useNotificationHandlers();
@@ -31,31 +31,34 @@ export default function NotificationListener() {
     }
 
     // Process notifications to show toasts for new ones
-    const notificationIds = notifications.map(n => n.id);
+    const notificationIds = notifications.map((n) => n.id);
     const newNotificationIds = getNewNotifications(notificationIds);
-    
+
     // Mark all current notifications as "seen" to prevent duplicate toasts
     updatePreviousIds(notificationIds);
-    
+
     // Show toasts for any new notifications that aren't historical
     if (newNotificationIds.length > 0) {
       newNotificationIds.forEach((id) => {
         // Find the full notification object
-        const notification = notifications.find(n => n.id === id);
+        const notification = notifications.find((n) => n.id === id);
         if (!notification) return;
-        
+
         // Don't show toasts if:
         // 1. User is not viewing the conversation that the notification is from
         // 2. User is in the app (tab is focused)
         if (document.visibilityState !== "visible" || document.hidden) {
           return;
         }
-        
+
         // Don't show toast if user is currently viewing the conversation
-        if (activeConversationId && activeConversationId === notification.conversationId) {
+        if (
+          activeConversationId &&
+          activeConversationId === notification.conversationId
+        ) {
           return;
         }
-        
+
         // Show the toast
         toast.custom(
           () => (
@@ -74,10 +77,10 @@ export default function NotificationListener() {
           ),
           {
             id: notification.id,
-            duration: 5000,
-          }
+            duration: 4000,
+          },
         );
-        
+
         // Mark as read in the sidebar
         markAsRead(notification.id).catch((err) => {
           console.error("[NotificationListener] Failed to mark as read:", err);
@@ -92,7 +95,7 @@ export default function NotificationListener() {
     joinNotificationCall,
     activeConversationId,
     updatePreviousIds,
-    getNewNotifications
+    getNewNotifications,
   ]);
 
   return null;

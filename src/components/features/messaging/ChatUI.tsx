@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { MessageList } from "../MessageList";
-import { ChatInputBar } from "../ChatInputBar";
+import { MessageList } from "./MessageList";
+import { ChatInputBar } from "./ChatInputBar";
 import {
   useMessageActions,
   useTypingIndicators,
