@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mic02Icon, MicOff02Icon, CallEnd01Icon, CallIncoming01Icon } from "@hugeicons/core-free-icons";
+import {
+  Mic02Icon,
+  MicOff02Icon,
+  CallEnd01Icon,
+  CallIncoming01Icon,
+} from "@hugeicons/core-free-icons";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useCallStore } from "@/store/callStore";
@@ -11,7 +16,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUIStore } from "@/store/uiStore";
 import { useRooms } from "@/contexts/roomContext";
-import AvatarStack from "@/components/shared/AvatarStack";
+import AvatarStack from "@/components/ui/AvatarStack";
 
 interface Call {
   _id: Id<"calls">;
@@ -60,12 +65,15 @@ export default function ActiveCallPanel({
   const isCallJoined = callStoreJoined && activeCallId === call._id;
   const isThisCallConnecting = isConnecting && activeCallId === call._id;
   const hasOtherActiveSession =
-    !!activeCallId && activeCallId !== call._id && (callStoreJoined || isConnecting);
+    !!activeCallId &&
+    activeCallId !== call._id &&
+    (callStoreJoined || isConnecting);
   const activeError = activeCallId === call._id ? callError : null;
 
-  const participantProfiles = useQuery(api.users.getUsersByExternalIds, {
-    user_ids: call.participants
-  }) || [];
+  const participantProfiles =
+    useQuery(api.users.getUsersByExternalIds, {
+      user_ids: call.participants,
+    }) || [];
 
   // Synchronize participants with PeerJS client whenever the Convex list changes
   useEffect(() => {
@@ -92,7 +100,9 @@ export default function ActiveCallPanel({
     if (hasOtherActiveSession) {
       const roomData = rooms.find((r) => r.room_id === call.roomId);
       const resolvedConversationName =
-        conversationName || roomData?.Rooms?.room_name || "Unknown Conversation";
+        conversationName ||
+        roomData?.Rooms?.room_name ||
+        "Unknown Conversation";
       setModal("SWITCH_CALL", {
         newCallId: call._id,
         newRoomId: call.roomId,
@@ -175,8 +185,13 @@ export default function ActiveCallPanel({
           disabled={isThisCallConnecting || isCallJoined}
           className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-green-600 text-white transition-colors hover:bg-green-700 disabled:opacity-50"
         >
-          <HugeiconsIcon icon={CallIncoming01Icon} className={`w-4 h-4 ${isThisCallConnecting ? "animate-bounce" : ""}`} />
-          <span className="text-sm">{isThisCallConnecting ? "Connecting to call..." : "Join Call"}</span>
+          <HugeiconsIcon
+            icon={CallIncoming01Icon}
+            className={`w-4 h-4 ${isThisCallConnecting ? "animate-bounce" : ""}`}
+          />
+          <span className="text-sm">
+            {isThisCallConnecting ? "Connecting to call..." : "Join Call"}
+          </span>
         </button>
       </div>
     );
@@ -199,10 +214,15 @@ export default function ActiveCallPanel({
       <div className="flex gap-2">
         <button
           onClick={handleToggleMute}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
-            }`}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${
+            isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
+          }`}
         >
-          {isMuted ? <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />}
+          {isMuted ? (
+            <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" />
+          ) : (
+            <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />
+          )}
           <span className="text-sm">{isMuted ? "Unmute" : "Mute"}</span>
         </button>
         <button

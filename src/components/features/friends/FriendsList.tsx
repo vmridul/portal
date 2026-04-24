@@ -5,7 +5,7 @@ import {
   CallIcon,
   Search01Icon,
   UserAdd01Icon,
-  UserGroupIcon
+  UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
@@ -15,7 +15,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls } from "@/hooks";
 import { useRouter } from "next/navigation";
-import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
+import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
 type FriendItem = {
   id: string;
   last_msg?: string;
@@ -45,7 +45,9 @@ export default function FriendsList({
   const [mounted, setMounted] = useState(false);
   const user = useUserStore((state) => state.user);
   const { activeCalls } = useVisibleActiveCalls();
-  const activeCallConversationIds = new Set(activeCalls.map((call) => call.roomId));
+  const activeCallConversationIds = new Set(
+    activeCalls.map((call) => call.roomId),
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -70,7 +72,10 @@ export default function FriendsList({
             onClick={(e) => e.stopPropagation()}
             className="flex text-sm px-3 w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
           >
-            <HugeiconsIcon icon={Search01Icon} className="w-4 h-4 text-white/40" />
+            <HugeiconsIcon
+              icon={Search01Icon}
+              className="w-4 h-4 text-white/40"
+            />
             <input
               type="text"
               placeholder="Search friend"
@@ -123,18 +128,26 @@ export default function FriendsList({
                   >
                     <div className="relative">
                       <Image
-                        src={friend?.friend?.avatar || "/assets/defaultAvatar.png"}
+                        src={
+                          friend?.friend?.avatar || "/assets/defaultAvatar.png"
+                        }
                         alt=""
                         width={40}
                         height={40}
                         unoptimized
                         className="w-10 h-10 rounded-[12px]"
                       />
-{hasActiveCall ? (
-  <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
-) : (
-  <MemberStatusIndicator isOnline={isUserOnline} isAway={isUserAway} />
-)}
+                      {hasActiveCall ? (
+                        <HugeiconsIcon
+                          icon={CallIcon}
+                          className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4"
+                        />
+                      ) : (
+                        <MemberStatusIndicator
+                          isOnline={isUserOnline}
+                          isAway={isUserAway}
+                        />
+                      )}
                     </div>
                     <div className="flex-1 flex flex-col min-w-0">
                       <div className="flex items-center justify-between">
@@ -167,9 +180,14 @@ export default function FriendsList({
             </div>
           ) : (
             <div className="flex h-full mt-[30%] justify-center">
-              <div className={`${isLoading ? "hidden" : "block"} rounded-[14px] text-center`}>
+              <div
+                className={`${isLoading ? "hidden" : "block"} rounded-[14px] text-center`}
+              >
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-[12px] border border-theme-border bg-theme-base">
-                  <HugeiconsIcon icon={UserGroupIcon} className="h-5 w-5 text-gray-400" />
+                  <HugeiconsIcon
+                    icon={UserGroupIcon}
+                    className="h-5 w-5 text-gray-400"
+                  />
                 </div>
                 <p className="mt-4 text-xs text-gray-400">No friends yet</p>
               </div>

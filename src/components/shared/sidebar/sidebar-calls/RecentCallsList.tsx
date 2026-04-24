@@ -3,7 +3,7 @@
 import { useCallStore } from "@/store/callStore";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import AvatarStack from "@/components/shared/AvatarStack";
+import AvatarStack from "@/components/ui/AvatarStack";
 
 interface Call {
   participants: string[];
@@ -50,13 +50,14 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
   const callError = useCallStore((state) => state.error);
   const grouped = groupCallsByDate(calls);
 
-  const allParticipantIds = Array.from(new Set(
-    calls.flatMap(c => c.allParticipants || c.participants)
-  ));
+  const allParticipantIds = Array.from(
+    new Set(calls.flatMap((c) => c.allParticipants || c.participants)),
+  );
 
-  const participantProfiles = useQuery(api.users.getUsersByExternalIds, {
-    user_ids: allParticipantIds
-  }) || [];
+  const participantProfiles =
+    useQuery(api.users.getUsersByExternalIds, {
+      user_ids: allParticipantIds,
+    }) || [];
 
   if (calls.length === 0) return null;
 
@@ -72,7 +73,9 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
 
       {Object.entries(grouped).map(([date, dateCalls]) => (
         <div key={date} className="border-t border-theme-border/50">
-          <div className="px-3 py-2 text-xs font-bold text-gray-500">{date}</div>
+          <div className="px-3 py-2 text-xs font-bold text-gray-500">
+            {date}
+          </div>
           {dateCalls.map((call, idx) => (
             <div
               key={idx}
@@ -82,8 +85,10 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center">
                     <AvatarStack
-                      users={participantProfiles.filter(p =>
-                        (call.allParticipants || call.participants).includes(p.user_id)
+                      users={participantProfiles.filter((p) =>
+                        (call.allParticipants || call.participants).includes(
+                          p.user_id,
+                        ),
                       )}
                       size={24}
                       showCount

@@ -1,5 +1,5 @@
 "use client";
-import Room from "@/components/features/rooms/RoomChat";
+import Room from "@/components/features/rooms/RoomChatUI";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRoomMembers } from "@/hooks";
@@ -20,16 +20,18 @@ export default function Page({
 
   useEffect(() => {
     if (!isAuthLoaded) return;
-    
+
     if (!userId) {
       router.replace(`/`);
       return;
     }
 
     if (members !== undefined) {
-      const isMember = members.some((m: { user_id: string }) => m.user_id === userId);
+      const isMember = members.some(
+        (m: { user_id: string }) => m.user_id === userId,
+      );
       if (!isMember) {
-        router.replace('/portal');
+        router.replace("/portal");
       } else {
         setChecking(false);
       }

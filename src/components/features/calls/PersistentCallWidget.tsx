@@ -1,7 +1,11 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mic02Icon, MicOff02Icon, CallEnd01Icon } from "@hugeicons/core-free-icons";
+import {
+  Mic02Icon,
+  MicOff02Icon,
+  CallEnd01Icon,
+} from "@hugeicons/core-free-icons";
 import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";
@@ -9,10 +13,11 @@ import { useCallSessionActions, useCalls } from "@/hooks";
 import { memo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import AvatarStack from "@/components/shared/AvatarStack";
+import AvatarStack from "@/components/ui/AvatarStack";
 
 const PersistentCallWidget = () => {
-  const { isJoined, roomName, actualRoomId, callId, isMuted, toggleMute } = useCallStore();
+  const { isJoined, roomName, actualRoomId, callId, isMuted, toggleMute } =
+    useCallStore();
   const { setSidebarOpen, setSidebarTab } = useUIStore();
   const { leaveCurrentSession } = useCallSessionActions();
   const router = useRouter();
@@ -23,8 +28,8 @@ const PersistentCallWidget = () => {
       api.users.getUsersByExternalIds,
       activeCall
         ? {
-          user_ids: activeCall.participants,
-        }
+            user_ids: activeCall.participants,
+          }
         : "skip",
     ) || [];
 
@@ -74,12 +79,17 @@ const PersistentCallWidget = () => {
             e.stopPropagation();
             toggleMute();
           }}
-          className={`p-2 rounded-xl transition-all ${isMuted
-            ? "text-red-400 scale-110"
-            : "text-gray-300 hover:text-white"
-            }`}
+          className={`p-2 rounded-xl transition-all ${
+            isMuted
+              ? "text-red-400 scale-110"
+              : "text-gray-300 hover:text-white"
+          }`}
         >
-          {isMuted ? <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" /> : <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />}
+          {isMuted ? (
+            <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" />
+          ) : (
+            <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />
+          )}
         </button>
 
         <button

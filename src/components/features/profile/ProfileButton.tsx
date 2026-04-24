@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Logout01Icon } from "@hugeicons/core-free-icons";
-import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
+import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
 import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";

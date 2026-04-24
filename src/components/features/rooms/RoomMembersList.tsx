@@ -5,7 +5,7 @@ import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
 import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
 
-import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
+import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
 
 function getMemberAvatar(
   member: RoomMemberWithUser,

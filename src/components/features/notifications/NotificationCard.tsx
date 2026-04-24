@@ -6,7 +6,7 @@ import {
   Notification01Icon,
   HashtagIcon,
 } from "@hugeicons/core-free-icons";
-import AvatarStack from "@/components/shared/AvatarStack";
+import AvatarStack from "@/components/ui/AvatarStack";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { timeAgo } from "@/lib/utils/date";

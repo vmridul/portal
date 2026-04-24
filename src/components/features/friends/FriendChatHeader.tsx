@@ -18,7 +18,7 @@ import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useFriendActions } from "@/hooks";
 import type { ConvexFriend } from "@/hooks/useFriends";
-import { MemberStatusIndicator } from "@/components/shared/ui/MemberStatusIndicator";
+import { MemberStatusIndicator } from "@/components/ui/MemberStatusIndicator";
 import { toast } from "sonner";
 
 interface FriendChatHeaderProps {
