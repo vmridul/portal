@@ -210,44 +210,50 @@ export const UserInfoTab = () => {
           />
           <div className="flex flex-col gap-1 w-full">
             <span className="text-xs text-gray-300">Username</span>
-            <div className="flex gap-2">
-              <Input
-                className="md:w-[270px] w-full"
-                type="text"
-                onChange={(e) => setNewUsername(e.target.value)}
-                placeholder="Username"
-                minLength={3}
-                maxLength={16}
-                value={newUsername || ""}
-              />
-              <Button
-                disabled={newUsername === user?.username}
-                onClick={onChangeName}
-                variant="primary"
-              >
-                Save
-              </Button>
-            </div>
+            <Input
+              type="text"
+              onChange={(e) => setNewUsername(e.target.value)}
+              placeholder="Username"
+              minLength={3}
+              maxLength={16}
+              value={newUsername || ""}
+              rightElement={
+                <Button
+                  disabled={newUsername === user?.username}
+                  onClick={onChangeName}
+                  variant="primary"
+                >
+                  Save
+                </Button>
+              }
+            />
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-1 w-full mt-5">
+      <div className="w-full flex flex-col gap-1 mt-5">
         <span className="text-xs text-gray-300">User ID</span>
-        <div className="flex gap-2 w-full">
-          <Input className="flex-1" value={user?.user_id} disabled />
-          <Button
-            variant="other"
-            size="sm"
-            onClick={() => {
-              if (!user?.user_id) return;
-              toast.success("User ID copied to clipboard");
-              navigator.clipboard.writeText(user?.user_id || "");
-            }}
-          >
-            <HugeiconsIcon icon={CopyIcon} className="w-4 h-4" />
-          </Button>
-        </div>
+
+        <Input
+          className=""
+          value={user?.user_id}
+          rightElement={
+            <Button
+              variant="ghost"
+              size="iconMd"
+              className="mr-1"
+              onClick={() => {
+                if (!user?.user_id) return;
+                toast.success("User ID copied to clipboard");
+                navigator.clipboard.writeText(user?.user_id || "");
+              }}
+            >
+              <HugeiconsIcon icon={CopyIcon} className="w-4 h-4" />
+            </Button>
+          }
+          disabled
+        />
       </div>
+
       <div className="w-full flex flex-col gap-1 mt-5">
         <span className="text-xs text-gray-300">Email</span>
         <Input value={user?.email || ""} disabled />

@@ -18,7 +18,7 @@ export default function Page() {
   return (
     <div className="text-white flex h-screen overflow-hidden">
       <LeftSidebar className="w-64" />
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 h-screen">
         <ProfilePage />
       </div>
     </div>
