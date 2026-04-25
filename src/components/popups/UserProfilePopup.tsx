@@ -20,6 +20,8 @@ export interface UserProfilePopupProps {
   isFriend?: boolean;
   currentUserId?: string;
   children: React.ReactNode;
+  side?: "top" | "right" | "bottom" | "left";
+  align?: "start" | "center" | "end";
 }
 
 function getInitials(username: string): string {
@@ -44,6 +46,8 @@ export function UserProfilePopup({
   isFriend: isFriendProp,
   currentUserId,
   children,
+  side = "top",
+  align = "start",
 }: UserProfilePopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -102,12 +106,12 @@ export function UserProfilePopup({
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <span className="cursor-pointer hover:text-gray-300">{children}</span>
+        {children}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          side="top"
-          align="start"
+          side={side}
+          align={align}
           sideOffset={8}
           alignOffset={0}
           className="z-[9999] w-64 rounded-xl border border-theme-border bg-theme-surface animate-in fade-in duration-200"

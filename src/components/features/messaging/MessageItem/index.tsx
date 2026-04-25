@@ -134,14 +134,30 @@ export const MessageItem = React.memo(
             className={`flex gap-2 ${showMeta ? "mt-3" : "pt-[0]"} flex-row`}
           >
             {showMeta ? (
-              <Image
-                src={senderAvatar}
-                width={40}
-                height={40}
-                unoptimized
-                alt={message.sender?.username || "User"}
-                className="w-10 h-10 rounded-[12px] flex-shrink-0"
-              />
+              <UserProfilePopup
+                user={{
+                  id: message.sender_id,
+                  username: displayName,
+                  avatarUrl: senderAvatar,
+                  joinedAt: message.sender?._creationTime
+                    ? new Date(message.sender._creationTime).toISOString()
+                    : new Date().toISOString(),
+                }}
+                currentUserId={user?.user_id}
+                side="right"
+                align="start"
+              >
+                <div className={`flex-shrink-0 w-10 h-10 rounded-[12px] ${!isCurrentUser ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}>
+                  <Image
+                    src={senderAvatar}
+                    width={40}
+                    height={40}
+                    unoptimized
+                    alt={message.sender?.username || "User"}
+                    className="w-10 h-10 rounded-[12px]"
+                  />
+                </div>
+              </UserProfilePopup>
             ) : (
               <div className="w-10" />
             )}
@@ -159,8 +175,10 @@ export const MessageItem = React.memo(
                         : new Date().toISOString(),
                     }}
                     currentUserId={user?.user_id}
+                    side="top"
+                    align="start"
                   >
-                    <span className="text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left">
+                    <span className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left ${!isCurrentUser ? 'cursor-pointer' : ''}`}>
                       {displayName}
                     </span>
                   </UserProfilePopup>

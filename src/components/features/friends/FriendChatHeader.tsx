@@ -82,34 +82,36 @@ export function FriendChatHeader({
           onClick={() => router.push("/portal")}
           className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
         />
-        <div className="relative flex flex-1 items-center gap-3">
-          <div className="relative">
-            <Image
-              src={friend?.friend?.avatar || "@/assets/defaultAvatar.png"}
-              alt="pic"
-              width={28}
-              height={28}
-              unoptimized
-              className="w-7 h-7 rounded-[8px]"
-            />
-            <StatusIndicator isOnline={isUserOnline} isAway={isUserAway} />
-          </div>
-          <UserProfilePopup
-            user={{
-              id: friend?.friend?.user_id || "",
-              username: friend?.friend?.username || "",
-              avatarUrl: friend?.friend?.avatar,
-              joinedAt: friend?._creationTime
-                ? new Date(friend._creationTime).toISOString()
-                : new Date().toISOString(),
-            }}
-            currentUserId={user?.user_id}
-          >
-            <span className="text-white/80 text-sm hover:text-white cursor-pointer transition-colors">
+        <UserProfilePopup
+          user={{
+            id: friend?.friend?.user_id || "",
+            username: friend?.friend?.username || "",
+            avatarUrl: friend?.friend?.avatar,
+            joinedAt: friend?._creationTime
+              ? new Date(friend._creationTime).toISOString()
+              : new Date().toISOString(),
+          }}
+          currentUserId={user?.user_id}
+          side="bottom"
+          align="start"
+        >
+          <div className="relative flex flex-1 items-center gap-3 cursor-pointer group w-fit">
+            <div className="relative">
+              <Image
+                src={friend?.friend?.avatar || "@/assets/defaultAvatar.png"}
+                alt="pic"
+                width={28}
+                height={28}
+                unoptimized
+                className="w-7 h-7 rounded-[8px]"
+              />
+              <StatusIndicator isOnline={isUserOnline} isAway={isUserAway} />
+            </div>
+            <span className="text-white/80 text-sm group-hover:text-white transition-colors">
               {friend?.friend?.username}
             </span>
-          </UserProfilePopup>
-        </div>
+          </div>
+        </UserProfilePopup>
         <div className="flex items-center gap-2">
           <div
             onClick={(e) => {

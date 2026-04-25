@@ -61,46 +61,50 @@ export const RoomMembersList = ({
           const avatar = getMemberAvatar(member, user);
           const displayName = getMemberDisplayName(member, user);
 
+          const isCurrentUser = member?.Users?.user_id === user?.user_id;
+
           return (
-            <div className="text-sm ml-2 mb-3" key={member.user_id}>
-              <div className="flex gap-4 items-center">
-                <div className="relative">
-                  <Image
-                    src={avatar}
-                    alt="Avatar"
-                    width={30}
-                    height={30}
-                    unoptimized
-                    className="w-10 h-10 rounded-[12px]"
-                  />
-                  <StatusIndicator
-                    isOnline={isUserOnline}
-                    isAway={isUserAway}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <UserProfilePopup
-                    user={{
-                      id: member?.Users?.user_id || "",
-                      username: displayName,
-                      avatarUrl: member?.Users?.avatar,
-                      joinedAt: member?.Users?._creationTime
-                        ? new Date(member.Users._creationTime).toISOString()
-                        : new Date().toISOString(),
-                    }}
-                    currentUserId={user?.user_id}
-                  >
-                    <span className="truncate max-w-[150px]">
+            <div className="text-sm ml-2 mb-1" key={member.user_id}>
+              <UserProfilePopup
+                user={{
+                  id: member?.Users?.user_id || "",
+                  username: displayName,
+                  avatarUrl: member?.Users?.avatar,
+                  joinedAt: member?.Users?._creationTime
+                    ? new Date(member.Users._creationTime).toISOString()
+                    : new Date().toISOString(),
+                }}
+                currentUserId={user?.user_id}
+                side="left"
+                align="start"
+              >
+                <div className={`flex gap-4 items-center p-1 px-2 -ml-2 rounded-lg transition-colors ${!isCurrentUser ? "hover:bg-theme-border cursor-pointer group" : ""}`}>
+                  <div className="relative">
+                    <Image
+                      src={avatar}
+                      alt="Avatar"
+                      width={30}
+                      height={30}
+                      unoptimized
+                      className="w-10 h-10 rounded-[12px]"
+                    />
+                    <StatusIndicator
+                      isOnline={isUserOnline}
+                      isAway={isUserAway}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className={`truncate max-w-[150px] ${!isCurrentUser ? "group-hover:text-gray-100" : ""}`}>
                       {displayName}
                     </span>
-                  </UserProfilePopup>
-                  {member.role && (
-                    <span className="text-[#aaaaaa] font-extralight">
-                      {member.role}
-                    </span>
-                  )}
+                    {member.role && (
+                      <span className="text-[#aaaaaa] font-extralight">
+                        {member.role}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </UserProfilePopup>
             </div>
           );
         })}
