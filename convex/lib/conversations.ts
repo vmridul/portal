@@ -95,7 +95,11 @@ export async function updateConversationMetadata(
     const { mine, theirs } = await findFriendshipPair(db, senderId, friendId);
 
     if (mine) {
-      await db.patch(mine._id, { last_msg: preview, last_msg_sender: senderId, updated_at: timestamp });
+      await db.patch(mine._id, {
+        last_msg: preview,
+        last_msg_sender: senderId,
+        updated_at: timestamp,
+      });
     }
     if (theirs) {
       await db.patch(theirs._id, {
@@ -105,6 +109,4 @@ export async function updateConversationMetadata(
       });
     }
   }
-}
-
 }

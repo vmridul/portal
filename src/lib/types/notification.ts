@@ -12,6 +12,7 @@ export interface Notification {
   sender_name: string;
   sender_avatar?: string;
   message: string;
+  read_at?: number;
   _creationTime: number;
 }
 
@@ -25,6 +26,7 @@ export interface NotificationItem {
   senderAvatar?: string;
   message: string;
   createdAt: number;
+  readAt?: number;
   isRead: boolean;
 }
 

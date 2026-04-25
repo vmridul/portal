@@ -1,8 +1,7 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { memo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
 import type { UserRoom } from "@/lib/types/room";
-import { useColor } from "@/contexts/colorContext";
 
 interface RoomItemProps {
   room: UserRoom;
@@ -10,6 +9,7 @@ interface RoomItemProps {
   setMobileMenu?: (value: boolean) => void;
   currentRoom?: string | number | null;
   hasActiveCall?: boolean;
+  unreadCount?: number;
 }
 
 export const RoomItem = memo(function RoomItem({
@@ -18,14 +18,8 @@ export const RoomItem = memo(function RoomItem({
   setMobileMenu,
   currentRoom,
   hasActiveCall = false,
+  unreadCount = 0,
 }: RoomItemProps) {
-  const [mounted, setMounted] = useState(false);
-  const { color, textColor } = useColor();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const roomId = room?.Rooms?.room_id ?? room?.room_id ?? "";
   const roomName = room?.Rooms?.room_name ?? "";
 
@@ -36,17 +30,19 @@ export const RoomItem = memo(function RoomItem({
         setMobileMenu?.(false);
         router.push(`/portal/room/${roomId}`);
       }}
-      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === roomId &&
-        "bg-theme-hover"
-        }`}
-      key={roomId}
+      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${
+        currentRoom?.toString() === roomId && "bg-theme-hover"
+      }`}
     >
       <div className="relative flex-shrink-0">
         <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
           {roomName?.charAt(0).toUpperCase()}
         </div>
         {hasActiveCall && (
-          <HugeiconsIcon icon={CallIcon} className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4" />
+          <HugeiconsIcon
+            icon={CallIcon}
+            className="rounded-full text-green-500 bg-theme-hover border border-theme-border p-0.5 absolute -right-1 bottom-0 h-4 w-4"
+          />
         )}
       </div>
 
@@ -56,6 +52,11 @@ export const RoomItem = memo(function RoomItem({
             <span className={`truncate max-w-[100px] text-white`}>
               {roomName}
             </span>
+            {unreadCount > 0 && (
+              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">

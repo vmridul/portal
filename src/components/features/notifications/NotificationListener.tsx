@@ -14,6 +14,7 @@ import { useActiveConversationId } from "@/hooks/useActiveConversationId";
  */
 export default function NotificationListener() {
   const { notifications: convexNotifications, isLoading } = useNotifications();
+  const { markConversationNotificationsRead } = useNotificationActions();
   const { updatePreviousIds, getNewNotifications } = useNewNotifications();
   const activeConversationId = useActiveConversationId();
   const isFirstRun = useRef(true);
@@ -24,6 +25,33 @@ export default function NotificationListener() {
   );
 
   const { openNotification, joinNotificationCall } = useNotificationHandlers();
+
+  useEffect(() => {
+    if (!activeConversationId || isLoading || notifications.length === 0) {
+      return;
+    }
+
+    const hasUnreadInActiveConversation = notifications.some(
+      (notification) =>
+        !notification.isRead &&
+        notification.conversationId === activeConversationId,
+    );
+
+    if (!hasUnreadInActiveConversation) {
+      return;
+    }
+
+    void markConversationNotificationsRead(activeConversationId).catch(
+      (error) => {
+        console.error(error);
+      },
+    );
+  }, [
+    activeConversationId,
+    isLoading,
+    notifications,
+    markConversationNotificationsRead,
+  ]);
 
   useEffect(() => {
     if (isLoading) {

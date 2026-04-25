@@ -8,8 +8,7 @@ import {
   toPreview,
   updateConversationMetadata,
 } from "./lib/conversations";
-import { pruneOldNotifications } from "./chatNotifications";
-
+import { createChatNotification } from "./chatNotifications";
 
 export const getAllMessages = query({
   args: {
@@ -59,8 +58,6 @@ export const getAllMessages = query({
     return result;
   },
 });
-
-
 
 export const searchMessages = query({
   args: { conversation_id: v.string(), query: v.string() },
@@ -142,7 +139,7 @@ export const sendMessage = mutation({
     if (args.conversation_type === "direct") {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
-        await ctx.db.insert("chatNotifications", {
+        await createChatNotification(ctx, {
           user_id: friendId,
           message_id: insertedMessageId,
           source_type: "direct",
@@ -155,8 +152,47 @@ export const sendMessage = mutation({
           message: notificationMessage,
           notification_type: "message",
         });
-        await pruneOldNotifications(ctx, friendId);
       }
+      return;
+    }
+
+    if (args.conversation_type === "room") {
+      const [room, members] = await Promise.all([
+        ctx.db
+          .query("rooms")
+          .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
+          .first(),
+        ctx.db
+          .query("roomMembers")
+          .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
+          .collect(),
+      ]);
+
+      const recipientIds = Array.from(
+        new Set(
+          members
+            .map((member) => member.user_id)
+            .filter((userId) => userId !== identity.subject),
+        ),
+      );
+
+      await Promise.all(
+        recipientIds.map(async (recipientId) => {
+          await createChatNotification(ctx, {
+            user_id: recipientId,
+            message_id: insertedMessageId,
+            source_type: "room",
+            source_id: args.conversation_id,
+            conversation_id: args.conversation_id,
+            source_name: room?.room_name || args.conversation_id,
+            sender_id: identity.subject,
+            sender_name: sender?.username || "Unknown user",
+            sender_avatar: sender?.avatar || "",
+            message: notificationMessage,
+            notification_type: "message",
+          });
+        }),
+      );
     }
   },
 });
@@ -287,7 +323,6 @@ export const getMedia = query({
     return result.filter((m) => m.file_url && m.type);
   },
 });
-
 
 // ─── Pagination Queries ───────────────────────────────────────────────────────
 //

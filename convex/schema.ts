@@ -39,24 +39,24 @@ export default defineSchema({
     .index("by_user_id", ["user_id"])
     .index("by_user_room", ["user_id", "room_id"]),
 
-messages: defineTable({
+  messages: defineTable({
     conversation_id: v.string(),
-    conversation_type: v.union(v.literal('room'), v.literal('direct')),
+    conversation_type: v.union(v.literal("room"), v.literal("direct")),
     sender_id: v.string(),
     sender_username: v.optional(v.string()),
     sender_avatar: v.optional(v.string()),
     content: v.union(v.string(), v.null()),
-    file_storage_id: v.optional(v.id('_storage')),
+    file_storage_id: v.optional(v.id("_storage")),
     file_url: v.union(v.string(), v.null()),
     type: v.union(v.string(), v.null()),
     file_name: v.union(v.string(), v.null()),
     file_size: v.optional(v.number()),
     edited: v.optional(v.boolean()),
   })
-    .index('by_conversation', ['conversation_id'])
-    .searchIndex('search_content', {
-      searchField: 'content',
-      filterFields: ['conversation_id'],
+    .index("by_conversation", ["conversation_id"])
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["conversation_id"],
     }),
 
   chatNotifications: defineTable({
@@ -70,13 +70,27 @@ messages: defineTable({
     sender_name: v.string(),
     sender_avatar: v.optional(v.string()),
     message: v.string(),
-    notification_type: v.optional(v.union(v.literal("message"), v.literal("call"))),
+    notification_type: v.optional(
+      v.union(v.literal("message"), v.literal("call")),
+    ),
     call_id: v.optional(v.id("calls")),
     call_status: v.optional(v.union(v.literal("active"), v.literal("ended"))),
+    read_at: v.optional(v.number()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_message_id", ["message_id"])
     .index("by_call_id", ["call_id"])
+    .index("by_user_conversation", ["user_id", "conversation_id"]),
+
+  unreadCounters: defineTable({
+    user_id: v.string(),
+    conversation_id: v.string(),
+    source_type: v.union(v.literal("room"), v.literal("direct")),
+    source_id: v.string(),
+    unread_count: v.number(),
+    updated_at: v.number(),
+  })
+    .index("by_user_id", ["user_id"])
     .index("by_user_conversation", ["user_id", "conversation_id"]),
 
   presence: defineTable({
@@ -106,10 +120,14 @@ messages: defineTable({
     endedAt: v.optional(v.number()),
     participants: v.array(v.string()),
     allParticipants: v.array(v.string()),
-    activePeerIds: v.optional(v.array(v.object({ 
-      userId: v.string(), 
-      peerId: v.string() 
-    }))),
+    activePeerIds: v.optional(
+      v.array(
+        v.object({
+          userId: v.string(),
+          peerId: v.string(),
+        }),
+      ),
+    ),
     initiatorId: v.string(),
     isActive: v.boolean(),
   })

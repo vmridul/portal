@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   UserAdd01Icon,
@@ -17,8 +17,7 @@ import { RoomsList } from "@/components/features/rooms/RoomsList";
 import { usePresence } from "@/contexts/presenceContext";
 import { ProfileButton } from "@/components/features/profile/ProfileButton";
 import { useUIStore } from "@/store/uiStore";
-import { useColor } from "@/contexts/colorContext";
-import { useFriends } from "@/hooks";
+import { useUnreadCounters } from "@/hooks";
 import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
 import { useActiveConversationId } from "@/hooks/useActiveConversationId";
 
@@ -40,14 +39,31 @@ export default function LeftSidebar({
   const user = useUserStore((s) => s.user);
   const { awayUsers } = usePresence();
   const { setModal, leftMobileMenu, setLeftMobileMenu } = useUIStore();
-  const { friends } = useFriends();
-  const [mounted, setMounted] = useState(false);
+  const { counters } = useUnreadCounters();
+
+  const unreadByRoomId = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const counter of counters) {
+      if (counter.sourceType !== "room" || counter.unreadCount <= 0) {
+        continue;
+      }
+      counts.set(counter.conversationId, counter.unreadCount);
+    }
+    return counts;
+  }, [counters]);
+
+  const directUnreadCount = useMemo(
+    () =>
+      counters.reduce((total, counter) => {
+        if (counter.sourceType === "direct" && counter.unreadCount > 0) {
+          return total + counter.unreadCount;
+        }
+        return total;
+      }, 0),
+    [counters],
+  );
 
   const isOnFriendsPage = /^\/portal$/.test(pathname);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   //open join dialog when path name have search params: join
   useEffect(() => {
@@ -93,7 +109,11 @@ export default function LeftSidebar({
               >
                 <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4`} />
                 <span>Friends</span>
-
+                {directUnreadCount > 0 && (
+                  <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                    {directUnreadCount > 99 ? "99+" : directUnreadCount}
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}
@@ -158,7 +178,10 @@ export default function LeftSidebar({
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
-                <RoomsList currentRoom={currentRoom} />
+                <RoomsList
+                  currentRoom={currentRoom}
+                  unreadByRoomId={unreadByRoomId}
+                />
               </div>
             </div>
           )}

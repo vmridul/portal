@@ -9,13 +9,18 @@ import {
 } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
-import { useVisibleActiveCalls, ConvexFriend } from "@/hooks";
+import {
+  useVisibleActiveCalls,
+  ConvexFriend,
+  useUnreadCounters,
+} from "@/hooks";
 import { useRouter } from "next/navigation";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { useColor } from "@/contexts/colorContext";
+import { useMemo } from "react";
 
 export default function FriendsList({
   friends,
@@ -29,16 +34,23 @@ export default function FriendsList({
   const { setPendingRequestMenu, setModal } = useUIStore();
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
-  const [mounted, setMounted] = useState(false);
   const user = useUserStore((state) => state.user);
   const { activeCalls } = useVisibleActiveCalls();
+  const { counters } = useUnreadCounters();
   const activeCallConversationIds = new Set(
     activeCalls.map((call) => call.roomId),
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const unreadByFriendId = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const counter of counters) {
+      if (counter.sourceType !== "direct" || counter.unreadCount <= 0) {
+        continue;
+      }
+      const friendId = counter.sourceId;
+      counts.set(friendId, (counts.get(friendId) ?? 0) + counter.unreadCount);
+    }
+    return counts;
+  }, [counters]);
 
   const filteredFriends = friends.filter((friend) => {
     return (friend?.friend?.username || "")
@@ -95,6 +107,9 @@ export default function FriendsList({
                   ? onlineUsers.has(friendId)
                   : false;
                 const isUserAway = friendId ? awayUsers.has(friendId) : false;
+                const unreadCount = friendId
+                  ? (unreadByFriendId.get(friendId) ?? 0)
+                  : 0;
                 const isLastMsgByMe = friend?.last_msg_sender === user?.user_id;
                 const lastMsgPreview = friend?.last_msg
                   ? isLastMsgByMe
@@ -140,7 +155,11 @@ export default function FriendsList({
                         <span className="text-white/90 text-sm truncate w-[80px]">
                           {friend?.friend?.username}
                         </span>
-
+                        {unreadCount > 0 && (
+                          <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                            {unreadCount > 99 ? "99+" : unreadCount}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#aaaaaa] text-xs truncate w-[80px]">
