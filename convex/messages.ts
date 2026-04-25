@@ -136,11 +136,9 @@ export const sendMessage = mutation({
       identity.subject,
       preview,
       now,
-      { incrementUnread: true },
     );
 
-    // Group notifications are now handled by the unread_count field in updateConversationMetadata.
-    // Individual activity records (chatNotifications) are reserved for direct messages.
+    // Notifications are handled by chatNotifications table.
     if (args.conversation_type === "direct") {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
@@ -203,7 +201,6 @@ export const deleteMessage = mutation({
       msg.sender_id,
       preview,
       timestamp,
-      { incrementUnread: false },
     );
   },
 });
@@ -247,7 +244,6 @@ export const updateMessage = mutation({
         msg.sender_id,
         preview,
         latestMsg._creationTime,
-        { incrementUnread: false },
       );
     }
   },

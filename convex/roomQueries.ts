@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { countUnreadMessages } from "./lib/conversations";
 
 export const getRoomDetails = query({
   args: { room_id: v.string() },
@@ -48,13 +49,14 @@ export const getUserRooms = query({
 
         const owner = allRoomMembers.find((m) => m.role === "owner");
 
+
         return {
           room_id: membership.room_id,
           Rooms: room,
           memberCount: allRoomMembers.length,
           owner_id: owner?.user_id || null,
           joined_at: membership._creationTime,
-          unread_count: membership.unread_count || 0,
+
           last_msg_preview: membership.last_msg_preview,
           last_msg_time: membership.last_msg_time,
           last_read_time: membership.last_read_time,

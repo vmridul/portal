@@ -40,14 +40,9 @@ export default function LeftSidebar({
   const user = useUserStore((s) => s.user);
   const { awayUsers } = usePresence();
   const { setModal, leftMobileMenu, setLeftMobileMenu } = useUIStore();
-  const { color, textColor } = useColor();
   const { friends } = useFriends();
   const [mounted, setMounted] = useState(false);
 
-  const totalFriendsUnread = friends.reduce(
-    (sum, f) => sum + (f.unread_count || 0),
-    0,
-  );
   const isOnFriendsPage = /^\/portal$/.test(pathname);
 
   useEffect(() => {
@@ -98,16 +93,7 @@ export default function LeftSidebar({
               >
                 <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4`} />
                 <span>Friends</span>
-                {mounted && totalFriendsUnread > 0 && (
-                  <div
-                    className="ml-auto flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex"
-                    style={{ backgroundColor: color, color: textColor }}
-                  >
-                    <span className="text-[8px] font-medium">
-                      {totalFriendsUnread > 99 ? "99+" : totalFriendsUnread}
-                    </span>
-                  </div>
-                )}
+
               </button>
               <button
                 onClick={() => setModal("CREATE_ROOM")}

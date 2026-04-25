@@ -10,7 +10,6 @@ import {
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import { useState, useEffect } from "react";
-import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls, ConvexFriend } from "@/hooks";
@@ -95,7 +94,6 @@ export default function FriendsList({
                   ? onlineUsers.has(friendId)
                   : false;
                 const isUserAway = friendId ? awayUsers.has(friendId) : false;
-                const unreadCount = friend?.unread_count || 0;
                 const isLastMsgByMe = friend?.last_msg_sender === user?.user_id;
                 const lastMsgPreview = friend?.last_msg
                   ? isLastMsgByMe
@@ -141,16 +139,7 @@ export default function FriendsList({
                         <span className="text-white/90 text-sm truncate w-[80px]">
                           {friend?.friend?.username}
                         </span>
-                        {mounted && unreadCount > 0 && (
-                          <div
-                            className="w-4 h-4 rounded-full items-center justify-center flex flex-shrink-0 mr-1"
-                            style={{ backgroundColor: color, color: textColor }}
-                          >
-                            <span className="text-[8px] font-medium">
-                              {unreadCount > 99 ? "99+" : unreadCount}
-                            </span>
-                          </div>
-                        )}
+
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-[#aaaaaa] text-xs truncate w-[80px]">

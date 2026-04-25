@@ -36,7 +36,6 @@ export interface ConvexFriend {
   last_msg_sender?: string;
   updated_at?: number;
   _creationTime: number;
-  unread_count: number;
   last_read_time?: number;
 }
 

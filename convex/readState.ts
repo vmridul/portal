@@ -26,8 +26,7 @@ export const markConversationRead = mutation({
       const currentReadTime = member.last_read_time ?? 0;
       if (args.read_until > currentReadTime) {
         await ctx.db.patch(member._id, { 
-          last_read_time: args.read_until,
-          unread_count: 0 
+          last_read_time: args.read_until
         });
       }
       return;
@@ -41,8 +40,7 @@ export const markConversationRead = mutation({
         const currentReadTime = mine.last_read_time ?? 0;
         if (args.read_until > currentReadTime) {
           await ctx.db.patch(mine._id, { 
-            last_read_time: args.read_until,
-            unread_count: 0
+            last_read_time: args.read_until
           });
         }
       }

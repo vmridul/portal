@@ -75,7 +75,16 @@ export const MessageList = React.memo(
         ? messageWindow.messages[messageWindow.messages.length - 1]._id
         : null;
 
-    // Call markAsRead with the latest message's creationTime when in LIVE mode
+    // ── Read Receipt Management ───────────────────────────────────────────
+    // 1. Force a read-receipt on mount/room-switch if there are messages
+    useEffect(() => {
+      if (messageWindow.messages.length > 0) {
+        const latestMessage = messageWindow.messages[messageWindow.messages.length - 1];
+        markAsRead(latestMessage._creationTime, true);
+      }
+    }, [conversationId]); // Only on room switch
+
+    // 2. Reactively mark as read when new messages arrive in LIVE mode
     useEffect(() => {
       if (messageWindow.mode !== "LIVE" || messageWindow.messages.length === 0) return;
       const latestMessage = messageWindow.messages[messageWindow.messages.length - 1];

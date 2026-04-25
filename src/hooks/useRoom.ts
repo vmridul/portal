@@ -17,7 +17,6 @@ export type ConvexRoomDetails = {
   memberCount?: number;
   owner_id?: string | null;
   joined_at?: number;
-  unread_count?: number;
 } | null;
 
 export interface UseRoomResult {

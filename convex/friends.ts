@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { countUnreadMessages, buildDirectConversationId } from "./lib/conversations";
 
 export const getFriends = query({
   args: {},
@@ -23,6 +24,8 @@ export const getFriends = query({
         const username = user?.username || f.friend_username || "Unknown";
         const avatar = user?.avatar || f.friend_avatar;
 
+        const conversationId = buildDirectConversationId(identity.subject, f.friend_id);
+
         return {
           id: f._id,
           friend: {
@@ -34,7 +37,7 @@ export const getFriends = query({
           last_msg_sender: f.last_msg_sender,
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
-          unread_count: f.unread_count || 0,
+
           last_read_time: f.last_read_time,
         };
       })

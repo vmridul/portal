@@ -1,8 +1,8 @@
 import React, { useState, useEffect, memo } from "react";
-import { useColor } from "@/contexts/colorContext";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
 import type { UserRoom } from "@/lib/types/room";
+import { useColor } from "@/contexts/colorContext";
 
 interface RoomItemProps {
   room: UserRoom;
@@ -20,7 +20,6 @@ export const RoomItem = memo(function RoomItem({
   hasActiveCall = false,
 }: RoomItemProps) {
   const [mounted, setMounted] = useState(false);
-  const unreadCount = room?.unread_count || 0;
   const { color, textColor } = useColor();
 
   useEffect(() => {
@@ -64,16 +63,6 @@ export const RoomItem = memo(function RoomItem({
             </span>
           </div>
         </div>
-        {mounted && unreadCount > 0 && currentRoom?.toString() !== roomId && (
-          <div
-            className="flex-shrink-0 w-4 h-4 rounded-full items-center justify-center flex"
-            style={{ backgroundColor: color, color: textColor }}
-          >
-            <span className="text-[8px] font-medium">
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

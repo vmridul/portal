@@ -84,7 +84,6 @@ export async function updateConversationMetadata(
   senderId: string,
   preview: string,
   timestamp: number,
-  opts: { incrementUnread: boolean },
 ) {
   if (conversationType === "room") {
     const members = await db
@@ -93,13 +92,9 @@ export async function updateConversationMetadata(
       .collect();
 
     for (const member of members) {
-      const isRecipient = member.user_id !== senderId && opts.incrementUnread;
       await db.patch(member._id, {
         last_msg_preview: preview,
         last_msg_time: timestamp,
-        unread_count: isRecipient 
-          ? (member.unread_count ?? 0) + 1 
-          : member.unread_count,
       });
     }
   } else {
@@ -116,10 +111,28 @@ export async function updateConversationMetadata(
         last_msg: preview,
         last_msg_sender: senderId,
         updated_at: timestamp,
-        unread_count: opts.incrementUnread 
-          ? (theirs.unread_count ?? 0) + 1 
-          : theirs.unread_count,
       });
     }
   }
+}
+
+/** 
+ * Derived unread count helper.
+ * Counts messages with _creationTime > lastReadTime.
+ * Optimized with take(limit) for UI badges.
+ */
+export async function countUnreadMessages(
+  db: DatabaseReader,
+  conversationId: string,
+  lastReadTime: number,
+  limit: number = 100,
+): Promise<number> {
+  const unread = await db
+    .query("messages")
+    .withIndex("by_conversation", (q) =>
+      q.eq("conversation_id", conversationId).gt("_creationTime", lastReadTime),
+    )
+    .take(limit);
+
+  return unread.length;
 }

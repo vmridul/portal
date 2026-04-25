@@ -13,24 +13,31 @@ export function useMarkAsRead(conversationId: string | null) {
   const lastSentRef = useRef<number>(0);
 
   const markAsRead = useCallback(
-    (readUntil: number) => {
+    (readUntil: number, force: boolean = false) => {
       if (!conversationId) return;
 
       // Skip if we'd send the same or smaller timestamp
-      if (readUntil <= lastSentRef.current) return;
+      if (readUntil <= lastSentRef.current && !force) return;
 
-      // Skip if tab is not visible
-      if (document.hidden || document.visibilityState !== "visible") return;
+      // Skip if tab is not visible, unless forced
+      if (!force && (document.hidden || document.visibilityState !== "visible")) return;
 
       // Debounce: cancel pending, schedule new
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
+
+      const performMutation = () => {
         lastSentRef.current = readUntil;
         markReadMutation({
           conversation_id: conversationId,
           read_until: readUntil,
         }).catch((e) => console.error("Failed to mark as read:", e));
-      }, 300);
+      };
+
+      if (force) {
+        performMutation();
+      } else {
+        timerRef.current = setTimeout(performMutation, 300);
+      }
     },
     [conversationId, markReadMutation],
   );

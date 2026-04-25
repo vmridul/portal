@@ -5,7 +5,6 @@ export interface UserRoom {
     room_name?: string;
     room_id?: string;
   } | null;
-  unread_count: number;
   owner_id?: string | null;
   joined_at?: number;
   last_msg_preview?: string;
