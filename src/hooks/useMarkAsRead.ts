@@ -6,11 +6,6 @@ import { useCallback, useEffect, useRef } from "react";
 
 /**
  * useMarkAsRead — the ONLY place that triggers marking a conversation as read.
- * 
- * Features:
- * - Debounced (300ms) to avoid spamming mutations during rapid message arrival
- * - Visibility-aware: only fires when the tab is focused AND visible
- * - Idempotent: backend ignores if readUntil <= current lastReadTime
  */
 export function useMarkAsRead(conversationId: string | null) {
   const markReadMutation = useMutation(api.readState.markConversationRead);
@@ -56,7 +51,8 @@ export function useMarkAsRead(conversationId: string | null) {
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [markAsRead]);
 
   return markAsRead;

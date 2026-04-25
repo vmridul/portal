@@ -21,7 +21,6 @@ export function RoomsProvider({
   user_id: string | null;
 }) {
   const { rooms: userRooms, isLoading: roomsLoading } = useUserRooms(user_id);
-  const unreadCountsQuery = useQuery(api.readState.getUnreadCounts);
 
   const { rooms, membersCount, isLoading } = useMemo(() => {
     if (!userRooms) return { rooms: [], membersCount: {}, isLoading: roomsLoading };
@@ -30,12 +29,7 @@ export function RoomsProvider({
     const roomsList = userRooms
       .map((r: UserRoom) => {
         countMap[r.room_id] = r.memberCount;
-        // Get the unread count from the new getUnreadCounts query
-        const unreadCount = unreadCountsQuery?.rooms?.[r.room_id] ?? 0;
-        return {
-          ...r,
-          unread_count: unreadCount
-        };
+        return r;
       })
       .sort((a: UserRoom, b: UserRoom) => {
         const timeA = a.last_msg_time ?? a.joined_at ?? 0;
@@ -44,7 +38,7 @@ export function RoomsProvider({
       });
 
     return { rooms: roomsList, membersCount: countMap, isLoading: roomsLoading };
-  }, [userRooms, unreadCountsQuery, roomsLoading]);
+  }, [userRooms, roomsLoading]);
 
   return (
     <RoomsContext.Provider

@@ -14,7 +14,6 @@ import { useActiveConversationId } from "@/hooks/useActiveConversationId";
  */
 export default function NotificationListener() {
   const { notifications: convexNotifications, isLoading } = useNotifications();
-  const { markAsRead } = useNotificationActions();
   const { updatePreviousIds, getNewNotifications } = useNewNotifications();
   const activeConversationId = useActiveConversationId();
   const isFirstRun = useRef(true);
@@ -57,10 +56,11 @@ export default function NotificationListener() {
           return;
         }
 
-        // Don't show toast if user is currently viewing the conversation
+        // Don't show toast if user is currently viewing the conversation or it's already read
         if (
-          activeConversationId &&
-          activeConversationId === notification.conversationId
+          (activeConversationId &&
+            activeConversationId === notification.conversationId) ||
+          notification.isRead
         ) {
           return;
         }
@@ -92,7 +92,6 @@ export default function NotificationListener() {
     notifications,
     convexNotifications,
     isLoading,
-    markAsRead,
     openNotification,
     joinNotificationCall,
     activeConversationId,

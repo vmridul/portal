@@ -139,36 +139,9 @@ export const sendMessage = mutation({
       { incrementUnread: true },
     );
 
-    if (args.conversation_type === "room") {
-      const room = await ctx.db
-        .query("rooms")
-        .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
-        .first();
-
-      const members = await ctx.db
-        .query("roomMembers")
-        .withIndex("by_room_id", (q) => q.eq("room_id", args.conversation_id))
-        .collect();
-
-      for (const member of members) {
-        if (member.user_id !== identity.subject) {
-          await ctx.db.insert("chatNotifications", {
-            user_id: member.user_id,
-            message_id: insertedMessageId,
-            source_type: "room",
-            source_id: args.conversation_id,
-            conversation_id: args.conversation_id,
-            source_name: room?.room_name || args.conversation_id,
-            sender_id: identity.subject,
-            sender_name: sender?.username || "Unknown user",
-            sender_avatar: sender?.avatar || "",
-            message: notificationMessage,
-            notification_type: "message",
-          });
-          await pruneOldNotifications(ctx, member.user_id);
-        }
-      }
-    } else {
+    // Group notifications are now handled by the unread_count field in updateConversationMetadata.
+    // Individual activity records (chatNotifications) are reserved for direct messages.
+    if (args.conversation_type === "direct") {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
         await ctx.db.insert("chatNotifications", {

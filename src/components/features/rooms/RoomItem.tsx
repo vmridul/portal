@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
@@ -12,7 +12,7 @@ interface RoomItemProps {
   hasActiveCall?: boolean;
 }
 
-export function RoomItem({
+export const RoomItem = memo(function RoomItem({
   room,
   router,
   setMobileMenu,
@@ -77,4 +77,4 @@ export function RoomItem({
       </div>
     </div>
   );
-}
+});

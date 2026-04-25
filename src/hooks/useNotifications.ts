@@ -17,13 +17,11 @@ export function useNotifications() {
 interface UseNotificationActionsResult {
   removeNotification: (notificationId: Id<"chatNotifications">) => Promise<void>;
   clearAllNotifications: () => Promise<void>;
-  markAsRead: (notificationId: Id<"chatNotifications">) => Promise<void>;
 }
 
 export function useNotificationActions(): UseNotificationActionsResult {
   const removeNotificationMutation = useMutation(api.chatNotifications.removeNotification);
   const clearAllNotificationsMutation = useMutation(api.chatNotifications.clearAllNotifications);
-  const markAsReadMutation = useMutation(api.chatNotifications.markAsRead);
 
   const removeNotification = useCallback(
     async (notificationId: Id<"chatNotifications">) => {
@@ -39,16 +37,9 @@ export function useNotificationActions(): UseNotificationActionsResult {
     [clearAllNotificationsMutation]
   );
 
-  const markAsRead = useCallback(
-    async (notificationId: Id<"chatNotifications">) => {
-      await markAsReadMutation({ notification_id: notificationId });
-    },
-    [markAsReadMutation]
-  );
 
   return {
     removeNotification,
     clearAllNotifications,
-    markAsRead,
   };
 }
