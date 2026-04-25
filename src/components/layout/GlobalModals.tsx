@@ -8,6 +8,7 @@ import { LeaveDialog } from "@/components/features/rooms/LeaveDialog";
 import { RoomInfoDialog } from "@/components/features/rooms/RoomInfoDialog";
 
 import { AddFriendDialog } from "@/components/features/friends/AddFriendDialog";
+import { RemoveFriendModal } from "@/components/ui/modals/RemoveFriendModal";
 import { CallSwitchModal } from "@/components/ui/modals/CallSwitchModal";
 
 export function GlobalModals() {
@@ -30,6 +31,7 @@ export function GlobalModals() {
           {activeModal === "INFO" && <RoomInfoDialog key={modalData?.room_id} />}
           
           {activeModal === "ADD_FRIEND" && <AddFriendDialog key="add_friend" />}
+          {activeModal === "REMOVE_FRIEND" && <RemoveFriendModal key="remove_friend" />}
           {activeModal === "SWITCH_CALL" && <CallSwitchModal key="switch_call" />}
         </div>
       </div>

@@ -5,6 +5,7 @@ export type ModalType =
   | "JOIN_ROOM"
   | "LOGOUT"
   | "ADD_FRIEND"
+  | "REMOVE_FRIEND"
   | "LEAVE_ROOM"
   | "INFO"
   | "COLOR"
