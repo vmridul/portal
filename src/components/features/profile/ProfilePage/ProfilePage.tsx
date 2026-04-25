@@ -54,14 +54,14 @@ export default function ProfilePage() {
         <div className="md:flex hidden w-[22%] h-full bg-theme-surface border-r border-theme-border p-3 flex-col gap-2">
           <button
             onClick={() => setCurrentTab("Info")}
-            className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
+            className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-surface"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
             <HugeiconsIcon icon={UserCircleIcon} className="w-4 h-4" />
             <span>User Info</span>
           </button>
           <button
             onClick={() => setCurrentTab("Preferences")}
-            className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
+            className={`flex text-sm items-center ${currentTab == "Preferences" ? "bg-theme-hover" : "bg-theme-surface"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
           >
             <HugeiconsIcon icon={Settings01Icon} className="w-4 h-4" />
             <span>Preferences</span>
