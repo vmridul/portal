@@ -90,6 +90,7 @@ export const getRoomMembers = query({
             user_id: m.user_id,
             username,
             avatar,
+            _creationTime: user?._creationTime,
           },
         };
       })
