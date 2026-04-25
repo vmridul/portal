@@ -136,7 +136,7 @@ export const UserInfoTab = () => {
     setDeleteDialog((prev) => ({ ...prev, input }));
 
   return (
-    <div className="flex flex-col items-center justify-center pt-2 overflow-y-auto md:pt-10 w-[80%] md:w-[47%] mx-auto">
+    <div className="flex flex-col items-center pt-2 md:pt-10 w-[80%] md:w-[47%] mx-auto pb-10">
       <div className="flex md:items-end justify-center gap-2 md:gap-4 w-full md:flex-row flex-col items-center">
         <div className="flex-shrink-0">
           <span className="text-xs text-gray-300 pl-1">Avatar</span>

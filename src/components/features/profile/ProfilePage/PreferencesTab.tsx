@@ -7,7 +7,7 @@ export const PreferencesTab = () => {
   const { color, setColor } = useColor();
   const [colorDialog, setColorDialog] = useState(false);
   return (
-    <div className="flex flex-col items-center justify-center pt-2 md:pt-10 w-[80%] md:w-[47%] mx-auto">
+    <div className="flex flex-col items-center pt-2 md:pt-10 w-[80%] md:w-[47%] mx-auto pb-10">
       <div className="w-full relative flex flex-col gap-1 mt-5">
         <span className="text-xs text-gray-300">Theme</span>
         <div

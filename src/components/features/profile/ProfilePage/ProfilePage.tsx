@@ -20,7 +20,7 @@ export default function ProfilePage() {
   const { setLeftMobileMenu, leftMobileMenu } = useUIStore();
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex justify-between w-full md:px-2 px-3 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
         <div className="md:ml-3 flex items-center w-full justify-between text-white/90">
@@ -49,9 +49,9 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="flex md:flex-row flex-col">
+      <div className="flex flex-1 min-h-0 md:flex-row flex-col">
         {/* Sidebar */}
-        <div className="md:flex hidden w-[22%] h-screen bg-theme-surface border-r border-theme-border p-3 flex-col gap-2">
+        <div className="md:flex hidden w-[22%] h-full bg-theme-surface border-r border-theme-border p-3 flex-col gap-2">
           <button
             onClick={() => setCurrentTab("Info")}
             className={`flex text-sm items-center ${currentTab == "Info" ? "bg-theme-hover" : "bg-theme-base"} hover:bg-theme-hover gap-1 px-3 py-2 rounded-[8px]`}
@@ -85,7 +85,7 @@ export default function ProfilePage() {
             <span>Preferences</span>
           </button>
         </div>
-        <div className="w-full overflow-y-auto h-screen">
+        <div className="w-full overflow-y-auto h-full pb-10">
           {currentTab === "Info" && <UserInfoTab />}
           {currentTab === "Preferences" && <PreferencesTab />}
         </div>
