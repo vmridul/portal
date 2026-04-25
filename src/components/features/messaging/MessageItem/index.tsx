@@ -12,7 +12,7 @@ import { File02Icon } from "@hugeicons/core-free-icons";
 import { VideoMessage } from "../VideoMessage";
 import { MessageToolbar } from "./MessageToolbar";
 import { MessageReactions } from "./MessageReactions";
-import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
+import { UserProfilePopup } from "@/components/popups/UserProfilePopup";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
 import React from "react";

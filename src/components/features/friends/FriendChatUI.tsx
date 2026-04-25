@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "../messaging/ChatUI";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { useMessageActions } from "@/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { toast } from "sonner";

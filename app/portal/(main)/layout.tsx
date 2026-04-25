@@ -1,5 +1,5 @@
 "use client";
-import LeftSidebar from "@/components/shared/layout/LeftSidebar";
+import LeftSidebar from "@/components/layout/LeftSidebar";
 import NotificationTab from "@/components/features/notifications/NotificationTab";
 
 export default function MainLayout({

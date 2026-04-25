@@ -7,7 +7,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { useFriends, useCalls } from "@/hooks";
 import { getDirectConversationId } from "@/lib/utils/message";
 import { useCallStore } from "@/store/callStore";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 import FriendChatUI from "./FriendChatUI";
 import { FriendChatHeader } from "./FriendChatHeader";

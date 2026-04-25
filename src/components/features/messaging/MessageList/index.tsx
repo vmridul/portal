@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { MessageItem } from "../MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { useMessageWindow } from "@/hooks/useMessageWindow";
 import { useScrollManager } from "@/hooks/useScrollManager";
 import { cn } from "@/lib/utils";

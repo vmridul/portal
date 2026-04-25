@@ -4,10 +4,7 @@ import { Galindo, Lexend } from "next/font/google";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { UserButton, SignOutButton, Show, useAuth } from "@clerk/nextjs";
-import {
-  LandingTopGradient,
-  LandingHeroIllustration,
-} from "@/components/shared/landing/LandingDecorations";
+
 import { useUIStore } from "@/store/uiStore";
 import { useEffect } from "react";
 import { toast } from "sonner";

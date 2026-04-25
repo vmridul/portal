@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 import { useNotifications, useNotificationActions, useFriends } from "@/hooks";
 import { useRooms } from "@/contexts/roomContext";
-import { Skeleton } from "@/components/shared/skeletons/Skeleton";
+import { Skeleton } from "@/components/skeletons/Skeleton";
 
 import { useNotificationHandlers } from "./useNotificationHandlers";
 import { NotificationCard } from "./NotificationCard";

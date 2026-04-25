@@ -7,12 +7,12 @@ import {
   CopyIcon,
 } from "@hugeicons/core-free-icons";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { Skeleton } from "@/components/shared/skeletons/Skeleton";
+import { Skeleton } from "@/components/skeletons/Skeleton";
 import { useUserStore } from "@/store/useUserStore";
 import { toast } from "sonner";
 import { usePresence } from "@/contexts/presenceContext";
 import { RoomMembersList } from "@/components/features/rooms/RoomMembersList";
-import { ListSkeleton } from "@/components/shared/skeletons/ListSkeleton";
+import { ListSkeleton } from "@/components/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";

@@ -9,11 +9,16 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { cn } from "@/lib/utils";
 import { getThemeBootstrapScript } from "@/lib/theme";
 import { ColorProvider } from "@/contexts/colorContext";
-import { GlobalModals } from "@/components/shared/layout/GlobalModals";
-import { ClerkProvider, SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
+import { GlobalModals } from "@/components/layout/GlobalModals";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  Show,
+  UserButton,
+} from "@clerk/nextjs";
 
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Portal",
@@ -40,9 +45,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable, dmSans.variable, lexend.variable)}>
+    <html
+      lang="en"
+      className={cn(
+        "font-sans",
+        inter.variable,
+        dmSans.variable,
+        lexend.variable,
+      )}
+    >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }} />
+        <script
+          dangerouslySetInnerHTML={{ __html: getThemeBootstrapScript() }}
+        />
       </head>
       <body suppressHydrationWarning className={`body`}>
         <ClerkProvider>

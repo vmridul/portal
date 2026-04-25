@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { UserIcon } from "@hugeicons/core-free-icons";
 import type { User } from "@/lib/types";
 import type { RoomMemberWithUser } from "@/lib/types";
-import { UserProfilePopup } from "@/components/shared/popups/UserProfilePopup";
+import { UserProfilePopup } from "@/components/popups/UserProfilePopup";
 
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 

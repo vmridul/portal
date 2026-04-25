@@ -6,7 +6,7 @@ import {
   useTypingIndicators,
 } from "@/hooks/useMessageActions";
 import type { User } from "@/lib/types";
-import { MediaLightbox } from "@/components/shared/MediaLightbox";
+import { MediaLightbox } from "@/components/ui/MediaLightbox";
 
 interface ChatUIProps {
   type: "room" | "direct";

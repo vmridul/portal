@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { ChatUI } from "@/components/features/messaging/ChatUI";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { useMessageActions } from "@/hooks";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";

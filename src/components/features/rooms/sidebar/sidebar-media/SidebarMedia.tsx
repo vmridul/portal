@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarLayout, SidebarHeader } from "@/components/ui/sidebar";
-import { MediaLightbox } from "@/components/shared/MediaLightbox";
+import { MediaLightbox } from "@/components/ui/MediaLightbox";
 import { useUIStore } from "@/store/uiStore";
 import { MediaItem } from "@/components/ui/media";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";

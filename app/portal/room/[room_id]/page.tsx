@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRoomMembers } from "@/hooks";
 import { useAuth } from "@clerk/nextjs";
 import { use } from "react";
-import { ChatSkeleton } from "@/components/shared/skeletons/ChatSkeleton";
+import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 
 export default function Page({
   params,

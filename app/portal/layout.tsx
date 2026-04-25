@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { ColorProvider, useColor } from "@/contexts/colorContext";
 import NotificationListener from "@/components/features/notifications/NotificationListener";
 import CallCleanupListener from "@/components/features/calls/CallCleanupListener";
-import PortalShellSkeleton from "@/components/shared/skeletons/PortalShellSkeleton";
+import PortalShellSkeleton from "@/components/skeletons/PortalShellSkeleton";
 import { useCurrentUser } from "@/hooks";
 import { OnboardingDialog } from "@/components/features/auth/OnboardingDialog";
 
@@ -55,11 +55,19 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
     return <PortalShellSkeleton />;
   }
 
-  const wasDeleted = typeof window !== "undefined" && sessionStorage.getItem("accountDeleted") === "true";
+  const wasDeleted =
+    typeof window !== "undefined" &&
+    sessionStorage.getItem("accountDeleted") === "true";
 
   // Show onboarding if authenticated but no profile exists in Convex
   // Skip if account was intentionally deleted (redirect to landing instead)
-  if (isAuthenticated && !isProfileLoading && !profile && !wasDeleted && !hasOnboarded) {
+  if (
+    isAuthenticated &&
+    !isProfileLoading &&
+    !profile &&
+    !wasDeleted &&
+    !hasOnboarded
+  ) {
     return <OnboardingDialog onComplete={handleOnboardingComplete} />;
   }
 
@@ -89,7 +97,5 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return (
-    <PortalLayoutContent>{children}</PortalLayoutContent>
-  );
+  return <PortalLayoutContent>{children}</PortalLayoutContent>;
 }
