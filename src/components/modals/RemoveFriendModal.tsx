@@ -1,5 +1,5 @@
 import { useUIStore } from "@/store/uiStore";
-import { ConfirmDialog } from "../dialog";
+import { ConfirmDialog } from "@/components/ui/dialog";
 import { useFriendActions } from "@/hooks";
 import { toast } from "sonner";
 import { useRouter, usePathname } from "next/navigation";

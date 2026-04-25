@@ -3,8 +3,8 @@ import { useRouter } from "next/navigation";
 import { useRoomActions } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import { toast } from "sonner";
-import { FormDialog } from "../dialog";
-import { Input } from "../input";
+import { FormDialog } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export function JoinRoomModal() {
   const { closeModal } = useUIStore();

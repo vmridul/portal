@@ -4,7 +4,7 @@ import { useUIStore } from "@/store/uiStore";
 import { useCallStore } from "@/store/callStore";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
-import { ConfirmDialog } from "../dialog";
+import { ConfirmDialog } from "@/components/ui/dialog";
 
 export function CallSwitchModal() {
   const { closeModal, modalData } = useUIStore();

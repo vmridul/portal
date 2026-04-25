@@ -4,8 +4,8 @@ import { useRoomActions } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import { generateRoomCode } from "@/app/actions/randomID";
 import { toast } from "sonner";
-import { FormDialog } from "../dialog";
-import { Input } from "../input";
+import { FormDialog } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export function CreateRoomModal() {
   const { closeModal } = useUIStore();

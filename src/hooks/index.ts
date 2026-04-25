@@ -1,4 +1,3 @@
-export * from "./useMessages";
 export * from "./useMessageActions";
 export * from "./useRoom";
 export * from "./useFriends";
@@ -7,6 +6,5 @@ export * from "./useSearchMessages";
 export * from "./useMediaFiles";
 export * from "./useUserProfile";
 export * from "./useGlobalPresence";
-export * from "./useRoomInfo";
 export * from "./useCalls";
 export * from "./useCallSessionActions";

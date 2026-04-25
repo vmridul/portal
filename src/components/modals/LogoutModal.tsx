@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { useUIStore } from "@/store/uiStore";
-import { ConfirmDialog } from "../dialog";
+import { ConfirmDialog } from "@/components/ui/dialog";
 
 export function LogoutModal() {
   const { closeModal } = useUIStore();
