@@ -18,7 +18,6 @@ export default defineSchema({
     last_msg: v.optional(v.string()),
     last_msg_sender: v.optional(v.string()),
     updated_at: v.optional(v.number()),
-    unread_count: v.optional(v.number()),
     last_read_time: v.optional(v.number()),
   })
     .index("by_user_id", ["user_id"])
@@ -36,7 +35,6 @@ export default defineSchema({
     username: v.optional(v.string()),
     avatar: v.optional(v.string()),
     role: v.optional(v.string()),
-    unread_count: v.optional(v.number()),
     last_msg_preview: v.optional(v.string()),
     last_msg_time: v.optional(v.number()),
     last_read_time: v.optional(v.number()),
@@ -79,11 +77,11 @@ messages: defineTable({
     notification_type: v.optional(v.union(v.literal("message"), v.literal("call"))),
     call_id: v.optional(v.id("calls")),
     call_status: v.optional(v.union(v.literal("active"), v.literal("ended"))),
-    sidebar_read: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_message_id", ["message_id"])
-    .index("by_call_id", ["call_id"]),
+    .index("by_call_id", ["call_id"])
+    .index("by_user_conversation", ["user_id", "conversation_id"]),
 
   presence: defineTable({
     user_id: v.string(),

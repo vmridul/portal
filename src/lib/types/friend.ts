@@ -10,7 +10,6 @@ export interface Friend {
   status: FriendStatus;
   last_msg?: string;
   updated_at?: number;
-  unread_count: number;
   last_read_time?: number;
   _creationTime: number;
 }

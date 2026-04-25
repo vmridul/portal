@@ -51,8 +51,16 @@ export function useFriends(): UseFriendsResult {
   const friendsQuery = useQuery(api.friends.getFriends);
   const pendingRequestsQuery = useQuery(api.friends.getPendingRequests);
   const sentRequestsQuery = useQuery(api.friends.getSentRequests);
+  const unreadCountsQuery = useQuery(api.readState.getUnreadCounts);
 
-  const sortedFriends = (friendsQuery ?? []).slice().sort((a, b) => {
+  const sortedFriends = (friendsQuery ?? []).map(friend => {
+    // Get the unread count from the new getUnreadCounts query
+    const unreadCount = unreadCountsQuery?.directs?.[friend.friend.user_id] ?? 0;
+    return {
+      ...friend,
+      unread_count: unreadCount
+    };
+  }).sort((a, b) => {
     const timeA = a.updated_at ?? a._creationTime ?? 0;
     const timeB = b.updated_at ?? b._creationTime ?? 0;
     return timeB - timeA;

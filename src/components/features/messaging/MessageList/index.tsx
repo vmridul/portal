@@ -10,7 +10,6 @@ import { TypingIndicator } from "./TypingIndicator";
 import { FloatingButtons } from "./FloatingButtons";
 import { MessageListProps } from "./types";
 import { useMessageListBridge } from "./useMessageListBridge";
-import { useMessageActions } from "@/hooks/useMessageActions";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -25,10 +24,10 @@ export const MessageList = React.memo(
     textColor,
     onDeleteRequest,
     returnToLiveTrigger,
-  }: MessageListProps) => {
+    markAsRead,
+  }: MessageListProps & { markAsRead: (readUntil: number) => void }) => {
     // ── Message window (data + state machine) ─────────────────────────────
     const messageWindow = useMessageWindow(conversationId, initialMessageId);
-    const { clearUnreadCount } = useMessageActions();
 
     // ── Scroll manager (DOM scroll concerns) ──────────────────────────────
     const scrollManager = useScrollManager({
@@ -76,17 +75,12 @@ export const MessageList = React.memo(
         ? messageWindow.messages[messageWindow.messages.length - 1]._id
         : null;
 
-    // Clear unread count when new messages arrive while in LIVE mode
+    // Call markAsRead with the latest message's creationTime when in LIVE mode
     useEffect(() => {
-      if (messageWindow.mode === "LIVE") {
-        clearUnreadCount(conversationId);
-      }
-    }, [
-      conversationId,
-      messageWindow.mode,
-      latestMessageId,
-      clearUnreadCount,
-    ]);
+      if (messageWindow.mode !== "LIVE" || messageWindow.messages.length === 0) return;
+      const latestMessage = messageWindow.messages[messageWindow.messages.length - 1];
+      markAsRead(latestMessage._creationTime);
+    }, [messageWindow.mode, messageWindow.messages, markAsRead]);
 
     // ── Loading state ─────────────────────────────────────────────────────
 
@@ -95,7 +89,7 @@ export const MessageList = React.memo(
     }
 
     const showNewMessageBadge =
-      messageWindow.mode === "HISTORY" && messageWindow.unreadCount > 0;
+      messageWindow.mode === "HISTORY" && messageWindow.newArrivalCount > 0;
 
     const showScrollDownButton =
       !showNewMessageBadge &&
@@ -111,7 +105,7 @@ export const MessageList = React.memo(
         <FloatingButtons
           showNewMessageBadge={showNewMessageBadge}
           showScrollDownButton={showScrollDownButton}
-          unreadCount={messageWindow.unreadCount}
+          newArrivalCount={messageWindow.newArrivalCount}
           onBadgeClick={handleBadgeClick}
           onScrollDownClick={handleScrollDownClick}
         />

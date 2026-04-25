@@ -84,11 +84,11 @@ export function useMessageWindow(
 
   const isInitialLoading = mode === "LIVE" && liveQueryResult === undefined;
 
-  // ── Derived: unread count for badge ─────────────────────────────────────
+  // ── Derived: newArrivalCount for badge ─────────────────────────────────────
   // In HISTORY mode, count how many messages in the live subscription are newer
   // than the timestamp when the user left LIVE. Caps at 50 since subscribeLive
   // only returns the latest page.
-  const unreadCount = useMemo(() => {
+  const newArrivalCount = useMemo(() => {
     if (mode !== "HISTORY" || !liveMessages.length || !lastSeenCreationTime) {
       return 0;
     }
@@ -341,7 +341,7 @@ export function useMessageWindow(
     // message data
     messages,
     mode,
-    unreadCount,
+    newArrivalCount,
     highlightedMessageId,
     isInitialLoading,
 

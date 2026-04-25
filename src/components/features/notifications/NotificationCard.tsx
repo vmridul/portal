@@ -19,13 +19,11 @@ type NotificationItem = ReturnType<
 
 export function NotificationCard({
   notification,
-  isUnread,
   onOpen,
   onJoin,
   onRemove,
 }: {
   notification: NotificationItem;
-  isUnread: boolean;
   onOpen: () => void;
   onJoin: () => Promise<void>;
   onRemove: () => Promise<void>;
@@ -45,9 +43,8 @@ export function NotificationCard({
 
   return (
     <div
-      className={`group relative rounded-[14px] p-3 shadow-sm ${
-        isUnread ? "bg-theme-hover" : "bg-theme-base"
-      }`}
+      className={`group relative rounded-[14px] p-3 shadow-sm 
+      bg-theme-base`}
     >
       <button
         onClick={async (e) => {

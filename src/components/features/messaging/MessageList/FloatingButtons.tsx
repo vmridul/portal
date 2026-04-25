@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface FloatingButtonsProps {
   showNewMessageBadge: boolean;
   showScrollDownButton: boolean;
-  unreadCount: number;
+  newArrivalCount: number;
   onBadgeClick: () => void;
   onScrollDownClick: () => void;
   color?: string; // kept for compatibility, not used directly
@@ -15,7 +15,7 @@ interface FloatingButtonsProps {
 export function FloatingButtons({
   showNewMessageBadge,
   showScrollDownButton,
-  unreadCount,
+  newArrivalCount,
   onBadgeClick,
   onScrollDownClick,
 }: FloatingButtonsProps) {
@@ -28,8 +28,8 @@ export function FloatingButtons({
         >
           <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-4 w-4")} />
           <span>
-            {unreadCount}
-            {unreadCount >= 50 ? "+" : ""} new message{unreadCount !== 1 ? "s" : ""}
+            {newArrivalCount}
+            {newArrivalCount >= 50 ? "+" : ""} new message{newArrivalCount !== 1 ? "s" : ""}
           </span>
         </button>
       )}

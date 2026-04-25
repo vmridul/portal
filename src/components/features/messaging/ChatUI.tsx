@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { MessageList } from "./MessageList";
 import { ChatInputBar } from "./ChatInputBar";
 import {
-  useMessageActions,
   useTypingIndicators,
 } from "@/hooks/useMessageActions";
+import { useMarkAsRead } from "@/hooks/useMarkAsRead";
 import type { User } from "@/lib/types";
 import { MediaLightbox } from "@/components/ui/MediaLightbox";
 
@@ -34,12 +34,7 @@ export function ChatUI({
   const [returnToLiveTrigger, setReturnToLiveTrigger] = useState(0);
 
   const { typingUsers } = useTypingIndicators(room_id);
-  const { clearUnreadCount } = useMessageActions();
-
-  // Re-clear unread count whenever this room is open.
-  useEffect(() => {
-    clearUnreadCount(room_id);
-  }, [room_id, clearUnreadCount]);
+  const markAsRead = useMarkAsRead(room_id);
 
   const handleScrollToBottomRequest = useCallback(() => {
     setReturnToLiveTrigger((previous) => previous + 1);
@@ -60,6 +55,7 @@ export function ChatUI({
           textColor={textColor}
           onDeleteRequest={onDeleteRequest}
           returnToLiveTrigger={returnToLiveTrigger}
+          markAsRead={markAsRead}
         />
       </div>
 

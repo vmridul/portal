@@ -5,20 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Home01Icon } from "@hugeicons/core-free-icons";
 import { useVisibleActiveCalls } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
-
-interface RoomWithNested {
-  room_id: string;
-  memberCount: number;
-  owner_id?: string | null;
-  joined_at?: number;
-  unread_count?: number;
-  last_msg_preview?: string;
-  last_msg_time?: number;
-  Rooms?: {
-    room_name?: string;
-    room_id?: string;
-  } | null;
-}
+import type { UserRoom } from "@/lib/types/room";
 
 interface RoomListProps {
   currentRoom?: string | number | null;
@@ -45,7 +32,7 @@ export const RoomsList = ({ currentRoom }: RoomListProps) => {
             <p className="mt-4 text-xs text-gray-400">No rooms yet</p>{" "}
           </div>
         ) : (
-          rooms.map((room: RoomWithNested) => {
+          rooms.map((room: UserRoom) => {
             return (
               <RoomItem
                 key={room?.Rooms?.room_id}

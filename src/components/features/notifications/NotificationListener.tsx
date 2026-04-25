@@ -86,11 +86,6 @@ export default function NotificationListener() {
             duration: 4000,
           },
         );
-
-        // Mark as read in the sidebar
-        markAsRead(notification.id).catch((err) => {
-          console.error("[NotificationListener] Failed to mark as read:", err);
-        });
       });
     }
   }, [

@@ -22,7 +22,6 @@ interface DeleteMessageArgs {
 interface UseMessageActionsResult {
   sendMessage: (args: SendMessageArgs) => Promise<void>;
   deleteMessage: (args: DeleteMessageArgs) => Promise<void>;
-  clearUnreadCount: (conversation_id: string) => Promise<void>;
   generateUploadUrl: () => Promise<string>;
   updateMessage: (args: { msg_id: Id<"messages">; content: string }) => Promise<void>;
 }
@@ -30,7 +29,6 @@ interface UseMessageActionsResult {
 export function useMessageActions(): UseMessageActionsResult {
   const sendMessageMutation = useMutation(api.messages.sendMessage);
   const deleteMessageMutation = useMutation(api.messages.deleteMessage);
-  const clearUnreadCountMutation = useMutation(api.messages.clearUnreadCount);
   const generateUploadUrlMutation = useMutation(api.storage.generateUploadUrl);
   const updateMessageMutation = useMutation(api.messages.updateMessage);
 
@@ -52,17 +50,6 @@ export function useMessageActions(): UseMessageActionsResult {
     [deleteMessageMutation],
   );
 
-  const clearUnreadCount = useCallback(
-    async (conversation_id: string) => {
-      try {
-        await clearUnreadCountMutation({ conversation_id });
-      } catch (e) {
-        console.error("Failed to clear unread count:", e);
-      }
-    },
-    [clearUnreadCountMutation],
-  );
-
   const generateUploadUrl = useCallback(async () => {
     return generateUploadUrlMutation();
   }, [generateUploadUrlMutation]);
@@ -74,7 +61,6 @@ export function useMessageActions(): UseMessageActionsResult {
   return {
     sendMessage,
     deleteMessage,
-    clearUnreadCount,
     generateUploadUrl,
     updateMessage,
   };

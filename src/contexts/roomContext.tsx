@@ -1,6 +1,8 @@
-"use client";
 import { createContext, useContext, useMemo } from "react";
 import { useUserRooms } from "@/hooks";
+import type { UserRoom } from "@/lib/types/room";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface RoomsContextType {
   rooms: UserRoom[];
@@ -8,21 +10,6 @@ interface RoomsContextType {
   isLoading: boolean;
   refreshRooms: () => void;
 }
-
-type UserRoom = {
-  room_id: string;
-  memberCount: number;
-  Rooms?: {
-    room_name?: string;
-    room_id?: string;
-  } | null;
-  owner_id?: string | null;
-  joined_at?: number;
-  unread_count?: number;
-  last_msg_preview?: string;
-  last_msg_time?: number;
-  last_read_time?: number;
-};
 
 const RoomsContext = createContext<RoomsContextType | undefined>(undefined);
 
@@ -33,16 +20,22 @@ export function RoomsProvider({
   children: React.ReactNode;
   user_id: string | null;
 }) {
-  const { rooms: userRooms, isLoading } = useUserRooms(user_id);
+  const { rooms: userRooms, isLoading: roomsLoading } = useUserRooms(user_id);
+  const unreadCountsQuery = useQuery(api.readState.getUnreadCounts);
 
-  const { rooms, membersCount } = useMemo(() => {
-    if (!userRooms) return { rooms: [], membersCount: {} };
+  const { rooms, membersCount, isLoading } = useMemo(() => {
+    if (!userRooms) return { rooms: [], membersCount: {}, isLoading: roomsLoading };
 
     const countMap: Record<string, number> = {};
     const roomsList = userRooms
       .map((r: UserRoom) => {
         countMap[r.room_id] = r.memberCount;
-        return r;
+        // Get the unread count from the new getUnreadCounts query
+        const unreadCount = unreadCountsQuery?.rooms?.[r.room_id] ?? 0;
+        return {
+          ...r,
+          unread_count: unreadCount
+        };
       })
       .sort((a: UserRoom, b: UserRoom) => {
         const timeA = a.last_msg_time ?? a.joined_at ?? 0;
@@ -50,8 +43,8 @@ export function RoomsProvider({
         return timeB - timeA;
       });
 
-    return { rooms: roomsList, membersCount: countMap };
-  }, [userRooms]);
+    return { rooms: roomsList, membersCount: countMap, isLoading: roomsLoading };
+  }, [userRooms, unreadCountsQuery, roomsLoading]);
 
   return (
     <RoomsContext.Provider

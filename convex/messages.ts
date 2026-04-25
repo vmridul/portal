@@ -60,51 +60,7 @@ export const getAllMessages = query({
   },
 });
 
-export const clearUnreadCount = mutation({
-  args: { conversation_id: v.string() },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthenticated");
 
-    const now = Date.now();
-
-    // Try room membership first (O(1) compound index)
-    const member = await findMembership(
-      ctx.db,
-      identity.subject,
-      args.conversation_id,
-    );
-    if (member) {
-      await ctx.db.patch(member._id, { unread_count: 0, last_read_time: now });
-    } else {
-      // Try direct conversation
-      const friendId = extractFriendId(args.conversation_id, identity.subject);
-      if (friendId) {
-        const { mine } = await findFriendshipPair(
-          ctx.db,
-          identity.subject,
-          friendId,
-        );
-        if (mine) {
-          await ctx.db.patch(mine._id, { unread_count: 0, last_read_time: now });
-        }
-      }
-    }
-
-    // Mark related notifications as read
-    const notifications = await ctx.db
-      .query("chatNotifications")
-      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
-      .filter((q) => q.eq(q.field("conversation_id"), args.conversation_id))
-      .collect();
-
-    for (const notification of notifications) {
-      if (!notification.sidebar_read) {
-        await ctx.db.patch(notification._id, { sidebar_read: true });
-      }
-    }
-  },
-});
 
 export const searchMessages = query({
   args: { conversation_id: v.string(), query: v.string() },
@@ -209,6 +165,7 @@ export const sendMessage = mutation({
             message: notificationMessage,
             notification_type: "message",
           });
+          await pruneOldNotifications(ctx, member.user_id);
         }
       }
     } else {

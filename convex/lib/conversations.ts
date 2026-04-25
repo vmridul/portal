@@ -97,9 +97,7 @@ export async function updateConversationMetadata(
       await db.patch(member._id, {
         last_msg_preview: preview,
         last_msg_time: timestamp,
-        ...(isRecipient
-          ? { unread_count: (member.unread_count || 0) + 1 }
-          : {}),
+        // unread_count is now derived from last_read_time - no increment needed
       });
     }
   } else {
@@ -116,9 +114,7 @@ export async function updateConversationMetadata(
         last_msg: preview,
         last_msg_sender: senderId,
         updated_at: timestamp,
-        ...(opts.incrementUnread
-          ? { unread_count: (theirs.unread_count || 0) + 1 }
-          : {}),
+        // unread_count is now derived from last_read_time - no increment needed
       });
     }
   }

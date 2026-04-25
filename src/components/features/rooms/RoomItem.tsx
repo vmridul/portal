@@ -2,23 +2,10 @@ import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
-
-interface RoomWithNested {
-  room_id: string;
-  memberCount: number;
-  owner_id?: string | null;
-  joined_at?: number;
-  unread_count?: number;
-  last_msg_preview?: string;
-  last_msg_time?: number;
-  Rooms?: {
-    room_name?: string;
-    room_id?: string;
-  } | null;
-}
+import type { UserRoom } from "@/lib/types/room";
 
 interface RoomItemProps {
-  room: RoomWithNested;
+  room: UserRoom;
   router: { push: (href: string) => void };
   setMobileMenu?: (value: boolean) => void;
   currentRoom?: string | number | null;

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Notification01Icon } from "@hugeicons/core-free-icons";
 
@@ -28,6 +28,18 @@ export default function NotificationTab() {
   const { rooms } = useRooms();
   const { friends } = useFriends();
 
+  // Pre-compute lookup maps once
+  const friendReadTimes = useMemo(() => {
+    const map = new Map<string, number>();
+    friends.forEach((f) => map.set(f.friend.user_id, f.last_read_time ?? 0));
+    return map;
+  }, [friends]);
+
+  const roomReadTimes = useMemo(() => {
+    const map = new Map<string, number>();
+    rooms.forEach((r) => map.set(r.room_id, r.last_read_time ?? 0));
+    return map;
+  }, [rooms]);
 
   const isOnFriendPage = pathname.startsWith("/portal/friend");
 
@@ -95,23 +107,14 @@ export default function NotificationTab() {
             </div>
           ) : (
             notifications.map((notification) => {
-              const lastReadTime =
-                notification.sourceType === "direct"
-                  ? friends.find((f) => f.friend.user_id === notification.sourceId)
-                    ?.last_read_time
-                  : rooms.find((r) => r.room_id === notification.sourceId)
-                    ?.last_read_time;
-
-              const isUnread = notification.createdAt > (lastReadTime ?? 0);
 
               return (
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
-                  isUnread={isUnread}
-onOpen={() => {
-                     void openNotification(notification, () => setMobileMenu(false));
-                   }}
+                  onOpen={() => {
+                    void openNotification(notification, () => setMobileMenu(false));
+                  }}
                   onJoin={() => joinNotificationCall(notification)}
                   onRemove={async () => {
                     try {

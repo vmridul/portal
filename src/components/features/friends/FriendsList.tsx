@@ -13,28 +13,15 @@ import { useState, useEffect } from "react";
 import { useColor } from "@/contexts/colorContext";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
-import { useVisibleActiveCalls } from "@/hooks";
+import { useVisibleActiveCalls, ConvexFriend } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
-type FriendItem = {
-  id: string;
-  last_msg?: string;
-  last_msg_sender?: string;
-  updated_at?: string | number;
-  _creationTime?: number;
-  unread_count?: number;
-  friend?: {
-    user_id?: string;
-    username?: string;
-    avatar?: string;
-  } | null;
-};
 
 export default function FriendsList({
   friends,
   isLoading,
 }: {
-  friends: FriendItem[];
+  friends: ConvexFriend[];
   isLoading: boolean;
 }) {
   const { onlineUsers, awayUsers } = usePresence();

@@ -19,27 +19,27 @@ export const getMessageNotifications = query({
           ? await ctx.db.get(notification.call_id)
           : null;
 
-        return {
-          id: notification._id,
-          messageId: notification.message_id,
-          sourceType: notification.source_type,
-          sourceId: notification.source_id,
-          conversationId: notification.conversation_id ?? notification.source_id,
-          sourceName: notification.source_name,
-          senderId: notification.sender_id,
-          senderName: notification.sender_name,
-          senderAvatar: notification.sender_avatar || "",
-          message: notification.message,
-          notificationType: notification.notification_type ?? "message",
-          callId: notification.call_id ?? null,
-          callStatus: notification.call_status ?? null,
-          participantIds:
-            notification.notification_type === "call"
-              ? call?.allParticipants || call?.participants || []
-              : [],
-          createdAt: notification._creationTime,
-          isRead: notification.sidebar_read ?? false,
-        };
+return {
+        id: notification._id,
+        messageId: notification.message_id,
+        sourceType: notification.source_type,
+        sourceId: notification.source_id,
+        conversationId: notification.conversation_id ?? notification.source_id,
+        sourceName: notification.source_name,
+        senderId: notification.sender_id,
+        senderName: notification.sender_name,
+        senderAvatar: notification.sender_avatar || "",
+        message: notification.message,
+        notificationType: notification.notification_type ?? "message",
+        callId: notification.call_id ?? null,
+        callStatus: notification.call_status ?? null,
+        participantIds:
+          notification.notification_type === "call"
+            ? call?.allParticipants || call?.participants || []
+            : [],
+        createdAt: notification._creationTime,
+        isRead: false, // We'll determine read status by comparing createdAt with lastReadTime
+      };
       }),
     );
   },
@@ -70,7 +70,9 @@ export const markAsRead = mutation({
     if (!notification) return;
     if (notification.user_id !== identity.subject) throw new Error("Unauthorized");
 
-    await ctx.db.patch(args.notification_id, { sidebar_read: true });
+    // We no longer need to mark individual notifications as read
+    // since we're using the watermark-based system
+    return;
   },
 });
 
