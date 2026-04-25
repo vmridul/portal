@@ -38,7 +38,7 @@ export function Tabs(props: TabsProps) {
   );
 }
 
-interface TabsListProps {
+export interface TabsListProps {
   children: React.ReactNode;
   activeTab?: string;
   onTabChange?: (value: string) => void;
@@ -51,8 +51,8 @@ export function TabsList({ children, activeTab, onTabChange, className }: TabsLi
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           return React.cloneElement(child as React.ReactElement<any>, { 
-            isActive: activeTab === child.props.value,
-            onClick: () => onTabChange?.(child.props.value)
+isActive: activeTab === (child as React.ReactElement<any>).props.value,
+             onClick: () => onTabChange?.((child as React.ReactElement<any>).props.value)
           });
         }
         return child;
