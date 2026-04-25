@@ -45,7 +45,7 @@ export const RoomMembersList = ({
   user,
 }: RoomMembersListProps) => {
   return (
-    <div className="mt-3 flex flex-col">
+    <div className="mt-3 flex flex-col flex-1 min-h-0">
       <div className="flex items-center gap-40">
         <span className="text-xs ml-2 text-[#aaaaaa]">Members</span>
         <div className="bg-theme-hover rounded-[8px] px-2 py-1 flex text-white/60 text-[10px] items-center gap-0.5">
@@ -54,7 +54,7 @@ export const RoomMembersList = ({
         </div>
       </div>
 
-      <div className="overflow-y-auto h-full mt-2">
+      <div className="overflow-y-auto h-full mt-2 pb-20">
         {members?.map((member) => {
           const isUserOnline = onlineUsers.has(member.user_id.toString());
           const isUserAway = awayUsers.has(member.user_id.toString());

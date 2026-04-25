@@ -48,7 +48,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
   return (
     <>
       <div
-        className={`bg-theme-surface px-2 h-screen border-theme-border border-l
+        className={`bg-theme-surface px-2 h-screen flex flex-col overflow-hidden border-theme-border border-l
     text-white
     select-none
     transition-transform duration-300 ease-in-out
@@ -61,7 +61,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
         {!user?.user_id || isRoomsLoading || !roomName ? (
           <Skeleton className="h-[56px] mt-2 w-[268px]  rounded-[8px]" />
         ) : (
-          <div className="relative w-[268px] flex items-center justify-between mt-2 rounded-[8px] py-2 px-2">
+          <div className="relative w-[268px] flex-none flex items-center justify-between mt-2 rounded-[8px] py-2 px-2">
             <div className="flex gap-3 items-center">
               <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
                 {roomName?.charAt(0).toUpperCase()}
