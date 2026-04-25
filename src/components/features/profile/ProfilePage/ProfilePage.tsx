@@ -20,7 +20,7 @@ export default function ProfilePage() {
   const { setLeftMobileMenu, leftMobileMenu } = useUIStore();
 
   return (
-    <div className="w-full">
+    <div className="w-full h-screen">
       {/* Header */}
       <div className="flex justify-between w-full md:px-2 px-3 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
         <div className="md:ml-3 flex items-center w-full justify-between text-white/90">

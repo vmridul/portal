@@ -154,27 +154,36 @@ export const UserInfoTab = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div
-                  className={`mt-2 flex w-full select-none cursor-pointer relative items-center py-0 gap-1 rounded-xl text-xs`}
+                  className={`mt-2 flex py-2 justify-center w-full bg-theme-border select-none cursor-pointer relative items-center gap-1 rounded-lg text-xs`}
                 >
-                  <StatusIndicator isOnline={!isAway} isAway={isAway} />
+                  <StatusIndicator
+                    className="relative w-2 h-2"
+                    isOnline={!isAway}
+                    isAway={isAway}
+                  />
+                  <span
+                    className={`${isAway ? "text-yellow-400" : "text-green-500"}`}
+                  >
+                    {isAway ? "Away" : "Online"}
+                  </span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuContent
-                  sideOffset={8}
-                  align="end"
+                  sideOffset={0}
+                  align="center"
                   className="w-auto min-w-[100px] bg-theme-base border border-theme-border rounded-[8px] shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
                 >
                   <DropdownMenuItem
                     onClick={() => setStatus("online")}
-                    className="px-3 py-2 text-xs text-green-500 hover:bg-theme-border flex items-center gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2 text-xs text-green-500 hover:bg-theme-border flex rounded-[8px] items-center gap-2 cursor-pointer outline-none"
                   >
                     <div className="w-2 h-2 bg-green-600 rounded-full" />
                     <span>Online</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setStatus("away")}
-                    className="px-3 py-2 text-xs text-yellow-500 hover:bg-theme-border flex items-center gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2 text-xs text-yellow-500 hover:bg-theme-border rounded-[8px] flex items-center gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon
                       icon={Moon02Icon}
