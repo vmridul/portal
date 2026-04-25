@@ -4,7 +4,6 @@ import { ChatInputBar } from "./ChatInputBar";
 import {
   useTypingIndicators,
 } from "@/hooks/useMessageActions";
-import { useMarkAsRead } from "@/hooks/useMarkAsRead";
 import type { User } from "@/lib/types";
 import { MediaLightbox } from "@/components/ui/MediaLightbox";
 
@@ -34,7 +33,6 @@ export function ChatUI({
   const [returnToLiveTrigger, setReturnToLiveTrigger] = useState(0);
 
   const { typingUsers } = useTypingIndicators(room_id);
-  const markAsRead = useMarkAsRead(room_id);
 
   const handleScrollToBottomRequest = useCallback(() => {
     setReturnToLiveTrigger((previous) => previous + 1);
@@ -55,7 +53,6 @@ export function ChatUI({
           textColor={textColor}
           onDeleteRequest={onDeleteRequest}
           returnToLiveTrigger={returnToLiveTrigger}
-          markAsRead={markAsRead}
         />
       </div>
 

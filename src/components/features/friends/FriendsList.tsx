@@ -15,6 +15,7 @@ import { getDirectConversationId } from "@/lib/utils/message";
 import { useVisibleActiveCalls, ConvexFriend } from "@/hooks";
 import { useRouter } from "next/navigation";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import { useColor } from "@/contexts/colorContext";
 
 export default function FriendsList({
   friends,

@@ -1,6 +1,5 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-import { countUnreadMessages } from "./lib/conversations";
 
 export const getRoomDetails = query({
   args: { room_id: v.string() },
@@ -56,18 +55,12 @@ export const getUserRooms = query({
           memberCount: allRoomMembers.length,
           owner_id: owner?.user_id || null,
           joined_at: membership._creationTime,
-
-          last_msg_preview: membership.last_msg_preview,
-          last_msg_time: membership.last_msg_time,
-          last_read_time: membership.last_read_time,
         };
       }),
     );
 
-    // Sort by most recent activity first, fall back to join time
-    return roomsWithCount.sort(
-      (a, b) => (b.last_msg_time || b.joined_at) - (a.last_msg_time || a.joined_at)
-    );
+    // Sort by join time (membership creation)
+    return roomsWithCount.sort((a, b) => b.joined_at - a.joined_at);
   },
 });
 

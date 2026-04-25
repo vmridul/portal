@@ -14,28 +14,11 @@ export const getMessageNotifications = query({
       .take(100);
 
     // Fetch all relevant read watermarks to determine isRead status
-    const memberships = await ctx.db
-      .query("roomMembers")
-      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
-      .collect();
-    
-    const friendships = await ctx.db
-      .query("friends")
-      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
-      .collect();
-
-    const readStateMap: Record<string, number> = {};
-    for (const m of memberships) readStateMap[m.room_id] = m.last_read_time ?? 0;
-    for (const f of friendships) readStateMap[f.friend_id] = f.last_read_time ?? 0;
-
     return await Promise.all(
       notifications.map(async (notification) => {
         const call = notification.call_id
           ? await ctx.db.get(notification.call_id)
           : null;
-
-        const lastRead = readStateMap[notification.source_id] ?? 0;
-        const isRead = notification._creationTime <= lastRead;
 
         return {
           id: notification._id,
@@ -56,7 +39,7 @@ export const getMessageNotifications = query({
               ? call?.allParticipants || call?.participants || []
               : [],
           createdAt: notification._creationTime,
-          isRead,
+          isRead: false,
         };
       }),
     );

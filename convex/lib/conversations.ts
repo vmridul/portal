@@ -86,17 +86,8 @@ export async function updateConversationMetadata(
   timestamp: number,
 ) {
   if (conversationType === "room") {
-    const members = await db
-      .query("roomMembers")
-      .withIndex("by_room_id", (q) => q.eq("room_id", conversationId))
-      .collect();
-
-    for (const member of members) {
-      await db.patch(member._id, {
-        last_msg_preview: preview,
-        last_msg_time: timestamp,
-      });
-    }
+    // Room-level last_msg metadata is now handled by derived queries or a separate table
+    return;
   } else {
     const friendId = extractFriendId(conversationId, senderId);
     if (!friendId) return;
@@ -116,23 +107,4 @@ export async function updateConversationMetadata(
   }
 }
 
-/** 
- * Derived unread count helper.
- * Counts messages with _creationTime > lastReadTime.
- * Optimized with take(limit) for UI badges.
- */
-export async function countUnreadMessages(
-  db: DatabaseReader,
-  conversationId: string,
-  lastReadTime: number,
-  limit: number = 100,
-): Promise<number> {
-  const unread = await db
-    .query("messages")
-    .withIndex("by_conversation", (q) =>
-      q.eq("conversation_id", conversationId).gt("_creationTime", lastReadTime),
-    )
-    .take(limit);
-
-  return unread.length;
 }

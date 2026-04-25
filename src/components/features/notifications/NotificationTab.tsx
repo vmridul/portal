@@ -28,19 +28,6 @@ export default function NotificationTab() {
   const { rooms } = useRooms();
   const { friends } = useFriends();
 
-  // Pre-compute lookup maps once
-  const friendReadTimes = useMemo(() => {
-    const map = new Map<string, number>();
-    friends.forEach((f) => map.set(f.friend.user_id, f.last_read_time ?? 0));
-    return map;
-  }, [friends]);
-
-  const roomReadTimes = useMemo(() => {
-    const map = new Map<string, number>();
-    rooms.forEach((r) => map.set(r.room_id, r.last_read_time ?? 0));
-    return map;
-  }, [rooms]);
-
   const isOnFriendPage = pathname.startsWith("/portal/friend");
 
   const isLoading = isNotificationsLoading && notifications.length === 0;

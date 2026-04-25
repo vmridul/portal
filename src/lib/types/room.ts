@@ -7,7 +7,4 @@ export interface UserRoom {
   } | null;
   owner_id?: string | null;
   joined_at?: number;
-  last_msg_preview?: string;
-  last_msg_time?: number;
-  last_read_time?: number;
 }

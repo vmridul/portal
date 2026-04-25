@@ -1,6 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { countUnreadMessages, buildDirectConversationId } from "./lib/conversations";
+import { buildDirectConversationId } from "./lib/conversations";
 
 export const getFriends = query({
   args: {},
@@ -37,8 +37,6 @@ export const getFriends = query({
           last_msg_sender: f.last_msg_sender,
           updated_at: f.updated_at,
           _creationTime: f._creationTime,
-
-          last_read_time: f.last_read_time,
         };
       })
     );

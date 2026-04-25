@@ -24,8 +24,7 @@ export const MessageList = React.memo(
     textColor,
     onDeleteRequest,
     returnToLiveTrigger,
-    markAsRead,
-  }: MessageListProps & { markAsRead: (readUntil: number) => void }) => {
+  }: MessageListProps) => {
     // ── Message window (data + state machine) ─────────────────────────────
     const messageWindow = useMessageWindow(conversationId, initialMessageId);
 
@@ -74,22 +73,6 @@ export const MessageList = React.memo(
       messageWindow.messages.length > 0
         ? messageWindow.messages[messageWindow.messages.length - 1]._id
         : null;
-
-    // ── Read Receipt Management ───────────────────────────────────────────
-    // 1. Force a read-receipt on mount/room-switch if there are messages
-    useEffect(() => {
-      if (messageWindow.messages.length > 0) {
-        const latestMessage = messageWindow.messages[messageWindow.messages.length - 1];
-        markAsRead(latestMessage._creationTime, true);
-      }
-    }, [conversationId]); // Only on room switch
-
-    // 2. Reactively mark as read when new messages arrive in LIVE mode
-    useEffect(() => {
-      if (messageWindow.mode !== "LIVE" || messageWindow.messages.length === 0) return;
-      const latestMessage = messageWindow.messages[messageWindow.messages.length - 1];
-      markAsRead(latestMessage._creationTime);
-    }, [messageWindow.mode, messageWindow.messages, markAsRead]);
 
     // ── Loading state ─────────────────────────────────────────────────────
 

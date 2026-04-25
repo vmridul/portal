@@ -32,8 +32,8 @@ export function RoomsProvider({
         return r;
       })
       .sort((a: UserRoom, b: UserRoom) => {
-        const timeA = a.last_msg_time ?? a.joined_at ?? 0;
-        const timeB = b.last_msg_time ?? b.joined_at ?? 0;
+        const timeA = a.joined_at ?? 0;
+        const timeB = b.joined_at ?? 0;
         return timeB - timeA;
       });
 

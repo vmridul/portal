@@ -15,7 +15,6 @@ import type * as lib_conversations from "../lib/conversations.js";
 import type * as messages from "../messages.js";
 import type * as presence from "../presence.js";
 import type * as reactions from "../reactions.js";
-import type * as readState from "../readState.js";
 import type * as roomQueries from "../roomQueries.js";
 import type * as rooms from "../rooms.js";
 import type * as storage from "../storage.js";
@@ -36,7 +35,6 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   presence: typeof presence;
   reactions: typeof reactions;
-  readState: typeof readState;
   roomQueries: typeof roomQueries;
   rooms: typeof rooms;
   storage: typeof storage;
