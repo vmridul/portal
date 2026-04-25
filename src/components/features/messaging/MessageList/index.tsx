@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { MessageItem } from "../MessageItem";
 import { usePinnedDate } from "@/hooks/ui/usePinnedDate";
 import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
@@ -10,6 +10,7 @@ import { TypingIndicator } from "./TypingIndicator";
 import { FloatingButtons } from "./FloatingButtons";
 import { MessageListProps } from "./types";
 import { useMessageListBridge } from "./useMessageListBridge";
+import { useMessageActions } from "@/hooks/useMessageActions";
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,7 @@ export const MessageList = React.memo(
   }: MessageListProps) => {
     // ── Message window (data + state machine) ─────────────────────────────
     const messageWindow = useMessageWindow(conversationId, initialMessageId);
+    const { clearUnreadCount } = useMessageActions();
 
     // ── Scroll manager (DOM scroll concerns) ──────────────────────────────
     const scrollManager = useScrollManager({
@@ -68,6 +70,23 @@ export const MessageList = React.memo(
         user,
         returnToLiveTrigger,
       });
+
+    const latestMessageId =
+      messageWindow.messages.length > 0
+        ? messageWindow.messages[messageWindow.messages.length - 1]._id
+        : null;
+
+    // Clear unread count when new messages arrive while in LIVE mode
+    useEffect(() => {
+      if (messageWindow.mode === "LIVE") {
+        clearUnreadCount(conversationId);
+      }
+    }, [
+      conversationId,
+      messageWindow.mode,
+      latestMessageId,
+      clearUnreadCount,
+    ]);
 
     // ── Loading state ─────────────────────────────────────────────────────
 
