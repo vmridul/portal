@@ -1,5 +1,5 @@
 import * as Popover from "@radix-ui/react-popover";
-import * as Tabs from "@radix-ui/react-tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useUIStore } from "@/store/uiStore";
 import { timeAgo } from "@/lib/utils/date";
 import Image from "next/image";
@@ -112,23 +112,16 @@ export default function PendingRequestMenu({
           align="end"
           onEscapeKeyDown={() => setPendingRequestMenu(false)}
         >
-          <Tabs.Root defaultValue="received" className="flex flex-col h-full">
-            <Tabs.List className="bg-theme-surface text-sm text-white h-9 rounded-[8px] w-fit p-1 flex items-center gap-1">
-              <Tabs.Trigger
+          <Tabs defaultValue="received" className="flex flex-col h-full">
+            <TabsList className="bg-theme-surface text-sm text-white h-9 rounded-[8px] w-fit p-1 flex items-center gap-1">
+              <TabsTrigger
                 value="received"
-                className="px-3 py-1 rounded-[6px] data-[state=active]:bg-theme-hover hover:bg-theme-hover"
-              >
-                Received
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="sent"
-                className="px-3 py-1 rounded-[6px] data-[state=active]:bg-theme-hover hover:bg-theme-hover"
-              >
-                Sent
-              </Tabs.Trigger>
-            </Tabs.List>
+                className="px-3 py-1 rounded-[6px]"
+              />
+              <TabsTrigger value="sent" className="px-3 py-1 rounded-[6px]" />
+            </TabsList>
 
-            <Tabs.Content
+            <TabsContent
               value="received"
               className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto"
             >
@@ -167,9 +160,9 @@ export default function PendingRequestMenu({
                   />
                 ))
               )}
-            </Tabs.Content>
+            </TabsContent>
 
-            <Tabs.Content
+            <TabsContent
               value="sent"
               className="mt-2 flex flex-col gap-1 max-h-[200px] overflow-y-auto"
             >
@@ -197,8 +190,8 @@ export default function PendingRequestMenu({
                   />
                 ))
               )}
-            </Tabs.Content>
-          </Tabs.Root>
+            </TabsContent>
+          </Tabs>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
