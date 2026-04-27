@@ -45,13 +45,12 @@ export function ChatInputBar(props: ChatInputBarProps) {
   return (
     <div
       {...getRootProps()}
-      className="flex flex-col z-[99] md:w-[50%] md:min-w-[400px] w-[80%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
+      className="flex flex-col z-[99] md:w-[50%] md:min-w-[400px] w-[95%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out"
     >
       {/* File preview */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          file.upload.file ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${file.upload.file ? "max-h-32 opacity-100 mb-2" : "max-h-0 opacity-0"
+          }`}
       >
         {file.upload.file && (
           <div className="flex items-center gap-3 pb-1 bg-theme-surface/40 rounded-xl  relative group">
@@ -109,9 +108,8 @@ export function ChatInputBar(props: ChatInputBarProps) {
 
       {/* Editing banner */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          editing.message ? "max-h-20 opacity-100 mb-2" : "max-h-0 opacity-0"
-        }`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${editing.message ? "max-h-20 opacity-100 mb-2" : "max-h-0 opacity-0"
+          }`}
       >
         {editing.message && (
           <div className="flex items-center rounded-xl relative text-gray-300">

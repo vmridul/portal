@@ -1,5 +1,5 @@
 const STORAGE_KEY = "chatColor";
-const DEFAULT_CHAT_COLOR = "#4a31b0";
+const DEFAULT_CHAT_COLOR = "#ffffff";
 
 export function hexToHsl(hex: string): [number, number, number] {
   let value = hex.trim();

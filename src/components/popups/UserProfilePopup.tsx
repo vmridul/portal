@@ -99,7 +99,7 @@ export function UserProfilePopup({
             align={align}
             sideOffset={8}
             alignOffset={0}
-            className="z-[9999] w-64 rounded-xl border border-theme-border bg-theme-surface animate-in fade-in duration-200"
+            className="z-[9999] w-64 rounded-xl border border-theme-border outline-none bg-theme-surface animate-in fade-in duration-200"
             onEscapeKeyDown={() => setIsOpen(false)}
             onPointerDownOutside={(e) => {
               const target = e.target as HTMLElement;
