@@ -579,6 +579,25 @@ export default function Page() {
           </div>
         </div>
       </section>
+      <section className="h-96 w-full bg-white relative">
+        <div className="absolute inset-0 z-[1000] overflow-hidden">
+          <PixelBlast
+            variant="square"
+            pixelSize={4}
+            color="#000000"
+            patternScale={2}
+            patternDensity={1}
+            enableRipples
+            rippleSpeed={0.3}
+            rippleThickness={0.1}
+            rippleIntensityScale={1}
+            speed={0.3}
+            transparent
+            edgeFade={0.25}
+          />
+        </div>
+      </section>
+
     </div>
   );
 }
