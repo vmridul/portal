@@ -67,7 +67,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
         </div>
       </div>
 
-      <div className="mt-auto w-full flex flex-col gap-2 p-1 bg-theme-surface/50">
+      <div className="mt-auto w-full flex flex-col p-1 bg-theme-surface/50">
         <CallWidgetMock
           name="Projects"
           className="w-full bg-theme-hover border-none shadow-none mb-2"
@@ -144,14 +144,14 @@ export const FullAppMock = ({ className }: { className?: string }) => (
       </div>
     </div>
 
-    {/* Right Sidebar (Copied from production RightSidebar.tsx) */}
+    {/* Right Sidebar */}
     <div className="w-[280px] bg-theme-surface border-theme-border border-l flex flex-col overflow-hidden text-white select-none">
       <div className="relative w-[268px] flex-none flex items-center justify-between mt-2 rounded-[8px] py-2 px-3 mx-1">
         <div className="flex gap-3 items-center">
           <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
             P
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col items-start">
             <span className="truncate max-w-[120px] text-sm">Projects</span>
             <span className="text-white/40 text-[10px]">ID: 6543</span>
           </div>

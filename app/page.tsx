@@ -127,8 +127,8 @@ export default function Page() {
       desc: "Chat with friends or join a room to connect in one place.",
       component: (
         <div className=" relative h-32 w-full flex items-center justify-center">
-          <RoomItemMock name="Projects" id="4567" className="scale-110 w-[221px] absolute top-6 -left-2 z-10" />
-          <RoomItemMock name="Roooom" id="1345" className="scale-110 w-[221px] absolute top-6 -right-2 z-10" />
+          <RoomItemMock name="Projects" id="4567" className="scale-110 w-[221px] absolute -top-4 -left-4 z-10" />
+          <RoomItemMock name="Roooom" id="1345" className="scale-110 w-[221px] absolute -top-4 -right-4 z-10" />
           <FriendItemMock name="Pika" avatar="/assets/pi.png" message="You: pika pika!" className="scale-110 h-16 w-[210px] absolute top-24 left-1 z-20" />
           <FriendItemMock name="Charm" avatar="/assets/ch.png" message="im burning" className="scale-110 h-16 w-[210px] absolute top-24 right-1 z-20" />
         </div>
@@ -163,7 +163,7 @@ export default function Page() {
 
 
   return (
-    <div ref={containerRef} className="h-screen bg-[#0a080b] overflow-y-auto overflow-x-hidden relative">
+    <div ref={containerRef} className="h-screen selection:bg-white/10 bg-[#0a080b] overflow-y-auto overflow-x-hidden relative">
       <div ref={contentRef} className="w-full">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <PixelBlast
@@ -364,7 +364,7 @@ export default function Page() {
       <section className="relative mt-56 h-screen text-white overflow-hidden flex items-center justify-center">
 
         <div className=" relative w-full max-w-5xl h-screen flex items-center justify-center" style={{ WebkitMaskImage: 'radial-gradient(circle, black 35%, transparent 85%)', maskImage: 'radial-gradient(circle, black 35%, transparent 85%)' }}>
-          <div className="select-none absolute top-[32%] left-[18%] z-0 hidden md:block">
+          <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
             <RoomItemMock />
           </div>
           <div className="select-none absolute top-[30%] -right-[12%] z-0 hidden md:block">
@@ -380,7 +380,7 @@ export default function Page() {
             <RoomMembersMock />
           </div>
 
-          <div className="select-none absolute top-[23%] left-[18%] z-0 hidden md:block">
+          <div className="select-none absolute top-[24%] left-[18%] z-0 hidden md:block">
             <ProfileButtonMock />
           </div>
           <div className="select-none absolute top-[41%] -left-[12%] z-0 hidden md:block">
@@ -422,7 +422,7 @@ export default function Page() {
             😁
           </div>
 
-          <span className="text-5xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <span className="selection:bg-white/10 text-5xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             Beautifully Crafted<br />Interface
           </span>
         </div>
@@ -530,8 +530,8 @@ export default function Page() {
               <h2 className="text-5xl md:text-6xl font-bold text-white mb-2 tracking-tight leading-[1.05]">
                 Theme As You Wish
               </h2>
-              <p className="text-[#888] text-md max-w-md mx-auto leading-relaxed">
-                except light theme :)
+              <p className="text-[#888] text-xs max-w-md mx-auto leading-relaxed">
+                except light theme to protect your eyes :)
               </p>
               <div className="mt-8 flex flex-col items-center">
                 <div

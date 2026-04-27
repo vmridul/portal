@@ -6,7 +6,7 @@ import { Logout01Icon } from "@hugeicons/core-free-icons";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 
 export const ProfileButtonMock = ({ name = "Sam", avatar = "/assets/ch.png", className }: { name?: string; avatar?: string; className?: string }) => (
-  <div className={`flex justify-between items-center cursor-default hover:bg-theme-hover ease-in-out rounded-xl w-56 px-2 py-2 ${className}`}>
+  <div className={`flex justify-between items-center cursor-default bg-[#272727] ease-in-out rounded-xl w-56 px-2 py-2 ${className}`}>
     <div className="flex gap-4 items-center">
       <div className="relative">
         <Image

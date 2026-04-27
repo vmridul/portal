@@ -22,7 +22,7 @@ export const ActiveCallMock = ({ className }: { className?: string }) => (
         <div className="flex gap-2">
             <button
 
-                className={`cursor-default flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
+                className={`cursor-default flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${isMuted ? "bg-red-500/20 text-red-400" : "bg-[#272727] text-white"
                     }`}
             >
                 {isMuted ? (
