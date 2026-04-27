@@ -1,6 +1,6 @@
 import "@/app/globals.css";
 
-import { DM_Sans, Inter, Lexend } from "next/font/google";
+import { DM_Sans, Galindo, Inter, Lexend } from "next/font/google";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
@@ -17,6 +17,8 @@ import {
   Show,
   UserButton,
 } from "@clerk/nextjs";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -32,6 +34,12 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-dm-sans",
+});
+
+const galindo = Galindo({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-galindo",
 });
 
 const lexend = Lexend({
@@ -52,6 +60,7 @@ export default function RootLayout({
         inter.variable,
         dmSans.variable,
         lexend.variable,
+        galindo.variable,
       )}
     >
       <head>
@@ -60,7 +69,31 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className={`body`}>
-        <ClerkProvider>
+        <ClerkProvider
+          localization={{
+            signIn: {
+              start: {
+                title: "Portal",
+                subtitle: "Log in to your account",
+              },
+            },
+            signUp: {
+              start: {
+                title: "Portal",
+                subtitle: "Create an account",
+              },
+            },
+          }}
+          appearance={{
+            elements: {
+              headerTitle: `text-white text-3xl font-semibold ${galindo.className}`,
+              headerSubtitle: "text-gray-400",
+            },
+            variables: {
+              fontFamily: lexend.style.fontFamily,
+            },
+          }}
+        >
           <header className="fixed top-4 right-4 z-50 flex gap-2">
             <Show when="signed-out">
               <SignInButton mode="modal">
@@ -81,13 +114,15 @@ export default function RootLayout({
           <div className="flex min-h-screen">
             <ConvexClientProvider>
               <Suspense>
-                <PresenceProvider>
-                  <ColorProvider>
-                    <GlobalModals />
-                    <main className="flex-1 font-sans">{children}</main>
-                    <Toaster theme="dark" position="top-center" gap={12} />
-                  </ColorProvider>
-                </PresenceProvider>
+                <TooltipProvider>
+                  <PresenceProvider>
+                    <ColorProvider>
+                      <GlobalModals />
+                      <main className="flex-1 font-sans">{children}</main>
+                      <Toaster theme="dark" position="top-center" gap={12} />
+                    </ColorProvider>
+                  </PresenceProvider>
+                </TooltipProvider>
               </Suspense>
             </ConvexClientProvider>
           </div>

@@ -11,6 +11,8 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { useToggleReaction } from "@/hooks/useToggleReaction";
 import { ReactionToolbar } from "./ReactionToolbar";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface MessageToolbarProps {
   content?: string | null;
@@ -52,6 +54,7 @@ export const MessageToolbar = ({
         open={hoverCardOpen}
         onOpenChange={setHoverCardOpen}
       >
+
         <HoverCard.Trigger asChild>
           <button
             className={`p-1.5 rounded-[6px] transition-colors ${hoverCardOpen ? "bg-theme-hover text-white" : "text-gray-400 hover:text-white hover:bg-theme-hover"}`}
@@ -59,6 +62,8 @@ export const MessageToolbar = ({
             <HugeiconsIcon icon={Happy01Icon} className="w-4 h-4" />
           </button>
         </HoverCard.Trigger>
+
+
 
         <HoverCard.Portal>
           <HoverCard.Content
@@ -73,15 +78,18 @@ export const MessageToolbar = ({
       </HoverCard.Root>
 
       {isCurrentUser && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEditRequest();
-          }}
-          className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white"
-        >
-          <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
-        </button>
+        <TooltipWrapper content="Edit">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditRequest();
+            }}
+            className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white"
+          >
+            <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
+          </button>
+        </TooltipWrapper>
+
       )}
 
       {(content || isCurrentUser) && (
@@ -90,11 +98,14 @@ export const MessageToolbar = ({
           open={menuOpen}
           onOpenChange={setMenuOpen}
         >
+
           <DropdownMenu.Trigger asChild>
             <button className="p-1.5 rounded-[6px] transition-colors hover:bg-theme-hover text-gray-400 hover:text-white">
               <HugeiconsIcon icon={MoreHorizontalIcon} className="w-4 h-4" />
             </button>
           </DropdownMenu.Trigger>
+
+
 
           <DropdownMenu.Portal>
             <DropdownMenu.Content

@@ -16,6 +16,8 @@ import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import type { ConvexFriend } from "@/hooks/useFriends";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface FriendChatHeaderProps {
   friend: ConvexFriend | undefined;
@@ -58,16 +60,22 @@ export function FriendChatHeader({
   return (
     <>
       <div className="flex shrink-0 items-center p-2 h-12 w-full gap-4 border-b border-theme-border bg-theme-hover bg-opacity-100">
-        <HugeiconsIcon
-          icon={Menu01Icon}
-          onClick={() => setLeftMobileMenu(!leftMobileMenu)}
-          className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70 md:hidden"
-        />
-        <HugeiconsIcon
-          icon={ArrowLeft01Icon}
-          onClick={() => router.push("/portal")}
-          className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
-        />
+        <TooltipWrapper content="Main menu" side="right">
+          <HugeiconsIcon
+            icon={Menu01Icon}
+            onClick={() => setLeftMobileMenu(!leftMobileMenu)}
+            className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70 md:hidden"
+          />
+        </TooltipWrapper>
+
+        <TooltipWrapper content="Back to portal">
+          <HugeiconsIcon
+            icon={ArrowLeft01Icon}
+            onClick={() => router.push("/portal")}
+            className="w-7 h-7 hover:bg-theme-base cursor-pointer duration-100 transition-all ease-in-out rounded-[8px] p-1 text-white/70"
+          />
+        </TooltipWrapper>
+
         <UserProfilePopup
           user={{
             id: friend?.friend?.user_id || "",
@@ -99,49 +107,56 @@ export function FriendChatHeader({
           </div>
         </UserProfilePopup>
         <div className="flex items-center gap-2">
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSidebar("media");
-            }}
-            className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
-              ? "bg-theme-base"
-              : "hover:bg-theme-base"
-              }`}
-          >
-            <HugeiconsIcon
-              icon={Image02Icon}
-              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media"
-                ? "text-white"
-                : "text-white/70"
+          <TooltipWrapper content="Media Gallery">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSidebar("media");
+              }}
+              className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
+                ? "bg-theme-base"
+                : "hover:bg-theme-base"
                 }`}
-            />
-          </div>
-          <div
-            onClick={() => toggleSidebar("calls")}
-            className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
-              ? "bg-theme-base"
-              : "hover:bg-theme-base"
-              }`}
-          >
-            <HugeiconsIcon
-              icon={CallIcon}
-              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
-                ? "text-white"
-                : "text-white/70"
-                }`}
-            />
-            {activeCalls.length > 0 && (
-              <span
-                className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === directConversationId
-                  ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
-                  : "bg-green-500"
+            >
+              <HugeiconsIcon
+                icon={Image02Icon}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media"
+                  ? "text-white"
+                  : "text-white/70"
                   }`}
               />
-            )}
-          </div>
+            </div>
+          </TooltipWrapper>
+
+          <TooltipWrapper content="Calls">
+            <div
+              onClick={() => toggleSidebar("calls")}
+              className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
+                ? "bg-theme-base"
+                : "hover:bg-theme-base"
+                }`}
+            >
+              <HugeiconsIcon
+                icon={CallIcon}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
+                  ? "text-white"
+                  : "text-white/70"
+                  }`}
+              />
+              {activeCalls.length > 0 && (
+                <span
+                  className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === directConversationId
+                    ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                    : "bg-green-500"
+                    }`}
+                />
+              )}
+            </div>
+          </TooltipWrapper>
+
 
           <DropdownMenu.Root modal={false}>
+
             <DropdownMenu.Trigger asChild>
               <button className="flex items-center">
                 <HugeiconsIcon
@@ -150,6 +165,8 @@ export function FriendChatHeader({
                 />
               </button>
             </DropdownMenu.Trigger>
+
+
             <DropdownMenu.Portal>
               <DropdownMenu.Content
                 sideOffset={8}

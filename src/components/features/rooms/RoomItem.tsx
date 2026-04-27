@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
 import type { UserRoom } from "@/lib/types/room";
+import { useColor } from "@/contexts/colorContext";
 
 interface RoomItemProps {
   room: UserRoom;
@@ -23,6 +24,7 @@ export const RoomItem = memo(function RoomItem({
   const roomId = room?.Rooms?.room_id ?? room?.room_id ?? "";
   const roomName = room?.Rooms?.room_name ?? "";
 
+  const { textColor } = useColor();
   return (
     <div
       onClick={(e) => {
@@ -30,9 +32,8 @@ export const RoomItem = memo(function RoomItem({
         setMobileMenu?.(false);
         router.push(`/portal/room/${roomId}`);
       }}
-      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${
-        currentRoom?.toString() === roomId && "bg-theme-hover"
-      }`}
+      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === roomId && "bg-theme-hover"
+        }`}
     >
       <div className="relative flex-shrink-0">
         <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
@@ -52,11 +53,7 @@ export const RoomItem = memo(function RoomItem({
             <span className={`truncate max-w-[100px] text-white`}>
               {roomName}
             </span>
-            {unreadCount > 0 && (
-              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
+
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">
@@ -64,6 +61,11 @@ export const RoomItem = memo(function RoomItem({
             </span>
           </div>
         </div>
+        {unreadCount > 0 && (
+          <span style={{ color: textColor }} className="mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-theme-accent p-2 text-[8px]">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
       </div>
     </div>
   );

@@ -17,6 +17,8 @@ import {
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
 import React from "react";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface RequestUser {
   avatar?: string;
@@ -84,8 +86,8 @@ export default function PendingRequestMenu({
       open={pendingRequestMenu}
       onOpenChange={setPendingRequestMenu}
     >
-      <Popover.PopoverTrigger asChild>
-        <div className="flex items-center text-sm gap-1">
+      <TooltipWrapper content="Friend Requests">
+        <Popover.Trigger asChild>
           <button
             onClick={() => {
               setPendingRequestMenu(!pendingRequestMenu);
@@ -94,14 +96,12 @@ export default function PendingRequestMenu({
           >
             <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
             <div
-              className={`${
-                pendingRequests.length > 0 ? "block" : "hidden"
-              } w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2
-                        `}
+              className={`${pendingRequests.length > 0 ? "block" : "hidden"} w-2 h-2 bg-red-600 rounded-full absolute top-1 right-2`}
             ></div>
           </button>
-        </div>
-      </Popover.PopoverTrigger>
+        </Popover.Trigger>
+      </TooltipWrapper>
+
       <Popover.Anchor asChild>
         <div />
       </Popover.Anchor>
@@ -137,24 +137,30 @@ export default function PendingRequestMenu({
                     createdAt={request._creationTime}
                     actions={
                       <>
-                        <button
-                          onClick={() => handleAccept(request.id)}
-                          className="p-1 rounded-[6px] hover:bg-theme-hover"
-                        >
-                          <HugeiconsIcon
-                            icon={Tick01Icon}
-                            className="w-4 h-4 text-green-500"
-                          />
-                        </button>
-                        <button
-                          onClick={() => handleReject(request.id, true)}
-                          className="p-1 rounded-[6px] hover:bg-theme-hover"
-                        >
-                          <HugeiconsIcon
-                            icon={Cancel01Icon}
-                            className="w-4 h-4 text-gray-300"
-                          />
-                        </button>
+                        <TooltipWrapper content="Accept">
+                          <button
+                            onClick={() => handleAccept(request.id)}
+                            className="p-1 rounded-[6px] hover:bg-theme-hover"
+                          >
+                            <HugeiconsIcon
+                              icon={Tick01Icon}
+                              className="w-4 h-4 text-green-500"
+                            />
+                          </button>
+                        </TooltipWrapper>
+
+                        <TooltipWrapper content="Reject">
+                          <button
+                            onClick={() => handleReject(request.id, true)}
+                            className="p-1 rounded-[6px] hover:bg-theme-hover"
+                          >
+                            <HugeiconsIcon
+                              icon={Cancel01Icon}
+                              className="w-4 h-4 text-gray-300"
+                            />
+                          </button>
+                        </TooltipWrapper>
+
                       </>
                     }
                   />
@@ -177,15 +183,18 @@ export default function PendingRequestMenu({
                     user={request.receiver ?? {}}
                     createdAt={request._creationTime}
                     actions={
-                      <button
-                        onClick={() => handleReject(request.id, false)}
-                        className="p-1 rounded-[6px] hover:bg-theme-hover"
-                      >
-                        <HugeiconsIcon
-                          icon={Cancel01Icon}
-                          className="w-4 h-4 text-gray-300"
-                        />
-                      </button>
+                      <TooltipWrapper content="Cancel request">
+                        <button
+                          onClick={() => handleReject(request.id, false)}
+                          className="p-1 rounded-[6px] hover:bg-theme-hover"
+                        >
+                          <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            className="w-4 h-4 text-gray-300"
+                          />
+                        </button>
+                      </TooltipWrapper>
+
                     }
                   />
                 ))

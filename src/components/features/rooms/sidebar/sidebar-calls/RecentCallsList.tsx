@@ -79,7 +79,7 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
           {dateCalls.map((call, idx) => (
             <div
               key={idx}
-              className="px-3 py-3 hover:bg-theme-hover/50 cursor-pointer transition-colors border-b border-theme-border/30 last:border-0"
+              className="px-3 py-3 hover:bg-theme-hover/50 transition-colors border-b border-theme-border/30 last:border-0"
             >
               <div className="flex items-center gap-3 px-2">
                 <div className="flex-1 min-w-0">

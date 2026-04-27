@@ -3,6 +3,8 @@ import * as Popover from "@radix-ui/react-popover";
 import EmojiPicker, { Theme, EmojiStyle } from "emoji-picker-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Happy01Icon } from "@hugeicons/core-free-icons";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface ChatEmojiPickerProps {
   onEmojiSelect: (emoji: any) => void;
@@ -25,27 +27,34 @@ export function ChatEmojiPicker({
   sideOffset = 60,
   alignOffset = 0,
 }: ChatEmojiPickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger asChild>
-        {trigger || (
-          <button
-            className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
-            disabled={disabled}
-          >
-            <HugeiconsIcon icon={Happy01Icon} className="text-gray-400 w-4 h-4" />
-          </button>
-        )}
-      </Popover.Trigger>
+    <Popover.Root>
+
+      <TooltipWrapper content={trigger ? null : "Add emoji"}>
+        <Popover.Trigger asChild>
+          {trigger || (
+            <button
+              className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+              disabled={disabled}
+            >
+              <HugeiconsIcon
+                icon={Happy01Icon}
+                className="text-gray-400 w-4 h-4"
+              />
+            </button>
+          )}
+        </Popover.Trigger>
+      </TooltipWrapper>
+
+
       <Popover.Portal>
         <Popover.Content
           side={side}
           align={align}
           sideOffset={sideOffset}
           alignOffset={alignOffset}
-          className="z-[1001] animate-in fade-in duration-200"
+          className="z-[9999] pointer-events-auto animate-in fade-in duration-200"
+
           onPointerDownOutside={(e) => {
             if (inputRef?.current && e.target === inputRef.current) {
               e.preventDefault();

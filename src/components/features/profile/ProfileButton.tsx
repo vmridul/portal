@@ -6,6 +6,8 @@ import type { User } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/store/uiStore";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 export const ProfileButton = ({
   user,
@@ -51,16 +53,25 @@ export const ProfileButton = ({
           )}
         </div>
       </div>
-      <HugeiconsIcon
-        icon={Logout01Icon}
-        onClick={(e) => {
-          e.stopPropagation();
-          import("@/store/uiStore").then((m) =>
-            m.useUIStore.getState().setModal("LOGOUT"),
-          );
-        }}
-        className="w-4 h-4 mr-1 text-white hover:text-gray-200 cursor-pointer"
-      />
+
+
+      <TooltipWrapper content="Logout" side="right">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            import("@/store/uiStore").then((m) =>
+              m.useUIStore.getState().setModal("LOGOUT"),
+            );
+          }}
+          className="p-1 hover:bg-theme-border rounded-lg transition-colors cursor-pointer"
+        >
+          <HugeiconsIcon
+            icon={Logout01Icon}
+            className="w-4 h-4 text-white hover:text-gray-200"
+          />
+        </div>
+      </TooltipWrapper>
+
     </div>
   );
 };

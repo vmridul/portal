@@ -10,6 +10,7 @@ import { formatToIST } from "@/lib/utils/date";
 import { useState, useEffect, useRef } from "react";
 import { useUserProfileActions } from "@/hooks";
 import { usePresence } from "@/contexts/presenceContext";
+import { TooltipWrapper } from "@/components/ui/tooltip";
 import {
   ConfirmDialog,
   Dialog,
@@ -198,18 +199,20 @@ export const UserInfoTab = () => {
           </div>
         </div>
         <div className="flex flex-col items-center gap-2 md:items-start w-full">
-          <Button
-            variant="other"
-            size="iconLg"
-            onClick={() => !isUploading && fileRef?.current?.click()}
-            disabled={isUploading}
-          >
-            {isUploading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <HugeiconsIcon icon={Upload01Icon} className="w-5 h-5" />
-            )}
-          </Button>
+          <TooltipWrapper content={isUploading ? "Uploading..." : "Upload"}>
+            <Button
+              variant="other"
+              size="iconLg"
+              onClick={() => !isUploading && fileRef?.current?.click()}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <HugeiconsIcon icon={Upload01Icon} className="w-5 h-5" />
+              )}
+            </Button>
+          </TooltipWrapper>
           <input
             ref={fileRef}
             type="file"

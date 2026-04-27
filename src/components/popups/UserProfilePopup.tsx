@@ -11,6 +11,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Message01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
 import { formatDateFull } from "@/lib/utils/date"
+import { TooltipWrapper } from "../ui/tooltip";
 
 import { useUIStore } from "@/store/uiStore";
 
@@ -141,6 +142,8 @@ export function UserProfilePopup({
               {/* TODO: add confirmation to remove sent req. */}
               {isFriend ? (
                 <div className="flex item-center gap-2 w-full">
+
+
                   <Button
                     data-dm-friend
                     onClick={handleDM}

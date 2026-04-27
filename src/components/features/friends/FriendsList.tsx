@@ -156,7 +156,7 @@ export default function FriendsList({
                           {friend?.friend?.username}
                         </span>
                         {unreadCount > 0 && (
-                          <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                          <span className="mr-2 inline-flex w-4 h-4 justify-center items-center rounded-full bg-theme-accent p-2 text-[8px]" style={{ color: textColor }}>
                             {unreadCount > 99 ? "99+" : unreadCount}
                           </span>
                         )}

@@ -2,6 +2,8 @@ import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface FloatingButtonsProps {
   showNewMessageBadge: boolean;
@@ -34,14 +36,19 @@ export function FloatingButtons({
         </button>
       )}
 
+
+
       {showScrollDownButton && (
-        <button
-          onClick={onScrollDownClick}
-          className="absolute bottom-5 z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 cursor-pointer border border-theme-border bg-theme-base transition-all duration-200 ease-out hover:bg-theme-hover active:scale-95"
-        >
-          <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-6 w-6")} />
-        </button>
+        <TooltipWrapper content="Scroll to bottom">
+          <button
+            onClick={onScrollDownClick}
+            className="absolute bottom-5 z-[2000] left-[50%] translate-x-[-50%] rounded-[10px] p-1 text-gray-400 cursor-pointer border border-theme-border bg-theme-base transition-all duration-200 ease-out hover:bg-theme-hover active:scale-95"
+          >
+            <HugeiconsIcon icon={ArrowDown01Icon} className={cn("h-6 w-6")} />
+          </button>
+        </TooltipWrapper>
       )}
+
     </>
   );
 }

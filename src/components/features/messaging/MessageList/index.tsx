@@ -118,7 +118,7 @@ export const MessageList = React.memo(
         <div
           ref={scrollManager.scrollContainerRef}
           onScroll={scrollManager.handleScroll}
-          className="flex-1 w-full overflow-y-auto scroll-smooth px-4"
+          className="flex-1 w-full overflow-y-auto scroll-smooth"
           style={{ overflowAnchor: "none" }}
         >
           <div className="flex flex-col min-h-full">

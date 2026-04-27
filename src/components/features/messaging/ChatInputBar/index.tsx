@@ -14,7 +14,9 @@ import { ProgressCircle } from "@/components/ui/ProgressCircle";
 import Image from "next/image";
 import { ChatEmojiPicker } from "../EmojiPicker";
 import { useChatInput } from "./useChatInput";
+import { TooltipWrapper } from "@/components/ui/tooltip";
 import type { ChatInputBarProps } from "./types";
+
 
 export function ChatInputBar(props: ChatInputBarProps) {
   const { room_id, type, color, textColor, scrollToBottom } = props;
@@ -96,12 +98,15 @@ export function ChatInputBar(props: ChatInputBarProps) {
               </p>
             </div>
 
-            <button
-              onClick={file.onCancel}
-              className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
-            </button>
+            <TooltipWrapper content="Cancel">
+              <button
+                onClick={file.onCancel}
+                className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
+              </button>
+            </TooltipWrapper>
+
           </div>
         )}
       </div>
@@ -119,12 +124,15 @@ export function ChatInputBar(props: ChatInputBarProps) {
             <div className="flex-1 min-w-0 pr-8">
               <p className="text-sm">Editing</p>
             </div>
-            <button
-              onClick={editing.onCancel}
-              className="absolute top-2 right-2 p-1 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
-            </button>
+            <TooltipWrapper content="Cancel editing">
+              <button
+                onClick={editing.onCancel}
+                className="absolute top-2 right-2 p-1 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
+              </button>
+            </TooltipWrapper>
+
           </div>
         )}
       </div>
@@ -178,30 +186,36 @@ export function ChatInputBar(props: ChatInputBarProps) {
         />
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => file.ref.current?.click()}
-              className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
-              disabled={file.upload.isUploading && !input.value.trim()}
-            >
-              <HugeiconsIcon
-                icon={Attachment01Icon}
-                className="text-gray-400 w-4 h-4"
-              />
-            </button>
+            <TooltipWrapper content="Attach file">
+              <button
+                onClick={() => file.ref.current?.click()}
+                className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
+                disabled={file.upload.isUploading && !input.value.trim()}
+              >
+                <HugeiconsIcon
+                  icon={Attachment01Icon}
+                  className="text-gray-400 w-4 h-4"
+                />
+              </button>
+            </TooltipWrapper>
+
             <ChatEmojiPicker
               onEmojiSelect={input.onEmojiClick}
               disabled={file.upload.isUploading && !input.value.trim()}
               inputRef={input.ref}
             />
           </div>
-          <button
-            onClick={actions.onSend}
-            style={{ backgroundColor: color, color: textColor }}
-            className="py-3 px-3 rounded-[12px] disabled:opacity-50"
-            disabled={!input.value.trim() && !file.upload.file}
-          >
-            <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
-          </button>
+          <TooltipWrapper content="Send message">
+            <button
+              onClick={actions.onSend}
+              style={{ backgroundColor: color, color: textColor }}
+              className="py-3 px-3 rounded-[12px] disabled:opacity-50"
+              disabled={!input.value.trim() && !file.upload.file}
+            >
+              <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" />
+            </button>
+          </TooltipWrapper>
+
         </div>
       </div>
 

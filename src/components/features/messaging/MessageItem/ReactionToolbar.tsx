@@ -1,7 +1,7 @@
-import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { ChatEmojiPicker } from "../EmojiPicker";
+import { TooltipWrapper } from "@/components/ui/tooltip";
 
 interface ReactionToolbarProps {
   onSelect: (emoji: string) => void;
@@ -37,9 +37,11 @@ export const ReactionToolbar = ({
           sideOffset={10}
           alignOffset={-130}
           trigger={
-            <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
-              <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
-            </button>
+            <TooltipWrapper content="Open Emoji Picker">
+              <button className="p-1.5 hover:bg-theme-hover rounded-[6px] transition-colors text-gray-400 hover:text-white">
+                <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
+              </button>
+            </TooltipWrapper>
           }
         />
       </div>

@@ -33,16 +33,20 @@ const buttonVariants = cva(
   },
 );
 
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 export interface ButtonProps
   extends
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   VariantProps<typeof buttonVariants> {
   loading?: boolean;
+  tooltip?: string;
+  tooltipSide?: "top" | "right" | "bottom" | "left";
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, loading, children, disabled, style, ...props },
+    { className, variant, size, loading, children, disabled, style, tooltip, tooltipSide, ...props },
     ref,
   ) => {
     const { color, textColor } = useColor();
@@ -52,7 +56,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ? { backgroundColor: color, color: textColor }
         : undefined;
 
-    return (
+    const button = (
       <button
         className={cn(buttonVariants({ variant, size }), className)}
         style={{ ...variantStyle, ...style }}
@@ -63,8 +67,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? "Loading..." : children}
       </button>
     );
+
+    if (tooltip) {
+      return (
+        <TooltipWrapper content={tooltip} side={tooltipSide}>
+          {button}
+        </TooltipWrapper>
+      );
+    }
+
+    return button;
   },
 );
+
 Button.displayName = "Button";
 
 export { Button, buttonVariants };

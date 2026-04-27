@@ -20,6 +20,7 @@ import { useUIStore } from "@/store/uiStore";
 import { useUnreadCounters } from "@/hooks";
 import PersistentCallWidget from "@/components/features/calls/PersistentCallWidget";
 import { useActiveConversationId } from "@/hooks/useActiveConversationId";
+import { useColor } from "@/contexts/colorContext";
 
 type LeftSidebarProps = {
   className?: string;
@@ -41,6 +42,7 @@ export default function LeftSidebar({
   const { setModal, leftMobileMenu, setLeftMobileMenu } = useUIStore();
   const { counters } = useUnreadCounters();
 
+  const { color, textColor } = useColor();
   const unreadByRoomId = useMemo(() => {
     const counts = new Map<string, number>();
     for (const counter of counters) {
@@ -110,7 +112,7 @@ export default function LeftSidebar({
                 <HugeiconsIcon icon={UserGroupIcon} className={`w-4 h-4`} />
                 <span>Friends</span>
                 {directUnreadCount > 0 && (
-                  <span className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                  <span style={{ color: textColor }} className="ml-auto inline-flex h-4 w-4 items-center justify-center rounded-full bg-theme-accent px-2 text-[8px]">
                     {directUnreadCount > 99 ? "99+" : directUnreadCount}
                   </span>
                 )}

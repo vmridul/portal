@@ -1,5 +1,7 @@
+"use client";
 import { SignIn } from "@clerk/nextjs";
 import { Lexend } from "next/font/google";
+import PixelBlast from "@/components/PixelBlast";
 
 const lexend = Lexend({
   weight: ["400", "600"],
@@ -8,7 +10,21 @@ const lexend = Lexend({
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full bg-theme-base flex items-center justify-center relative overflow-hidden">
+    <div className="selection:bg-white/10 min-h-screen w-full bg-[#0a0a0a] flex items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0"><PixelBlast
+        variant="square"
+        pixelSize={3}
+        color="#505050"
+        patternScale={2}
+        patternDensity={1}
+        enableRipples
+        rippleSpeed={0.3}
+        rippleThickness={0.1}
+        rippleIntensityScale={1}
+        speed={0.5}
+        transparent
+        edgeFade={0.1}
+      /></div>
       <div className="relative z-10 w-full max-w-md p-4">
         <SignIn
           routing="path"
@@ -17,38 +33,43 @@ export default function LoginPage() {
           fallbackRedirectUrl="/portal"
           appearance={{
             elements: {
-              rootBox: "bg-theme-surface rounded-xl border border-theme-border",
-              card: "bg-theme-surface shadow-none border-none",
+              rootBox: "bg-[#101010] rounded-xl",
+              card: "bg-[#101010] shadow-none border-none",
+              main: "bg-[#101010]",
+
               headerTitle: "text-white font-semibold",
               headerSubtitle: "text-gray-400",
-              socialButtonsBlockButton: "bg-theme-border hover:bg-theme-hover border border-theme-border text-white hover:text-white",
+              socialButtonsBlockButton: "bg-[#242424] hover:bg-[#242424] border border-[#242424] text-white hover:text-white",
               socialButtonsBlockButtonText: "text-white",
               formFieldLabel: "text-gray-300",
-              formFieldInput: "bg-theme-hover border border-theme-border rounded-lg text-white placeholder-[#666]",
-              formButtonPrimary: "bg-theme-accent hover:brightness-110 text-white rounded-lg",
-              footerActionLink: "text-theme-accent hover:text-theme-accent/80",
+              formFieldInput: "bg-[#272727] border border-[#242424] rounded-lg text-white placeholder-[#666]",
+              formButtonPrimary: "bg-[#ffffff] hover:bg-gray-200 text-black rounded-lg",
               footerText: "text-white",
-              dividerLine: "bg-theme-border",
+              dividerLine: "bg-[#242424]",
               dividerText: "text-gray-400",
               identityPreviewText: "text-white",
-              identityPreviewEditButton: "text-theme-accent",
-              formFieldInputShowPasswordButton: "text-gray-400 hover:text-white",
-              footer: "bg-theme-surface",
-              footerPageLink: "text-white",
-              otpCodeFieldInput: "bg-theme-hover border border-theme-border text-white rounded-lg",
-              badge: "bg-red-900/50 text-red-200",
+              formFieldInputShowPasswordButton: "text-gray-400",
+              footer: "bg-[#101010]",
+              footerAction: "bg-[#101010",
+              footerActionLink: "text-gray-300",
+              footerActionText: "text-white",
+              footerPageLink: "text-gray-200",
+              otpCodeFieldInput: "bg-[#272727] border border-[#242424] text-white rounded-lg",
               formFieldInputShowPasswordButtonText: "text-white",
               alternativeMethodsText: "text-gray-300",
               enterpriseBrandedSwitchText: "text-gray-300",
-              formFieldAction: "text-theme-accent",
+              formFieldAction: "text-white",
               backLink: "text-gray-300 hover:text-white",
               otpCodeFieldInputGroupText: "text-white",
               alternativeMethodsTextButton: "text-white",
+              lastAuthenticationStrategyBadge: "bg-gray-200 text-black"
+
             },
             variables: {
-              colorPrimary: "#4a31b0",
-              colorTextOnPrimary: "#ffffff",
-              colorInputBackground: "#252033",
+              colorPrimary: "white",
+              colorBackground: "#101010",
+              colorTextOnPrimary: "#101010",
+              colorInputBackground: "#272727",
               colorInputText: "#ffffff",
               colorText: "#ffffff",
               colorTextSecondary: "#a0a0a0",

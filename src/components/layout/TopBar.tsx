@@ -15,6 +15,8 @@ import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 
 import { useUIStore } from "@/store/uiStore";
 import { useCallStore } from "@/store/callStore";
+import { TooltipWrapper } from "@/components/ui/tooltip";
+
 
 interface SearchResult {
   _id: string;
@@ -70,18 +72,21 @@ export default function TopBar({ room_id }: { room_id: string }) {
   return (
     <div className="h-12">
       <div className="z-[60] relative text-white/60 text-sm px-3 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-surface h-12 border-theme-border border-b">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setLeftMobileMenu(!leftMobileMenu);
-          }}
-          className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
-        >
-          <HugeiconsIcon
-            icon={Menu01Icon}
-            className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`}
-          />
-        </button>
+        <TooltipWrapper content="Main menu" side="right">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setLeftMobileMenu(!leftMobileMenu);
+            }}
+            className="flex-none p-1 md:hidden rounded-[8px] transition-colors"
+          >
+            <HugeiconsIcon
+              icon={Menu01Icon}
+              className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${leftMobileMenu ? "rotate-180" : ""}`}
+            />
+          </button>
+        </TooltipWrapper>
+
 
         <div ref={searchRef} className="relative flex-1 md:max-w-[50%] min-w-0">
           <div
@@ -134,9 +139,8 @@ export default function TopBar({ room_id }: { room_id: string }) {
                     e.preventDefault();
                     handleSearchClick(index, result._id, result._creationTime);
                   }}
-                  className={`hover:bg-[white/10] ${
-                    selectedResult == index ? "bg-theme-hover" : ""
-                  } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
+                  className={`hover:bg-[white/10] ${selectedResult == index ? "bg-theme-hover" : ""
+                    } flex items-center hover:bg-theme-hover justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-white/40">
@@ -155,79 +159,86 @@ export default function TopBar({ room_id }: { room_id: string }) {
           )}
         </div>
         <div className="flex items-center flex-none md:gap-2 gap-0 ml-2">
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSidebar("media");
-            }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
-              isSidebarOpen && sidebarTab === "media"
-                ? "bg-theme-hover"
-                : "hover:bg-theme-hover"
-            }`}
-          >
-            <HugeiconsIcon
-              icon={Image01Icon}
-              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`}
-            />
-          </div>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSidebar("calls");
-            }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${
-              isSidebarOpen && sidebarTab === "calls"
-                ? "bg-theme-hover"
-                : "hover:bg-theme-hover"
-            }`}
-          >
-            <HugeiconsIcon
-              icon={CallIcon}
-              className={`w-4 h-4 transition-colors ${
-                isSidebarOpen && sidebarTab === "calls"
-                  ? "text-white"
-                  : "text-gray-300"
-              }`}
-            />
-            {activeCalls.length > 0 && (
-              <span
-                className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
-                  isInCall && actualRoomId === room_id
-                    ? "bg-red-500"
-                    : "bg-green-500"
+          <TooltipWrapper content="Media Gallery">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSidebar("media");
+              }}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
+                  ? "bg-theme-hover"
+                  : "hover:bg-theme-hover"
                 }`}
+            >
+              <HugeiconsIcon
+                icon={Image01Icon}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media" ? "text-white" : "text-gray-300"}`}
               />
-            )}
-          </div>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSidebar("info");
-            }}
-            className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
-              isSidebarOpen && sidebarTab === "info"
-                ? "bg-theme-hover"
-                : "hover:bg-theme-hover"
-            }`}
-          >
-            <HugeiconsIcon
-              icon={InformationCircleIcon}
-              className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`}
-            />
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setRightMobileMenu(!rightMobileMenu);
-            }}
-            className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
-          >
-            <HugeiconsIcon
-              icon={UserGroupIcon}
-              className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-300"}`}
-            />
-          </button>
+            </div>
+          </TooltipWrapper>
+
+          <TooltipWrapper content="Calls">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSidebar("calls");
+              }}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
+                  ? "bg-theme-hover"
+                  : "hover:bg-theme-hover"
+                }`}
+            >
+              <HugeiconsIcon
+                icon={CallIcon}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
+                    ? "text-white"
+                    : "text-gray-300"
+                  }`}
+              />
+              {activeCalls.length > 0 && (
+                <span
+                  className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
+                      ? "bg-red-500"
+                      : "bg-green-500"
+                    }`}
+                />
+              )}
+            </div>
+          </TooltipWrapper>
+
+          <TooltipWrapper content="Room Information">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleSidebar("info");
+              }}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info"
+                  ? "bg-theme-hover"
+                  : "hover:bg-theme-hover"
+                }`}
+            >
+              <HugeiconsIcon
+                icon={InformationCircleIcon}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "info" ? "text-white" : "text-gray-300"}`}
+              />
+            </div>
+          </TooltipWrapper>
+
+          <TooltipWrapper content="Room Members" side="left">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setRightMobileMenu(!rightMobileMenu);
+              }}
+              className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
+            >
+              <HugeiconsIcon
+                icon={UserGroupIcon}
+                className={`w-4 h-4 ${rightMobileMenu ? "text-white" : "text-gray-300"}`}
+              />
+            </button>
+          </TooltipWrapper>
+
         </div>
       </div>
     </div>
