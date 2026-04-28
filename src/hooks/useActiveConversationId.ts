@@ -1,13 +1,20 @@
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
+import { useUserStore } from "@/store/useUserStore";
+import { getDirectConversationId } from "@/lib/utils/message";
 
 export function useActiveConversationId(): string | null {
   const pathname = usePathname();
+  const user = useUserStore((s) => s.user);
 
   return useMemo(() => {
     const friendMatch = pathname.match(/^\/portal\/friend\/([^\/]+)(\/.*)?$/);
     if (friendMatch) {
-      return friendMatch[1];
+      const friendId = friendMatch[1];
+      if (user?.user_id) {
+        return getDirectConversationId(friendId, user.user_id);
+      }
+      return friendId;
     }
 
     const roomMatch = pathname.match(/^\/portal\/room\/([^\/]+)(\/.*)?$/);
@@ -16,5 +23,5 @@ export function useActiveConversationId(): string | null {
     }
 
     return null;
-  }, [pathname]);
+  }, [pathname, user?.user_id]);
 }

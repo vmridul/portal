@@ -8,12 +8,11 @@ function isDirectConversationId(roomId: string): boolean {
   return roomId.startsWith("direct_");
 }
 
-// Removed naive parseDirectConversationMembers in favor of extractFriendId
-
 function getCallNotificationKey(callId: Id<"calls">): string {
   return `call:${callId}`;
 }
 
+//TODO: change to common function
 async function getUserSummary(ctx: MutationCtx, userId: string) {
   const user = await ctx.db
     .query("users")
@@ -155,7 +154,7 @@ export const joinCall = mutation({
     const isNewHistorical = !call.allParticipants.includes(identity.subject);
     const isNewActive = !call.participants.includes(identity.subject);
 
-    // Update participants list normally
+    // update participants list normally
     const participants = isNewActive
       ? [...call.participants, identity.subject]
       : call.participants;
@@ -164,13 +163,13 @@ export const joinCall = mutation({
       ? [...call.allParticipants, identity.subject]
       : call.allParticipants;
 
-    // Update specialized peer ID list for discrete signaling
+    // update specialized peer ID list for discrete signaling
     const activePeerIds = call.activePeerIds || [];
     const entryIndex = activePeerIds.findIndex(
       (p) => p.userId === identity.subject,
     );
 
-    // Always update the peerId to the latest session to handle refreshes
+    // always update the peerId to the latest session to handle refreshes
     if (entryIndex >= 0) {
       activePeerIds[entryIndex].peerId = args.peerId;
     } else {

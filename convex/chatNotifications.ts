@@ -3,12 +3,11 @@ import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 
 const MAX_NOTIFICATIONS_PER_USER = 100;
-type CounterSourceType = "room" | "direct";
 
 type ChatNotificationInsertArgs = {
   user_id: string;
   message_id: string;
-  source_type: CounterSourceType;
+  source_type: "room" | "direct";
   source_id: string;
   conversation_id?: string;
   source_name: string;
@@ -33,7 +32,7 @@ async function applyUnreadDelta(
   args: {
     userId: string;
     conversationId: string;
-    sourceType: CounterSourceType;
+    sourceType: "room" | "direct";
     sourceId: string;
     delta: number;
   },

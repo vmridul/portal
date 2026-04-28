@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 
-export const ChatMessageMock = ({ 
-  name = "Sam", 
-  avatar = "/assets/ch.png", 
+export const ChatMessageMock = ({
+  name = "Sam",
+  avatar = "/assets/ch.png",
   className,
   showDate = true
-}: { 
-  name?: string; 
-  avatar?: string; 
+}: {
+  name?: string;
+  avatar?: string;
   className?: string;
   showDate?: boolean;
 }) => (
@@ -36,7 +36,6 @@ export const ChatMessageMock = ({
       </div>
     </div>
 
-    {/* Message 2 (Continuation) */}
     <div className="px-4 md:px-10 py-0.5 transition-colors hover:bg-theme-border duration-200">
       <div className="flex gap-2">
         <div className="w-10 flex-shrink-0" />
@@ -44,7 +43,6 @@ export const ChatMessageMock = ({
       </div>
     </div>
 
-    {/* Message 3 (User) */}
     <div className="px-4 md:px-10 py-2 transition-colors hover:bg-theme-border duration-200 mt-2">
       <div className="flex gap-2">
         <Image src="/assets/sq.png" width={40} height={40} alt="" className="w-10 h-10 rounded-[12px] flex-shrink-0" />

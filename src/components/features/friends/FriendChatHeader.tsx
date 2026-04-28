@@ -68,7 +68,7 @@ export function FriendChatHeader({
           />
         </TooltipWrapper>
 
-        <TooltipWrapper content="Back to portal">
+        <TooltipWrapper content="Back">
           <HugeiconsIcon
             icon={ArrowLeft01Icon}
             onClick={() => router.push("/portal")}

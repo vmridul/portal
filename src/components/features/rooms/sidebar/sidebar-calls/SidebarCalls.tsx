@@ -15,6 +15,7 @@ import { useRooms } from "@/contexts/roomContext";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/skeletons/Skeleton";
 
 interface SidebarCallsProps {
   roomId: string;
@@ -37,7 +38,11 @@ export function SidebarCalls({
     return (
       <SidebarLayout>
         <SidebarHeader title="Calls" onClose={onClose} />
-        <div className="p-4 text-gray-400">Loading...</div>
+        <div className="p-4 text-gray-400 flex flex-col gap-2">
+          <Skeleton className="w-full h-20 rounded-xl" />
+          <Skeleton className="w-full h-20 rounded-xl" />
+          <Skeleton className="w-full h-20 rounded-xl" />
+        </div>
       </SidebarLayout>
     );
   }
@@ -72,7 +77,7 @@ export function SidebarCalls({
     <SidebarLayout>
       <SidebarHeader title="Calls" onClose={onClose} />
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {hasNoCalls ? (
+        {hasNoCalls && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-40 text-gray-400 p-4">
             <p className="text-sm">No calls yet</p>
           </div>

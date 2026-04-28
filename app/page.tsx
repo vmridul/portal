@@ -91,28 +91,28 @@ export default function Page() {
   const contentRef = useRef<HTMLDivElement>(null);
   const dashboardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!containerRef.current || !contentRef.current) return;
+  // useEffect(() => {
+  //   if (!containerRef.current || !contentRef.current) return;
 
-    const lenis = new Lenis({
-      wrapper: containerRef.current,
-      content: contentRef.current,
-      wheelMultiplier: 1,
-      lerp: 0.1,
-    });
+  //   const lenis = new Lenis({
+  //     wrapper: containerRef.current,
+  //     content: contentRef.current,
+  //     wheelMultiplier: 1.3,
+  //     lerp: 0.1,
+  //   });
 
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
+  //   let rafId: number;
+  //   function raf(time: number) {
+  //     lenis.raf(time);
+  //     rafId = requestAnimationFrame(raf);
+  //   }
+  //   rafId = requestAnimationFrame(raf);
 
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
-  }, []);
+  //   return () => {
+  //     cancelAnimationFrame(rafId);
+  //     lenis.destroy();
+  //   };
+  // }, []);
 
 
   const privacy = [
@@ -361,7 +361,7 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section className="relative mt-56 h-screen text-white overflow-hidden flex items-center justify-center">
+      <section className="relative mt-36 h-screen text-white overflow-hidden flex items-center justify-center">
 
         <div className=" relative w-full max-w-5xl h-screen flex items-center justify-center" style={{ WebkitMaskImage: 'radial-gradient(circle, black 35%, transparent 85%)', maskImage: 'radial-gradient(circle, black 35%, transparent 85%)' }}>
           <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
@@ -531,7 +531,7 @@ export default function Page() {
                 Theme As You Wish
               </h2>
               <p className="text-[#888] text-xs max-w-md mx-auto leading-relaxed">
-                except light theme to protect your eyes :)
+                except light theme, to protect your eyes :)
               </p>
               <div className="mt-8 flex flex-col items-center">
                 <div

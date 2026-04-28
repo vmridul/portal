@@ -3,8 +3,6 @@ import type { Doc } from "./_generated/dataModel";
 import { v } from "convex/values";
 import {
   extractFriendId,
-  findFriendshipPair,
-  findMembership,
   toPreview,
   updateConversationMetadata,
 } from "./lib/conversations";
@@ -16,7 +14,7 @@ export const getAllMessages = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const limit = args.limit ?? 1000; // Large limit to effectively get all messages
+    const limit = args.limit ?? 1000; // large limit to effectively get all messages
 
     const messages = await ctx.db
       .query("messages")
@@ -135,7 +133,7 @@ export const sendMessage = mutation({
       now,
     );
 
-    // Notifications are handled by chatNotifications table.
+    // to handle notification creation
     if (args.conversation_type === "direct") {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
@@ -215,7 +213,7 @@ export const deleteMessage = mutation({
       await ctx.storage.delete(msg.file_storage_id);
     }
 
-    // Update last_msg_preview to the previous message after deletion
+    // update last_msg_preview to the previous message after deletion
     const latestMsg = await ctx.db
       .query("messages")
       .withIndex("by_conversation", (q) =>
@@ -262,7 +260,7 @@ export const updateMessage = mutation({
       edited: true,
     });
 
-    // Update conversation metadata if this is the latest message
+    // to update conversation metadata if this is the latest message
     const latestMsg = await ctx.db
       .query("messages")
       .withIndex("by_conversation", (q) =>

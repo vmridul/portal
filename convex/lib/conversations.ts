@@ -1,9 +1,8 @@
 import { DatabaseReader, DatabaseWriter } from "../_generated/server";
 
-/** Max length for message preview text */
 const PREVIEW_MAX_LENGTH = 100;
 
-/** Build a deterministic direct conversation ID (sorted) */
+// to build id for DMs
 export function buildDirectConversationId(
   userId1: string,
   userId2: string,
@@ -12,7 +11,7 @@ export function buildDirectConversationId(
   return `direct_${sorted[0]}_${sorted[1]}`;
 }
 
-/** Extract the other user's ID from a direct conversation ID */
+// to extract user id from a direct conversation id
 export function extractFriendId(
   conversationId: string,
   currentUserId: string,
@@ -20,9 +19,6 @@ export function extractFriendId(
   if (!conversationId.startsWith("direct_")) return null;
   const idsContent = conversationId.slice("direct_".length);
 
-  // Robustly remove currentUserId. We handle the two cases since IDs are sorted:
-  // 1. currentUserId_friendId
-  // 2. friendId_currentUserId
   if (idsContent.startsWith(currentUserId + "_")) {
     return idsContent.slice(currentUserId.length + 1);
   }
@@ -33,7 +29,7 @@ export function extractFriendId(
   return null;
 }
 
-/** Truncate content to a preview string */
+// to make a preview from content or filename
 export function toPreview(
   content: string | null,
   fileName: string | null,
@@ -41,7 +37,7 @@ export function toPreview(
   return (content || fileName || "Attachment").slice(0, PREVIEW_MAX_LENGTH);
 }
 
-/** Look up both directions of a friendship pair */
+// to look up both directions of a friendship pair
 export async function findFriendshipPair(
   db: DatabaseReader,
   userId: string,
@@ -62,7 +58,7 @@ export async function findFriendshipPair(
   return { mine, theirs };
 }
 
-/** Look up a room membership using the compound index (O(1)) */
+// to look up a room membership
 export async function findMembership(
   db: DatabaseReader,
   userId: string,
@@ -76,7 +72,7 @@ export async function findMembership(
     .first();
 }
 
-/** Update conversation metadata after a message changes (send or delete) */
+// to update conversation metadata after a message changes (last_msg, last_msg_sender, updated_at)
 export async function updateConversationMetadata(
   db: DatabaseWriter,
   conversationId: string,
@@ -86,7 +82,6 @@ export async function updateConversationMetadata(
   timestamp: number,
 ) {
   if (conversationType === "room") {
-    // Room-level last_msg metadata is now handled by derived queries or a separate table
     return;
   } else {
     const friendId = extractFriendId(conversationId, senderId);
