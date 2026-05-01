@@ -15,7 +15,6 @@ import {
   ComputerScreenShareIcon,
   ComputerRemoveIcon,
   Settings02Icon,
-  CheckmarkCircle02Icon,
 } from "@hugeicons/core-free-icons";
 
 export const CallControls = () => {
@@ -40,7 +39,6 @@ export const CallControls = () => {
   const handleLeave = async () => {
     if (!callId) return;
     try {
-      if (isScreenSharing) await toggleScreenShare();
       await leaveCurrentSession(callId);
       setCallOverlayOpen(false);
     } catch { }
@@ -99,7 +97,7 @@ export const CallControls = () => {
             <HugeiconsIcon icon={Settings02Icon} className="w-5 h-5" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] mb-4 p-4" side="top" align="center" sideOffset={12}>
+        <PopoverContent className="w-[300px] mb-4 p-4" side="top" align="center" sideOffset={0}>
           <div className="space-y-5">
             {/* Audio Section */}
             <div className="space-y-2">

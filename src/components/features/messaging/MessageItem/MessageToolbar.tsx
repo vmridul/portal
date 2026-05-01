@@ -111,12 +111,12 @@ export const MessageToolbar = ({
             <DropdownMenu.Content
               sideOffset={8}
               align="end"
-              className="w-auto min-w-[120px] pointer-events-auto bg-theme-base border border-theme-border rounded-[8px] z-[100] animate-in fade-in duration-100 outline-none"
+              className="w-auto min-w-[120px] pointer-events-auto bg-theme-base border border-theme-border rounded-md z-[100] animate-in fade-in duration-100 outline-none"
             >
               {content && (
                 <DropdownMenu.Item
                   onClick={handleCopy}
-                  className="px-3 py-2 text-xs text-gray-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  className="px-3 py-2 text-xs text-gray-300 hover:bg-theme-hover flex items-center rounded-md gap-2 cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={CopyIcon} className="w-3.5 h-3.5" />
                   Copy
@@ -125,7 +125,7 @@ export const MessageToolbar = ({
               {isCurrentUser && (
                 <DropdownMenu.Item
                   onClick={() => onDeleteRequest(messageId)}
-                  className="px-3 py-2 text-xs text-red-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  className="px-3 py-2 text-xs text-red-300 hover:bg-theme-hover flex items-center rounded-md gap-2 cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={Delete01Icon} className="w-3.5 h-3.5" />
                   Delete

@@ -7,6 +7,7 @@ import {
   Video01Icon,
   VideoOffIcon,
   CallEnd01Icon,
+  ComputerRemoveIcon
 } from "@hugeicons/core-free-icons";
 import { useCallStore } from "@/store/callStore";
 import { useRouter } from "next/navigation";
@@ -41,7 +42,6 @@ const PersistentCallWidget = () => {
     if (!callId) return;
 
     try {
-      if (isScreenSharing) await toggleScreenShare();
       await leaveCurrentSession(callId);
     } catch {
       // Best effort widget leave
@@ -100,6 +100,18 @@ const PersistentCallWidget = () => {
           className={`rounded-lg ${!isVideoOn ? "" : "text-gray-200"}`}
         >
           <HugeiconsIcon icon={isVideoOn ? Video01Icon : VideoOffIcon} className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="destructive2"
+          size="iconMd"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleScreenShare();
+          }}
+          tooltip={"Stop Screen Sharing"}
+          className={`rounded-lg ${isScreenSharing ? "block" : "hidden"}`}
+        >
+          <HugeiconsIcon icon={ComputerRemoveIcon} className="w-4 h-4" />
         </Button>
 
         <Button

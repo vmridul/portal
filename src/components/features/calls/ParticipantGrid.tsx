@@ -20,6 +20,11 @@ export const ParticipantGrid = () => {
     return 0;
   });
 
+  // Create MediaState lookup map for O(1) access
+  const mediaStateByUserId = new Map(
+    (activeCall?.mediaStates || []).map((m) => [m.userId, m])
+  );
+
   // Collect all screen shares: local + remote
   const screenShares: { userId: string; stream: MediaStream }[] = [];
 
@@ -54,7 +59,7 @@ export const ParticipantGrid = () => {
         {/* Main area: Screen share cards (large) */}
         <div className="flex-1 min-h-0 flex flex-col gap-3">
           {screenShares.map(({ userId, stream }) => {
-            const mediaState = activeCall?.mediaStates?.find(m => m.userId === userId);
+            const mediaState = mediaStateByUserId.get(userId);
             return (
               <div key={`screen-${userId}`} className="flex-1 min-h-0">
                 <ParticipantCard
@@ -73,7 +78,7 @@ export const ParticipantGrid = () => {
           {Array.from(mediaStatesScreenSharers).filter(
             uid => !screenShares.some(s => s.userId === uid)
           ).map(userId => {
-            const mediaState = activeCall?.mediaStates?.find(m => m.userId === userId);
+            const mediaState = mediaStateByUserId.get(userId);
             return (
               <div key={`screen-${userId}`} className="flex-1 min-h-0">
                 <ParticipantCard
@@ -95,7 +100,7 @@ export const ParticipantGrid = () => {
           {sortedParticipants.map((userId) => {
             const isLocal = userId === currentUserId;
             const stream = isLocal ? localStream : remoteStreams?.[userId];
-            const mediaState = activeCall?.mediaStates?.find(m => m.userId === userId);
+            const mediaState = mediaStateByUserId.get(userId);
 
             return (
               <div key={userId} className="md:h-40 h-28 w-36 md:w-full shrink-0">
@@ -128,7 +133,7 @@ export const ParticipantGrid = () => {
       {sortedParticipants.map((userId) => {
         const isLocal = userId === currentUserId;
         const stream = isLocal ? localStream : remoteStreams?.[userId];
-        const mediaState = activeCall?.mediaStates?.find(m => m.userId === userId);
+        const mediaState = mediaStateByUserId.get(userId);
 
         return (
           <ParticipantCard

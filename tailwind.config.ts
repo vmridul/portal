@@ -29,6 +29,8 @@ export default {
           surface: "hsl(var(--theme-bg-surface))",
           hover: "hsl(var(--theme-bg-hover))",
           border: "hsl(var(--theme-border))",
+          text: "var(--theme-text-on-accent)",
+          "text-on-accent": "var(--theme-text-on-accent)",
         },
         card: {
           DEFAULT: "hsl(var(--card))",

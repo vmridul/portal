@@ -117,10 +117,7 @@ export function ChatInputBar(props: ChatInputBarProps) {
           }`}
       >
         {editing.message && (
-          <div className="flex items-center rounded-xl relative text-gray-300">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg">
-              <HugeiconsIcon icon={PencilEdit01Icon} className="w-4 h-4" />
-            </div>
+          <div className="p-2 flex items-center rounded-xl relative text-gray-300">
             <div className="flex-1 min-w-0 pr-8">
               <p className="text-sm">Editing</p>
             </div>

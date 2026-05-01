@@ -63,6 +63,7 @@ export function applyThemeToRoot(
     root.style.setProperty("--theme-bg-hover", `${h} ${s * 0.5}% 15%`);
     root.style.setProperty("--theme-border", `${h} ${s * 0.3}% 14%`);
     root.style.setProperty("--theme-accent-color", color);
+    root.style.setProperty("--theme-text-on-accent", getContrastColor(color));
     root.dataset.themeReady = "true";
   } catch (error) {
     console.error("Failed to apply theme", error);
@@ -79,6 +80,7 @@ export function getThemeBootstrapScript() {
     const storageKey = "${STORAGE_KEY}";
     const fallbackColor = "${DEFAULT_CHAT_COLOR}";
     const hexToHsl = ${hexToHsl.toString()};
+    const getContrastColor = ${getContrastColor.toString()};
     const applyThemeToRoot = ${applyThemeToRoot.toString()};
     try {
       const savedColor = window.localStorage.getItem(storageKey) || fallbackColor;

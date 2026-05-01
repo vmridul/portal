@@ -37,6 +37,7 @@ export class CallClient {
   private screenShareStream: MediaStream | null = null;
   private isScreenSharing = false;
   private screenShareConnections = new Map<string, any>();
+  private remoteScreenShareStreams = new Map<string, MediaStream>();
 
   // Device management
   private availableDevices: MediaDeviceInfo[] = [];
@@ -81,7 +82,9 @@ export class CallClient {
 
       // Initialize devices list
       await this.refreshDevices();
-      navigator.mediaDevices.ondevicechange = () => void this.refreshDevices();
+      navigator.mediaDevices.ondevicechange = () => {
+        this.refreshDevices().catch(() => {});
+      };
 
       const { default: Peer } = await import("peerjs");
 
@@ -178,7 +181,7 @@ export class CallClient {
     const isMuted = !track.enabled;
 
     if (this.target?.callId && this.updateMediaState) {
-      void this.updateMediaState({ callId: this.target.callId, isMuted });
+      this.updateMediaState({ callId: this.target.callId, isMuted }).catch(() => {});
     }
 
     this.updateCombinedLocalStream();
@@ -209,10 +212,10 @@ export class CallClient {
       this.updateCombinedLocalStream();
 
       if (this.target?.callId && this.updateMediaState) {
-        void this.updateMediaState({
+        this.updateMediaState({
           callId: this.target.callId,
           isVideoOn: false,
-        });
+        }).catch(() => {});
       }
 
       this.broadcastStatus();
@@ -245,10 +248,10 @@ export class CallClient {
       }
 
       if (this.target?.callId && this.updateMediaState) {
-        void this.updateMediaState({
+        this.updateMediaState({
           callId: this.target.callId,
           isVideoOn: true,
-        });
+        }).catch(() => {});
       }
 
       this.updateCombinedLocalStream();
@@ -379,10 +382,10 @@ export class CallClient {
       this.screenShareConnections.clear();
 
       if (this.target?.callId && this.updateMediaState) {
-        void this.updateMediaState({
+        this.updateMediaState({
           callId: this.target.callId,
           isScreenSharing: false,
-        });
+        }).catch(() => {});
       }
 
       this.broadcastStatus();
@@ -410,10 +413,10 @@ export class CallClient {
           this.screenShareConnections.clear();
 
           if (this.target?.callId && this.updateMediaState) {
-            void this.updateMediaState({
+            this.updateMediaState({
               callId: this.target.callId,
               isScreenSharing: false,
-            });
+            }).catch(() => {});
           }
 
           this.broadcastStatus();
@@ -424,10 +427,10 @@ export class CallClient {
       this.initiateScreenShareCalls();
 
       if (this.target?.callId && this.updateMediaState) {
-        void this.updateMediaState({
+        this.updateMediaState({
           callId: this.target.callId,
           isScreenSharing: true,
-        });
+        }).catch(() => {});
       }
 
       this.broadcastStatus();
@@ -500,7 +503,7 @@ export class CallClient {
     });
   }
 
-  private initiateCall(remotePeerId: string, retryCount = 0): void {
+private initiateCall(remotePeerId: string, retryCount = 0): void {
     if (!this.peer || this.isDisconnecting) return;
 
     this.updateCombinedLocalStream();
@@ -524,9 +527,13 @@ export class CallClient {
           err?.msg?.includes("unavailable")
         ) {
           this.handleCallRetry(remotePeerId, retryCount);
+        } else {
+          console.warn("[CallClient] initiateCall error:", err);
+          this.handleCallRetry(remotePeerId, retryCount);
         }
       });
-    } catch {
+    } catch (err) {
+      console.warn("[CallClient] initiateCall error:", err);
       this.handleCallRetry(remotePeerId, retryCount);
     }
   }
@@ -649,7 +656,7 @@ export class CallClient {
 
     this.speakerDetectionLoopId = setInterval(() => {
       if (this.audioContext?.state === "suspended") {
-        void this.audioContext.resume();
+        this.audioContext.resume().catch(() => {});
       }
 
       let changed = false;
@@ -744,8 +751,9 @@ export class CallClient {
       if (!userId && peerId.includes("_")) {
         userId = peerId.split("_")[0];
       }
-      if (userId && call._remoteScreenStream) {
-        screenShareStreamsByUser[userId] = call._remoteScreenStream;
+      if (userId) {
+        const stream = this.remoteScreenShareStreams.get(peerId);
+        if (stream) screenShareStreamsByUser[userId] = stream;
       }
     }
 
@@ -821,22 +829,25 @@ export class CallClient {
     incomingCall.answer(dummyStream);
 
     incomingCall.on("stream", (remoteScreenStream: MediaStream) => {
-      // Tag the connection with the remote screen stream for broadcastStatus
-      incomingCall._remoteScreenStream = remoteScreenStream;
+      // Store stream in proper Map
+      this.remoteScreenShareStreams.set(remotePeerId, remoteScreenStream);
       this.screenShareConnections.set(remotePeerId, incomingCall);
       this.broadcastStatus();
 
       remoteScreenStream.onremovetrack = () => {
+        this.remoteScreenShareStreams.delete(remotePeerId);
         this.screenShareConnections.delete(remotePeerId);
         this.broadcastStatus();
       };
     });
 
     incomingCall.on("close", () => {
+      this.remoteScreenShareStreams.delete(remotePeerId);
       this.screenShareConnections.delete(remotePeerId);
       this.broadcastStatus();
     });
     incomingCall.on("error", () => {
+      this.remoteScreenShareStreams.delete(remotePeerId);
       this.screenShareConnections.delete(remotePeerId);
       this.broadcastStatus();
     });
