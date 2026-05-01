@@ -93,7 +93,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                       navigator.clipboard.writeText(room_id);
                       toast.success("Room ID copied to clipboard");
                     }}
-                    className="px-3 py-2.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center rounded-md gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2.5 text-xs text-gray-300 hover:bg-theme-hover flex items-center rounded-sm gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon icon={CopyIcon} className="w-4 h-4" />
                     Copy Room ID
@@ -106,7 +106,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
                         room_id,
                       });
                     }}
-                    className="px-3 py-2.5 text-xs text-red-300 hover:bg-theme-hover flex items-center rounded-md gap-2 cursor-pointer outline-none"
+                    className="px-3 py-2.5 text-xs text-red-300 hover:bg-theme-hover flex items-center rounded-sm gap-2 cursor-pointer outline-none"
                   >
                     <HugeiconsIcon
                       icon={isOwner ? Delete02Icon : UserRemove01Icon}
