@@ -49,9 +49,6 @@ const lexend = Lexend({
   display: "swap",
 });
 
-
-
-
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -114,12 +111,7 @@ export default function Page() {
   //   };
   // }, []);
 
-
-  const privacy = [
-    "End to end Encryption",
-    "No Tracking",
-    "No Data Collection",
-  ];
+  const privacy = ["Encrypted Calls", "No Tracking", "No Data Collection"];
 
   const goodstuff = [
     {
@@ -127,10 +119,28 @@ export default function Page() {
       desc: "Chat with friends or join a room to connect in one place.",
       component: (
         <div className=" relative h-32 w-full flex items-center justify-center">
-          <RoomItemMock name="Projects" id="4567" className="scale-110 w-[221px] absolute -top-4 -left-4 z-10" />
-          <RoomItemMock name="Roooom" id="1345" className="scale-110 w-[221px] absolute -top-4 -right-4 z-10" />
-          <FriendItemMock name="Pika" avatar="/assets/pi.png" message="You: pika pika!" className="scale-110 h-16 w-[210px] absolute top-24 left-1 z-20" />
-          <FriendItemMock name="Charm" avatar="/assets/ch.png" message="im burning" className="scale-110 h-16 w-[210px] absolute top-24 right-1 z-20" />
+          <RoomItemMock
+            name="Projects"
+            id="4567"
+            className="scale-110 w-[221px] absolute -top-4 -left-4 z-10"
+          />
+          <RoomItemMock
+            name="Roooom"
+            id="1345"
+            className="scale-110 w-[221px] absolute -top-4 -right-4 z-10"
+          />
+          <FriendItemMock
+            name="Pika"
+            avatar="/assets/pi.png"
+            message="You: pika pika!"
+            className="scale-110 h-16 w-[210px] absolute top-24 left-1 z-20"
+          />
+          <FriendItemMock
+            name="Charm"
+            avatar="/assets/ch.png"
+            message="im burning"
+            className="scale-110 h-16 w-[210px] absolute top-24 right-1 z-20"
+          />
         </div>
       ),
     },
@@ -161,9 +171,11 @@ export default function Page() {
     },
   ];
 
-
   return (
-    <div ref={containerRef} className="h-screen selection:bg-white/10 bg-[#0a080b] overflow-y-auto overflow-x-hidden relative">
+    <div
+      ref={containerRef}
+      className="h-screen selection:bg-white/10 bg-[#0a080b] overflow-y-auto overflow-x-hidden relative"
+    >
       <div ref={contentRef} className="w-full">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <PixelBlast
@@ -180,16 +192,15 @@ export default function Page() {
             transparent
             edgeFade={0.1}
           />
-
         </div>
 
-        <section
-          className="relative min-h-screen p-6 text-white flex flex-col items-center"
-        >
+        <section className="relative min-h-screen p-6 text-white flex flex-col items-center">
           {/* NAVBAR */}
           <div className="flex justify-between items-center px-6 py-5 max-w-6xl w-[90%] mx-auto">
             <div className="flex items-center gap-3">
-              <span className={`text-2xl ${galindo.className} font-medium tracking-wide`}>
+              <span
+                className={`text-2xl ${galindo.className} font-medium tracking-wide`}
+              >
                 Portal
               </span>
             </div>
@@ -203,14 +214,15 @@ export default function Page() {
           </div>
 
           <div className="text-center relative z-10">
-
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className=" text-gray-300 text-6xl mt-36"
             >
-              Realtime Conversation<br />Without Friction
+              Realtime Conversation
+              <br />
+              Without Friction
             </motion.p>
 
             <motion.button
@@ -218,7 +230,6 @@ export default function Page() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               onClick={handleEnter}
-
               className="cursor-pointer mt-8 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 transition-all duration-300 text-black rounded-xl  text-sm "
             >
               Enter
@@ -233,7 +244,6 @@ export default function Page() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-
               className="w-[80%] rounded-5xl overflow-hidden"
             >
               <Image
@@ -248,7 +258,6 @@ export default function Page() {
         </section>
       </div>
       <section className="relative mt-64 text-white overflow-hidden">
-
         <h2 className="text-center text-5xl md:text-6xl font-semibold flex justify-center gap-4">
           <motion.span
             initial={{ opacity: 0, x: 100, filter: "blur(10px)" }}
@@ -257,7 +266,7 @@ export default function Page() {
               type: "spring",
               stiffness: 100,
               damping: 20,
-              duration: 0.8
+              duration: 0.8,
             }}
             viewport={{ once: true }}
           >
@@ -271,7 +280,7 @@ export default function Page() {
               stiffness: 100,
               damping: 20,
               duration: 0.8,
-              delay: 0.2
+              delay: 0.2,
             }}
             viewport={{ once: true }}
           >
@@ -280,7 +289,6 @@ export default function Page() {
         </h2>
 
         <div className="mt-20 max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-
           {privacy.map((text, i) => (
             <motion.div
               key={i}
@@ -299,13 +307,10 @@ export default function Page() {
               </span>
             </motion.div>
           ))}
-
         </div>
       </section>
       <section className=" text-white px-6 mt-[300px]">
-
         <div className="max-w-6xl mx-auto flex">
-
           <div className="w-1/2">
             <div className="sticky top-48">
               <h2 className="text-5xl md:text-6xl font-semibold leading-tight">
@@ -318,7 +323,12 @@ export default function Page() {
             <div className="relative rounded-[40px] bg-white/[0.01] p-3">
               <div
                 className="absolute inset-0 rounded-[40px] border border-white/10 pointer-events-none"
-                style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent, black, transparent)', maskImage: 'linear-gradient(to bottom, transparent, black, transparent)' }}
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, transparent, black, transparent)",
+                  maskImage:
+                    "linear-gradient(to bottom, transparent, black, transparent)",
+                }}
               />
 
               <div className="flex flex-col gap-3">
@@ -335,10 +345,14 @@ export default function Page() {
                     viewport={{ once: true }}
                     className="relative rounded-[32px] bg-[#0a0a0d]"
                   >
-
                     <div
                       className="absolute inset-0 rounded-[32px] border border-white/10 pointer-events-none"
-                      style={{ WebkitMaskImage: 'linear-gradient(to bottom, transparent, black, transparent)', maskImage: 'linear-gradient(to bottom, transparent, black, transparent)' }}
+                      style={{
+                        WebkitMaskImage:
+                          "linear-gradient(to bottom, transparent, black, transparent)",
+                        maskImage:
+                          "linear-gradient(to bottom, transparent, black, transparent)",
+                      }}
                     />
 
                     <div className="overflow-hidden relative p-12 min-h-[350px] flex flex-col">
@@ -362,8 +376,14 @@ export default function Page() {
         </div>
       </section>
       <section className="relative mt-36 h-screen text-white overflow-hidden flex items-center justify-center">
-
-        <div className=" relative w-full max-w-5xl h-screen flex items-center justify-center" style={{ WebkitMaskImage: 'radial-gradient(circle, black 35%, transparent 85%)', maskImage: 'radial-gradient(circle, black 35%, transparent 85%)' }}>
+        <div
+          className=" relative w-full max-w-5xl h-screen flex items-center justify-center"
+          style={{
+            WebkitMaskImage:
+              "radial-gradient(circle, black 35%, transparent 85%)",
+            maskImage: "radial-gradient(circle, black 35%, transparent 85%)",
+          }}
+        >
           <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
             <RoomItemMock />
           </div>
@@ -404,16 +424,18 @@ export default function Page() {
             <AvatarStatusMock />
           </div>
 
-          <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block"><div className="mt-2">
-            <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-              <StatusIndicator
-                className="relative w-2 h-2"
-                isOnline={true}
-                isAway={false}
-              />
-              <span className="text-green-500">Online</span>
+          <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
+            <div className="mt-2">
+              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                <StatusIndicator
+                  className="relative w-2 h-2"
+                  isOnline={true}
+                  isAway={false}
+                />
+                <span className="text-green-500">Online</span>
+              </div>
             </div>
-          </div></div>
+          </div>
 
           <div className="absolute top-[17%] left-[19%] z-0 text-4xl select-none hidden md:block">
             👀
@@ -423,7 +445,9 @@ export default function Page() {
           </div>
 
           <span className="selection:bg-white/10 text-5xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-            Beautifully Crafted<br />Interface
+            Beautifully Crafted
+            <br />
+            Interface
           </span>
         </div>
       </section>
@@ -437,11 +461,18 @@ export default function Page() {
             <div className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden flex flex-col relative group">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)', maskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)' }}
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                }}
               />
 
               <div className="relative z-10">
-                <h3 className="text-xl font-medium text-white mb-4">Flawless On Mobile Too</h3>
+                <h3 className="text-xl font-medium text-white mb-4">
+                  Flawless On Mobile Too
+                </h3>
               </div>
 
               <div className="top-0 absolute flex-1 flex justify-center">
@@ -460,32 +491,49 @@ export default function Page() {
               <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
                 <div
                   className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                  style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)', maskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)' }}
+                  style={{
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 0%, transparent 15%)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  }}
                 />
                 <div className="space-y-4 relative z-10">
-                  <h3 className="text-xl font-medium text-white">Typing Indicators</h3>
+                  <h3 className="text-xl font-medium text-white">
+                    Typing Indicators
+                  </h3>
                 </div>
-                <div className=""><TypingIndicatorMock
-                  name="Chip"
-                  avatar="/assets/ch.png"
-                  className="absolute top-[40%] left-[76px] scale-110"
-                />
+                <div className="">
+                  <TypingIndicatorMock
+                    name="Chip"
+                    avatar="/assets/ch.png"
+                    className="absolute top-[40%] left-[76px] scale-110"
+                  />
                   <TypingIndicatorMock
                     name="Pika"
                     avatar="/assets/pi.png"
                     className="absolute top-[64%] left-[76px] scale-110"
-                  /></div>
+                  />
+                </div>
               </div>
 
               <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
                 <div
                   className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                  style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)', maskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)' }}
+                  style={{
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 0%, transparent 15%)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  }}
                 />
                 <div className="space-y-4 relative z-10">
-                  <h3 className="text-xl font-medium text-white">Realtime Presence</h3>
-                  <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block"><div className="mt-2">
-                  </div></div>
+                  <h3 className="text-xl font-medium text-white">
+                    Realtime Presence
+                  </h3>
+                  <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
+                    <div className="mt-2"></div>
+                  </div>
                   <div className="flex flex-col items-center justify-center pt-4">
                     <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
                       <StatusIndicator
@@ -504,7 +552,6 @@ export default function Page() {
                       <span className="text-yellow-400">Away</span>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -512,12 +559,18 @@ export default function Page() {
             <div className="md:col-span-1 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col group overflow-hidden relative">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                style={{ WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)', maskImage: 'linear-gradient(to bottom, black 0%, transparent 15%)' }}
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                }}
               />
               <div className="space-y-4 mb-12 relative z-10">
-                <h3 className="text-xl font-medium text-white">Enterprise Grade Security</h3>
+                <h3 className="text-xl font-medium text-white">
+                  Enterprise Grade Security
+                </h3>
               </div>
-
             </div>
           </div>
         </div>
@@ -597,7 +650,6 @@ export default function Page() {
           />
         </div>
       </section>
-
     </div>
   );
 }
