@@ -11,10 +11,3 @@ export interface CallTrack {
   unmute: () => Promise<void>;
   dispose: () => void;
 }
-
-export interface CallParticipant {
-  id: string;
-  displayName?: string;
-  userId?: string;
-  isLocal: boolean;
-}

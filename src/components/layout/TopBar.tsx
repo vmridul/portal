@@ -28,7 +28,8 @@ interface SearchResult {
 export default function TopBar({ room_id }: { room_id: string }) {
   const members = useRoomMembers(room_id);
   const { activeCalls } = useCalls(room_id);
-  const { isJoined: isInCall, actualRoomId } = useCallStore();
+  const { status: callStatus, actualRoomId } = useCallStore();
+  const isInCall = callStatus === "joined";
   const [query, setQuery] = useState("");
   const { results: searchResults } = useSearchMessages({
     conversationId: room_id,

@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "./Tooltip";
 
-interface TooltipWrapperProps extends React.ComponentPropsWithoutRef<typeof TooltipTrigger> {
+interface TooltipWrapperProps extends Omit<React.ComponentPropsWithoutRef<typeof TooltipTrigger>, "content"> {
   children: React.ReactNode;
   content: React.ReactNode;
   side?: "top" | "right" | "bottom" | "left";

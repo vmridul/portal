@@ -115,22 +115,15 @@ export const FullAppMock = ({ className }: { className?: string }) => (
         <ChatMessageMock
           name="Pika"
           avatar="/assets/pi.png"
-          message="Hey team, I've updated the latest design mocks for the landing page. Check them out!"
-          time="10:24 AM"
         />
         <ChatMessageMock
           name="Charm"
           avatar="/assets/ch.png"
-          message="Looks amazing! I love the new color palette. The glassmorphism effects are really standing out."
-          time="10:26 AM"
           showDate={false}
         />
         <ChatMessageMock
           name="Me"
           avatar="/assets/sq.png"
-          message="Great work everyone! Let's schedule a quick sync to finalize the animations."
-          time="10:30 AM"
-          isMe={true}
           showDate={false}
         />
       </div>

@@ -108,3 +108,10 @@ export function isSameMinute(
     date1.getMinutes() === date2.getMinutes()
   );
 }
+
+export function formatDuration(startMs: number): string {
+  const seconds = Math.floor((Date.now() - startMs) / 1000);
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}

@@ -128,6 +128,15 @@ export default defineSchema({
         }),
       ),
     ),
+    mediaStates: v.optional(
+      v.array(
+        v.object({
+          userId: v.string(),
+          isMuted: v.boolean(),
+          isVideoOn: v.boolean(),
+        }),
+      ),
+    ),
     initiatorId: v.string(),
     isActive: v.boolean(),
   })

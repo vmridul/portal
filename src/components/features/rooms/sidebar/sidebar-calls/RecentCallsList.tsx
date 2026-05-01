@@ -63,13 +63,7 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
 
   return (
     <div className="overflow-y-auto">
-      {callError && (
-        <div className="p-3">
-          <div className="p-2 text-xs bg-red-500/10 text-red-400 rounded border border-red-500/20 text-center">
-            {callError}
-          </div>
-        </div>
-      )}
+
 
       {Object.entries(grouped).map(([date, dateCalls]) => (
         <div key={date} className="border-t border-theme-border/50">

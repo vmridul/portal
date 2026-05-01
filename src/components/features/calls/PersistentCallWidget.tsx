@@ -4,6 +4,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Mic02Icon,
   MicOff02Icon,
+  Video01Icon,
+  VideoOffIcon,
   CallEnd01Icon,
 } from "@hugeicons/core-free-icons";
 import { useCallStore } from "@/store/callStore";
@@ -14,9 +16,10 @@ import { memo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AvatarStack from "@/components/ui/AvatarStack";
+import { Button } from "@/components/ui/button/Button";
 
 const PersistentCallWidget = () => {
-  const { isJoined, roomName, actualRoomId, callId, isMuted, toggleMute } =
+  const { status, roomName, actualRoomId, callId, isMuted, toggleMute, isVideoOn, toggleVideo } =
     useCallStore();
   const { setSidebarOpen, setSidebarTab } = useUIStore();
   const { leaveCurrentSession } = useCallSessionActions();
@@ -27,14 +30,11 @@ const PersistentCallWidget = () => {
     useQuery(
       api.users.getUsersByExternalIds,
       activeCall
-        ? {
-            user_ids: activeCall.participants,
-          }
+        ? { user_ids: activeCall.participants }
         : "skip",
     ) || [];
 
-  // Render logic: Show ONLY if joined
-  if (!isJoined) return null;
+  if (status !== "joined") return null;
 
   const handleLeave = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,20 +43,21 @@ const PersistentCallWidget = () => {
     try {
       await leaveCurrentSession(callId);
     } catch {
-      // Best effort widget leave.
+      // Best effort widget leave
     }
   };
 
   const handleClick = () => {
-    if (actualRoomId) {
-      if (actualRoomId.startsWith("direct_")) {
-        router.push("/portal");
-      } else {
-        router.push(`/portal/room/${actualRoomId}`);
-      }
-      setSidebarOpen(true);
-      setSidebarTab("calls");
+    if (!actualRoomId) return;
+
+    if (actualRoomId.startsWith("direct_")) {
+      router.push("/portal");
+    } else {
+      router.push(`/portal/room/${actualRoomId}`);
     }
+    setSidebarOpen(true);
+    setSidebarTab("calls");
+    useUIStore.getState().setCallOverlayOpen(true);
   };
 
   return (
@@ -73,32 +74,42 @@ const PersistentCallWidget = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <button
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <Button
+          variant={isMuted ? "destructive2" : "other"}
+          size="iconMd"
           onClick={(e) => {
             e.stopPropagation();
             toggleMute();
           }}
-          className={`p-2 rounded-xl transition-all ${
-            isMuted
-              ? "text-red-400 scale-110"
-              : "text-gray-300 hover:text-white"
-          }`}
+          tooltip={isMuted ? "Unmute" : "Mute"}
+          className={`rounded-lg ${isMuted ? "" : "text-gray-200"}`}
         >
-          {isMuted ? (
-            <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" />
-          ) : (
-            <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />
-          )}
-        </button>
+          <HugeiconsIcon icon={isMuted ? MicOff02Icon : Mic02Icon} className="w-4 h-4" />
+        </Button>
 
-        <button
+        <Button
+          variant={isVideoOn ? "other" : "destructive2"}
+          size="iconMd"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleVideo();
+          }}
+          tooltip={isVideoOn ? "Turn off Video" : "Turn on Video"}
+          className={`rounded-lg ${!isVideoOn ? "" : "text-gray-200"}`}
+        >
+          <HugeiconsIcon icon={isVideoOn ? Video01Icon : VideoOffIcon} className="w-4 h-4" />
+        </Button>
+
+        <Button
+          variant="destructive2"
+          size="iconMd"
           onClick={handleLeave}
-          className="p-2 rounded-xl bg-red-800 text-red-100 hover:bg-red-900 transition-all duration-200"
-          title="Leave Call"
+          tooltip="Leave Call"
+          className="rounded-lg"
         >
           <HugeiconsIcon icon={CallEnd01Icon} className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

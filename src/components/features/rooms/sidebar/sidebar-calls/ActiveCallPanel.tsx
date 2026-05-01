@@ -3,41 +3,29 @@
 import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Mic02Icon,
-  MicOff02Icon,
+  FullscreenIcon,
   CallEnd01Icon,
   CallIncoming01Icon,
 } from "@hugeicons/core-free-icons";
 import { useCallSessionActions } from "@/hooks";
 import { useUserStore } from "@/store/useUserStore";
 import { useCallStore } from "@/store/callStore";
-import { Id } from "@/convex/_generated/dataModel";
+import { formatDuration } from "@/lib/utils/date";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUIStore } from "@/store/uiStore";
 import { useRooms } from "@/contexts/roomContext";
 import AvatarStack from "@/components/ui/AvatarStack";
-
-interface Call {
-  _id: Id<"calls">;
-  participants: string[];
-  activePeerIds?: { userId: string; peerId: string }[];
-  startedAt: number;
-  roomId: string;
-}
+import type { CallRecord } from "@/lib/types/call";
+import { Button } from "@/components/ui";
 
 interface ActiveCallPanelProps {
-  call: Call;
+  call: CallRecord;
   conversationName?: string;
   onLeave: () => void;
 }
 
-function formatDuration(startMs: number): string {
-  const seconds = Math.floor((Date.now() - startMs) / 1000);
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
+
 
 export default function ActiveCallPanel({
   call,
@@ -47,28 +35,23 @@ export default function ActiveCallPanel({
   const user = useUserStore((s) => s.user);
   const [duration, setDuration] = useState(formatDuration(call.startedAt));
   const [isLeaving, setIsLeaving] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
 
   const { rooms } = useRooms();
-  const { setModal } = useUIStore();
+  const { setModal, setCallOverlayOpen } = useUIStore();
   const { joinExistingSession, leaveCurrentSession } = useCallSessionActions();
   const {
-    isJoined: callStoreJoined,
-    isConnecting,
+    status,
     callId: activeCallId,
-    isMuted,
-    toggleMute,
     error: callError,
     syncParticipants,
   } = useCallStore();
 
-  const isCallJoined = callStoreJoined && activeCallId === call._id;
-  const isThisCallConnecting = isConnecting && activeCallId === call._id;
+  const isCallJoined = status === "joined" && activeCallId === call._id;
+  const isThisCallConnecting = status === "joining" && activeCallId === call._id;
   const hasOtherActiveSession =
     !!activeCallId &&
     activeCallId !== call._id &&
-    (callStoreJoined || isConnecting);
-  const activeError = activeCallId === call._id ? callError : null;
+    (status === "joined" || status === "joining");
 
   const participantProfiles =
     useQuery(api.users.getUsersByExternalIds, {
@@ -90,23 +73,16 @@ export default function ActiveCallPanel({
   }, [call.startedAt]);
 
   const handleJoin = async () => {
-    setLocalError(null);
-
-    // Guard: Already in this exact call - do nothing
-    if (callStoreJoined && isCallJoined) {
-      return;
-    }
+    if (isCallJoined) return;
 
     if (hasOtherActiveSession) {
       const roomData = rooms.find((r) => r.room_id === call.roomId);
-      const resolvedConversationName =
-        conversationName ||
-        roomData?.Rooms?.room_name ||
-        "Unknown Conversation";
+      const resolvedName =
+        conversationName || roomData?.Rooms?.room_name || "Unknown Conversation";
       setModal("SWITCH_CALL", {
         newCallId: call._id,
         newRoomId: call.roomId,
-        newRoomName: resolvedConversationName,
+        newRoomName: resolvedName,
         oldCallId: activeCallId,
       });
       return;
@@ -116,11 +92,7 @@ export default function ActiveCallPanel({
       const roomData = rooms.find((r) => r.room_id === call.roomId);
       await joinExistingSession({
         callId: call._id,
-        user: {
-          userId: user?.user_id,
-          displayName: user?.username || "Guest",
-          avatarUrl: user?.avatar || undefined,
-        },
+        userId: user?.user_id || "",
         room: {
           id: call.roomId,
           name:
@@ -128,35 +100,22 @@ export default function ActiveCallPanel({
             roomData?.Rooms?.room_name ||
             "Unknown Conversation",
         },
+        startedAt: call.startedAt,
       });
     } catch (error) {
-      setLocalError(
-        error instanceof Error ? error.message : "Failed to join call",
-      );
+      console.error("[ActiveCallPanel] Failed to join:", error);
     }
   };
 
   const handleLeave = async () => {
     setIsLeaving(true);
-    setLocalError(null);
     try {
       await leaveCurrentSession(call._id);
       onLeave();
     } catch (error) {
-      setLocalError(
-        error instanceof Error ? error.message : "Failed to leave call",
-      );
+      console.error("[ActiveCallPanel] Failed to leave:", error);
       setIsLeaving(false);
     }
-  };
-
-  const handleToggleMute = () => {
-    setLocalError(null);
-    void toggleMute().catch((error) => {
-      setLocalError(
-        error instanceof Error ? error.message : "Failed to toggle mute",
-      );
-    });
   };
 
   if (!isCallJoined) {
@@ -174,11 +133,7 @@ export default function ActiveCallPanel({
           <AvatarStack users={participantProfiles} size={24} showCount />
         </div>
 
-        {(activeError || localError) && (
-          <div className="mb-3 p-2 text-xs bg-red-500/10 text-red-400 rounded border border-red-500/20 text-center">
-            {localError || activeError}
-          </div>
-        )}
+
 
         <button
           onClick={handleJoin}
@@ -212,27 +167,24 @@ export default function ActiveCallPanel({
       </div>
 
       <div className="flex gap-2">
-        <button
-          onClick={handleToggleMute}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-colors ${
-            isMuted ? "bg-red-500/20 text-red-400" : "bg-theme-hover text-white"
-          }`}
+        <Button
+          variant="other"
+          size="md"
+          onClick={() => setCallOverlayOpen(true)}
+          className="rounded-lg gap-2 w-full"
         >
-          {isMuted ? (
-            <HugeiconsIcon icon={MicOff02Icon} className="w-4 h-4" />
-          ) : (
-            <HugeiconsIcon icon={Mic02Icon} className="w-4 h-4" />
-          )}
-          <span className="text-sm">{isMuted ? "Unmute" : "Mute"}</span>
-        </button>
-        <button
+          <HugeiconsIcon icon={FullscreenIcon} className="w-4 h-4" />
+          <span className="text-sm">Open</span>
+        </Button>
+        <Button
+          variant="destructive2"
+          size="md"
           onClick={handleLeave}
-          disabled={isLeaving}
-          className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-red-800 text-red-100 hover:bg-red-900  transition-colors"
+          className="rounded-lg gap-2 w-full"
         >
           <HugeiconsIcon icon={CallEnd01Icon} className="w-4 h-4" />
           <span className="text-sm">Leave</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -41,12 +41,15 @@ type UIState = {
   setSidebarTab: (v: "info" | "media" | "calls") => void;
   toggleSidebar: (tab?: "info" | "media" | "calls") => void;
 
-  // Active Call State
   activeCall: {
     callId: string;
     isMuted: boolean;
   } | null;
   setActiveCall: (call: { callId: string; isMuted: boolean } | null) => void;
+
+  // Call Overlay
+  isCallOverlayOpen: boolean;
+  setCallOverlayOpen: (isOpen: boolean) => void;
 
   // Jump/Highlight System
   jumpedMessageId: string | null;
@@ -85,8 +88,10 @@ export const useUIStore = create<UIState>((set, get) => ({
   isSidebarOpen: false,
   sidebarTab: "info",
   activeCall: null,
+  isCallOverlayOpen: false,
 
   setActiveCall: (call) => set({ activeCall: call }),
+  setCallOverlayOpen: (isOpen) => set({ isCallOverlayOpen: isOpen }),
 
   setPendingRequestMenu: (v) => set({ pendingRequestMenu: v }),
   setSelectedPendingMenu: (v) => set({ selectedPendingMenu: v }),

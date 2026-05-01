@@ -1,8 +1,11 @@
 "use client";
 
-import type { CallSessionTarget, CallSessionSnapshot } from "@/lib/types/call";
+import type {
+  CallSessionTarget,
+  CallSessionSnapshot,
+  UpdateMediaStateFn,
+} from "@/lib/types/call";
 import { RemoteAudioSinkManager } from "./audioSinkManager";
-import { CallTrack } from "./types";
 
 import type PeerType from "peerjs";
 
@@ -25,6 +28,24 @@ export class CallClient {
   private pendingCalls = new Set<string>();
   private lastPeerMappings: { userId: string; peerId: string }[] | null = null;
   private syncDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private localVideoStream: MediaStream | null = null;
+  private remoteStreams: Record<string, MediaStream> = {};
+  private dummyVideoTrack: MediaStreamTrack | null = null;
+  private updateMediaState: UpdateMediaStateFn | null = null;
+
+  // Peer-to-user mapping
+  private peerToUser: Map<string, string> = new Map();
+
+  // Active speaker detection
+  private audioContext: AudioContext | null = null;
+  private analysers: Map<string, AnalyserNode> = new Map();
+  private activeSpeakers: Set<string> = new Set();
+  private speakerDetectionLoopId: ReturnType<typeof setInterval> | null = null;
+  private combinedLocalStream: MediaStream | null = null;
+
+  setUpdateMediaState(fn: UpdateMediaStateFn) {
+    this.updateMediaState = fn;
+  }
 
   async connect(
     target: CallSessionTarget,
@@ -45,15 +66,14 @@ export class CallClient {
 
       const { default: Peer } = await import("peerjs");
 
-      // Generate a unique peer ID to avoid collisions on reconnect
-      const uniquePeerId = `${target.user.userId}_${Math.random().toString(36).substring(2, 9)}`;
+      const uniquePeerId = `${target.userId}_${Math.random().toString(36).substring(2, 9)}`;
 
       this.peer = new Peer(uniquePeerId, {
         host: "0.peerjs.com",
         port: 443,
         path: "/",
         secure: true,
-        debug: 1, // Increased debug level slightly for better diagnostics
+        debug: 1,
         config: {
           iceServers: [
             { urls: "stun:stun.l.google.com:19302" },
@@ -65,6 +85,8 @@ export class CallClient {
       });
 
       this.setupPeerListeners();
+      this.setupAudioContext();
+      this.setupLocalSpeakerDetection();
       callbacks.onJoined();
       return uniquePeerId;
     } catch (error) {
@@ -80,11 +102,16 @@ export class CallClient {
     this.isDisconnecting = true;
     this.lastPeerMappings = null;
 
+    if (this.speakerDetectionLoopId) {
+      clearInterval(this.speakerDetectionLoopId);
+      this.speakerDetectionLoopId = null;
+    }
+
     this.connections.forEach((conn) => {
       try {
         conn.close();
-      } catch (e) {
-        // Ignore close errors during disconnect
+      } catch {
+        /* connection may already be closed */
       }
     });
     this.connections.clear();
@@ -94,38 +121,117 @@ export class CallClient {
       this.peer = null;
     }
 
-    if (this.localStream) {
-      this.localStream.getTracks().forEach((track) => track.stop());
-      this.localStream = null;
-    }
+    this.localStream?.getTracks().forEach((track) => track.stop());
+    this.localStream = null;
 
+    this.localVideoStream?.getTracks().forEach((track) => track.stop());
+    this.localVideoStream = null;
+
+    this.remoteStreams = {};
+    this.peerToUser.clear();
+    this.analysers.clear();
+    this.activeSpeakers.clear();
     this.audioSinkManager.clear();
+
     this.callbacks?.onDisconnected();
     this.isDisconnecting = false;
   }
 
   async toggleMute(): Promise<boolean> {
     if (!this.localStream) return false;
+    const track = this.localStream.getAudioTracks()[0];
+    if (!track) return false;
 
-    const audioTrack = this.localStream.getAudioTracks()[0];
-    if (audioTrack) {
-      audioTrack.enabled = !audioTrack.enabled;
-      return !audioTrack.enabled;
+    track.enabled = !track.enabled;
+    const isMuted = !track.enabled;
+
+    if (this.target?.callId && this.updateMediaState) {
+      void this.updateMediaState({ callId: this.target.callId, isMuted });
     }
-    return false;
+
+    this.updateCombinedLocalStream();
+    this.broadcastStatus();
+    return isMuted;
   }
 
-  public syncParticipants(
-    peerMappings: { userId: string; peerId: string }[],
-  ): void {
+  async toggleVideo(): Promise<boolean> {
+    if (!this.localStream) return false;
+
+    if (this.localVideoStream) {
+      // Video is on — turn it off by fully releasing the camera
+      this.localVideoStream.getVideoTracks().forEach((t) => {
+        // Replace with dummy track in all peer connections
+        this.connections.forEach((call) => {
+          const pc = call.peerConnection as RTCPeerConnection;
+          const sender = pc
+            ?.getSenders()
+            .find((s) => s.track?.kind === "video");
+          if (sender && this.dummyVideoTrack) {
+            void sender.replaceTrack(this.dummyVideoTrack);
+          }
+        });
+        t.stop();
+      });
+      this.localVideoStream = null;
+
+      this.updateCombinedLocalStream();
+
+      if (this.target?.callId && this.updateMediaState) {
+        void this.updateMediaState({
+          callId: this.target.callId,
+          isVideoOn: false,
+        });
+      }
+
+      this.broadcastStatus();
+      return false;
+    }
+
+    // No video stream yet — acquire camera on first toggle
+    try {
+      this.localVideoStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+
+      const videoTrack = this.localVideoStream.getVideoTracks()[0];
+      if (videoTrack) {
+        this.connections.forEach((call) => {
+          const pc = call.peerConnection as RTCPeerConnection;
+          const sender = pc
+            ?.getSenders()
+            .find((s) => s.track?.kind === "video");
+          if (sender) {
+            void sender.replaceTrack(videoTrack);
+          } else {
+            // Fallback: if no video sender existed, we must add it (though this might need re-negotiation)
+            pc?.addTrack(videoTrack, this.getCombinedLocalStream()!);
+          }
+        });
+      }
+
+      if (this.target?.callId && this.updateMediaState) {
+        void this.updateMediaState({
+          callId: this.target.callId,
+          isVideoOn: true,
+        });
+      }
+
+      this.updateCombinedLocalStream();
+      this.broadcastStatus();
+      return true;
+    } catch (err) {
+      console.error("[CallClient] Failed to get video stream:", err);
+      return false;
+    }
+  }
+
+  syncParticipants(peerMappings: { userId: string; peerId: string }[]): void {
     if (!this.peer || !this.target || !this.localStream) return;
 
-    // Cache the latest mappings so we can sync as soon as the peer opens
     this.lastPeerMappings = peerMappings;
+    peerMappings.forEach((m) => this.peerToUser.set(m.peerId, m.userId));
 
-    if (!this.isPeerOpen) {
-      return;
-    }
+    if (!this.isPeerOpen) return;
 
     if (this.syncDebounceTimer) clearTimeout(this.syncDebounceTimer);
     this.syncDebounceTimer = setTimeout(() => {
@@ -133,33 +239,33 @@ export class CallClient {
     }, 1000);
   }
 
+  // --- Private ---
+
   private doSyncParticipants(
     peerMappings: { userId: string; peerId: string }[],
   ): void {
     if (!this.peer || !this.target || !this.localStream) return;
 
-    const currentUserId = this.target.user.userId;
+    const currentUserId = this.target.userId;
     if (!currentUserId) return;
 
     peerMappings.forEach(({ userId, peerId }) => {
+      this.peerToUser.set(peerId, userId);
       if (userId === currentUserId) return;
-      if (this.connections.has(peerId)) return;
-      if (this.pendingCalls.has(peerId)) return;
+      if (this.connections.has(peerId) || this.pendingCalls.has(peerId)) return;
 
       this.pendingCalls.add(peerId);
       this.initiateCall(peerId);
     });
 
-    this.updateStatus();
+    this.broadcastStatus();
   }
 
   private setupPeerListeners(): void {
     if (!this.peer) return;
 
-    this.peer.on("open", (id) => {
+    this.peer.on("open", () => {
       this.isPeerOpen = true;
-
-      // Automatically sync if we had mappings waiting
       if (this.lastPeerMappings) {
         this.doSyncParticipants(this.lastPeerMappings);
       }
@@ -170,12 +276,11 @@ export class CallClient {
     });
 
     this.peer.on("call", (incomingCall) => {
-      if (!this.localStream) {
-        console.warn("[CallClient] Received call but local stream is missing");
-        return;
-      }
+      this.updateCombinedLocalStream();
+      const combined = this.combinedLocalStream;
+      if (!combined) return;
 
-      incomingCall.answer(this.localStream);
+      incomingCall.answer(combined);
       this.setupCallHandlers(incomingCall);
     });
 
@@ -187,10 +292,14 @@ export class CallClient {
   }
 
   private initiateCall(remotePeerId: string, retryCount = 0): void {
-    if (!this.peer || !this.localStream || this.isDisconnecting) return;
+    if (!this.peer || this.isDisconnecting) return;
+
+    this.updateCombinedLocalStream();
+    const combined = this.combinedLocalStream;
+    if (!combined) return;
 
     try {
-      const outgoingCall = this.peer.call(remotePeerId, this.localStream);
+      const outgoingCall = this.peer.call(remotePeerId, combined);
       if (!outgoingCall) {
         throw new Error("PeerJS failed to create outgoing call object");
       }
@@ -208,21 +317,17 @@ export class CallClient {
           this.handleCallRetry(remotePeerId, retryCount);
         }
       });
-    } catch (error) {
-      console.error("[CallClient] Failed to initiate call:", error);
+    } catch {
       this.handleCallRetry(remotePeerId, retryCount);
     }
   }
 
   private handleCallRetry(remotePeerId: string, retryCount: number): void {
     if (this.connections.has(remotePeerId)) return;
-
-    const maxRetries = 3;
-    if (retryCount >= maxRetries) {
+    if (retryCount >= 3 || !this.peer || this.isDisconnecting) {
       this.pendingCalls.delete(remotePeerId);
       return;
     }
-    if (!this.peer || this.isDisconnecting) return;
 
     setTimeout(
       () => {
@@ -239,6 +344,30 @@ export class CallClient {
 
     call.on("stream", (remoteStream: MediaStream) => {
       this.pendingCalls.delete(remotePeerId);
+      this.remoteStreams[remotePeerId] = remoteStream;
+
+      remoteStream.onaddtrack = () => this.broadcastStatus();
+      remoteStream.onremovetrack = () => this.broadcastStatus();
+
+      // Active speaker detection
+      this.setupAudioContext();
+      if (!this.audioContext) return;
+
+      const audioTrack = remoteStream.getAudioTracks()[0];
+      if (audioTrack) {
+        try {
+          const source = this.audioContext.createMediaStreamSource(
+            new MediaStream([audioTrack]),
+          );
+          const analyser = this.audioContext.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.4;
+          source.connect(analyser);
+          this.analysers.set(remotePeerId, analyser);
+        } catch (err) {
+          console.error("Failed to setup audio analyser", err);
+        }
+      }
 
       this.audioSinkManager.attach({
         id: remotePeerId,
@@ -257,26 +386,160 @@ export class CallClient {
         },
         dispose: () => {},
       });
-      this.updateStatus();
+      this.broadcastStatus();
     });
 
-    call.on("close", () => {
-      this.audioSinkManager.detach(remotePeerId);
-      this.connections.delete(remotePeerId);
-      this.updateStatus();
-    });
-
-    call.on("error", (err: any) => {
-      console.error("[CallClient] Call error with:", remotePeerId, err);
-      this.audioSinkManager.detach(remotePeerId);
-      this.connections.delete(remotePeerId);
-      this.updateStatus();
-    });
+    call.on("close", () => this.cleanupPeer(remotePeerId));
+    call.on("error", () => this.cleanupPeer(remotePeerId));
   }
 
-  private updateStatus(): void {
+  private cleanupPeer(peerId: string) {
+    this.audioSinkManager.detach(peerId);
+    this.connections.delete(peerId);
+    delete this.remoteStreams[peerId];
+    this.analysers.delete(peerId);
+    this.activeSpeakers.delete(peerId);
+    this.broadcastStatus();
+  }
+
+  private setupAudioContext() {
+    if (!this.audioContext) {
+      this.audioContext = new (
+        window.AudioContext || (window as any).webkitAudioContext
+      )();
+    }
+    this.startSpeakerDetectionLoop();
+  }
+
+  private setupLocalSpeakerDetection() {
+    if (!this.localStream || !this.audioContext) return;
+    const audioTrack = this.localStream.getAudioTracks()[0];
+    if (!audioTrack) return;
+
+    try {
+      const source = this.audioContext.createMediaStreamSource(
+        new MediaStream([audioTrack]),
+      );
+      const analyser = this.audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.4;
+      source.connect(analyser);
+      this.analysers.set("local", analyser);
+    } catch (err) {
+      console.error("[CallClient] Failed to setup local audio analyser", err);
+    }
+  }
+
+  private startSpeakerDetectionLoop() {
+    if (this.speakerDetectionLoopId) return;
+
+    this.speakerDetectionLoopId = setInterval(() => {
+      if (this.audioContext?.state === "suspended") {
+        void this.audioContext.resume();
+      }
+
+      let changed = false;
+
+      this.analysers.forEach((analyser, peerId) => {
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+        const average = sum / dataArray.length;
+
+        const isSpeaking = average > 10;
+        const wasSpeaking = this.activeSpeakers.has(peerId);
+
+        if (isSpeaking && !wasSpeaking) {
+          this.activeSpeakers.add(peerId);
+          changed = true;
+        } else if (!isSpeaking && wasSpeaking) {
+          this.activeSpeakers.delete(peerId);
+          changed = true;
+        }
+      });
+
+      if (changed) this.broadcastStatus();
+    }, 100);
+  }
+
+  private updateCombinedLocalStream(): void {
+    if (!this.localStream) return;
+
+    const audioTracks = this.localStream.getAudioTracks();
+    const videoTracks = this.localVideoStream?.getVideoTracks() || [];
+
+    // If no real video, use dummy track to keep the sender alive
+    if (videoTracks.length === 0) {
+      if (!this.dummyVideoTrack) {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.fillStyle = "black";
+          ctx.fillRect(0, 0, 1, 1);
+        }
+        const stream = (canvas as any).captureStream(1);
+        this.dummyVideoTrack = stream.getVideoTracks()[0];
+      }
+      if (this.dummyVideoTrack) videoTracks.push(this.dummyVideoTrack);
+    }
+
+    if (!this.combinedLocalStream) {
+      this.combinedLocalStream = new MediaStream([
+        ...audioTracks,
+        ...videoTracks,
+      ]);
+    } else {
+      // Sync tracks to the stable instance
+      const current = this.combinedLocalStream.getTracks();
+      const target = [...audioTracks, ...videoTracks];
+      current.forEach((t) => {
+        if (!target.includes(t)) this.combinedLocalStream?.removeTrack(t);
+      });
+      target.forEach((t) => {
+        if (!current.includes(t)) this.combinedLocalStream?.addTrack(t);
+      });
+    }
+  }
+
+  private getCombinedLocalStream(): MediaStream | null {
+    this.updateCombinedLocalStream();
+    return this.combinedLocalStream;
+  }
+
+  private broadcastStatus(): void {
+    const remoteStreamsByUser: Record<string, MediaStream> = {};
+    const activeSpeakersByUser = new Set<string>();
+
+    for (const [peerId, stream] of Object.entries(this.remoteStreams)) {
+      let userId = this.peerToUser.get(peerId);
+      // Fallback: extract userId from peerId pattern "userId_random"
+      if (!userId && peerId.includes("_")) {
+        userId = peerId.split("_")[0];
+      }
+      if (userId) remoteStreamsByUser[userId] = stream;
+    }
+
+    for (const peerId of this.activeSpeakers) {
+      if (peerId === "local") {
+        if (this.target?.userId) activeSpeakersByUser.add(this.target.userId);
+        continue;
+      }
+      let userId = this.peerToUser.get(peerId);
+      if (!userId && peerId.includes("_")) {
+        userId = peerId.split("_")[0];
+      }
+      if (userId) activeSpeakersByUser.add(userId);
+    }
+
     this.callbacks?.onStatusChange({
       participantCount: this.connections.size + 1,
+      remoteStreams: remoteStreamsByUser,
+      localStream: this.getCombinedLocalStream(),
+      activeSpeakers: Array.from(activeSpeakersByUser),
     });
   }
 }

@@ -11,6 +11,7 @@ import { ChatSkeleton } from "@/components/skeletons/ChatSkeleton";
 import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 import FriendChatUI from "./FriendChatUI";
 import { FriendChatHeader } from "./FriendChatHeader";
+import { CallOverlay } from "@/components/features/calls/CallOverlay";
 
 export function FriendPage() {
   const params = useParams();
@@ -19,7 +20,8 @@ export function FriendPage() {
   const { friends } = useFriends();
   const { onlineUsers, awayUsers } = usePresence();
   const { activeCalls } = useCalls("");
-  const { isJoined: isInCall, actualRoomId } = useCallStore();
+  const { status: callStatus, actualRoomId } = useCallStore();
+  const isInCall = callStatus === "joined";
   const { isSidebarOpen } = useUIStore();
 
   const friend = friends.find((f) => f?.friend?.user_id === friendId);
@@ -30,7 +32,7 @@ export function FriendPage() {
 
   return (
     <div className="flex-1 flex overflow-hidden">
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative">
         <FriendChatHeader
           friend={friend}
           directConversationId={directConversationId}
@@ -41,7 +43,7 @@ export function FriendPage() {
           actualRoomId={actualRoomId}
         />
         <div className="flex-1 flex overflow-hidden relative">
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden relative">
             <Suspense fallback={<ChatSkeleton />}>
               <FriendChatUI />
             </Suspense>
@@ -54,6 +56,7 @@ export function FriendPage() {
             />
           )}
         </div>
+        <CallOverlay />
       </div>
     </div>
   );

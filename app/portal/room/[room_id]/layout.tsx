@@ -9,6 +9,8 @@ import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useUIStore } from "@/store/uiStore";
 import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSidebar";
 
+import { CallOverlay } from "@/components/features/calls/CallOverlay";
+
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const room_id = params.room_id as string;
@@ -24,9 +26,12 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col flex-1 min-w-0 bg-theme-base overflow-hidden relative">
           <TopBar room_id={room_id} />
           <div className="flex-1 flex overflow-hidden">
-            <div className="flex-1 overflow-hidden relative">{children}</div>
+            <div className="flex-1 overflow-hidden relative">
+              {children}
+            </div>
             {isSidebarOpen && <DetailsSidebar id={room_id} type="room" />}
           </div>
+          <CallOverlay />
         </div>
         <RightSidebar room_id={room_id} />
       </div>

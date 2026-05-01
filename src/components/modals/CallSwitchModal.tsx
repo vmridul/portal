@@ -9,11 +9,11 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 export function CallSwitchModal() {
   const { closeModal, modalData } = useUIStore();
   const activeCallId = useCallStore((state) => state.callId);
-  const { switchSession } = useCallSessionActions();
+  const { switchSession, startAndJoinCall, leaveCurrentSession } = useCallSessionActions();
   const user = useUserStore((s) => s.user);
 
   const handleSwitch = async () => {
-    const { newCallId, newRoomId, newRoomName, oldCallId } = modalData;
+    const { newCallId, newRoomId, newRoomName, oldCallId, isStartingNew } = modalData;
     const currentCallId = oldCallId || activeCallId;
 
     if (!currentCallId) {
@@ -22,21 +22,26 @@ export function CallSwitchModal() {
     }
 
     try {
-      await switchSession(
-        {
-          callId: newCallId,
-          room: {
-            id: newRoomId,
-            name: newRoomName,
+      if (isStartingNew) {
+        await leaveCurrentSession(currentCallId);
+        await startAndJoinCall({
+          roomId: newRoomId,
+          roomName: newRoomName,
+          userId: user?.user_id || "",
+        });
+      } else {
+        await switchSession(
+          {
+            callId: newCallId,
+            room: {
+              id: newRoomId,
+              name: newRoomName,
+            },
+            userId: user?.user_id || "",
           },
-          user: {
-            userId: user?.user_id,
-            displayName: user?.username || "Guest",
-            avatarUrl: user?.avatar || undefined,
-          },
-        },
-        currentCallId,
-      );
+          currentCallId,
+        );
+      }
       closeModal();
     } catch {
       closeModal();

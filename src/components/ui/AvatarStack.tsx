@@ -44,7 +44,7 @@ const AvatarStack = ({
               quality={40}
               width={size}
               height={size}
-              className="rounded-full ring-2 ring-theme-base object-cover bg-theme-base"
+              className="rounded-full ring-1 ring-theme-base object-cover bg-theme-base"
             />
           </div>
         ))}

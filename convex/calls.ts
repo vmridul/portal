@@ -125,6 +125,7 @@ export const startCall = mutation({
       participants: [identity.subject],
       allParticipants: [identity.subject],
       activePeerIds: [{ userId: identity.subject, peerId: args.peerId }],
+      mediaStates: [{ userId: identity.subject, isMuted: false, isVideoOn: false }],
       initiatorId: identity.subject,
       isActive: true,
     });
@@ -176,11 +177,55 @@ export const joinCall = mutation({
       activePeerIds.push({ userId: identity.subject, peerId: args.peerId });
     }
 
+    // Update media states
+    const mediaStates = call.mediaStates || [];
+    const stateIndex = mediaStates.findIndex((m) => m.userId === identity.subject);
+    if (stateIndex >= 0) {
+      mediaStates[stateIndex] = { userId: identity.subject, isMuted: false, isVideoOn: false };
+    } else {
+      mediaStates.push({ userId: identity.subject, isMuted: false, isVideoOn: false });
+    }
+
     await ctx.db.patch(args.callId, {
       participants,
       allParticipants,
       activePeerIds,
+      mediaStates,
     });
+  },
+});
+
+export const updateMediaState = mutation({
+  args: { 
+    callId: v.id("calls"), 
+    isMuted: v.optional(v.boolean()), 
+    isVideoOn: v.optional(v.boolean()) 
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const call = await ctx.db.get(args.callId);
+    if (!call || !call.isActive) return;
+
+    const mediaStates = [...(call.mediaStates || [])];
+    const index = mediaStates.findIndex((m) => m.userId === identity.subject);
+
+    if (index >= 0) {
+      mediaStates[index] = {
+        ...mediaStates[index],
+        isMuted: args.isMuted ?? mediaStates[index].isMuted,
+        isVideoOn: args.isVideoOn ?? mediaStates[index].isVideoOn,
+      };
+    } else {
+      mediaStates.push({
+        userId: identity.subject,
+        isMuted: args.isMuted ?? false,
+        isVideoOn: args.isVideoOn ?? false,
+      });
+    }
+
+    await ctx.db.patch(args.callId, { mediaStates });
   },
 });
 
@@ -199,6 +244,9 @@ export const leaveCall = mutation({
     const newActivePeerIds = (call.activePeerIds || []).filter(
       (p) => p.userId !== identity.subject,
     );
+    const newMediaStates = (call.mediaStates || []).filter(
+      (m) => m.userId !== identity.subject,
+    );
 
     if (newParticipants.length === 0) {
       await ctx.db.patch(args.callId, {
@@ -206,12 +254,14 @@ export const leaveCall = mutation({
         endedAt: Date.now(),
         participants: [],
         activePeerIds: [],
+        mediaStates: [],
       });
       await markCallNotificationsEnded(ctx, args.callId);
     } else {
       await ctx.db.patch(args.callId, {
         participants: newParticipants,
         activePeerIds: newActivePeerIds,
+        mediaStates: newMediaStates,
       });
     }
   },

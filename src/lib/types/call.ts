@@ -4,12 +4,6 @@ export type CallId = Id<"calls">;
 
 export type CallSessionStatus = "idle" | "joining" | "joined" | "leaving" | "error";
 
-export interface CallUserInfo {
-  userId?: string;
-  displayName?: string;
-  avatarUrl?: string;
-}
-
 export interface CallRoomMetadata {
   id: string;
   name: string;
@@ -18,7 +12,8 @@ export interface CallRoomMetadata {
 export interface CallSessionTarget {
   callId: CallId;
   room: CallRoomMetadata;
-  user: CallUserInfo;
+  userId: string;
+  startedAt?: number;
 }
 
 export interface CallSessionSnapshot {
@@ -29,4 +24,28 @@ export interface CallSessionSnapshot {
   isMuted: boolean;
   participantCount: number;
   error: string | null;
+  isVideoOn: boolean;
+  localStream: MediaStream | null;
+  joinedAt: number | null;
+  startedAt: number | null;
+  activeSpeakers: string[];
+  remoteStreams: Record<string, MediaStream>;
 }
+
+/** Shared call record shape matching the Convex schema. */
+export interface CallRecord {
+  _id: Id<"calls">;
+  participants: string[];
+  activePeerIds?: { userId: string; peerId: string }[];
+  mediaStates?: { userId: string; isMuted: boolean; isVideoOn: boolean }[];
+  startedAt: number;
+  roomId: string;
+  isActive: boolean;
+}
+
+/** Callback to update media state in Convex. */
+export type UpdateMediaStateFn = (args: {
+  callId: CallId;
+  isMuted?: boolean;
+  isVideoOn?: boolean;
+}) => Promise<unknown>;

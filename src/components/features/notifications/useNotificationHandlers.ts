@@ -55,11 +55,7 @@ export function useNotificationHandlers() {
           id: notification.conversationId,
           name: notification.sourceName,
         },
-        user: {
-          userId: user.user_id,
-          displayName: user.username || "Guest",
-          avatarUrl: user.avatar || undefined,
-        },
+        userId: user.user_id,
       });
     },
     [openNotification, joinOrSwitchSession, user],
