@@ -23,3 +23,4 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
 export { MediaItem, MediaGrid } from "./media";
 
 export { SidebarLayout, SidebarHeader, SidebarFooter } from "./sidebar";
+export { Popover, PopoverTrigger, PopoverContent } from "./popover/Popover";

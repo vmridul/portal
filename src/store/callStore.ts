@@ -19,11 +19,17 @@ const initialSnapshot: CallSessionSnapshot = {
   participantCount: 0,
   error: null,
   isVideoOn: false,
+  isScreenSharing: false,
   localStream: null,
+  screenShareStream: null,
   joinedAt: null,
   startedAt: null,
   activeSpeakers: [],
   remoteStreams: {},
+  screenShareStreams: {},
+  availableDevices: [],
+  selectedAudioDeviceId: null,
+  selectedVideoDeviceId: null,
 };
 
 interface CallStoreState extends CallSessionSnapshot {
@@ -31,8 +37,12 @@ interface CallStoreState extends CallSessionSnapshot {
   leaveCall: () => Promise<void>;
   toggleMute: () => Promise<boolean | void>;
   toggleVideo: () => Promise<boolean | void>;
+  toggleScreenShare: () => Promise<boolean | void>;
   syncParticipants: (participants: { userId: string; peerId: string }[]) => void;
   setUpdateMediaState: (fn: UpdateMediaStateFn) => void;
+  refreshDevices: () => Promise<void>;
+  setAudioSource: (deviceId: string) => Promise<void>;
+  setVideoSource: (deviceId: string) => Promise<void>;
   clearError: () => void;
   setError: (message: string) => void;
 }
@@ -126,6 +136,11 @@ export const useCallStore = create<CallStoreState>((set, get) => ({
     set({ isVideoOn, error: null });
   },
 
+  async toggleScreenShare() {
+    const isScreenSharing = await callClient.toggleScreenShare();
+    set({ isScreenSharing, error: null });
+  },
+
   syncParticipants(participants) {
     if (get().status === "joined") {
       callClient.syncParticipants(participants);
@@ -134,6 +149,18 @@ export const useCallStore = create<CallStoreState>((set, get) => ({
 
   setUpdateMediaState(fn: UpdateMediaStateFn) {
     callClient.setUpdateMediaState(fn);
+  },
+  
+  async refreshDevices() {
+    await callClient.refreshDevices();
+  },
+
+  async setAudioSource(deviceId: string) {
+    await callClient.setAudioSource(deviceId);
+  },
+
+  async setVideoSource(deviceId: string) {
+    await callClient.setVideoSource(deviceId);
   },
 
   clearError() {

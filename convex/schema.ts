@@ -134,6 +134,7 @@ export default defineSchema({
           userId: v.string(),
           isMuted: v.boolean(),
           isVideoOn: v.boolean(),
+          isScreenSharing: v.optional(v.boolean()),
         }),
       ),
     ),

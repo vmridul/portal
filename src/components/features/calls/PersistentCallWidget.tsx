@@ -19,7 +19,7 @@ import AvatarStack from "@/components/ui/AvatarStack";
 import { Button } from "@/components/ui/button/Button";
 
 const PersistentCallWidget = () => {
-  const { status, roomName, actualRoomId, callId, isMuted, toggleMute, isVideoOn, toggleVideo } =
+  const { status, roomName, actualRoomId, callId, isMuted, toggleMute, isVideoOn, toggleVideo, isScreenSharing, toggleScreenShare } =
     useCallStore();
   const { setSidebarOpen, setSidebarTab } = useUIStore();
   const { leaveCurrentSession } = useCallSessionActions();
@@ -41,6 +41,7 @@ const PersistentCallWidget = () => {
     if (!callId) return;
 
     try {
+      if (isScreenSharing) await toggleScreenShare();
       await leaveCurrentSession(callId);
     } catch {
       // Best effort widget leave

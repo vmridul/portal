@@ -125,7 +125,7 @@ export const startCall = mutation({
       participants: [identity.subject],
       allParticipants: [identity.subject],
       activePeerIds: [{ userId: identity.subject, peerId: args.peerId }],
-      mediaStates: [{ userId: identity.subject, isMuted: false, isVideoOn: false }],
+      mediaStates: [{ userId: identity.subject, isMuted: false, isVideoOn: false, isScreenSharing: false }],
       initiatorId: identity.subject,
       isActive: true,
     });
@@ -181,9 +181,9 @@ export const joinCall = mutation({
     const mediaStates = call.mediaStates || [];
     const stateIndex = mediaStates.findIndex((m) => m.userId === identity.subject);
     if (stateIndex >= 0) {
-      mediaStates[stateIndex] = { userId: identity.subject, isMuted: false, isVideoOn: false };
+      mediaStates[stateIndex] = { userId: identity.subject, isMuted: false, isVideoOn: false, isScreenSharing: false };
     } else {
-      mediaStates.push({ userId: identity.subject, isMuted: false, isVideoOn: false });
+      mediaStates.push({ userId: identity.subject, isMuted: false, isVideoOn: false, isScreenSharing: false });
     }
 
     await ctx.db.patch(args.callId, {
@@ -199,7 +199,8 @@ export const updateMediaState = mutation({
   args: { 
     callId: v.id("calls"), 
     isMuted: v.optional(v.boolean()), 
-    isVideoOn: v.optional(v.boolean()) 
+    isVideoOn: v.optional(v.boolean()),
+    isScreenSharing: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -216,12 +217,14 @@ export const updateMediaState = mutation({
         ...mediaStates[index],
         isMuted: args.isMuted ?? mediaStates[index].isMuted,
         isVideoOn: args.isVideoOn ?? mediaStates[index].isVideoOn,
+        isScreenSharing: args.isScreenSharing ?? mediaStates[index].isScreenSharing ?? false,
       };
     } else {
       mediaStates.push({
         userId: identity.subject,
         isMuted: args.isMuted ?? false,
         isVideoOn: args.isVideoOn ?? false,
+        isScreenSharing: args.isScreenSharing ?? false,
       });
     }
 

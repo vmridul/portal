@@ -26,7 +26,7 @@ export const CallOverlayHeader = () => {
   }, [startedAt]);
 
   return (
-    <div className="flex shrink-0 items-center px-4 h-12 w-full gap-4 border-b border-theme-border bg-theme-base absolute top-0 left-0 z-10">
+    <div className="flex shrink-0 items-center px-4 h-12 w-full gap-4 border-b border-theme-border bg-theme-surface absolute top-0 left-0 z-10">
       <TooltipWrapper content="Back to Chat">
         <button
           onClick={() => setCallOverlayOpen(false)}

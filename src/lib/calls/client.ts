@@ -33,6 +33,16 @@ export class CallClient {
   private dummyVideoTrack: MediaStreamTrack | null = null;
   private updateMediaState: UpdateMediaStateFn | null = null;
 
+  // Screen sharing
+  private screenShareStream: MediaStream | null = null;
+  private isScreenSharing = false;
+  private screenShareConnections = new Map<string, any>();
+
+  // Device management
+  private availableDevices: MediaDeviceInfo[] = [];
+  private selectedAudioDeviceId: string | null = null;
+  private selectedVideoDeviceId: string | null = null;
+
   // Peer-to-user mapping
   private peerToUser: Map<string, string> = new Map();
 
@@ -63,6 +73,15 @@ export class CallClient {
         audio: true,
         video: false,
       });
+
+      const audioTrack = this.localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        this.selectedAudioDeviceId = audioTrack.getSettings().deviceId || null;
+      }
+
+      // Initialize devices list
+      await this.refreshDevices();
+      navigator.mediaDevices.ondevicechange = () => void this.refreshDevices();
 
       const { default: Peer } = await import("peerjs");
 
@@ -116,6 +135,14 @@ export class CallClient {
     });
     this.connections.clear();
 
+    // Clean up screen share connections
+    this.screenShareConnections.forEach((conn) => {
+      try {
+        conn.close();
+      } catch { /* already closed */ }
+    });
+    this.screenShareConnections.clear();
+
     if (this.peer) {
       this.peer.destroy();
       this.peer = null;
@@ -126,6 +153,11 @@ export class CallClient {
 
     this.localVideoStream?.getTracks().forEach((track) => track.stop());
     this.localVideoStream = null;
+
+    // Clean up screen share stream
+    this.screenShareStream?.getTracks().forEach((track) => track.stop());
+    this.screenShareStream = null;
+    this.isScreenSharing = false;
 
     this.remoteStreams = {};
     this.peerToUser.clear();
@@ -190,11 +222,14 @@ export class CallClient {
     // No video stream yet — acquire camera on first toggle
     try {
       this.localVideoStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: this.selectedVideoDeviceId
+          ? { deviceId: { exact: this.selectedVideoDeviceId } }
+          : true,
       });
 
       const videoTrack = this.localVideoStream.getVideoTracks()[0];
       if (videoTrack) {
+        this.selectedVideoDeviceId = videoTrack.getSettings().deviceId || null;
         this.connections.forEach((call) => {
           const pc = call.peerConnection as RTCPeerConnection;
           const sender = pc
@@ -225,6 +260,97 @@ export class CallClient {
     }
   }
 
+  async refreshDevices(): Promise<void> {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      this.availableDevices = devices;
+      this.broadcastStatus();
+    } catch (err) {
+      console.error("[CallClient] Failed to enumerate devices:", err);
+    }
+  }
+
+  async setAudioSource(deviceId: string): Promise<void> {
+    this.selectedAudioDeviceId = deviceId;
+    if (!this.localStream) {
+      this.broadcastStatus();
+      return;
+    }
+
+    try {
+      const oldTrack = this.localStream.getAudioTracks()[0];
+      // Only switch immediately if we aren't "effectively" off? 
+      // Actually for audio we switch immediately if localStream exists, 
+      // but we preserve the enabled state.
+      const isMuted = oldTrack ? !oldTrack.enabled : false;
+
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: { exact: deviceId } },
+      });
+      const newTrack = newStream.getAudioTracks()[0];
+
+      if (newTrack) {
+        newTrack.enabled = !isMuted;
+        if (oldTrack) {
+          oldTrack.stop();
+          this.localStream.removeTrack(oldTrack);
+        }
+        this.localStream.addTrack(newTrack);
+
+        this.connections.forEach((call) => {
+          const pc = call.peerConnection as RTCPeerConnection;
+          const sender = pc?.getSenders().find((s) => s.track?.kind === "audio");
+          if (sender) void sender.replaceTrack(newTrack);
+        });
+
+        this.updateCombinedLocalStream();
+        this.setupLocalSpeakerDetection();
+      }
+    } catch (err) {
+      console.error("[CallClient] Failed to set audio source:", err);
+    }
+    this.broadcastStatus();
+  }
+
+  async setVideoSource(deviceId: string): Promise<void> {
+    this.selectedVideoDeviceId = deviceId;
+
+    // If video is OFF, just remember the device and broadcast
+    if (!this.localVideoStream) {
+      this.broadcastStatus();
+      return;
+    }
+
+    // If video is ON, switch immediately
+    try {
+      const oldTrack = this.localVideoStream.getVideoTracks()[0];
+
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } },
+      });
+      const newTrack = newStream.getVideoTracks()[0];
+
+      if (newTrack) {
+        if (oldTrack) {
+          oldTrack.stop();
+          this.localVideoStream.removeTrack(oldTrack);
+        }
+        this.localVideoStream.addTrack(newTrack);
+
+        this.connections.forEach((call) => {
+          const pc = call.peerConnection as RTCPeerConnection;
+          const sender = pc?.getSenders().find((s) => s.track?.kind === "video");
+          if (sender) void sender.replaceTrack(newTrack);
+        });
+
+        this.updateCombinedLocalStream();
+      }
+    } catch (err) {
+      console.error("[CallClient] Failed to set video source:", err);
+    }
+    this.broadcastStatus();
+  }
+
   syncParticipants(peerMappings: { userId: string; peerId: string }[]): void {
     if (!this.peer || !this.target || !this.localStream) return;
 
@@ -237,6 +363,81 @@ export class CallClient {
     this.syncDebounceTimer = setTimeout(() => {
       this.doSyncParticipants(peerMappings);
     }, 1000);
+  }
+
+  async toggleScreenShare(): Promise<boolean> {
+    if (this.isScreenSharing && this.screenShareStream) {
+      // Stop screen sharing
+      this.screenShareStream.getTracks().forEach((t) => t.stop());
+      this.screenShareStream = null;
+      this.isScreenSharing = false;
+
+      // Close all screen share peer connections
+      this.screenShareConnections.forEach((conn) => {
+        try { conn.close(); } catch { /* already closed */ }
+      });
+      this.screenShareConnections.clear();
+
+      if (this.target?.callId && this.updateMediaState) {
+        void this.updateMediaState({
+          callId: this.target.callId,
+          isScreenSharing: false,
+        });
+      }
+
+      this.broadcastStatus();
+      return false;
+    }
+
+    // Start screen sharing
+    try {
+      this.screenShareStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: "always" } as any,
+        audio: false,
+      });
+
+      this.isScreenSharing = true;
+
+      // Listen for user stopping via browser's native "Stop sharing" button
+      const videoTrack = this.screenShareStream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.onended = () => {
+          this.isScreenSharing = false;
+          this.screenShareStream = null;
+          this.screenShareConnections.forEach((conn) => {
+            try { conn.close(); } catch { /* already closed */ }
+          });
+          this.screenShareConnections.clear();
+
+          if (this.target?.callId && this.updateMediaState) {
+            void this.updateMediaState({
+              callId: this.target.callId,
+              isScreenSharing: false,
+            });
+          }
+
+          this.broadcastStatus();
+        };
+      }
+
+      // Send screen share stream to all connected peers
+      this.initiateScreenShareCalls();
+
+      if (this.target?.callId && this.updateMediaState) {
+        void this.updateMediaState({
+          callId: this.target.callId,
+          isScreenSharing: true,
+        });
+      }
+
+      this.broadcastStatus();
+      return true;
+    } catch (err) {
+      console.error("[CallClient] Failed to get screen share:", err);
+      this.isScreenSharing = false;
+      this.screenShareStream = null;
+      return false;
+    }
   }
 
   // --- Private ---
@@ -276,6 +477,14 @@ export class CallClient {
     });
 
     this.peer.on("call", (incomingCall) => {
+      const metadata = incomingCall.metadata;
+
+      if (metadata?.type === "screen-share") {
+        // This is a screen share call — handle separately
+        this.handleIncomingScreenShareCall(incomingCall);
+        return;
+      }
+
       this.updateCombinedLocalStream();
       const combined = this.combinedLocalStream;
       if (!combined) return;
@@ -341,6 +550,11 @@ export class CallClient {
     const remotePeerId = call.peer;
     this.connections.set(remotePeerId, call);
     this.pendingCalls.delete(remotePeerId);
+
+    // If we're screen sharing, also send screen to this newly connected peer
+    if (this.isScreenSharing && this.screenShareStream) {
+      this.initiateScreenShareCallToPeer(remotePeerId);
+    }
 
     call.on("stream", (remoteStream: MediaStream) => {
       this.pendingCalls.delete(remotePeerId);
@@ -513,6 +727,7 @@ export class CallClient {
   private broadcastStatus(): void {
     const remoteStreamsByUser: Record<string, MediaStream> = {};
     const activeSpeakersByUser = new Set<string>();
+    const screenShareStreamsByUser: Record<string, MediaStream> = {};
 
     for (const [peerId, stream] of Object.entries(this.remoteStreams)) {
       let userId = this.peerToUser.get(peerId);
@@ -521,6 +736,17 @@ export class CallClient {
         userId = peerId.split("_")[0];
       }
       if (userId) remoteStreamsByUser[userId] = stream;
+    }
+
+    // Build remote screen share streams by user
+    for (const [peerId, call] of this.screenShareConnections.entries()) {
+      let userId = this.peerToUser.get(peerId);
+      if (!userId && peerId.includes("_")) {
+        userId = peerId.split("_")[0];
+      }
+      if (userId && call._remoteScreenStream) {
+        screenShareStreamsByUser[userId] = call._remoteScreenStream;
+      }
     }
 
     for (const peerId of this.activeSpeakers) {
@@ -535,11 +761,84 @@ export class CallClient {
       if (userId) activeSpeakersByUser.add(userId);
     }
 
+    const audioTrack = this.localStream?.getAudioTracks()[0];
+    const isMuted = audioTrack ? !audioTrack.enabled : true;
+
     this.callbacks?.onStatusChange({
       participantCount: this.connections.size + 1,
       remoteStreams: remoteStreamsByUser,
       localStream: this.getCombinedLocalStream(),
       activeSpeakers: Array.from(activeSpeakersByUser),
+      isScreenSharing: this.isScreenSharing,
+      screenShareStream: this.screenShareStream,
+      screenShareStreams: screenShareStreamsByUser,
+      availableDevices: this.availableDevices,
+      selectedAudioDeviceId: this.selectedAudioDeviceId,
+      selectedVideoDeviceId: this.selectedVideoDeviceId,
+      isMuted,
+      isVideoOn: !!this.localVideoStream,
+    });
+  }
+
+  /** Initiate screen share PeerJS calls to all connected peers */
+  private initiateScreenShareCalls(): void {
+    if (!this.peer || !this.screenShareStream) return;
+
+    this.connections.forEach((_call, remotePeerId) => {
+      this.initiateScreenShareCallToPeer(remotePeerId);
+    });
+  }
+
+  private initiateScreenShareCallToPeer(remotePeerId: string): void {
+    if (!this.peer || !this.screenShareStream) return;
+    if (this.screenShareConnections.has(remotePeerId)) return;
+
+    try {
+      const screenCall = this.peer.call(remotePeerId, this.screenShareStream, {
+        metadata: { type: "screen-share" },
+      });
+      if (!screenCall) return;
+
+      this.screenShareConnections.set(remotePeerId, screenCall);
+
+      screenCall.on("close", () => {
+        this.screenShareConnections.delete(remotePeerId);
+      });
+      screenCall.on("error", () => {
+        this.screenShareConnections.delete(remotePeerId);
+      });
+    } catch (err) {
+      console.error("[CallClient] Failed to send screen share to peer:", err);
+    }
+  }
+
+  /** Handle an incoming screen share call from a remote peer */
+  private handleIncomingScreenShareCall(incomingCall: any): void {
+    const remotePeerId = incomingCall.peer;
+
+    // Answer with a silent dummy stream (PeerJS requires a stream for answer)
+    const dummyStream = new MediaStream();
+    incomingCall.answer(dummyStream);
+
+    incomingCall.on("stream", (remoteScreenStream: MediaStream) => {
+      // Tag the connection with the remote screen stream for broadcastStatus
+      incomingCall._remoteScreenStream = remoteScreenStream;
+      this.screenShareConnections.set(remotePeerId, incomingCall);
+      this.broadcastStatus();
+
+      remoteScreenStream.onremovetrack = () => {
+        this.screenShareConnections.delete(remotePeerId);
+        this.broadcastStatus();
+      };
+    });
+
+    incomingCall.on("close", () => {
+      this.screenShareConnections.delete(remotePeerId);
+      this.broadcastStatus();
+    });
+    incomingCall.on("error", () => {
+      this.screenShareConnections.delete(remotePeerId);
+      this.broadcastStatus();
     });
   }
 }

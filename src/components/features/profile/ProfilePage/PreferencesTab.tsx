@@ -12,9 +12,9 @@ export const PreferencesTab = () => {
         <span className="text-xs text-gray-400 font-medium">Theme Accent</span>
         <div
           onClick={() => setColorDialog((v) => !v)}
-          className="flex items-center justify-between bg-white/5 border border-white/10 py-2.5 px-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group"
+          className="flex items-center justify-between bg-theme-hover py-2.5 px-5 rounded-xl cursor-pointer transition-all group"
         >
-          <span className="text-gray-300 text-sm select-none group-hover:text-white transition-colors">
+          <span className="text-gray-200 text-sm select-none group-hover:text-white transition-colors">
             Customize Theme Color
           </span>
           <div
@@ -27,7 +27,7 @@ export const PreferencesTab = () => {
         createPortal(
           <>
             <div
-              className="fixed inset-0 z-[9998]"
+              className="fixed inset-0 z-[9998] min-w-32"
               onClick={() => setColorDialog(false)}
             />
             <div
@@ -35,14 +35,13 @@ export const PreferencesTab = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-4 px-1">
-                <h3 className="text-white text-lg font-semibold">Pick a Color</h3>
-                <p className="text-gray-400 text-xs">Choose your primary theme color</p>
+                <h3 className="text-white text-md">Pick Accent Color</h3>
               </div>
               <HexColorPicker color={color} onChange={setColor} />
               <button
                 onClick={() => setColorDialog(false)}
                 style={{ color: textColor }}
-                className="w-full mt-6 py-2.5 bg-theme-accent rounded-xl text-sm font-semibold  active:scale-[0.98] transition-all"
+                className="w-full mt-6 py-2.5 bg-theme-accent rounded-xl text-sm transition-all"
               >
                 Done
               </button>

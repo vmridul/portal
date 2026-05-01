@@ -25,11 +25,17 @@ export interface CallSessionSnapshot {
   participantCount: number;
   error: string | null;
   isVideoOn: boolean;
+  isScreenSharing: boolean;
   localStream: MediaStream | null;
+  screenShareStream: MediaStream | null;
   joinedAt: number | null;
   startedAt: number | null;
   activeSpeakers: string[];
   remoteStreams: Record<string, MediaStream>;
+  screenShareStreams: Record<string, MediaStream>;
+  availableDevices: MediaDeviceInfo[];
+  selectedAudioDeviceId: string | null;
+  selectedVideoDeviceId: string | null;
 }
 
 /** Shared call record shape matching the Convex schema. */
@@ -37,7 +43,7 @@ export interface CallRecord {
   _id: Id<"calls">;
   participants: string[];
   activePeerIds?: { userId: string; peerId: string }[];
-  mediaStates?: { userId: string; isMuted: boolean; isVideoOn: boolean }[];
+  mediaStates?: { userId: string; isMuted: boolean; isVideoOn: boolean; isScreenSharing?: boolean }[];
   startedAt: number;
   roomId: string;
   isActive: boolean;
@@ -48,4 +54,5 @@ export type UpdateMediaStateFn = (args: {
   callId: CallId;
   isMuted?: boolean;
   isVideoOn?: boolean;
+  isScreenSharing?: boolean;
 }) => Promise<unknown>;
