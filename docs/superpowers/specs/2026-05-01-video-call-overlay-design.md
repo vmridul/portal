@@ -31,7 +31,7 @@ Extend the existing voice call system to include a "Discord-style" Video and Cal
   - Placed inside `app/portal/room/[room_id]/layout.tsx` (and DM layout if applicable), absolutely positioned within the `.flex-1` chat container.
   - Render Condition: `isCallOverlayOpen === true` AND `useCallStore().actualRoomId === params.room_id`.
 - **`ParticipantGrid` & `ParticipantCard`**: Handles dynamic sizing and rendering of media tracks / speaking avatars based on the `CallClient` streams.
-- **`CallControls`**: Component for the bottom pill bar.
+- **`CallControls`**: Component for the bottom pill bar. Uses the existing `Button` component for all interactive elements.
 
 ## Out of Scope
 - Actual screen sharing backend/WebRTC logic is excluded from this initial pass (only the UI button is added for layout completeness).
