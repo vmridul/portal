@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useMessageActions, useTypingIndicators } from "@/hooks/useMessageActions";
+import {
+  useMessageActions,
+  useTypingIndicators,
+} from "@/hooks/useMessageActions";
 import { useUIStore } from "@/store/uiStore";
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
@@ -16,7 +19,6 @@ export function useChatInput({
   const { setTyping, clearTyping } = useTypingIndicators(room_id);
   const { sendMessage, generateUploadUrl, updateMessage } = useMessageActions();
   const { editingMessage, setEditingMessage } = useUIStore();
-
 
   // File upload hook
   const {
@@ -92,17 +94,22 @@ export function useChatInput({
 
     // Editing flow
     if (editingMessage) {
-      if (!msg.trim() || msg === editingMessage.content) {
-        setEditingMessage(null);
-        return;
-      }
-      try {
-        await updateMessage({
-          msg_id: editingMessage.id as Id<"messages">,
-          content: msg,
-        });
+      const content = msg.trim();
+      if (!content || content === editingMessage.content) {
         setEditingMessage(null);
         setMsg("");
+        return;
+      }
+
+      const editId = editingMessage.id;
+      setEditingMessage(null);
+      setMsg("");
+
+      try {
+        await updateMessage({
+          msg_id: editId as Id<"messages">,
+          content: content,
+        });
       } catch (error) {
         console.error(error);
         toast.error("Failed to update message");
@@ -111,34 +118,42 @@ export function useChatInput({
     }
 
     let storageId = upload.storageId;
+    const fileToSend = upload.file;
+    const contentToSend = msg.trim();
 
-    if (upload.file && !storageId) {
+    if (fileToSend && !storageId) {
       if (upload.isUploading) {
         toast.info("Waiting for upload to finish...");
-        // Upload is in progress; we cannot send until it completes.
-        // For simplicity, abort send and rely on user to retry after upload finishes.
         return;
       } else {
-        await startUpload(upload.file);
-        storageId = upload.storageId;
+        try {
+          await startUpload(fileToSend);
+          storageId = upload.storageId;
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to upload file");
+          return;
+        }
       }
     }
+
+    // Clear input and state immediately to prevent double sends
+    // and allow the user to type the next message while offline.
+    setMsg("");
+    cancelUpload();
+    scrollToBottom();
+    clearTyping();
 
     try {
       await sendMessage({
         conversation_id: room_id,
         conversation_type: type,
-        msg: msg || null,
+        msg: contentToSend || null,
         file_storage_id: storageId || undefined,
-        file_type: upload.file?.type || null,
-        file_name: upload.file?.name || null,
-        file_size: upload.file?.size,
+        file_type: fileToSend?.type || null,
+        file_name: fileToSend?.name || null,
+        file_size: fileToSend?.size,
       });
-      setMsg("");
-      // Reset upload state via hook
-      cancelUpload();
-      scrollToBottom();
-      await clearTyping();
     } catch (error) {
       console.error(error);
       toast.error("Failed to send message");
@@ -158,29 +173,28 @@ export function useChatInput({
     cancelUpload,
   ]);
 
-
-return {
-  input: {
-    ref: inputRef,
-    value: msg,
-    onChange: handleInputChange,
-    onEmojiClick,
-  },
-  file: {
-    ref: fileInputRef,
-    previewUrl,
-    upload,
-    onSelect: handleFileSelect,
-    onCancel: cancelUpload,
-    onStart: startUpload,
-  },
-  actions: {
-    onSend: handleSendMessage,
-    onClearTyping: clearTyping,
-  },
-  editing: {
-    message: editingMessage,
-    onCancel: () => setEditingMessage(null),
-  },
-} as const;
+  return {
+    input: {
+      ref: inputRef,
+      value: msg,
+      onChange: handleInputChange,
+      onEmojiClick,
+    },
+    file: {
+      ref: fileInputRef,
+      previewUrl,
+      upload,
+      onSelect: handleFileSelect,
+      onCancel: cancelUpload,
+      onStart: startUpload,
+    },
+    actions: {
+      onSend: handleSendMessage,
+      onClearTyping: clearTyping,
+    },
+    editing: {
+      message: editingMessage,
+      onCancel: () => setEditingMessage(null),
+    },
+  } as const;
 }

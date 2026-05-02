@@ -122,12 +122,12 @@ export default function Page() {
           <RoomItemMock
             name="Projects"
             id="4567"
-            className="scale-110 w-[221px] absolute -top-4 -left-4 z-10"
+            className="scale-110 w-[210px] absolute -top-3 left-[-3%] z-10"
           />
           <RoomItemMock
             name="Roooom"
             id="1345"
-            className="scale-110 w-[221px] absolute -top-4 -right-4 z-10"
+            className="scale-110 w-[210px] absolute -top-3 right-[-3%] z-10"
           />
           <FriendItemMock
             name="Pika"
@@ -146,7 +146,7 @@ export default function Page() {
     },
     {
       title: "Calls",
-      desc: "Start individual or group voice calls and switch between them seamlessly.",
+      desc: "Start individual or group audio & video calls and switch between them seamlessly.",
       component: (
         <div className=" flex items-center justify-center">
           <ActiveCallMock className="w-[400px] h-[200px] pt-16 scale:150" />
@@ -157,7 +157,7 @@ export default function Page() {
       title: "Notifications",
       desc: "Stay updated with real-time notifications and never miss a beat.",
       component: (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col scale-[1.2] items-center justify-center">
           <MessageNotificationMock
             name="Bulb"
             avatar="/assets/bu.png"
@@ -589,7 +589,7 @@ export default function Page() {
               <div className="mt-8 flex flex-col items-center">
                 <div
                   onClick={() => setColorDialog((v) => !v)}
-                  className="flex items-center gap-4 bg-white/5 border border-white/10 py-2.5 px-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group"
+                  className="flex items-center gap-4 bg-white/5 py-2.5 px-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group"
                 >
                   <span className="text-gray-300 text-sm select-none group-hover:text-white transition-colors">
                     Customize Theme Color

@@ -69,7 +69,7 @@ export const MessageReactions = ({
         <button
           key={emoji}
           onClick={() => handleReactionClick(emoji)}
-          className={`${data.hasUserReacted ? "bg-theme-hover text-white border border-theme-hover" : "bg-theme-surface hover:bg-theme-base border border-theme-border  text-gray-400"} flex items-center gap-1 px-2 py-0.5 rounded-md text-xs`}
+          className={`${data.hasUserReacted ? "bg-theme-accent text-theme-text border border-theme-hover" : "bg-theme-surface hover:bg-theme-base border border-theme-border  text-gray-400"} flex items-center gap-1 px-2 py-0.5 transition-all duration-100 rounded-md text-xs`}
           title={emoji}
         >
           <span className="text-sm">{emoji}</span>

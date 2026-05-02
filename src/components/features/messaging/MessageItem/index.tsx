@@ -15,6 +15,7 @@ import { MessageReactions } from "./MessageReactions";
 import { UserProfilePopup } from "@/components/popups/UserProfilePopup";
 import type { User, MessageWithSender } from "@/lib/types";
 import { useUIStore } from "@/store/uiStore";
+import { LinkifiedText } from "../LinkifiedText";
 import React from "react";
 
 interface MessageItemProps {
@@ -252,11 +253,11 @@ export const MessageItem = React.memo(
                 )}
 
                 {message.content && (
-                  <div
-                    className={`text-white whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
-                  >
-                    {message.content}
-                  </div>
+                    <LinkifiedText 
+                      text={message.content} 
+                      className={`text-white whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
+                      style={{ color: isImage || isVideo ? undefined : textColor }}
+                    />
                 )}
               </div>
 
