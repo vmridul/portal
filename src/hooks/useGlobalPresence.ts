@@ -16,31 +16,36 @@ export function useGlobalPresence() {
     else if (p.status === "away") awayUsers.add(p.user_id);
   });
 
-  const setStatus = useCallback(async (status: Status) => {
-    try {
+  const setStatus = useCallback(
+    async (status: Status) => {
       await updatePresence({ status });
-    } catch (e) {
-      console.error("Failed to update presence:", e);
-    }
-  }, [updatePresence]);
+    },
+    [updatePresence],
+  );
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let awayTimeout: ReturnType<typeof setTimeout>;
+
+    const onFocus = () => {
+      clearTimeout(awayTimeout);
       setStatus("online");
-    }, 60 * 1000);
+    };
 
-    // const onFocus = () => setStatus("online");
-    // const onBlur = () => setStatus("away");
+    const onBlur = () => {
+      awayTimeout = setTimeout(() => {
+        setStatus("away");
+      }, 5 * 60 * 1000);
+    };
 
-    // window.addEventListener("focus", onFocus);
-    // window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", onBlur);
 
     setStatus("online");
 
     return () => {
-      clearInterval(interval);
-      // window.removeEventListener("focus", onFocus);
-      // window.removeEventListener("blur", onBlur);
+      clearTimeout(awayTimeout);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("blur", onBlur);
     };
   }, [setStatus]);
 
