@@ -183,3 +183,29 @@ export const deleteRoom = mutation({
     }
   },
 });
+
+export const setNotificationPreference = mutation({
+  args: {
+    room_id: v.string(),
+    preference: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const membership = await ctx.db
+      .query("roomMembers")
+      .withIndex("by_user_room", (q) =>
+        q.eq("user_id", identity.subject).eq("room_id", args.room_id)
+      )
+      .first();
+
+    if (!membership) {
+      throw new Error("Not a member of this room");
+    }
+
+    await ctx.db.patch(membership._id, {
+      notificationPreference: args.preference,
+    });
+  },
+});

@@ -60,6 +60,7 @@ export interface UseRoomActionsResult {
   renameRoom: (args: { room_id: string; new_name: string }) => Promise<void>;
   leaveRoom: (args: { room_id: string }) => Promise<void>;
   deleteRoom: (args: { room_id: string }) => Promise<void>;
+  setNotificationPreference: (args: { room_id: string; preference: string }) => Promise<void>;
 }
 
 export function useRoomActions(): UseRoomActionsResult {
@@ -104,12 +105,22 @@ export function useRoomActions(): UseRoomActionsResult {
     [deleteRoomMutation]
   );
 
+  const setNotificationPreferenceMutation = useMutation(api.rooms.setNotificationPreference);
+
+  const setNotificationPreference = useCallback(
+    async ({ room_id, preference }: { room_id: string; preference: string }) => {
+      await setNotificationPreferenceMutation({ room_id, preference });
+    },
+    [setNotificationPreferenceMutation]
+  );
+
   return {
     joinRoom,
     createRoom,
     renameRoom,
     leaveRoom,
     deleteRoom,
+    setNotificationPreference,
   };
 }
 

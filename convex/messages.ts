@@ -156,19 +156,35 @@ export const sendMessage = mutation({
     if (args.conversation_type === "direct") {
       const friendId = extractFriendId(args.conversation_id, identity.subject);
       if (friendId) {
-        await createChatNotification(ctx, {
-          user_id: friendId,
-          message_id: insertedMessageId,
-          source_type: "direct",
-          source_id: identity.subject,
-          conversation_id: args.conversation_id,
-          source_name: sender?.username || "Unknown user",
-          sender_id: identity.subject,
-          sender_name: sender?.username || "Unknown user",
-          sender_avatar: sender?.avatar || "",
-          message: notificationMessage,
-          notification_type: "message",
-        });
+        // Check friend's notification preference
+        const friendPreference = await ctx.db
+          .query("friends")
+          .withIndex("by_friend_id", (q) =>
+            q.eq("friend_id", identity.subject)
+          )
+          .filter((q) => q.eq(q.field("user_id"), friendId))
+          .first();
+
+        const shouldNotify = shouldCreateNotification(
+          friendPreference?.notificationPreference ?? "all",
+          mentions.length > 0
+        );
+
+        if (shouldNotify) {
+          await createChatNotification(ctx, {
+            user_id: friendId,
+            message_id: insertedMessageId,
+            source_type: "direct",
+            source_id: identity.subject,
+            conversation_id: args.conversation_id,
+            source_name: sender?.username || "Unknown user",
+            sender_id: identity.subject,
+            sender_name: sender?.username || "Unknown user",
+            sender_avatar: sender?.avatar || "",
+            message: notificationMessage,
+            notification_type: "message",
+          });
+        }
       }
       return;
     }
@@ -185,16 +201,25 @@ export const sendMessage = mutation({
           .collect(),
       ]);
 
-      const recipientIds = Array.from(
-        new Set(
-          members
-            .map((member) => member.user_id)
-            .filter((userId) => userId !== identity.subject),
-        ),
+      const hasMentions = mentions.length > 0;
+
+      // Filter recipients based on their notification preferences
+      const validRecipients = await Promise.all(
+        members
+          .filter((member) => member.user_id !== identity.subject)
+          .map(async (member) => {
+            const shouldNotify = shouldCreateNotification(
+              member.notificationPreference,
+              hasMentions,
+              member.user_id
+            );
+            return { member, shouldNotify };
+          })
       );
 
-      // For simplicity: if there are any @mentions in the message, mark all recipients as having unread mentions
-      const hasMentions = mentions.length > 0;
+      const recipientIds = validRecipients
+        .filter(({ shouldNotify }) => shouldNotify)
+        .map(({ member }) => member.user_id);
 
       await Promise.all(
         recipientIds.map(async (recipientId) => {
@@ -212,11 +237,22 @@ export const sendMessage = mutation({
             notification_type: "message",
             hasMentions,
           });
-        }),
+        })
       );
     }
   },
 });
+
+function shouldCreateNotification(
+  preference: string | undefined,
+  hasMentions: boolean,
+  recipientId?: string
+): boolean {
+  if (!preference || preference === "all") return true;
+  if (preference === "none") return false;
+  if (preference === "mentions") return hasMentions;
+  return true;
+}
 
 export const deleteMessage = mutation({
   args: { msg_id: v.id("messages") },

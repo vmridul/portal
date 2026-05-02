@@ -19,6 +19,7 @@ export interface RoomMemberWithUser {
   role?: string;
   username?: string;
   avatar?: string;
+  notificationPreference?: string;
   Users?: {
     user_id: string;
     username: string;

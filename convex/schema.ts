@@ -18,6 +18,7 @@ export default defineSchema({
     last_msg: v.optional(v.string()),
     last_msg_sender: v.optional(v.string()),
     updated_at: v.optional(v.number()),
+    notificationPreference: v.optional(v.string()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_friend_id", ["friend_id"]),
@@ -34,6 +35,7 @@ export default defineSchema({
     username: v.optional(v.string()),
     avatar: v.optional(v.string()),
     role: v.optional(v.string()),
+    notificationPreference: v.optional(v.string()),
   })
     .index("by_room_id", ["room_id"])
     .index("by_user_id", ["user_id"])

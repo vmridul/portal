@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Message01Icon } from "@hugeicons/core-free-icons";
 import { useRouter } from "next/navigation";
-import { formatDateFull } from "@/lib/utils/date"
+import { formatDateFull } from "@/lib/utils/date";
 import { TooltipWrapper } from "../ui/tooltip";
 
 import { useUIStore } from "@/store/uiStore";
@@ -74,13 +74,10 @@ export function UserProfilePopup({
     }
   }, [sendRequest, user.id, isLoading]);
 
-
   const handleDM = useCallback(() => {
     setIsOpen(false);
     router.push(`/portal/friend/${user.id}`);
   }, [router, user.id]);
-
-
 
   const avatarSrc = getAvatarUrl(user.avatarUrl, user.username);
 
@@ -91,9 +88,7 @@ export function UserProfilePopup({
   return (
     <>
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Popover.Trigger asChild>
-          {children}
-        </Popover.Trigger>
+        <Popover.Trigger asChild>{children}</Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
             side={side}
@@ -121,7 +116,7 @@ export function UserProfilePopup({
                     width={40}
                     height={40}
                     alt={user.username}
-                    className="w-16 h-16 rounded-full object-cover ring-2 ring-theme-border"
+                    className="w-16 h-16 rounded-3xl object-cover ring-1 ring-theme-border"
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-theme-hover flex items-center justify-center ring-2 ring-theme-border">
@@ -139,20 +134,17 @@ export function UserProfilePopup({
                   Joined {formatDateFull(user.joinedAt)}
                 </span>
               </div>
-              {/* TODO: add confirmation to remove sent req. */}
               {isFriend ? (
                 <div className="flex item-center gap-2 w-full">
-
-
                   <Button
                     data-dm-friend
                     onClick={handleDM}
                     disabled={isLoading}
                     variant="other"
                     size="iconMd"
-                    className=""
+                    className="text-gray-300 hover:text-white"
                   >
-                    <HugeiconsIcon className="h-5 w-5 text-gray-200" icon={Message01Icon} />
+                    <HugeiconsIcon className="h-5 w-5 " icon={Message01Icon} />
                   </Button>
                   <Button
                     data-remove-friend
@@ -187,7 +179,8 @@ export function UserProfilePopup({
             </div>
           </Popover.Content>
         </Popover.Portal>
-      </Popover.Root></>
+      </Popover.Root>
+    </>
   );
 }
 

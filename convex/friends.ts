@@ -236,3 +236,30 @@ export const removeFriend = mutation({
     if (link2) await ctx.db.delete(link2._id);
   },
 });
+
+export const setNotificationPreference = mutation({
+  args: {
+    friend_id: v.string(),
+    preference: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthenticated");
+
+    const friendship = await ctx.db
+      .query("friends")
+      .withIndex("by_user_id", (q) =>
+        q.eq("user_id", identity.subject)
+      )
+      .filter((q) => q.eq(q.field("friend_id"), args.friend_id))
+      .first();
+
+    if (!friendship) {
+      throw new Error("Not friends with this user");
+    }
+
+    await ctx.db.patch(friendship._id, {
+      notificationPreference: args.preference,
+    });
+  },
+});

@@ -253,7 +253,7 @@ export function MentionsDropdown({
               src={getAvatarUrl(user.avatar, user.username)}
               alt={user.username}
               fill
-              className="rounded-full object-cover bg-theme-border"
+              className="rounded-[12px] object-cover bg-theme-border"
             />
           </div>
           <span className="text-sm text-gray-200">{user.username}</span>

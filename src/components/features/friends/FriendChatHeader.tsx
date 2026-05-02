@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
@@ -8,6 +9,8 @@ import {
   Image02Icon,
   CallIcon,
   MoreVerticalIcon,
+  CircleIcon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import { UserProfilePopup } from "@/components/popups/UserProfilePopup";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -15,9 +18,17 @@ import { UserRemove01Icon } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 import { useUserStore } from "@/store/useUserStore";
 import type { ConvexFriend } from "@/hooks/useFriends";
+import { useFriendActions } from "@/hooks/useFriends";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { TooltipWrapper } from "@/components/ui/tooltip";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
+const NOTIFICATION_OPTIONS = [
+  { value: "all", label: "All messages" },
+  { value: "mentions", label: "Mentions only" },
+  { value: "nothing", label: "Nothing" },
+];
 
 interface FriendChatHeaderProps {
   friend: ConvexFriend | undefined;
@@ -48,7 +59,30 @@ export function FriendChatHeader({
     setLeftMobileMenu,
     setModal,
   } = useUIStore();
+  const { setNotificationPreference } = useFriendActions();
 
+  const [notificationPref, setNotificationPref] = useState<string>("all");
+
+  useEffect(() => {
+    if (friend?.friend?.user_id) {
+      setNotificationPref(friend.notificationPreference || "all");
+    }
+  }, [friend?.friend?.user_id, friend?.notificationPreference]);
+
+  const handleNotificationChange = async (preference: string) => {
+    if (!friend?.friend?.user_id) return;
+    try {
+      await setNotificationPreference({
+        friend_id: friend.friend.user_id,
+        preference,
+      });
+      setNotificationPref(preference);
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Failed to update preference",
+      );
+    }
+  };
 
   const isUserOnline = friend?.friend?.user_id
     ? onlineUsers.has(friend.friend.user_id)
@@ -113,17 +147,21 @@ export function FriendChatHeader({
                 e.stopPropagation();
                 toggleSidebar("media");
               }}
-              className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
-                ? "bg-theme-base"
-                : "hover:bg-theme-base"
-                }`}
+              className={cn(
+                "w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors",
+                isSidebarOpen && sidebarTab === "media"
+                  ? "bg-theme-base"
+                  : "hover:bg-theme-base",
+              )}
             >
               <HugeiconsIcon
                 icon={Image02Icon}
-                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "media"
-                  ? "text-white"
-                  : "text-white/70"
-                  }`}
+                className={cn(
+                  "w-4 h-4 transition-colors",
+                  isSidebarOpen && sidebarTab === "media"
+                    ? "text-white"
+                    : "text-white/70",
+                )}
               />
             </div>
           </TooltipWrapper>
@@ -131,32 +169,36 @@ export function FriendChatHeader({
           <TooltipWrapper content="Calls">
             <div
               onClick={() => toggleSidebar("calls")}
-              className={`w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
-                ? "bg-theme-base"
-                : "hover:bg-theme-base"
-                }`}
+              className={cn(
+                "w-7 select-none h-7 cursor-pointer duration-100 ease-in-out rounded-[8px] p-1 flex items-center justify-center transition-colors relative",
+                isSidebarOpen && sidebarTab === "calls"
+                  ? "bg-theme-base"
+                  : "hover:bg-theme-base",
+              )}
             >
               <HugeiconsIcon
                 icon={CallIcon}
-                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
-                  ? "text-white"
-                  : "text-white/70"
-                  }`}
+                className={cn(
+                  "w-4 h-4 transition-colors",
+                  isSidebarOpen && sidebarTab === "calls"
+                    ? "text-white"
+                    : "text-white/70",
+                )}
               />
               {activeCalls.length > 0 && (
                 <span
-                  className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === directConversationId
-                    ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
-                    : "bg-green-500"
-                    }`}
+                  className={cn(
+                    "absolute top-1 right-1 w-2 h-2 rounded-full",
+                    isInCall && actualRoomId === directConversationId
+                      ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
+                      : "bg-green-500",
+                  )}
                 />
               )}
             </div>
           </TooltipWrapper>
 
-
           <DropdownMenu.Root modal={false}>
-
             <DropdownMenu.Trigger asChild>
               <button className="flex items-center">
                 <HugeiconsIcon
@@ -166,18 +208,43 @@ export function FriendChatHeader({
               </button>
             </DropdownMenu.Trigger>
 
-
             <DropdownMenu.Portal>
               <DropdownMenu.Content
                 sideOffset={8}
                 align="end"
-                className="w-auto min-w-[120px] bg-theme-base border border-theme-border rounded-[8px] shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
+                className="w-44 bg-theme-base border border-theme-border rounded-lg shadow-xl z-[1000] animate-in fade-in duration-100 outline-none"
               >
+                <DropdownMenu.Sub>
+                  <DropdownMenu.SubTrigger className="flex items-center rounded-t-lg justify-between w-full px-3 py-2 text-sm text-gray-200 hover:bg-theme-hover cursor-pointer outline-none">
+                    <span>Notifications</span>
+                    <HugeiconsIcon
+                      icon={ArrowRight01Icon}
+                      className="w-3 h-3 text-gray-300"
+                    />
+                  </DropdownMenu.SubTrigger>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.SubContent
+                      sideOffset={6}
+                      className="w-40 bg-theme-base border border-theme-border rounded-lg shadow-xl z-[9999] animate-in fade-in duration-100 outline-none"
+                    >
+                      {NOTIFICATION_OPTIONS.map((option) => (
+                        <DropdownMenu.Item
+                          key={option.value}
+                          onClick={() => handleNotificationChange(option.value)}
+                          className={`flex items-center justify-between px-3 py-2 text-sm text-gray-200 ${notificationPref === option.value ? "bg-theme-hover" : ""} hover:bg-theme-hover cursor-pointer outline-none`}
+                        >
+                          <span>{option.label}</span>
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.SubContent>
+                  </DropdownMenu.Portal>
+                </DropdownMenu.Sub>
+                <DropdownMenu.Separator className="h-px bg-theme-border" />
                 <DropdownMenu.Item
                   onClick={() => {
                     setModal("REMOVE_FRIEND", { friend });
                   }}
-                  className="px-3 py-2 text-xs text-red-300 hover:bg-theme-hover flex items-center gap-2 cursor-pointer outline-none"
+                  className="flex items-center gap-2 px-3 py-2 text-sm rounded-b-lg text-red-300 hover:bg-theme-hover cursor-pointer outline-none"
                 >
                   <HugeiconsIcon icon={UserRemove01Icon} className="w-4 h-4" />
                   Remove Friend

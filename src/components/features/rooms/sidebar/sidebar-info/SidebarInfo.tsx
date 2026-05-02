@@ -6,11 +6,24 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { useRoomActions } from "@/hooks";
+import { useRoomActions, useRoomMembers } from "@/hooks";
 import { formatDateFull } from "@/lib/utils/date";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowDownIcon,
+  Checkmark,
+  CircleIcon,
+} from "@hugeicons/core-free-icons";
+
+const NOTIFICATION_OPTIONS = [
+  { value: "all", label: "All messages" },
+  { value: "mentions", label: "Mentions only" },
+  { value: "nothing", label: "Nothing" },
+];
 
 interface SidebarInfoProps {
   id: string;
@@ -31,15 +44,26 @@ export function SidebarInfo({
   isLoading,
   onClose,
 }: SidebarInfoProps) {
-  const { renameRoom } = useRoomActions();
+  const { renameRoom, setNotificationPreference } = useRoomActions();
+  const roomMembers = useRoomMembers(id);
   const [editedName, setEditedName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notificationPref, setNotificationPref] = useState<string>("all");
 
   useEffect(() => {
     if (room?.room_name) {
       setEditedName(room.room_name);
     }
   }, [room?.room_name]);
+
+  useEffect(() => {
+    if (roomMembers && currentUser?.user_id) {
+      const myMember = roomMembers.find(
+        (m) => m.Users?.user_id === currentUser?.user_id,
+      );
+      setNotificationPref(myMember?.notificationPreference || "all");
+    }
+  }, [roomMembers, currentUser?.user_id]);
 
   const isOwner = room?.owner_id === currentUser?.user_id;
   const owner = members?.find((m) => m.role === "owner");
@@ -58,12 +82,30 @@ export function SidebarInfo({
     }
   };
 
+  const handleNotificationChange = async (preference: string) => {
+    try {
+      await setNotificationPreference({ room_id: id, preference });
+      setNotificationPref(preference);
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Failed to update preference",
+      );
+    }
+  };
+
   const canSave =
     isOwner &&
     editedName.trim() &&
     editedName !== room?.room_name &&
     editedName.length >= 3 &&
     editedName.length <= 16;
+
+  const getCurrentLabel = () => {
+    const option = NOTIFICATION_OPTIONS.find(
+      (o) => o.value === notificationPref,
+    );
+    return option?.label || "All messages";
+  };
 
   return (
     <SidebarLayout>
@@ -99,6 +141,43 @@ export function SidebarInfo({
             }
             disabled
           />
+
+          <div className="flex flex-col gap-2">
+            <label className="text-xs text-white/60">Notifications</label>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  className="flex text-gray-200 items-center justify-between w-full  outline-none cursor-pointer"
+                >
+                  <span>{getCurrentLabel()}</span>
+                  <HugeiconsIcon
+                    icon={ArrowDownIcon}
+                    className="w-4 h-4 text-gray-400"
+                  />
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  sideOffset={2}
+                  align="end"
+                  className="w-full min-w-[200px] bg-theme-base border border-theme-border rounded-lg shadow-xl z-[100] animate-in fade-in duration-100 outline-none"
+                >
+                  {NOTIFICATION_OPTIONS.map((option) => (
+                    <DropdownMenu.Item
+                      key={option.value}
+                      onClick={() => handleNotificationChange(option.value)}
+                      className="flex items-center justify-between px-3 py-2.5 text-sm text-gray-200 hover:bg-theme-hover cursor-pointer outline-none first:rounded-t-lg last:rounded-b-lg"
+                    >
+                      <span>{option.label}</span>
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
         </div>
       </div>
       <SidebarFooter>

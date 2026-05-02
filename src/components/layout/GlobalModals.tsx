@@ -5,7 +5,6 @@ import { JoinRoomModal } from "@/components/modals/JoinRoomModal";
 import { CreateRoomModal } from "@/components/modals/CreateRoomModal";
 import { LogoutModal } from "@/components/modals/LogoutModal";
 import { LeaveDialog } from "@/components/features/rooms/LeaveDialog";
-import { RoomInfoDialog } from "@/components/features/rooms/RoomInfoDialog";
 
 import { AddFriendDialog } from "@/components/features/friends/AddFriendDialog";
 import { RemoveFriendModal } from "@/components/modals/RemoveFriendModal";
@@ -27,12 +26,16 @@ export function GlobalModals() {
           {activeModal === "JOIN_ROOM" && <JoinRoomModal key="join" />}
           {activeModal === "CREATE_ROOM" && <CreateRoomModal key="create" />}
           {activeModal === "LOGOUT" && <LogoutModal key="logout" />}
-          {activeModal === "LEAVE_ROOM" && <LeaveDialog key={modalData?.room_id} />}
-          {activeModal === "INFO" && <RoomInfoDialog key={modalData?.room_id} />}
-
+          {activeModal === "LEAVE_ROOM" && (
+            <LeaveDialog key={modalData?.room_id} />
+          )}
           {activeModal === "ADD_FRIEND" && <AddFriendDialog key="add_friend" />}
-          {activeModal === "REMOVE_FRIEND" && <RemoveFriendModal key="remove_friend" />}
-          {activeModal === "SWITCH_CALL" && <CallSwitchModal key="switch_call" />}
+          {activeModal === "REMOVE_FRIEND" && (
+            <RemoveFriendModal key="remove_friend" />
+          )}
+          {activeModal === "SWITCH_CALL" && (
+            <CallSwitchModal key="switch_call" />
+          )}
         </div>
       </div>
     </>

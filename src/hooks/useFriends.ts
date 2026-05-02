@@ -37,6 +37,7 @@ export interface ConvexFriend {
   updated_at?: number;
   _creationTime: number;
   last_read_time?: number;
+  notificationPreference?: string;
 }
 
 export interface UseFriendsResult {
@@ -70,6 +71,7 @@ export interface UseFriendActionsResult {
   acceptRequest: (requestId: Id<"friends">) => Promise<void>;
   rejectRequest: (requestId: Id<"friends">) => Promise<void>;
   removeFriend: (friendId: string) => Promise<void>;
+  setNotificationPreference: (args: { friend_id: string; preference: string }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -107,11 +109,21 @@ export function useFriendActions(): UseFriendActionsResult {
     [removeFriendMutation]
   );
 
+  const setNotificationPreferenceMutation = useMutation(api.friends.setNotificationPreference);
+
+  const setNotificationPreference = useCallback(
+    async ({ friend_id, preference }: { friend_id: string; preference: string }) => {
+      await setNotificationPreferenceMutation({ friend_id, preference });
+    },
+    [setNotificationPreferenceMutation]
+  );
+
   return {
     sendRequest,
     acceptRequest,
     rejectRequest,
     removeFriend,
+    setNotificationPreference,
     isLoading: false,
   };
 }

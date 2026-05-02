@@ -78,7 +78,9 @@ export const RoomMembersList = ({
                 side="left"
                 align="start"
               >
-                <div className={`flex gap-4 items-center p-1 px-2 -ml-2 rounded-lg transition-colors ${!isCurrentUser ? "hover:bg-theme-border cursor-pointer group" : ""}`}>
+                <div
+                  className={`flex gap-4 items-center p-1 px-2 -ml-2 rounded-lg transition-colors ${!isCurrentUser ? "hover:bg-theme-border cursor-pointer group" : ""}`}
+                >
                   <div className="relative">
                     <Image
                       src={avatar}
@@ -94,7 +96,9 @@ export const RoomMembersList = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className={`truncate max-w-[150px] ${!isCurrentUser ? "group-hover:text-gray-100" : ""}`}>
+                    <span
+                      className={`truncate max-w-[150px] ${!isCurrentUser ? "group-hover:text-gray-100" : ""}`}
+                    >
                       {displayName}
                     </span>
                     {member.role && (
