@@ -43,15 +43,19 @@ export default function LeftSidebar({
   const { counters } = useUnreadCounters();
 
   const { color, textColor } = useColor();
-  const unreadByRoomId = useMemo(() => {
+  const { unreadByRoomId, roomHasUnreadMentions } = useMemo(() => {
     const counts = new Map<string, number>();
+    const hasMentions = new Map<string, boolean>();
     for (const counter of counters) {
       if (counter.sourceType !== "room" || counter.unreadCount <= 0) {
         continue;
       }
       counts.set(counter.conversationId, counter.unreadCount);
+      if (counter.hasUnreadMentions) {
+        hasMentions.set(counter.conversationId, true);
+      }
     }
-    return counts;
+    return { unreadByRoomId: counts, roomHasUnreadMentions: hasMentions };
   }, [counters]);
 
   const directUnreadCount = useMemo(
@@ -183,6 +187,7 @@ export default function LeftSidebar({
                 <RoomsList
                   currentRoom={currentRoom}
                   unreadByRoomId={unreadByRoomId}
+                  roomHasUnreadMentions={roomHasUnreadMentions}
                 />
               </div>
             </div>

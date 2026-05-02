@@ -40,16 +40,20 @@ export default function FriendsList({
   const activeCallConversationIds = new Set(
     activeCalls.map((call) => call.roomId),
   );
-  const unreadByFriendId = useMemo(() => {
+  const { unreadByFriendId, friendHasUnreadMentions } = useMemo(() => {
     const counts = new Map<string, number>();
+    const hasMentions = new Map<string, boolean>();
     for (const counter of counters) {
       if (counter.sourceType !== "direct" || counter.unreadCount <= 0) {
         continue;
       }
       const friendId = counter.sourceId;
       counts.set(friendId, (counts.get(friendId) ?? 0) + counter.unreadCount);
+      if (counter.hasUnreadMentions) {
+        hasMentions.set(friendId, true);
+      }
     }
-    return counts;
+    return { unreadByFriendId: counts, friendHasUnreadMentions: hasMentions };
   }, [counters]);
 
   const filteredFriends = friends.filter((friend) => {
@@ -110,6 +114,9 @@ export default function FriendsList({
                 const unreadCount = friendId
                   ? (unreadByFriendId.get(friendId) ?? 0)
                   : 0;
+                const hasUnreadMentions = friendId
+                  ? (friendHasUnreadMentions.get(friendId) ?? false)
+                  : false;
                 const isLastMsgByMe = friend?.last_msg_sender === user?.user_id;
                 const lastMsgPreview = friend?.last_msg
                   ? isLastMsgByMe
@@ -157,8 +164,14 @@ export default function FriendsList({
                         </span>
                         {unreadCount > 0 && (
                           <span
-                            className="mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full bg-theme-accent p-2 text-[8px]"
-                            style={{ color: textColor }}
+                            className={`mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${
+                              hasUnreadMentions
+                                ? "bg-red-500"
+                                : "bg-theme-accent"
+                            }`}
+                            style={{
+                              color: hasUnreadMentions ? "#ffffff" : textColor,
+                            }}
                           >
                             {unreadCount > 99 ? "99+" : unreadCount}
                           </span>

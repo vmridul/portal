@@ -18,6 +18,7 @@ type ChatNotificationInsertArgs = {
   notification_type?: "message" | "call";
   call_id?: Id<"calls">;
   call_status?: "active" | "ended";
+  hasMentions?: boolean;
 };
 
 function normalizeConversationId(input: {
@@ -35,6 +36,7 @@ async function applyUnreadDelta(
     sourceType: "room" | "direct";
     sourceId: string;
     delta: number;
+    hasMentions?: boolean;
   },
 ) {
   if (args.delta === 0) return;
@@ -57,12 +59,17 @@ async function applyUnreadDelta(
 
   const now = Date.now();
   if (existing) {
-    await ctx.db.patch(existing._id, {
+    const updates: Record<string, unknown> = {
       unread_count: next,
       updated_at: now,
       source_type: args.sourceType,
       source_id: args.sourceId,
-    });
+    };
+    // Only update has_unread_mentions if explicitly set to true (don't clear it)
+    if (args.hasMentions === true) {
+      updates.has_unread_mentions = true;
+    }
+    await ctx.db.patch(existing._id, updates);
     return;
   }
 
@@ -73,6 +80,7 @@ async function applyUnreadDelta(
     source_id: args.sourceId,
     unread_count: next,
     updated_at: now,
+    has_unread_mentions: args.hasMentions ? true : undefined,
   });
 }
 
@@ -118,6 +126,7 @@ export async function createChatNotification(
     sourceType: notification.source_type,
     sourceId: notification.source_id,
     delta: 1,
+    hasMentions: notification.hasMentions,
   });
 
   await pruneOldNotifications(ctx, notification.user_id);
@@ -141,6 +150,7 @@ export const getUnreadCounters = query({
       sourceId: counter.source_id,
       unreadCount: counter.unread_count,
       updatedAt: counter.updated_at,
+      hasUnreadMentions: counter.has_unread_mentions ?? false,
     }));
   },
 });

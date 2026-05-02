@@ -84,6 +84,21 @@ export const searchMessages = query({
   },
 });
 
+/**
+ * Extracts @username mentions from message content.
+ * Returns array of unique usernames (without the @ symbol).
+ */
+function extractMentions(content: string | null): string[] {
+  if (!content) return [];
+  const mentionRegex = /@(\w+)/g;
+  const mentions: string[] = [];
+  let match;
+  while ((match = mentionRegex.exec(content)) !== null) {
+    mentions.push(match[1]);
+  }
+  return [...new Set(mentions)];
+}
+
 export const sendMessage = mutation({
   args: {
     conversation_id: v.string(),
@@ -120,6 +135,10 @@ export const sendMessage = mutation({
       file_name: args.file_name || null,
       file_size: args.file_size,
     });
+
+    // Extract mentions from content and update the message
+    const mentions = extractMentions(args.msg);
+    await ctx.db.patch(insertedMessageId, { mentions });
 
     const now = Date.now();
     const preview = toPreview(args.msg, args.file_name);
@@ -174,6 +193,9 @@ export const sendMessage = mutation({
         ),
       );
 
+      // For simplicity: if there are any @mentions in the message, mark all recipients as having unread mentions
+      const hasMentions = mentions.length > 0;
+
       await Promise.all(
         recipientIds.map(async (recipientId) => {
           await createChatNotification(ctx, {
@@ -188,6 +210,7 @@ export const sendMessage = mutation({
             sender_avatar: sender?.avatar || "",
             message: notificationMessage,
             notification_type: "message",
+            hasMentions,
           });
         }),
       );

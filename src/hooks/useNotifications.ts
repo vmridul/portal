@@ -11,6 +11,7 @@ export interface UnreadCounterItem {
   sourceId: string;
   unreadCount: number;
   updatedAt: number;
+  hasUnreadMentions: boolean;
 }
 
 export function useNotifications() {

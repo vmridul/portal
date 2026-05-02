@@ -10,11 +10,13 @@ import type { UserRoom } from "@/lib/types/room";
 interface RoomListProps {
   currentRoom?: string | number | null;
   unreadByRoomId?: Map<string, number>;
+  roomHasUnreadMentions?: Map<string, boolean>;
 }
 
 export const RoomsList = ({
   currentRoom,
   unreadByRoomId = new Map(),
+  roomHasUnreadMentions = new Map(),
 }: RoomListProps) => {
   const { rooms } = useRooms();
   const { activeCalls } = useVisibleActiveCalls();
@@ -47,6 +49,7 @@ export const RoomsList = ({
                 currentRoom={currentRoom}
                 hasActiveCall={activeCallRoomIds.has(roomId)}
                 unreadCount={unreadByRoomId.get(roomId) ?? 0}
+                hasUnreadMentions={roomHasUnreadMentions.get(roomId) ?? false}
               />
             );
           })

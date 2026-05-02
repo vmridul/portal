@@ -52,6 +52,7 @@ export default defineSchema({
     file_name: v.union(v.string(), v.null()),
     file_size: v.optional(v.number()),
     edited: v.optional(v.boolean()),
+    mentions: v.optional(v.array(v.string())),
   })
     .index("by_conversation", ["conversation_id"])
     .searchIndex("search_content", {
@@ -76,6 +77,7 @@ export default defineSchema({
     call_id: v.optional(v.id("calls")),
     call_status: v.optional(v.union(v.literal("active"), v.literal("ended"))),
     read_at: v.optional(v.number()),
+    hasMentions: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_message_id", ["message_id"])
@@ -89,6 +91,7 @@ export default defineSchema({
     source_id: v.string(),
     unread_count: v.number(),
     updated_at: v.number(),
+    has_unread_mentions: v.optional(v.boolean()),
   })
     .index("by_user_id", ["user_id"])
     .index("by_user_conversation", ["user_id", "conversation_id"]),

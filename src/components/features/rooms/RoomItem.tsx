@@ -11,6 +11,7 @@ interface RoomItemProps {
   currentRoom?: string | number | null;
   hasActiveCall?: boolean;
   unreadCount?: number;
+  hasUnreadMentions?: boolean;
 }
 
 export const RoomItem = memo(function RoomItem({
@@ -20,6 +21,7 @@ export const RoomItem = memo(function RoomItem({
   currentRoom,
   hasActiveCall = false,
   unreadCount = 0,
+  hasUnreadMentions = false,
 }: RoomItemProps) {
   const roomId = room?.Rooms?.room_id ?? room?.room_id ?? "";
   const roomName = room?.Rooms?.room_name ?? "";
@@ -32,8 +34,9 @@ export const RoomItem = memo(function RoomItem({
         setMobileMenu?.(false);
         router.push(`/portal/room/${roomId}`);
       }}
-      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${currentRoom?.toString() === roomId && "bg-theme-hover"
-        }`}
+      className={`cursor-pointer relative flex items-center gap-3 mt-2 ml-1 rounded-[8px] py-2 px-2 hover:bg-theme-hover ${
+        currentRoom?.toString() === roomId && "bg-theme-hover"
+      }`}
     >
       <div className="relative flex-shrink-0">
         <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
@@ -53,7 +56,6 @@ export const RoomItem = memo(function RoomItem({
             <span className={`truncate max-w-[100px] text-white`}>
               {roomName}
             </span>
-
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[#aaaaaa] text-xs truncate max-w-[150px]">
@@ -62,7 +64,12 @@ export const RoomItem = memo(function RoomItem({
           </div>
         </div>
         {unreadCount > 0 && (
-          <span style={{ color: textColor }} className="mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-theme-accent p-2 text-[8px]">
+          <span
+            style={{ color: hasUnreadMentions ? "#ffffff" : textColor }}
+            className={`mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-2 text-[8px] ${
+              hasUnreadMentions ? "bg-red-500" : "bg-theme-accent"
+            }`}
+          >
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}

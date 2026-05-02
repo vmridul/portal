@@ -148,7 +148,9 @@ export const MessageItem = React.memo(
                 side="right"
                 align="start"
               >
-                <div className={`flex-shrink-0 w-10 h-10 rounded-[12px] ${!isCurrentUser ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}>
+                <div
+                  className={`flex-shrink-0 w-10 h-10 rounded-[12px] ${!isCurrentUser ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+                >
                   <Image
                     src={senderAvatar}
                     width={40}
@@ -179,7 +181,9 @@ export const MessageItem = React.memo(
                     side="top"
                     align="start"
                   >
-                    <span className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left ${!isCurrentUser ? 'cursor-pointer' : ''}`}>
+                    <span
+                      className={`text-xs truncate min-w-0 max-w-[140px] text-gray-400 text-left ${!isCurrentUser ? "cursor-pointer" : ""}`}
+                    >
                       {displayName}
                     </span>
                   </UserProfilePopup>
@@ -253,11 +257,11 @@ export const MessageItem = React.memo(
                 )}
 
                 {message.content && (
-                    <LinkifiedText 
-                      text={message.content} 
-                      className={`text-white whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
-                      style={{ color: isImage || isVideo ? undefined : textColor }}
-                    />
+                  <LinkifiedText
+                    text={message.content}
+                    className={`text-white whitespace-pre-wrap ${isJumbo ? "text-4xl py-1" : ""}`}
+                    style={{ color: isImage || isVideo ? undefined : "" }}
+                  />
                 )}
               </div>
 
