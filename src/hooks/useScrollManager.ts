@@ -165,7 +165,17 @@ export function useScrollManager(options: UseScrollManagerOptions = {}) {
   // ── Scroll actions ──────────────────────────────────────────────────────
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
-    bottomAnchorRef.current?.scrollIntoView({ behavior });
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    if (behavior === "smooth") {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth",
+      });
+    } else {
+      container.scrollTop = container.scrollHeight;
+    }
   }, []);
 
   /**

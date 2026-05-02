@@ -118,8 +118,7 @@ export const MessageList = React.memo(
         <div
           ref={scrollManager.scrollContainerRef}
           onScroll={scrollManager.handleScroll}
-          className="flex-1 w-full overflow-y-auto scroll-smooth"
-          style={{ overflowAnchor: "none" }}
+          className="flex-1 w-full overflow-y-auto"
         >
           <div className="flex flex-col min-h-full">
             {/* Spacer pushes messages to the bottom when there are few of them */}

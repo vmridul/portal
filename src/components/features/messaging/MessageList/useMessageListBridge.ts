@@ -40,7 +40,7 @@ export function useMessageListBridge({
     // the array length stays constant at MAX_WINDOW_SIZE.
     const oldestGotOlder = currentOldestTime < previousOldestTimeRef.current;
     const oldestIdChanged = currentOldestId !== previousOldestIdRef.current;
-    const wasPrepeneded = oldestGotOlder && oldestIdChanged;
+    const wasPrepeneded = previousOldestIdRef.current !== null && oldestGotOlder && oldestIdChanged;
 
     if (wasPrepeneded) {
       scrollManager.restoreScrollAnchor();
@@ -57,10 +57,16 @@ export function useMessageListBridge({
   // not on every re-render. This prevents the scroll-to-bottom from
   // fighting the user's manual upward scroll.
   const lastRenderedMessageIdRef = useRef<string | null>(null);
+  const chatOpenTimeRef = useRef(Date.now());
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (messageWindow.mode !== "LIVE") return;
-    if (messageWindow.messages.length === 0) return;
+    
+    if (messageWindow.messages.length === 0) {
+      lastRenderedMessageIdRef.current = null;
+      chatOpenTimeRef.current = Date.now();
+      return;
+    }
 
     const lastMessage =
       messageWindow.messages[messageWindow.messages.length - 1];
@@ -68,13 +74,18 @@ export function useMessageListBridge({
 
     // Skip if this is the same message we already handled
     if (lastMessageId === lastRenderedMessageIdRef.current) return;
+    
+    // Treat any load within the first 250ms as an initial load.
+    // This catches scenarios where cached messages load instantly, 
+    // followed milliseconds later by live messages, preventing a "smooth" jitter.
+    const isInitialLoad = Date.now() - chatOpenTimeRef.current < 250;
     lastRenderedMessageIdRef.current = lastMessageId;
 
     const sentByCurrentUser = lastMessage.sender_id === user?.user_id;
 
     // Auto-scroll if the user sent the message OR is already near bottom
     if (sentByCurrentUser || scrollManager.isNearBottomRef.current) {
-      scrollManager.scrollToBottom();
+      scrollManager.scrollToBottom(isInitialLoad ? "instant" : "smooth");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageWindow.messages, messageWindow.mode, user?.user_id]);
