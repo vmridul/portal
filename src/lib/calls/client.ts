@@ -25,11 +25,12 @@ export class CallClient {
   private target: CallSessionTarget | null = null;
   private isDisconnecting = false;
   private isPeerOpen = false;
+  private hasJoined = false; // B2: track whether onJoined was ever fired
   private pendingCalls = new Set<string>();
   private lastPeerMappings: { userId: string; peerId: string }[] | null = null;
   private syncDebounceTimer: ReturnType<typeof setTimeout> | null = null;
   private localVideoStream: MediaStream | null = null;
-  private remoteStreams: Record<string, MediaStream> = {};
+  private remoteStreams = new Map<string, MediaStream>(); // E8: unified to Map
   private dummyVideoTrack: MediaStreamTrack | null = null;
   private updateMediaState: UpdateMediaStateFn | null = null;
 
@@ -50,9 +51,13 @@ export class CallClient {
   // Active speaker detection
   private audioContext: AudioContext | null = null;
   private analysers: Map<string, AnalyserNode> = new Map();
+  private analyserSources: Map<string, MediaStreamAudioSourceNode> = new Map(); // B11/B12: track source nodes for cleanup
   private activeSpeakers: Set<string> = new Set();
   private speakerDetectionLoopId: ReturnType<typeof setInterval> | null = null;
   private combinedLocalStream: MediaStream | null = null;
+
+  // B6: store devicechange handler reference for cleanup
+  private deviceChangeHandler: (() => void) | null = null;
 
   setUpdateMediaState(fn: UpdateMediaStateFn) {
     this.updateMediaState = fn;
@@ -62,10 +67,16 @@ export class CallClient {
     target: CallSessionTarget,
     callbacks: PeerCallbacks,
   ): Promise<string> {
+    // B15: guard against double-connect — disconnect existing connection first
+    if (this.peer) {
+      await this.disconnect();
+    }
+
     this.target = target;
     this.callbacks = callbacks;
     this.isDisconnecting = false;
     this.isPeerOpen = false;
+    this.hasJoined = false; // B2: reset join tracking
     this.pendingCalls.clear();
     this.lastPeerMappings = null;
 
@@ -82,13 +93,22 @@ export class CallClient {
 
       // Initialize devices list
       await this.refreshDevices();
-      navigator.mediaDevices.ondevicechange = () => {
+
+      // B6: store handler reference for cleanup in disconnect()
+      this.deviceChangeHandler = () => {
         this.refreshDevices().catch(() => {});
       };
+      navigator.mediaDevices.addEventListener(
+        "devicechange",
+        this.deviceChangeHandler,
+      );
 
       const { default: Peer } = await import("peerjs");
 
-      const uniquePeerId = `${target.userId}_${Math.random().toString(36).substring(2, 9)}`;
+      // E1: use "-" delimiter instead of "_" to avoid userId collision
+      // when userId itself contains underscores. Convex document IDs are
+      // base62 (no hyphens), so "-" is a safe separator.
+      const uniquePeerId = `${target.userId}-${Math.random().toString(36).substring(2, 9)}`;
 
       this.peer = new Peer(uniquePeerId, {
         host: "0.peerjs.com",
@@ -109,7 +129,10 @@ export class CallClient {
       this.setupPeerListeners();
       this.setupAudioContext();
       this.setupLocalSpeakerDetection();
-      callbacks.onJoined();
+
+      // B1: onJoined is now called inside peer.on("open") handler
+      // (in setupPeerListeners), ensuring the peer is actually open
+      // before the store sets status to "joined"
       return uniquePeerId;
     } catch (error) {
       const message =
@@ -123,6 +146,12 @@ export class CallClient {
   async disconnect(): Promise<void> {
     this.isDisconnecting = true;
     this.lastPeerMappings = null;
+
+    // B5: clear sync debounce timer to prevent firing on destroyed peer
+    if (this.syncDebounceTimer) {
+      clearTimeout(this.syncDebounceTimer);
+      this.syncDebounceTimer = null;
+    }
 
     if (this.speakerDetectionLoopId) {
       clearInterval(this.speakerDetectionLoopId);
@@ -142,7 +171,9 @@ export class CallClient {
     this.screenShareConnections.forEach((conn) => {
       try {
         conn.close();
-      } catch { /* already closed */ }
+      } catch {
+        /* already closed */
+      }
     });
     this.screenShareConnections.clear();
 
@@ -162,26 +193,78 @@ export class CallClient {
     this.screenShareStream = null;
     this.isScreenSharing = false;
 
-    this.remoteStreams = {};
+    // B3: stop dummy video track and release the underlying canvas stream
+    this.dummyVideoTrack?.stop();
+    this.dummyVideoTrack = null;
+
+    // B4: close AudioContext to free browser audio resources
+    if (this.audioContext) {
+      try {
+        await this.audioContext.close();
+      } catch {
+        // AudioContext may already be closed
+      }
+      this.audioContext = null;
+    }
+
+    // B6: remove devicechange handler
+    if (this.deviceChangeHandler) {
+      navigator.mediaDevices.removeEventListener(
+        "devicechange",
+        this.deviceChangeHandler,
+      );
+      this.deviceChangeHandler = null;
+    }
+
+    // E8/B7: clear both remote stream maps
+    this.remoteStreams.clear();
+    this.remoteScreenShareStreams.clear();
     this.peerToUser.clear();
+
+    // B11/B12: disconnect all analyser source nodes before clearing
+    this.analyserSources.forEach((source) => {
+      try {
+        source.disconnect();
+      } catch {
+        /* already disconnected */
+      }
+    });
+    this.analyserSources.clear();
     this.analysers.clear();
     this.activeSpeakers.clear();
     this.audioSinkManager.clear();
 
-    this.callbacks?.onDisconnected();
+    // B8: null combinedLocalStream to release stale reference
+    this.combinedLocalStream = null;
+
+    // B9: clear pending calls to prevent retry timers firing on destroyed peer
+    this.pendingCalls.clear();
+
+    // B2: only fire onDisconnected if we ever successfully joined.
+    // When connect() fails before the peer opens, onJoined was never called,
+    // so onDisconnected would incorrectly reset the error state to idle.
+    if (this.hasJoined) {
+      this.callbacks?.onDisconnected();
+    }
+    this.hasJoined = false;
     this.isDisconnecting = false;
+    this.isPeerOpen = false;
   }
 
   async toggleMute(): Promise<boolean> {
-    if (!this.localStream) return false;
+    // B13: return true (muted) when no stream/track — the user is
+    // effectively muted because there's no audio, not "unmuted"
+    if (!this.localStream) return true;
     const track = this.localStream.getAudioTracks()[0];
-    if (!track) return false;
+    if (!track) return true;
 
     track.enabled = !track.enabled;
     const isMuted = !track.enabled;
 
     if (this.target?.callId && this.updateMediaState) {
-      this.updateMediaState({ callId: this.target.callId, isMuted }).catch(() => {});
+      this.updateMediaState({ callId: this.target.callId, isMuted }).catch(
+        () => {},
+      );
     }
 
     this.updateCombinedLocalStream();
@@ -241,8 +324,13 @@ export class CallClient {
           if (sender) {
             void sender.replaceTrack(videoTrack);
           } else {
-            // Fallback: if no video sender existed, we must add it (though this might need re-negotiation)
-            pc?.addTrack(videoTrack, this.getCombinedLocalStream()!);
+            // E3: addTrack fallback — must trigger renegotiation
+            // so the remote peer sees the new video track
+            const stream = this.getCombinedLocalStream();
+            if (stream && pc) {
+              pc.addTrack(videoTrack, stream);
+              this.triggerRenegotiation(pc);
+            }
           }
         });
       }
@@ -282,8 +370,8 @@ export class CallClient {
 
     try {
       const oldTrack = this.localStream.getAudioTracks()[0];
-      // Only switch immediately if we aren't "effectively" off? 
-      // Actually for audio we switch immediately if localStream exists, 
+      // Only switch immediately if we aren't "effectively" off?
+      // Actually for audio we switch immediately if localStream exists,
       // but we preserve the enabled state.
       const isMuted = oldTrack ? !oldTrack.enabled : false;
 
@@ -302,7 +390,9 @@ export class CallClient {
 
         this.connections.forEach((call) => {
           const pc = call.peerConnection as RTCPeerConnection;
-          const sender = pc?.getSenders().find((s) => s.track?.kind === "audio");
+          const sender = pc
+            ?.getSenders()
+            .find((s) => s.track?.kind === "audio");
           if (sender) void sender.replaceTrack(newTrack);
         });
 
@@ -342,7 +432,9 @@ export class CallClient {
 
         this.connections.forEach((call) => {
           const pc = call.peerConnection as RTCPeerConnection;
-          const sender = pc?.getSenders().find((s) => s.track?.kind === "video");
+          const sender = pc
+            ?.getSenders()
+            .find((s) => s.track?.kind === "video");
           if (sender) void sender.replaceTrack(newTrack);
         });
 
@@ -364,6 +456,7 @@ export class CallClient {
 
     if (this.syncDebounceTimer) clearTimeout(this.syncDebounceTimer);
     this.syncDebounceTimer = setTimeout(() => {
+      this.syncDebounceTimer = null;
       this.doSyncParticipants(peerMappings);
     }, 1000);
   }
@@ -377,7 +470,11 @@ export class CallClient {
 
       // Close all screen share peer connections
       this.screenShareConnections.forEach((conn) => {
-        try { conn.close(); } catch { /* already closed */ }
+        try {
+          conn.close();
+        } catch {
+          /* already closed */
+        }
       });
       this.screenShareConnections.clear();
 
@@ -408,7 +505,11 @@ export class CallClient {
           this.isScreenSharing = false;
           this.screenShareStream = null;
           this.screenShareConnections.forEach((conn) => {
-            try { conn.close(); } catch { /* already closed */ }
+            try {
+              conn.close();
+            } catch {
+              /* already closed */
+            }
           });
           this.screenShareConnections.clear();
 
@@ -470,6 +571,14 @@ export class CallClient {
 
     this.peer.on("open", () => {
       this.isPeerOpen = true;
+
+      // B1: fire onJoined only after the peer is actually open,
+      // so syncParticipants calls won't be silently dropped
+      if (!this.hasJoined) {
+        this.hasJoined = true;
+        this.callbacks?.onJoined();
+      }
+
       if (this.lastPeerMappings) {
         this.doSyncParticipants(this.lastPeerMappings);
       }
@@ -477,6 +586,16 @@ export class CallClient {
 
     this.peer.on("disconnected", () => {
       this.isPeerOpen = false;
+      // B14: attempt reconnection on signaling disconnect
+      // Without this, a dropped WebSocket to the signaling server
+      // makes the peer unreachable and all calls fail silently
+      if (!this.isDisconnecting && this.peer) {
+        try {
+          this.peer.reconnect();
+        } catch (err) {
+          console.error("[CallClient] Reconnect attempt failed:", err);
+        }
+      }
     });
 
     this.peer.on("call", (incomingCall) => {
@@ -503,7 +622,7 @@ export class CallClient {
     });
   }
 
-private initiateCall(remotePeerId: string, retryCount = 0): void {
+  private initiateCall(remotePeerId: string, retryCount = 0): void {
     if (!this.peer || this.isDisconnecting) return;
 
     this.updateCombinedLocalStream();
@@ -545,6 +664,12 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
       return;
     }
 
+    // B10: re-add to pendingCalls before the setTimeout to prevent
+    // syncParticipants from creating a duplicate call during the retry window.
+    // Without this, the peerId is in neither connections nor pendingCalls
+    // during the 2-4s delay, so syncParticipants initiates a second call.
+    this.pendingCalls.add(remotePeerId);
+
     setTimeout(
       () => {
         this.initiateCall(remotePeerId, retryCount + 1);
@@ -563,9 +688,39 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
       this.initiateScreenShareCallToPeer(remotePeerId);
     }
 
+    // E4: monitor ICE connection state for failures and auto-recovery
+    const pc = call.peerConnection as RTCPeerConnection;
+    if (pc) {
+      pc.oniceconnectionstatechange = () => {
+        const state = pc.iceConnectionState;
+        if (state === "failed") {
+          // ICE failed — attempt restart
+          try {
+            pc.restartIce();
+          } catch (err) {
+            console.error("[CallClient] ICE restart failed:", err);
+          }
+        } else if (state === "disconnected") {
+          // ICE disconnected — wait briefly, then restart if still disconnected
+          setTimeout(() => {
+            if (pc.iceConnectionState === "disconnected") {
+              try {
+                pc.restartIce();
+              } catch (err) {
+                console.error(
+                  "[CallClient] ICE restart after disconnect failed:",
+                  err,
+                );
+              }
+            }
+          }, 5000);
+        }
+      };
+    }
+
     call.on("stream", (remoteStream: MediaStream) => {
       this.pendingCalls.delete(remotePeerId);
-      this.remoteStreams[remotePeerId] = remoteStream;
+      this.remoteStreams.set(remotePeerId, remoteStream);
 
       remoteStream.onaddtrack = () => this.broadcastStatus();
       remoteStream.onremovetrack = () => this.broadcastStatus();
@@ -577,6 +732,18 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
       const audioTrack = remoteStream.getAudioTracks()[0];
       if (audioTrack) {
         try {
+          // B11: clean up old analyser/source before creating new one.
+          // PeerJS can fire "stream" multiple times (e.g. on renegotiation),
+          // and each firing would leak the previous MediaStreamSourceNode.
+          const oldSource = this.analyserSources.get(remotePeerId);
+          if (oldSource) {
+            try {
+              oldSource.disconnect();
+            } catch {
+              /* already disconnected */
+            }
+          }
+
           const source = this.audioContext.createMediaStreamSource(
             new MediaStream([audioTrack]),
           );
@@ -585,6 +752,7 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
           analyser.smoothingTimeConstant = 0.4;
           source.connect(analyser);
           this.analysers.set(remotePeerId, analyser);
+          this.analyserSources.set(remotePeerId, source);
         } catch (err) {
           console.error("Failed to setup audio analyser", err);
         }
@@ -617,7 +785,19 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
   private cleanupPeer(peerId: string) {
     this.audioSinkManager.detach(peerId);
     this.connections.delete(peerId);
-    delete this.remoteStreams[peerId];
+    this.remoteStreams.delete(peerId); // E8: Map uses .delete()
+
+    // B11: disconnect analyser source node for this peer
+    const source = this.analyserSources.get(peerId);
+    if (source) {
+      try {
+        source.disconnect();
+      } catch {
+        /* already disconnected */
+      }
+      this.analyserSources.delete(peerId);
+    }
+
     this.analysers.delete(peerId);
     this.activeSpeakers.delete(peerId);
     this.broadcastStatus();
@@ -638,6 +818,18 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
     if (!audioTrack) return;
 
     try {
+      // B12: clean up old local analyser/source before creating new one.
+      // This method is called from both connect() and setAudioSource(),
+      // and each call would leak the previous MediaStreamSourceNode.
+      const oldSource = this.analyserSources.get("local");
+      if (oldSource) {
+        try {
+          oldSource.disconnect();
+        } catch {
+          /* already disconnected */
+        }
+      }
+
       const source = this.audioContext.createMediaStreamSource(
         new MediaStream([audioTrack]),
       );
@@ -646,6 +838,7 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
       analyser.smoothingTimeConstant = 0.4;
       source.connect(analyser);
       this.analysers.set("local", analyser);
+      this.analyserSources.set("local", source);
     } catch (err) {
       console.error("[CallClient] Failed to setup local audio analyser", err);
     }
@@ -731,16 +924,32 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
     return this.combinedLocalStream;
   }
 
+  /**
+   * E3: Trigger renegotiation on an RTCPeerConnection after adding a new track.
+   * PeerJS doesn't expose a built-in renegotiation API, so we manually
+   * create and set the local description. The signaling is handled by PeerJS
+   * through its internal data channel.
+   */
+  private async triggerRenegotiation(pc: RTCPeerConnection): Promise<void> {
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+    } catch (err) {
+      console.error("[CallClient] Renegotiation failed:", err);
+    }
+  }
+
   private broadcastStatus(): void {
     const remoteStreamsByUser: Record<string, MediaStream> = {};
     const activeSpeakersByUser = new Set<string>();
     const screenShareStreamsByUser: Record<string, MediaStream> = {};
 
-    for (const [peerId, stream] of Object.entries(this.remoteStreams)) {
+    // E8: remoteStreams is now a Map — use .entries()
+    for (const [peerId, stream] of this.remoteStreams.entries()) {
       let userId = this.peerToUser.get(peerId);
-      // Fallback: extract userId from peerId pattern "userId_random"
-      if (!userId && peerId.includes("_")) {
-        userId = peerId.split("_")[0];
+      // E1: use "-" delimiter for userId extraction fallback
+      if (!userId && peerId.includes("-")) {
+        userId = peerId.split("-")[0];
       }
       if (userId) remoteStreamsByUser[userId] = stream;
     }
@@ -748,8 +957,8 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
     // Build remote screen share streams by user
     for (const [peerId, call] of this.screenShareConnections.entries()) {
       let userId = this.peerToUser.get(peerId);
-      if (!userId && peerId.includes("_")) {
-        userId = peerId.split("_")[0];
+      if (!userId && peerId.includes("-")) {
+        userId = peerId.split("-")[0];
       }
       if (userId) {
         const stream = this.remoteScreenShareStreams.get(peerId);
@@ -763,8 +972,8 @@ private initiateCall(remotePeerId: string, retryCount = 0): void {
         continue;
       }
       let userId = this.peerToUser.get(peerId);
-      if (!userId && peerId.includes("_")) {
-        userId = peerId.split("_")[0];
+      if (!userId && peerId.includes("-")) {
+        userId = peerId.split("-")[0];
       }
       if (userId) activeSpeakersByUser.add(userId);
     }

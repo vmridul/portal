@@ -25,8 +25,6 @@ interface ActiveCallPanelProps {
   onLeave: () => void;
 }
 
-
-
 export default function ActiveCallPanel({
   call,
   conversationName,
@@ -47,7 +45,8 @@ export default function ActiveCallPanel({
   } = useCallStore();
 
   const isCallJoined = status === "joined" && activeCallId === call._id;
-  const isThisCallConnecting = status === "joining" && activeCallId === call._id;
+  const isThisCallConnecting =
+    status === "joining" && activeCallId === call._id;
   const hasOtherActiveSession =
     !!activeCallId &&
     activeCallId !== call._id &&
@@ -78,7 +77,9 @@ export default function ActiveCallPanel({
     if (hasOtherActiveSession) {
       const roomData = rooms.find((r) => r.room_id === call.roomId);
       const resolvedName =
-        conversationName || roomData?.Rooms?.room_name || "Unknown Conversation";
+        conversationName ||
+        roomData?.Rooms?.room_name ||
+        "Unknown Conversation";
       setModal("SWITCH_CALL", {
         newCallId: call._id,
         newRoomId: call.roomId,
@@ -123,7 +124,6 @@ export default function ActiveCallPanel({
       <div className="p-3 border-b border-theme-border">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span className="text-sm font-medium text-white">Active Call</span>
           </div>
           <span className="text-xs text-gray-400">{duration}</span>
@@ -132,8 +132,6 @@ export default function ActiveCallPanel({
         <div className="flex items-center mb-3">
           <AvatarStack users={participantProfiles} size={24} showCount />
         </div>
-
-
 
         <button
           onClick={handleJoin}
@@ -156,7 +154,6 @@ export default function ActiveCallPanel({
     <div className="p-3 border-b border-theme-border">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           <span className="text-sm font-medium text-white">Active Call</span>
         </div>
         <span className="text-xs text-gray-400">{duration}</span>
