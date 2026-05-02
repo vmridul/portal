@@ -156,13 +156,18 @@ export default function FriendsList({
                           {friend?.friend?.username}
                         </span>
                         {unreadCount > 0 && (
-                          <span className="mr-2 inline-flex w-4 h-4 justify-center items-center rounded-full bg-theme-accent p-2 text-[8px]" style={{ color: textColor }}>
+                          <span
+                            className="mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full bg-theme-accent p-2 text-[8px]"
+                            style={{ color: textColor }}
+                          >
                             {unreadCount > 99 ? "99+" : unreadCount}
                           </span>
                         )}
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-[#aaaaaa] text-xs truncate w-[80px]">
+                        <span
+                          className={`${unreadCount == 0 ? "text-[#aaaaaa]" : "text-white"} text-xs truncate w-[80px]`}
+                        >
                           {lastMsgPreview}
                         </span>
                         <span className="text-[#aaaaaa] text-xs whitespace-nowrap mr-2">
