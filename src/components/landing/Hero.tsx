@@ -11,20 +11,20 @@ interface HeroProps {
 
 export function Hero({ handleEnter, dashboardRef }: HeroProps) {
   return (
-    <section className="relative min-h-screen mt-12 p-6 text-white flex flex-col items-center">
+    <section className="relative min-h-screen md:mt-12 p-6 w-full text-white flex flex-col justify-center items-center">
       <div className="text-center relative z-10">
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className=" text-gray-300 text-6xl mt-36"
+          className=" text-gray-300 text-4xl md:text-6xl md:mt-36"
         >
           Realtime Conversation
           <br />
           Without Friction
         </motion.p>
 
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex md:flex-row flex-col items-center justify-center md:gap-3">
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -34,7 +34,7 @@ export function Hero({ handleEnter, dashboardRef }: HeroProps) {
           >
             Enter
           </motion.button>
-          <motion.div whileHover="hover" className="relative group mt-8">
+          <motion.div whileHover="hover" className="relative group md:mt-8 mt-2">
             <motion.div
               initial={{
                 opacity: 0,
@@ -86,7 +86,7 @@ export function Hero({ handleEnter, dashboardRef }: HeroProps) {
 
       <div
         ref={dashboardRef}
-        className="relative w-full flex justify-center mt-20"
+        className=" relative w-full  hidden md:flex justify-center mt-20"
       >
         <motion.div
           initial={{ opacity: 0, y: 30 }}

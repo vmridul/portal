@@ -14,7 +14,7 @@ const galindo = Galindo({
 
 export function Footer() {
   return (
-    <section className="h-96 w-full bg-white flex justify-end relative">
+    <section className="h-96 w-full bg-white flex md:flex-row flex-col justify-end relative">
       <div className="flex-1 p-20 relative z-[1001]">
         <span className={`${galindo.className} text-black text-4xl`}>
           Portal
@@ -56,7 +56,7 @@ export function Footer() {
           </motion.button>
         </div>
       </div>
-      <div className="w-[75%] inset-0 z-[1000] overflow-hidden">
+      <div className="md:w-[75%] inset-0 z-[1000] overflow-hidden">
         <PixelBlast
           variant="square"
           pixelSize={4}

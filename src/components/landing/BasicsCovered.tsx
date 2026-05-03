@@ -13,7 +13,7 @@ export function BasicsCovered() {
   return (
     <section className="relative py-24 text-white">
       <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-5xl md:text-6xl text-center mb-6 tracking-tight">
+        <h2 className="text-3xl md:text-6xl text-center mb-6 tracking-tight">
           Basics Covered
         </h2>
 
@@ -63,7 +63,7 @@ export function BasicsCovered() {
                 alt="Mobile ss 1"
                 width={300}
                 height={200}
-                className="object-contain rounded-lg border border-white/5 shadow-2xl"
+                className="object-contain md:block hidden rounded-lg border border-white/5 shadow-2xl"
               />
             </motion.div>
           </motion.div>
@@ -117,7 +117,7 @@ export function BasicsCovered() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <MentionsAutocompleteMock className="scale-110 z-20" />
+                <MentionsAutocompleteMock className="md:scale-110 scale-[0.75] z-20" />
               </motion.div>
             </div>
           </motion.div>
@@ -159,7 +159,7 @@ export function BasicsCovered() {
                   name="Chip"
                   avatar="/assets/ch.png"
                   showDate={false}
-                  className="w-full pointer-events-none"
+                  className="w-full md:block hidden pointer-events-none"
                 />
               </motion.div>
               <motion.div
@@ -170,7 +170,7 @@ export function BasicsCovered() {
                 <TypingIndicatorMock
                   name="Pika"
                   avatar="/assets/pi.png"
-                  className="scale-110"
+                  className="scale-110 md:mt-0 mt-6"
                 />
               </motion.div>
             </div>

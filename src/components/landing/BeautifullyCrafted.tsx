@@ -50,19 +50,19 @@ export function BeautifullyCrafted({
           }}
           className="absolute inset-0 z-0 pointer-events-none"
         >
-          <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
+          <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 md:block">
             <RoomItemMock />
           </div>
-          <div className="select-none absolute top-[30%] -right-[12%] z-0 hidden md:block">
+          <div className="select-none absolute md:top-[30%] top-36 -right-[12%] md:right-[11%] z-0  md:block">
             <FriendItemMock />
           </div>
-          <div className="select-none absolute top-[17%] -left-[5%] z-0 hidden md:block">
+          <div className="select-none absolute md:top-[17%] top-[58%] -left-[5%] z-0 md:block">
             <PendingRequestMock />
           </div>
-          <div className="select-none absolute top-[54%] -left-[8%] z-0 hidden md:block">
+          <div className="select-none absolute md:top-[54%] bottom-[7%] -left-8 md:-left-[8%] z-0 md:block">
             <CallWidgetMock />
           </div>
-          <div className="select-none absolute top-[29%] right-[11%] -translate-y-1/2 z-0 hidden md:block">
+          <div className="select-none absolute md:top-[29%] top-[134px] -left-[40%] md:right-[11%] -translate-y-1/2 z-0  md:block">
             <RoomMembersMock />
           </div>
 
@@ -86,17 +86,17 @@ export function BeautifullyCrafted({
             <RecentCallItemMock />
           </div>
 
-          <div className="select-none absolute top-[74%] -left-[2%] z-0 hidden lg:block">
+          <div className="select-none absolute top-16 md:top-[74%] left-[32%] md:-left-[2%] z-0 lg:block">
             <CallControlsMock className="scale-90" />
           </div>
 
-          <div className="select-none absolute top-[53%] left-[17%] z-0 hidden md:block">
+          <div className="select-none absolute top-[53%] -right-[14%] md:left-[17%] z-0  md:block">
             <AvatarStatusMock />
           </div>
 
-          <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
+          <div className="select-none absolute bottom-[11%] md:top-[61%] -right-[6%] md:left-[5%] z-0 md:block">
             <div className="mt-2">
-              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+              <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
                 <StatusIndicator
                   className="relative w-2 h-2"
                   isOnline={true}
@@ -104,7 +104,7 @@ export function BeautifullyCrafted({
                 />
                 <span className="text-green-500">Online</span>
               </div>
-              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+              <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
                 <StatusIndicator
                   className="relative w-2 h-2"
                   isOnline={false}
@@ -123,7 +123,7 @@ export function BeautifullyCrafted({
           </div>
         </motion.div>
 
-        <span className="selection:bg-white/10 text-5xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <span className="selection:bg-white/10 text-2xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
           Beautifully Crafted
           <br />
           Interface

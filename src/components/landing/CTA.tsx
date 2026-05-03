@@ -13,7 +13,7 @@ export function CTA({ handleEnter }: CTAProps) {
       <div className="max-w-7xl mx-auto">
         <div className="flex relative flex-col items-center text-center">
           <div className="max-w-3xl mb-24 items-center flex flex-col ">
-            <h2 className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]">
+            <h2 className="text-2xl md:text-6xl text-white tracking-tight leading-[1.05]">
               Ready to Dive In?
             </h2>
             <div className="relative mt-8">

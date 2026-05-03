@@ -15,7 +15,7 @@ export function Theming({ colorDialog, setColorDialog }: ThemingProps) {
   const { color, setColor } = useColor();
 
   return (
-    <section className="relative py-24 text-white">
+    <section className="relative py-16 text-white">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center text-center">
           <div className="max-w-3xl mb-6 flex flex-col ">
@@ -24,7 +24,7 @@ export function Theming({ colorDialog, setColorDialog }: ThemingProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-              className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]"
+              className="text-4xl max-w-[12ch] md:text-6xl text-white tracking-tight leading-[1.05]"
             >
               Theme As You Wish
             </motion.h2>
@@ -71,8 +71,8 @@ export function Theming({ colorDialog, setColorDialog }: ThemingProps) {
             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full relative group"
           >
-            <div className="relative flex items-center justify-center">
-              <FullAppMock className="scale-[0.45] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.85] xl:scale-[1] origin-center" />
+            <div className="flex items-center justify-center">
+              <FullAppMock className="scale-[0.85] sm:scale-1 md:scale-[0.75] lg:scale-[0.85] xl:scale-[1] origin-center" />
             </div>
           </motion.div>
         </div>
