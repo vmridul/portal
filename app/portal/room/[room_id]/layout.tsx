@@ -29,7 +29,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex-1 overflow-hidden relative">
               {children}
             </div>
-            {isSidebarOpen && <DetailsSidebar id={room_id} type="room" />}
+            {isSidebarOpen && (
+              <div className="md:w-[320px] w-0 flex-shrink-0">
+                <DetailsSidebar id={room_id} type="room" />
+              </div>
+            )}
           </div>
           <CallOverlay />
         </div>

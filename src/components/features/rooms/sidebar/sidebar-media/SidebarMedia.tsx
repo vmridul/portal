@@ -51,7 +51,7 @@ export function SidebarMedia({
       <SidebarHeader title="Media Gallery" onClose={onClose} />
       <MediaLightbox />
 
-      <Tabs defaultValue="images" className="flex flex-col h-full p-2">
+      <Tabs defaultValue="images" className="flex flex-col flex-1 min-h-0 p-2">
         <TabsList>
           <TabsTrigger value="images" className="px-3 py-1 rounded-[6px]" />
           <TabsTrigger value="videos" className="px-3 py-1 rounded-[6px]" />

@@ -12,7 +12,7 @@ export function SidebarLayout({ children, className }: SidebarLayoutProps) {
   return (
     <div
       className={cn(
-        "w-full md:w-[320px] h-full min-h-0 bg-theme-base md:border-l border-theme-border flex flex-col  z-auto mrelative",
+        "fixed md:static top-0 right-0 z-[100] w-full md:w-[320px] h-full bg-theme-base md:border-l border-theme-border flex flex-col",
         className,
       )}
     >
