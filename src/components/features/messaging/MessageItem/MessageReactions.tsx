@@ -1,5 +1,6 @@
 import React from "react";
 import { useToggleReaction } from "@/hooks/useToggleReaction";
+import { toast } from "sonner";
 
 interface Reaction {
   _id: string;
@@ -61,7 +62,7 @@ export const MessageReactions = ({
 
   const handleReactionClick = async (emoji: string) => {
     const result = await toggleReaction(messageId, emoji);
-    if (result.error) {
+    if (!result.success && result.error) {
       toast.error(result.error);
     }
   };

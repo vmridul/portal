@@ -30,7 +30,7 @@ export default function SignUpPage() {
           routing="path"
           path="/signup"
           signInUrl="/login"
-          fallbackRedirectUrl="/portal"
+          forceRedirectUrl="/portal"
           appearance={{
             elements: {
               headerTitle: "text-white font-semibold",

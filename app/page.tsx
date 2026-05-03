@@ -62,8 +62,11 @@ export default function Page() {
   const [colorDialog, setColorDialog] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  const deletedToastShown = useRef(false);
+
   useEffect(() => {
-    if (searchParams.get("deleted") === "true") {
+    if (searchParams.get("deleted") === "true" && !deletedToastShown.current) {
+      deletedToastShown.current = true;
       toast.success("Account deleted successfully");
       router.replace("/");
     }
@@ -228,7 +231,7 @@ export default function Page() {
               </span>
             </div>
             <Show when="signed-out">
-              <SignInButton>
+              <SignInButton forceRedirectUrl="/portal">
                 <button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg bg-white text-black hover:bg-gray-200">
                   Sign in with Google
                   <Image

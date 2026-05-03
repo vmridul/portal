@@ -127,17 +127,22 @@ export const UserInfoTab = () => {
     if (deleteDialog.input !== "DELETE") return;
     setDeleteDialog((prev) => ({ ...prev, isDeleting: true }));
     try {
+      // Set the flag BEFORE the mutation so the layout's guard condition
+      // catches it immediately when Convex reactively nulls the profile,
+      // preventing the onboarding dialog from flashing.
+      sessionStorage.setItem("accountDeleted", "true");
       const result = await deleteUserAccount();
       if (result.error) {
         toast.error(result.error);
+        sessionStorage.removeItem("accountDeleted");
         setDeleteDialog((prev) => ({ ...prev, isDeleting: false }));
         return;
       }
-      sessionStorage.setItem("accountDeleted", "true");
       await signOut();
       router.push("/");
     } catch (e) {
       toast.error("An unexpected error occurred");
+      sessionStorage.removeItem("accountDeleted");
       setDeleteDialog((prev) => ({ ...prev, isDeleting: false }));
     }
   };

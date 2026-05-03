@@ -10,6 +10,7 @@ import {
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { useToggleReaction } from "@/hooks/useToggleReaction";
+import { toast } from "sonner";
 import { ReactionToolbar } from "./ReactionToolbar";
 import { TooltipWrapper } from "@/components/ui/tooltip";
 
@@ -41,7 +42,7 @@ export const MessageToolbar = ({
 
   const onReactionSelect = async (emoji: string) => {
     const result = await toggleReaction(messageId, emoji);
-    if (result.error) {
+    if (!result.success && result.error) {
       toast.error(result.error);
     }
     setHoverCardOpen(false);

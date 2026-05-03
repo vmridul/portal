@@ -30,7 +30,7 @@ export default function LoginPage() {
           routing="path"
           path="/login"
           signUpUrl="/signup"
-          fallbackRedirectUrl="/portal"
+          forceRedirectUrl="/portal"
           appearance={{
             elements: {
               rootBox: "bg-[#101010] rounded-xl",

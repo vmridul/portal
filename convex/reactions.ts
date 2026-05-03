@@ -9,7 +9,7 @@ export const toggleReaction = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthenticated");
+      return { success: false, error: "You must be logged in to react" };
     }
 
     const userId = identity.subject;
@@ -27,14 +27,14 @@ export const toggleReaction = mutation({
 
     if (existing) {
       await ctx.db.delete(existing._id);
-      return { action: "removed", success: true };
+      return { success: true, action: "removed" };
     } else {
       await ctx.db.insert("reactions", {
         message_id: args.messageId,
         user_id: userId,
         emoji: args.emoji,
       });
-      return { action: "added", success: true };
+      return { success: true, action: "added" };
     }
   },
 });
