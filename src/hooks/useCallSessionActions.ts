@@ -49,6 +49,10 @@ export function useCallSessionActions() {
       useCallStore.getState().setError(result.error);
       throw new Error(result.error);
     }
+    if (!result.callId) {
+      useCallStore.getState().setError("Failed to create call");
+      throw new Error("Failed to create call");
+    }
     const callId = result.callId;
 
     const peerId = await joinCall({

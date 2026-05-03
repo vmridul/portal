@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Message01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-export const UserProfilePopupMock = ({ name = "mridul", avatar = "/assets/sq.png", joinedDate = "Joined April 2024", className }: { name?: string; avatar?: string; joinedDate?: string; className?: string }) => (
+export const UserProfilePopupMock = ({ name = "sq", avatar = "/assets/sq.png", joinedDate = "Joined April 2024", className }: { name?: string; avatar?: string; joinedDate?: string; className?: string }) => (
   <div className={`rounded-xl border border-[#242424] bg-[#0a0a0a] shadow-2xl backdrop-blur-md ${className || "w-64"}`}>
     <div className="flex flex-col items-center p-4 gap-3">
       <div className="relative">

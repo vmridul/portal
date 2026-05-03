@@ -117,7 +117,7 @@ export const startCall = mutation({
   args: { roomId: v.string(), peerId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) return { error: "Not authenticated" };
 
     const callId = await ctx.db.insert("calls", {
       roomId: args.roomId,

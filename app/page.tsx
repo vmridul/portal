@@ -11,7 +11,6 @@ import { useRef } from "react";
 import { useUIStore } from "@/store/uiStore";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Lenis from "lenis";
 import PixelBlast from "@/components/PixelBlast";
 import { useColor } from "@/contexts/colorContext";
 import { HexColorPicker } from "react-colorful";
@@ -94,29 +93,6 @@ export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const dashboardRef = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   if (!containerRef.current || !contentRef.current) return;
-
-  //   const lenis = new Lenis({
-  //     wrapper: containerRef.current,
-  //     content: contentRef.current,
-  //     wheelMultiplier: 1.3,
-  //     lerp: 0.1,
-  //   });
-
-  //   let rafId: number;
-  //   function raf(time: number) {
-  //     lenis.raf(time);
-  //     rafId = requestAnimationFrame(raf);
-  //   }
-  //   rafId = requestAnimationFrame(raf);
-
-  //   return () => {
-  //     cancelAnimationFrame(rafId);
-  //     lenis.destroy();
-  //   };
-  // }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -207,7 +183,7 @@ export default function Page() {
             rippleSpeed={0.3}
             rippleThickness={0.1}
             rippleIntensityScale={1}
-            speed={0.5}
+            speed={0.2}
             transparent
             edgeFade={0.1}
           />
@@ -540,13 +516,13 @@ export default function Page() {
                 </h3>
               </div>
 
-              <div className="absolute -bottom-[180px] left-6 rounded-xl">
+              <div className="absolute -bottom-[200px] left-6 rounded-xl">
                 <Image
                   src="/assets/m1.png"
                   alt="Mobile ss 1"
                   width={300}
                   height={200}
-                  className="object-contain"
+                  className="object-contain rounded-lg border border-white/5"
                 />
               </div>
 

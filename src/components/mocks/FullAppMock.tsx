@@ -70,7 +70,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
           className="w-full bg-theme-hover border-none shadow-none mb-2"
         />
         <ProfileButtonMock
-          name="Mridul"
+          name="sq"
           avatar="/assets/sq.png"
           className="w-full bg-theme-hover"
         />
@@ -112,13 +112,50 @@ export const FullAppMock = ({ className }: { className?: string }) => (
 
       {/* Messages */}
       <div className="flex-1 p-0 space-y-0 overflow-hidden">
-        <ChatMessageMock name="Pika" avatar="/assets/pi.png" />
+        <ChatMessageMock
+          name="Pika"
+          avatar="/assets/pi.png"
+          message="That battle earlier was close."
+          secondMessage="Thought you had it at one point."
+        />
         <ChatMessageMock
           name="Charm"
           avatar="/assets/ch.png"
+          message="Yeah, misplayed the last turn."
           showDate={false}
         />
-        <ChatMessageMock name="Me" avatar="/assets/sq.png" showDate={false} />
+        <ChatMessageMock
+          name="Squir"
+          avatar="/assets/sq.png"
+          message="Your switch was predictable."
+          secondMessage="Kind of gave it away."
+          showDate={false}
+        />
+        <ChatMessageMock
+          name="Pika"
+          avatar="/assets/pi.png"
+          message="Fair. I rushed it."
+          showDate={false}
+        />
+        <ChatMessageMock
+          name="Charm"
+          avatar="/assets/ch.png"
+          message="Rematch later?"
+          secondMessage="I’ll try a different team."
+          showDate={false}
+        />
+        <ChatMessageMock
+          name="Squir"
+          avatar="/assets/sq.png"
+          message="Sure. Send when ready."
+          showDate={false}
+        />
+        <ChatMessageMock
+          name="Pika"
+          avatar="/assets/pi.png"
+          message="Give me a bit."
+          showDate={false}
+        />
       </div>
 
       {/* Input Bar */}
@@ -136,7 +173,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
           </div>
           <div className="flex flex-col items-start">
             <span className="truncate max-w-[120px] text-sm">Projects</span>
-            <span className="text-white/40 text-[10px]">ID: 6543</span>
+            <span className="text-white/40 text-[10px]">ID: 4369</span>
           </div>
         </div>
         <div className="w-8 h-8 flex items-center justify-center hover:bg-theme-hover rounded-[12px]">

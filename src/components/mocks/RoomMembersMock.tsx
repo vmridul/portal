@@ -12,7 +12,7 @@ export const RoomMembersMock = ({ className }: { className?: string }) => (
     <div className="flex justify-between items-center mb-3">
       <div className="flex items-center w-full justify-between">
         <span className="text-xs text-[#aaaaaa] font-medium">Members</span>
-        <div className="bg-[#272727] flex items-center px-2 py-0.5 rounded-[8px] text-[10px] text-white/60">
+        <div className="bg-[#272727] flex items-center px-2 py-1 rounded-[8px] text-[10px] text-gray-300">
           <HugeiconsIcon icon={Users} className="w-3 h-3" />
           <span className="ml-1">2</span>
         </div>

@@ -119,7 +119,17 @@ export default function RootLayout({
                     <ColorProvider>
                       <GlobalModals />
                       <main className="flex-1 font-sans">{children}</main>
-                      <Toaster theme="dark" position="top-center" gap={12} />
+                      <Toaster 
+                        theme="dark" 
+                        position="top-center" 
+                        gap={12}
+                        toastOptions={{
+                          style: {
+                            background: 'hsl(var(--theme-bg-surface))',
+                            border: '1px solid hsl(var(--theme-border))',
+                          },
+                        }}
+                      />
                     </ColorProvider>
                   </PresenceProvider>
                 </TooltipProvider>
