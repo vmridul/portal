@@ -35,6 +35,7 @@ import {
   TypingIndicatorMock,
   FullAppMock,
   MentionsAutocompleteMock,
+  CallControlsMock,
 } from "@/components/mocks";
 
 const galindo = Galindo({
@@ -216,11 +217,10 @@ export default function Page() {
           initial={{ y: 0, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${
-            scrolled
-              ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
-              : "bg-transparent border-transparent py-2"
-          }`}
+          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${scrolled
+            ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
+            : "bg-transparent border-transparent py-2"
+            }`}
         >
           <div className="flex justify-between items-center px-6 py-4 max-w-6xl w-[90%] mx-auto">
             <div className="flex items-center gap-3">
@@ -472,6 +472,10 @@ export default function Page() {
             <RecentCallItemMock />
           </div>
 
+          <div className="select-none absolute top-[74%] -left-[2%] z-0 hidden lg:block">
+            <CallControlsMock className="scale-90" />
+          </div>
+
           <div className="select-none absolute top-[53%] left-[17%] z-0 hidden md:block">
             <AvatarStatusMock />
           </div>
@@ -485,6 +489,14 @@ export default function Page() {
                   isAway={false}
                 />
                 <span className="text-green-500">Online</span>
+              </div>
+              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                <StatusIndicator
+                  className="relative w-2 h-2"
+                  isOnline={false}
+                  isAway={true}
+                />
+                <span className="text-yellow-400">Away</span>
               </div>
             </div>
           </div>
@@ -528,7 +540,7 @@ export default function Page() {
                 </h3>
               </div>
 
-              <div className="absolute -bottom-[350px] left-6 rounded-xl">
+              <div className="absolute -bottom-[180px] left-6 rounded-xl">
                 <Image
                   src="/assets/m1.png"
                   alt="Mobile ss 1"
@@ -537,15 +549,7 @@ export default function Page() {
                   className="object-contain"
                 />
               </div>
-              <div className="absolute -top-[470px] left-6 rounded-xl">
-                <Image
-                  src="/assets/m2.png"
-                  alt="Mobile ss 2"
-                  width={300}
-                  height={200}
-                  className="object-contain rounded-xl"
-                />
-              </div>
+
             </div>
             <div className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col group overflow-hidden relative">
               <div
