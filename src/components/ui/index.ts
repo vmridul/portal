@@ -24,3 +24,4 @@ export { MediaItem, MediaGrid } from "./media";
 
 export { SidebarLayout, SidebarHeader, SidebarFooter } from "./sidebar";
 export { Popover, PopoverTrigger, PopoverContent } from "./popover/Popover";
+export { AsciiArt } from "./AsciiArt";

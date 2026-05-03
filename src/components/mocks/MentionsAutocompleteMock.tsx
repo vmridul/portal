@@ -23,13 +23,13 @@ export const MentionsAutocompleteMock = ({ className }: { className?: string }) 
 
   return (
     <div
-      className={`bg-[#121214] border border-white/5 rounded-2xl ${className}`}
+      className={`bg-[#121214] border border-white/5 rounded-xl ${className}`}
       style={{ width: "350px" }}
     >
       {users.map((user, index) => (
         <div
           key={user.user_id}
-          className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-t-2xl cursor-pointer ${index === 0 ? "bg-white/10" : ""
+          className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-t-lg cursor-pointer ${index === 0 ? "bg-white/10" : ""
             }`}
         >
           <div className="relative w-8 h-8 flex-shrink-0">

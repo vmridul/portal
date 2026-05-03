@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { SignOutButton, Show, useAuth, SignInButton } from "@clerk/nextjs";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 import { useUIStore } from "@/store/uiStore";
@@ -15,6 +15,7 @@ import PixelBlast from "@/components/PixelBlast";
 import { useColor } from "@/contexts/colorContext";
 import { HexColorPicker } from "react-colorful";
 import { createPortal } from "react-dom";
+import { AsciiArt } from "@/components/ui";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import {
   RoomItemMock,
@@ -93,6 +94,24 @@ export default function Page() {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const dashboardRef = useRef<HTMLDivElement>(null);
+  const beautifullyCraftedRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    container: containerRef,
+    target: beautifullyCraftedRef,
+    offset: ["start end", "end start"],
+  });
+
+  const beautifullyCraftedOpacity = useTransform(
+    scrollYProgress,
+    [0.1, 0.45, 0.75, 1],
+    [0, 1, 1, 0],
+  );
+  const beautifullyCraftedBlur = useTransform(
+    scrollYProgress,
+    [0.1, 0.45, 0.75, 1],
+    ["blur(12px)", "blur(0px)", "blur(0px)", "blur(12px)"],
+  );
 
   useEffect(() => {
     const container = containerRef.current;
@@ -222,8 +241,11 @@ export default function Page() {
             </Show>
             <Show when="signed-in">
               <div className="flex items-center gap-2">
+                <button onClick={() => window.open("https://github.com/vmridul/portal", "_blank")} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all border border-dashed border-white/5 text-gray-200 hover:text-white">
+                  <Image src="/assets/github-icon-white.webp" alt="Git" width={20} height={20} />
+                </button>
                 <SignOutButton>
-                  <button className="px-3 py-2 text-sm rounded-lg transition-all border border-white/5 text-gray-300 hover:text-white">
+                  <button className="px-3 py-2 text-sm rounded-lg transition-all border border-dashed border-white/5 text-gray-200 hover:text-white">
                     Sign Out
                   </button>
                 </SignOutButton>
@@ -253,15 +275,64 @@ export default function Page() {
               Without Friction
             </motion.p>
 
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              onClick={handleEnter}
-              className="cursor-pointer mt-8 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 transition-all duration-300 text-black rounded-xl  text-sm "
-            >
-              Enter
-            </motion.button>
+            <div className="flex items-center justify-center gap-3">
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                onClick={handleEnter}
+                className="cursor-pointer mt-8 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 transition-all duration-300 text-black rounded-xl  text-sm "
+              >
+                Enter
+              </motion.button>
+              <motion.div whileHover="hover" className="relative group mt-8">
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    scale: 0.1,
+                    y: 0,
+                    rotate: -20,
+                    filter: "blur(4px)",
+                  }}
+                  variants={{
+                    hover: {
+                      opacity: 1,
+                      scale: 1,
+                      y: -24,
+                      rotate: 10,
+                      filter: "blur(0px)",
+                    },
+                  }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="absolute inset-0 -z-10 flex items-center justify-center pointer-events-none"
+                >
+                  <Image
+                    src="/assets/star.png"
+                    alt="Star"
+                    width={32}
+                    height={32}
+                    className="opacity-100"
+                  />
+                </motion.div>
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  onClick={() =>
+                    window.open("https://github.com/vmridul/portal", "_blank")
+                  }
+                  className="relative z-10 cursor-pointer px-3 py-2.5 bg-[#2f2d30] hover:bg-[#262427] border border-white/5 border-dashed transition-all duration-300 text-white hover:text-gray-200 rounded-xl text-sm flex items-center gap-2"
+                >
+                  Star on GitHub
+                  <Image
+                    src="/assets/github-icon-white.webp"
+                    alt="Git"
+                    width={20}
+                    height={20}
+                  />
+                </motion.button>
+              </motion.div>
+            </div>
           </div>
 
           <div
@@ -285,8 +356,8 @@ export default function Page() {
           </div>
         </section>
       </div>
-      <section className="relative mt-48 text-white overflow-hidden">
-        <h2 className="text-center text-5xl md:text-6xl font-semibold flex justify-center gap-4">
+      <section className="relative mt-32 text-white overflow-hidden">
+        <h2 className="text-center text-5xl md:text-6xl flex justify-center gap-4">
           <motion.span
             initial={{ opacity: 0, x: 100, filter: "blur(10px)" }}
             whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
@@ -341,7 +412,7 @@ export default function Page() {
         <div className="max-w-6xl mx-auto flex">
           <div className="w-1/2">
             <div className="sticky top-48">
-              <h2 className="text-5xl md:text-6xl font-semibold leading-tight">
+              <h2 className="text-5xl md:text-6xl leading-tight">
                 The Good <br /> Stuff
               </h2>
             </div>
@@ -403,7 +474,10 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section className="relative mt-36 h-screen text-white overflow-hidden flex items-center justify-center">
+      <section
+        ref={beautifullyCraftedRef}
+        className="relative mt-36 h-screen text-white overflow-hidden flex items-center justify-center"
+      >
         <div
           className=" relative w-full max-w-5xl h-screen flex items-center justify-center"
           style={{
@@ -412,77 +486,85 @@ export default function Page() {
             maskImage: "radial-gradient(circle, black 35%, transparent 85%)",
           }}
         >
-          <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
-            <RoomItemMock />
-          </div>
-          <div className="select-none absolute top-[30%] -right-[12%] z-0 hidden md:block">
-            <FriendItemMock />
-          </div>
-          <div className="select-none absolute top-[17%] -left-[5%] z-0 hidden md:block">
-            <PendingRequestMock />
-          </div>
-          <div className="select-none absolute top-[54%] -left-[8%] z-0 hidden md:block">
-            <CallWidgetMock />
-          </div>
-          <div className="select-none absolute top-[29%] right-[11%] -translate-y-1/2 z-0 hidden md:block">
-            <RoomMembersMock />
-          </div>
+          <motion.div
+            style={{
+              opacity: beautifullyCraftedOpacity,
+              filter: beautifullyCraftedBlur,
+            }}
+            className="absolute inset-0 z-0 pointer-events-none"
+          >
+            <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 hidden md:block">
+              <RoomItemMock />
+            </div>
+            <div className="select-none absolute top-[30%] -right-[12%] z-0 hidden md:block">
+              <FriendItemMock />
+            </div>
+            <div className="select-none absolute top-[17%] -left-[5%] z-0 hidden md:block">
+              <PendingRequestMock />
+            </div>
+            <div className="select-none absolute top-[54%] -left-[8%] z-0 hidden md:block">
+              <CallWidgetMock />
+            </div>
+            <div className="select-none absolute top-[29%] right-[11%] -translate-y-1/2 z-0 hidden md:block">
+              <RoomMembersMock />
+            </div>
 
-          <div className="select-none absolute top-[24%] left-[18%] z-0 hidden md:block">
-            <ProfileButtonMock />
-          </div>
-          <div className="select-none absolute top-[41%] -left-[12%] z-0 hidden md:block">
-            <MessageNotificationMock />
-          </div>
-          <div className="select-none absolute top-[41%] -right-[12%] z-0 hidden md:block">
-            <CallEndedNotificationMock />
-          </div>
-          <div className="select-none absolute bottom-[25%] left-1/2 -translate-x-1/2 z-0 hidden md:block">
-            <ChatInputBarMock bg="bg-white" />
-          </div>
+            <div className="select-none absolute top-[24%] left-[18%] z-0 hidden md:block">
+              <ProfileButtonMock />
+            </div>
+            <div className="select-none absolute top-[41%] -left-[12%] z-0 hidden md:block">
+              <MessageNotificationMock />
+            </div>
+            <div className="select-none absolute top-[41%] -right-[12%] z-0 hidden md:block">
+              <CallEndedNotificationMock />
+            </div>
+            <div className="select-none absolute bottom-[25%] left-1/2 -translate-x-1/2 z-0 hidden md:block">
+              <ChatInputBarMock bg="bg-white" />
+            </div>
 
-          <div className="select-none absolute top-[59%] right-[4%] z-0 hidden lg:block">
-            <UserProfilePopupMock />
-          </div>
-          <div className="select-none absolute top-[15%] left-[41%] z-0 hidden lg:block">
-            <RecentCallItemMock />
-          </div>
+            <div className="select-none absolute top-[59%] right-[4%] z-0 hidden lg:block">
+              <UserProfilePopupMock />
+            </div>
+            <div className="select-none absolute top-[15%] left-[41%] z-0 hidden lg:block">
+              <RecentCallItemMock />
+            </div>
 
-          <div className="select-none absolute top-[74%] -left-[2%] z-0 hidden lg:block">
-            <CallControlsMock className="scale-90" />
-          </div>
+            <div className="select-none absolute top-[74%] -left-[2%] z-0 hidden lg:block">
+              <CallControlsMock className="scale-90" />
+            </div>
 
-          <div className="select-none absolute top-[53%] left-[17%] z-0 hidden md:block">
-            <AvatarStatusMock />
-          </div>
+            <div className="select-none absolute top-[53%] left-[17%] z-0 hidden md:block">
+              <AvatarStatusMock />
+            </div>
 
-          <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
-            <div className="mt-2">
-              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                <StatusIndicator
-                  className="relative w-2 h-2"
-                  isOnline={true}
-                  isAway={false}
-                />
-                <span className="text-green-500">Online</span>
-              </div>
-              <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                <StatusIndicator
-                  className="relative w-2 h-2"
-                  isOnline={false}
-                  isAway={true}
-                />
-                <span className="text-yellow-400">Away</span>
+            <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
+              <div className="mt-2">
+                <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                  <StatusIndicator
+                    className="relative w-2 h-2"
+                    isOnline={true}
+                    isAway={false}
+                  />
+                  <span className="text-green-500">Online</span>
+                </div>
+                <div className="mt-2 flex py-2.5 px-6 justify-center w-full bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                  <StatusIndicator
+                    className="relative w-2 h-2"
+                    isOnline={false}
+                    isAway={true}
+                  />
+                  <span className="text-yellow-400">Away</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="absolute top-[17%] left-[19%] z-0 text-4xl select-none hidden md:block">
-            👀
-          </div>
-          <div className="absolute top-[17%] left-[23%] z-0 text-4xl select-none hidden md:block">
-            😁
-          </div>
+            <div className="absolute top-[17%] left-[19%] z-0 text-4xl select-none hidden md:block">
+              👀
+            </div>
+            <div className="absolute top-[17%] left-[23%] z-0 text-4xl select-none hidden md:block">
+              😁
+            </div>
+          </motion.div>
 
           <span className="selection:bg-white/10 text-5xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             Beautifully Crafted
@@ -493,7 +575,7 @@ export default function Page() {
       </section>
       <section className="relative py-24 text-white">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-5xl md:text-6xl font-semibold text-center mb-6 tracking-tight">
+          <h2 className="text-5xl md:text-6xl text-center mb-6 tracking-tight">
             Basics Covered
           </h2>
 
@@ -633,13 +715,11 @@ export default function Page() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center">
             <div className="max-w-3xl mb-6 flex flex-col ">
-              <h2 className="text-5xl md:text-6xl font-bold text-white mb-2 tracking-tight leading-[1.05]">
+              <h2 className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]">
                 Theme As You Wish
               </h2>
-              <p className="text-[#888] text-xs max-w-md mx-auto leading-relaxed">
-                except light theme, to protect your eyes :)
-              </p>
-              <div className="mt-8 flex flex-col items-center">
+
+              <div className="mt-4 flex flex-col items-center">
                 <div
                   onClick={() => setColorDialog((v) => !v)}
                   className="flex items-center gap-4 bg-white/5 py-2.5 px-5 rounded-2xl cursor-pointer transition-all group"
@@ -657,7 +737,7 @@ export default function Page() {
                         onClick={() => setColorDialog(false)}
                       />
                       <div
-                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] p-4 bg-[#0a080b] border border-white/10 rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200"
+                        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] p-4 bg-[#0a080b] border border-white/10 rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <HexColorPicker color={color} onChange={setColor} />
@@ -682,8 +762,55 @@ export default function Page() {
           </div>
         </div>
       </section>
-      <section className="h-96 w-full bg-white relative">
-        <div className="absolute inset-0 z-[1000] overflow-hidden">
+      <section className="py-8 px-6 md:px-12 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex relative flex-col items-center text-center">
+            <div className="max-w-3xl mb-24 items-center flex flex-col ">
+              <h2 className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]">
+                Ready to Dive In?
+              </h2>
+              <div className="relative mt-8">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-white/10 blur-[60px] rounded-full pointer-events-none" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white/10 blur-2xl rounded-full pointer-events-none" />
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  onClick={handleEnter}
+                  className="relative z-10 cursor-pointer px-6 py-3 bg-gray-100 text-black rounded-xl text-sm font-medium shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-all duration-300"
+                >
+                  Enter
+                </motion.button>
+              </div>
+              <AsciiArt size="md" color="text-white/40" className="absolute top-12 right-20" />
+              <AsciiArt size="sm" color="text-white/30" inverted className="absolute top-12 left-48" />
+            </div>
+
+          </div>
+        </div>
+      </section>
+      <section className="h-96 w-full bg-white flex justify-end relative">
+        <div className="flex-1 p-20 relative z-[1001]">
+          <span className={`${galindo.className} text-black text-4xl`}>Portal</span>
+          <span className="text-gray-400 block text-sm">Realtime conversation<br />without friction</span>
+          <div className="flex gap-4 mt-2">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center p-2 rounded-lg bg-white border border-black/10 hover:bg-gray-100/30 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.04),inset_0_-4px_10px_rgba(0,0,0,0.02)] cursor-pointer"
+              onClick={() => window.open("https://github.com/vmridul", "_blank")}
+            >
+              <Image src="/assets/github-icon.png" alt="Github" width={20} height={20} />
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center justify-center p-2 rounded-lg bg-white border border-black/10 hover:bg-gray-100/30 shadow-[inset_0_-1px_2px_rgba(0,0,0,0.04),inset_0_-4px_10px_rgba(0,0,0,0.02)] cursor-pointer"
+              onClick={() => window.open("https://www.linkedin.com/in/mridul-verma-a875aa256/", "_blank")}
+            >
+              <Image src="/assets/linkdin-icon.png" alt="Linkedin" width={20} height={20} />
+            </motion.button>
+          </div>
+        </div>
+        <div className="w-[75%] inset-0 z-[1000] overflow-hidden">
           <PixelBlast
             variant="square"
             pixelSize={4}

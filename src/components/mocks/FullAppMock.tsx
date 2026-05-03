@@ -19,7 +19,7 @@ import { ProfileButtonMock } from "./ProfileButtonMock";
 
 export const FullAppMock = ({ className }: { className?: string }) => (
   <div
-    className={`flex aspect-video w-[1200px] overflow-hidden bg-[#0a080b] rounded-2xl border border-white/10 ${className}`}
+    className={`flex aspect-video w-[1200px] overflow-hidden bg-[#0a080b] rounded-2xl border border-white/5 ${className}`}
   >
     {/* Left Sidebar */}
     <div className="w-[240px] bg-theme-surface border-theme-border border-r select-none flex flex-col py-2 px-1 md:px-1 text-white items-center font-sans">
