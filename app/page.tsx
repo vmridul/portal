@@ -543,13 +543,13 @@ export default function Page() {
               <div className="flex flex-col items-center justify-start relative h-32">
                 <div className="flex items-center mb-4 text-sm gap-2">
                   {" "}
-                  <span className="bg-[#ff9800] text-black rounded-sm px-1">
+                  <span className="bg-[#ff9800] bg-opacity-50 text-gray-100 rounded-sm px-1">
                     @Chip
                   </span>
-                  <span className="bg-[#7ee0d3] text-black rounded-sm px-1">
+                  <span className="bg-[#7ee0d3] bg-opacity-50 text-gray-100 rounded-sm px-1">
                     @Squir
                   </span>
-                  <span className="bg-[#f0e150] text-black rounded-sm px-1">
+                  <span className="bg-[#eed606] bg-opacity-60 text-gray-100 rounded-sm px-1">
                     @Pika
                   </span>
                 </div>
@@ -557,7 +557,7 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
+            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative ">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -572,29 +572,18 @@ export default function Page() {
                   Typing Indicators
                 </h3>
               </div>
-              <div className="">
-                <div className="absolute top-[38%] left-[60px] scale-110 flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-[12px] border border-[#2a2a2a] overflow-hidden flex-shrink-0">
-                    <Image
-                      src="/assets/sq.png"
-                      width={40}
-                      height={40}
-                      alt="Chip"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px]  text-gray-400">Chip</span>
-                    <span className="text-xs text-white/90">
-                      What you doing?
-                    </span>
-                  </div>
-                </div>
-
+              <div className="flex flex-col items-center justify-start">
+                <ChatMessageMock
+                  message="pika pika!"
+                  name="Chip"
+                  avatar="/assets/ch.png"
+                  showDate={false}
+                  className="w-full pointer-events-none"
+                />
                 <TypingIndicatorMock
                   name="Pika"
                   avatar="/assets/pi.png"
-                  className="absolute top-[64%] left-[60px] scale-110"
+                  className="scale-110"
                 />
               </div>
             </div>
