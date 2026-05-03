@@ -213,11 +213,10 @@ export default function Page() {
           initial={{ y: 0, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${
-            scrolled
-              ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
-              : "bg-transparent border-transparent py-2"
-          }`}
+          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${scrolled
+            ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
+            : "bg-transparent border-transparent py-2"
+            }`}
         >
           <div className="flex justify-between items-center px-6 py-4 max-w-6xl w-[90%] mx-auto">
             <div className="flex items-center gap-3">
@@ -229,8 +228,9 @@ export default function Page() {
             </div>
             <Show when="signed-out">
               <SignInButton mode="modal">
-                <button className="px-4 py-1.5 text-xs font-semibold rounded-full transition-all bg-white text-black hover:bg-gray-200">
+                <button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg bg-white text-black hover:bg-gray-200">
                   Sign in with Google
+                  <Image className="ml-2" src="/assets/google-logo.png" alt="Google" width={18} height={18}></Image>
                 </button>
               </SignInButton>
             </Show>
@@ -299,7 +299,7 @@ export default function Page() {
           </div>
         </section>
       </div>
-      <section className="relative mt-64 text-white overflow-hidden">
+      <section className="relative mt-48 text-white overflow-hidden">
         <h2 className="text-center text-5xl md:text-6xl font-semibold flex justify-center gap-4">
           <motion.span
             initial={{ opacity: 0, x: 100, filter: "blur(10px)" }}
@@ -351,7 +351,7 @@ export default function Page() {
           ))}
         </div>
       </section>
-      <section className=" text-white px-6 mt-[300px]">
+      <section className=" text-white px-6 mt-[200px]">
         <div className="max-w-6xl mx-auto flex">
           <div className="w-1/2">
             <div className="sticky top-48">
@@ -495,12 +495,12 @@ export default function Page() {
       </section>
       <section className="relative py-24 text-white">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-5xl md:text-6xl font-semibold text-center mb-16 tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-semibold text-center mb-6 tracking-tight">
             Basics Covered
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[500px]">
-            <div className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden flex flex-col relative group">
+            <div className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden justify-center items-end flex flex-col relative group">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -512,18 +512,28 @@ export default function Page() {
               />
 
               <div className="relative z-10">
-                <h3 className="text-xl font-medium text-white mb-4">
-                  Flawless On Mobile Too
+                <h3 className="text-xl font-medium text-white text-end">
+                  Flawless On
+                  <br /> Mobile Too
                 </h3>
               </div>
 
-              <div className="absolute bottom-10 scale-125 -left-[150px]">
+              <div className="absolute -bottom-[350px] left-6 rounded-xl">
                 <Image
-                  src="/assets/mobiless1.png"
-                  alt="Mobile App"
-                  width={1000}
-                  height={1000}
-                  className="object-contain object-bottom"
+                  src="/assets/m1.png"
+                  alt="Mobile ss 1"
+                  width={300}
+                  height={200}
+                  className="object-contain"
+                />
+              </div>
+              <div className="absolute -top-[470px] left-6 rounded-xl">
+                <Image
+                  src="/assets/m2.png"
+                  alt="Mobile ss 2"
+                  width={300}
+                  height={200}
+                  className="object-contain rounded-xl"
                 />
               </div>
             </div>
@@ -640,7 +650,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="py-32 px-6 md:px-12 relative overflow-hidden">
+      <section className="py-24 px-6 md:px-12 relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center">
             <div className="max-w-3xl mb-6 flex flex-col ">
@@ -653,7 +663,7 @@ export default function Page() {
               <div className="mt-8 flex flex-col items-center">
                 <div
                   onClick={() => setColorDialog((v) => !v)}
-                  className="flex items-center gap-4 bg-white/5 py-2.5 px-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group"
+                  className="flex items-center gap-4 bg-white/5 py-2.5 px-5 rounded-2xl cursor-pointer transition-all group"
                 >
                   <span className="text-gray-300 text-sm select-none group-hover:text-white transition-colors">
                     Choose Accent Color

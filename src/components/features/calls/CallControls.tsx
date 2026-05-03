@@ -46,17 +46,17 @@ export const CallControls = () => {
     try {
       await leaveCurrentSession(callId);
       setCallOverlayOpen(false);
-    } catch {}
+    } catch { }
   };
 
   const audioDevices = availableDevices.filter((d) => d.kind === "audioinput");
   const videoDevices = availableDevices.filter((d) => d.kind === "videoinput");
 
   return (
-    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-theme-surface md:scale-100 scale-75 p-3 rounded-2xl flex items-center gap-3 border border-theme-border">
+    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 md:scale-100 scale-90 bg-theme-surface p-3 rounded-2xl flex items-center gap-2 md:gap-3 border border-theme-border">
       <Button
         variant={isMuted ? "destructive2" : "other"}
-        size="iconLg"
+        size={"iconLg"}
         className="rounded-2xl"
         onClick={toggleMute}
         tooltip={isMuted ? "Unmute" : "Mute"}

@@ -31,9 +31,9 @@ export const CallOverlay = () => {
   }
 
   return (
-    <div className="absolute inset-0 z-[9999] bg-theme-base flex flex-col items-center justify-center overflow-hidden">
+    <div className="fixed md:absolute inset-0 z-[9999] bg-theme-base flex flex-col min-w-0 overflow-hidden">
       <CallOverlayHeader />
-      <div className="w-full h-full pb-20 pt-10 relative">
+      <div className="w-full h-full flex-1 md:pt-12 md:pb-20 pb-2 min-w-0 relative">
         <ParticipantGrid />
       </div>
       <CallControls />

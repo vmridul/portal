@@ -65,7 +65,7 @@ export const ParticipantGrid = () => {
   // - Participants are shown in a sidebar strip
   if (hasScreenShares) {
     return (
-      <div className="w-full h-full flex flex-col md:flex-row gap-3 p-4 pt-6">
+      <div className="w-full h-full flex flex-col md:flex-row gap-3 p-2 md:p-4 pt-16 pb-20 md:pb-0">
         {/* Main area: Screen share cards (large) */}
         <div className="flex-1 min-h-0 flex flex-col gap-3">
           {screenShares.map(({ userId, stream }) => {
@@ -143,7 +143,7 @@ export const ParticipantGrid = () => {
 
   return (
     <div
-      className={`w-full h-full p-4 pt-6 grid gap-4 ${gridClass} auto-rows-fr`}
+      className={`w-full h-full p-4 md:p-4 pt-16 pb-20 grid gap-4 ${gridClass} auto-rows-fr`}
     >
       {sortedParticipants.map((userId) => {
         const isLocal = userId === currentUserId;
