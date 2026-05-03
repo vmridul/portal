@@ -14,3 +14,4 @@ export * from "./ChatMessageMock";
 export * from "./ActiveCallMock";
 export * from "./TypingIndicatorMock";
 export * from "./FullAppMock";
+export * from "./MentionsAutocompleteMock";

@@ -75,7 +75,7 @@ export const MessageReactions = ({
           <span className="text-sm">{emoji}</span>
           {data.count > 0 && (
             <span
-              className={data.hasUserReacted ? "text-white" : "text-gray-400"}
+              className={data.hasUserReacted ? "text-theme-text" : "text-gray-400"}
             >
               {data.count}
             </span>

@@ -6,12 +6,21 @@ import { ParticipantCard } from "./ParticipantCard";
 import { useUserStore } from "@/store/useUserStore";
 
 export const ParticipantGrid = () => {
-  const { callId, actualRoomId, remoteStreams, activeSpeakers, localStream, screenShareStream, screenShareStreams } = useCallStore();
+  const {
+    callId,
+    actualRoomId,
+    remoteStreams,
+    activeSpeakers,
+    localStream,
+    screenShareStream,
+    screenShareStreams,
+  } = useCallStore();
   const { activeCalls } = useCalls(actualRoomId || "");
   const activeCall = activeCalls.find((call) => call._id === callId);
   const currentUserId = useUserStore((s) => s.user?.user_id);
 
-  const participants = activeCall?.participants || (currentUserId ? [currentUserId] : []);
+  const participants =
+    activeCall?.participants || (currentUserId ? [currentUserId] : []);
 
   // Current user always first
   const sortedParticipants = [...participants].sort((a, b) => {
@@ -22,7 +31,7 @@ export const ParticipantGrid = () => {
 
   // Create MediaState lookup map for O(1) access
   const mediaStateByUserId = new Map(
-    (activeCall?.mediaStates || []).map((m) => [m.userId, m])
+    (activeCall?.mediaStates || []).map((m) => [m.userId, m]),
   );
 
   // Collect all screen shares: local + remote
@@ -48,7 +57,8 @@ export const ParticipantGrid = () => {
     }
   });
 
-  const hasScreenShares = screenShares.length > 0 || mediaStatesScreenSharers.size > 0;
+  const hasScreenShares =
+    screenShares.length > 0 || mediaStatesScreenSharers.size > 0;
 
   // If there are screen shares, use a spotlight layout:
   // - Screen share takes up the large area
@@ -75,24 +85,24 @@ export const ParticipantGrid = () => {
             );
           })}
           {/* Show placeholder for users who are screen sharing per mediaState but we don't have their stream yet */}
-          {Array.from(mediaStatesScreenSharers).filter(
-            uid => !screenShares.some(s => s.userId === uid)
-          ).map(userId => {
-            const mediaState = mediaStateByUserId.get(userId);
-            return (
-              <div key={`screen-${userId}`} className="flex-1 min-h-0">
-                <ParticipantCard
-                  userId={userId}
-                  isSpeaking={false}
-                  videoStream={null}
-                  isLocal={userId === currentUserId}
-                  isVideoOn={true}
-                  isMuted={mediaState?.isMuted ?? false}
-                  isScreenShare={true}
-                />
-              </div>
-            );
-          })}
+          {Array.from(mediaStatesScreenSharers)
+            .filter((uid) => !screenShares.some((s) => s.userId === uid))
+            .map((userId) => {
+              const mediaState = mediaStateByUserId.get(userId);
+              return (
+                <div key={`screen-${userId}`} className="flex-1 min-h-0">
+                  <ParticipantCard
+                    userId={userId}
+                    isSpeaking={false}
+                    videoStream={null}
+                    isLocal={userId === currentUserId}
+                    isVideoOn={true}
+                    isMuted={mediaState?.isMuted ?? false}
+                    isScreenShare={true}
+                  />
+                </div>
+              );
+            })}
         </div>
 
         {/* Sidebar: Participant cards (small strip) */}
@@ -103,7 +113,10 @@ export const ParticipantGrid = () => {
             const mediaState = mediaStateByUserId.get(userId);
 
             return (
-              <div key={userId} className="md:h-40 h-28 w-36 md:w-full shrink-0">
+              <div
+                key={userId}
+                className="md:h-40 h-28 w-36 md:w-full shrink-0"
+              >
                 <ParticipantCard
                   userId={userId}
                   isSpeaking={activeSpeakers?.includes(userId) || false}
@@ -129,7 +142,9 @@ export const ParticipantGrid = () => {
   else if (count >= 7) gridClass = "grid-cols-3 md:grid-cols-4";
 
   return (
-    <div className={`w-full h-full p-4 pt-6 grid gap-4 ${gridClass} auto-rows-fr`}>
+    <div
+      className={`w-full h-full p-4 pt-6 grid gap-4 ${gridClass} auto-rows-fr`}
+    >
       {sortedParticipants.map((userId) => {
         const isLocal = userId === currentUserId;
         const stream = isLocal ? localStream : remoteStreams?.[userId];

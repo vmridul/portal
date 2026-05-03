@@ -3,7 +3,8 @@
 import { Galindo, Lexend } from "next/font/google";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { SignOutButton, Show, useAuth } from "@clerk/nextjs";
+import { SignOutButton, Show, useAuth, SignInButton } from "@clerk/nextjs";
+
 import { motion } from "framer-motion";
 import { useRef } from "react";
 
@@ -33,6 +34,7 @@ import {
   ActiveCallMock,
   TypingIndicatorMock,
   FullAppMock,
+  MentionsAutocompleteMock,
 } from "@/components/mocks";
 
 const galindo = Galindo({
@@ -58,6 +60,7 @@ export default function Page() {
   const [isDraggingIcon, setIsDraggingIcon] = useState(false);
   const { color, setColor } = useColor();
   const [colorDialog, setColorDialog] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("deleted") === "true") {
@@ -111,6 +114,18 @@ export default function Page() {
   //   };
   // }, []);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      setScrolled(container.scrollTop > 300);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const privacy = ["Encrypted Calls", "No Tracking", "No Data Collection"];
 
   const goodstuff = [
@@ -149,7 +164,7 @@ export default function Page() {
       desc: "Start individual or group audio & video calls and switch between them seamlessly.",
       component: (
         <div className=" flex items-center justify-center">
-          <ActiveCallMock className="w-[400px] h-[200px] pt-16 scale:150" />
+          <ActiveCallMock className="w-[400px] h-[150px] pt-10 scale:150" />
         </div>
       ),
     },
@@ -194,25 +209,52 @@ export default function Page() {
           />
         </div>
 
-        <section className="relative min-h-screen p-6 text-white flex flex-col items-center">
-          {/* NAVBAR */}
-          <div className="flex justify-between items-center px-6 py-5 max-w-6xl w-[90%] mx-auto">
+        <motion.div
+          initial={{ y: 0, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${
+            scrolled
+              ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
+              : "bg-transparent border-transparent py-2"
+          }`}
+        >
+          <div className="flex justify-between items-center px-6 py-4 max-w-6xl w-[90%] mx-auto">
             <div className="flex items-center gap-3">
               <span
-                className={`text-2xl ${galindo.className} font-medium tracking-wide`}
+                className={`text-2xl text-white ${galindo.className} font-medium tracking-wide`}
               >
                 Portal
               </span>
             </div>
-            <Show when="signed-in">
-              <SignOutButton>
-                <button className="px-3 py-1  text-xs font-semibold rounded-full transition-all border border-white/5 text-gray-300 hover:text-white">
-                  Sign Out
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button className="px-4 py-1.5 text-xs font-semibold rounded-full transition-all bg-white text-black hover:bg-gray-200">
+                  Sign in with Google
                 </button>
-              </SignOutButton>
+              </SignInButton>
+            </Show>
+            <Show when="signed-in">
+              <div className="flex items-center gap-2">
+                <SignOutButton>
+                  <button className="px-3 py-2 text-sm rounded-lg transition-all border border-white/5 text-gray-300 hover:text-white">
+                    Sign Out
+                  </button>
+                </SignOutButton>
+                {scrolled && (
+                  <button
+                    onClick={handleEnter}
+                    className="px-4 py-2 text-sm rounded-lg transition-all bg-white text-black hover:bg-gray-200 animate-in fade-in slide-in-from-bottom-4 duration-300"
+                  >
+                    Enter
+                  </button>
+                )}
+              </div>
             </Show>
           </div>
+        </motion.div>
 
+        <section className="relative min-h-screen mt-12 p-6 text-white flex flex-col items-center">
           <div className="text-center relative z-10">
             <motion.p
               initial={{ opacity: 0, y: 30 }}
@@ -410,7 +452,7 @@ export default function Page() {
             <CallEndedNotificationMock />
           </div>
           <div className="select-none absolute bottom-[25%] left-1/2 -translate-x-1/2 z-0 hidden md:block">
-            <ChatInputBarMock />
+            <ChatInputBarMock bg="bg-white" />
           </div>
 
           <div className="select-none absolute top-[59%] right-[4%] z-0 hidden lg:block">
@@ -451,14 +493,14 @@ export default function Page() {
           </span>
         </div>
       </section>
-      <section className="relative mt-24 py-24 text-white">
-        <div className="max-w-7xl mx-auto px-4">
+      <section className="relative py-24 text-white">
+        <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-5xl md:text-6xl font-semibold text-center mb-16 tracking-tight">
             Basics Covered
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[500px]">
-            <div className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden flex flex-col relative group">
+            <div className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden flex flex-col relative group">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -475,88 +517,17 @@ export default function Page() {
                 </h3>
               </div>
 
-              <div className="top-0 absolute flex-1 flex justify-center">
-                <div className="relative w-full left-[50%] -translate-x-[30%] -mb-24 transition-transform duration-500">
-                  <Image
-                    src="/assets/iphone.png"
-                    alt="Mobile App"
-                    width={1000}
-                    height={1000}
-                    className="object-contain object-bottom"
-                  />
-                </div>
+              <div className="absolute bottom-10 scale-125 -left-[150px]">
+                <Image
+                  src="/assets/mobiless1.png"
+                  alt="Mobile App"
+                  width={1000}
+                  height={1000}
+                  className="object-contain object-bottom"
+                />
               </div>
             </div>
-            <div className="md:col-span-1 flex flex-col gap-3">
-              <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
-                <div
-                  className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                  style={{
-                    WebkitMaskImage:
-                      "linear-gradient(to bottom, black 0%, transparent 15%)",
-                    maskImage:
-                      "linear-gradient(to bottom, black 0%, transparent 15%)",
-                  }}
-                />
-                <div className="space-y-4 relative z-10">
-                  <h3 className="text-xl font-medium text-white">
-                    Typing Indicators
-                  </h3>
-                </div>
-                <div className="">
-                  <TypingIndicatorMock
-                    name="Chip"
-                    avatar="/assets/ch.png"
-                    className="absolute top-[40%] left-[76px] scale-110"
-                  />
-                  <TypingIndicatorMock
-                    name="Pika"
-                    avatar="/assets/pi.png"
-                    className="absolute top-[64%] left-[76px] scale-110"
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
-                <div
-                  className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
-                  style={{
-                    WebkitMaskImage:
-                      "linear-gradient(to bottom, black 0%, transparent 15%)",
-                    maskImage:
-                      "linear-gradient(to bottom, black 0%, transparent 15%)",
-                  }}
-                />
-                <div className="space-y-4 relative z-10">
-                  <h3 className="text-xl font-medium text-white">
-                    Realtime Presence
-                  </h3>
-                  <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
-                    <div className="mt-2"></div>
-                  </div>
-                  <div className="flex flex-col items-center justify-center pt-4">
-                    <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                      <StatusIndicator
-                        className="relative w-2 h-2"
-                        isOnline={true}
-                        isAway={false}
-                      />
-                      <span className="text-green-500">Online</span>
-                    </div>
-                    <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                      <StatusIndicator
-                        className="relative w-2 h-2"
-                        isOnline={false}
-                        isAway={true}
-                      />
-                      <span className="text-yellow-400">Away</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-1 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col group overflow-hidden relative">
+            <div className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col group overflow-hidden relative">
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -566,10 +537,103 @@ export default function Page() {
                     "linear-gradient(to bottom, black 0%, transparent 15%)",
                 }}
               />
-              <div className="space-y-4 mb-12 relative z-10">
+              <div className="space-y-4 mb-6 relative z-10">
+                <h3 className="text-xl font-medium text-white">Mentions</h3>
+              </div>
+              <div className="flex flex-col items-center justify-start relative h-32">
+                <div className="flex items-center mb-4 text-sm gap-2">
+                  {" "}
+                  <span className="bg-[#ff9800] text-black rounded-sm px-1">
+                    @Chip
+                  </span>
+                  <span className="bg-[#7ee0d3] text-black rounded-sm px-1">
+                    @Squir
+                  </span>
+                  <span className="bg-[#f0e150] text-black rounded-sm px-1">
+                    @Pika
+                  </span>
+                </div>
+                <MentionsAutocompleteMock className="scale-110 z-20" />
+              </div>
+            </div>
+
+            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
+              <div
+                className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                }}
+              />
+              <div className="space-y-4 relative z-10">
                 <h3 className="text-xl font-medium text-white">
-                  Enterprise Grade Security
+                  Typing Indicators
                 </h3>
+              </div>
+              <div className="">
+                <div className="absolute top-[38%] left-[60px] scale-110 flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-[12px] border border-[#2a2a2a] overflow-hidden flex-shrink-0">
+                    <Image
+                      src="/assets/sq.png"
+                      width={40}
+                      height={40}
+                      alt="Chip"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px]  text-gray-400">Chip</span>
+                    <span className="text-xs text-white/90">
+                      What you doing?
+                    </span>
+                  </div>
+                </div>
+
+                <TypingIndicatorMock
+                  name="Pika"
+                  avatar="/assets/pi.png"
+                  className="absolute top-[64%] left-[60px] scale-110"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
+              <div
+                className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                  maskImage:
+                    "linear-gradient(to bottom, black 0%, transparent 15%)",
+                }}
+              />
+              <div className="space-y-4 relative z-10">
+                <h3 className="text-xl font-medium text-white">
+                  Realtime Presence
+                </h3>
+                <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
+                  <div className="mt-2"></div>
+                </div>
+                <div className="flex flex-col scale-110 items-center justify-center pt-4">
+                  <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                    <StatusIndicator
+                      className="relative w-2 h-2"
+                      isOnline={true}
+                      isAway={false}
+                    />
+                    <span className="text-green-500">Online</span>
+                  </div>
+                  <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                    <StatusIndicator
+                      className="relative w-2 h-2"
+                      isOnline={false}
+                      isAway={true}
+                    />
+                    <span className="text-yellow-400">Away</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -592,12 +656,9 @@ export default function Page() {
                   className="flex items-center gap-4 bg-white/5 py-2.5 px-5 rounded-2xl cursor-pointer hover:bg-white/10 transition-all group"
                 >
                   <span className="text-gray-300 text-sm select-none group-hover:text-white transition-colors">
-                    Customize Theme Color
+                    Choose Accent Color
                   </span>
-                  <div
-                    style={{ backgroundColor: color }}
-                    className="w-6 h-6 rounded-lg shadow-lg border border-white/20"
-                  ></div>
+                  <div className="w-6 h-6 rounded-lg shadow-lg border bg-theme-accent border-white/20"></div>
                 </div>
                 {colorDialog &&
                   createPortal(

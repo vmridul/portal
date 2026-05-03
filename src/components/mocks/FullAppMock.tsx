@@ -48,18 +48,18 @@ export const FullAppMock = ({ className }: { className?: string }) => (
         <div className="flex-1 overflow-y-auto no-scrollbar pr-1 px-1">
           <RoomItemMock
             name="Projects"
-            id="portal"
+            id="4369"
             className="w-full bg-theme-hover border-none shadow-none mt-1"
           />
           <RoomItemMock
             name="Design"
-            id="design"
-            className="w-full bg-transparent border-none shadow-none opacity-60 mt-1"
+            id="1034"
+            className="w-full hover:bg-theme-hover bg-transparent border-none shadow-none  mt-1"
           />
           <RoomItemMock
             name="Engineering"
-            id="eng"
-            className="w-full bg-transparent border-none shadow-none opacity-60 mt-1"
+            id="9450"
+            className="w-full hover:bg-theme-hover bg-transparent border-none shadow-none  mt-1"
           />
         </div>
       </div>
@@ -72,7 +72,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
         <ProfileButtonMock
           name="Mridul"
           avatar="/assets/sq.png"
-          className="w-full"
+          className="w-full bg-theme-hover"
         />
       </div>
     </div>
@@ -90,7 +90,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
             <div className="px-2 py-1 text-gray-400">Search messages</div>
           </div>
         </div>
-        <div className="flex items-center flex-none gap-2 ml-2">
+        <div className="flex items-center flex-none gap-2">
           <div className="w-8 h-8 p-2 cursor-default rounded-xl flex items-center justify-center hover:bg-theme-hover">
             <HugeiconsIcon
               icon={Image01Icon}
@@ -112,25 +112,18 @@ export const FullAppMock = ({ className }: { className?: string }) => (
 
       {/* Messages */}
       <div className="flex-1 p-0 space-y-0 overflow-hidden">
-        <ChatMessageMock
-          name="Pika"
-          avatar="/assets/pi.png"
-        />
+        <ChatMessageMock name="Pika" avatar="/assets/pi.png" />
         <ChatMessageMock
           name="Charm"
           avatar="/assets/ch.png"
           showDate={false}
         />
-        <ChatMessageMock
-          name="Me"
-          avatar="/assets/sq.png"
-          showDate={false}
-        />
+        <ChatMessageMock name="Me" avatar="/assets/sq.png" showDate={false} />
       </div>
 
       {/* Input Bar */}
       <div className="flex-shrink-0 w-full flex justify-center pb-4 pt-0 px-4">
-        <ChatInputBarMock />
+        <ChatInputBarMock bg="bg-theme-accent" text="text-theme-text" />
       </div>
     </div>
 

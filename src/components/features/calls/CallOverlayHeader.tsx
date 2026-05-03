@@ -13,7 +13,9 @@ import { formatDuration } from "@/lib/utils/date";
 export const CallOverlayHeader = () => {
   const { setCallOverlayOpen } = useUIStore();
   const { startedAt } = useCallStore();
-  const [elapsed, setElapsed] = useState(startedAt ? formatDuration(startedAt) : "00:00");
+  const [elapsed, setElapsed] = useState(
+    startedAt ? formatDuration(startedAt) : "00:00",
+  );
 
   useEffect(() => {
     if (!startedAt) return;
