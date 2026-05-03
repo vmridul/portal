@@ -33,6 +33,10 @@ export default function SignUpPage() {
           forceRedirectUrl="/portal"
           appearance={{
             elements: {
+              rootBox: "bg-[#101010] rounded-xl",
+              card: "bg-[#101010] shadow-none border-none",
+              main: "bg-[#101010]",
+
               headerTitle: "text-white font-semibold",
               headerSubtitle: "text-gray-400",
               socialButtonsBlockButton: "bg-[#242424] hover:bg-[#242424] border border-[#242424] text-white hover:text-white",
@@ -45,8 +49,8 @@ export default function SignUpPage() {
               dividerText: "text-gray-400",
               identityPreviewText: "text-white",
               formFieldInputShowPasswordButton: "text-gray-400",
-              footer: "bg-black",
-              footerAction: "bg-black",
+              footer: "bg-[#101010]",
+              footerAction: "bg-[#101010",
               footerActionLink: "text-gray-300",
               footerActionText: "text-white",
               footerPageLink: "text-gray-200",
@@ -54,7 +58,7 @@ export default function SignUpPage() {
               formFieldInputShowPasswordButtonText: "text-white",
               alternativeMethodsText: "text-gray-300",
               enterpriseBrandedSwitchText: "text-gray-300",
-              formFieldAction: "text-theme-accent",
+              formFieldAction: "text-white",
               backLink: "text-gray-300 hover:text-white",
               otpCodeFieldInputGroupText: "text-white",
               alternativeMethodsTextButton: "text-white",
@@ -62,8 +66,8 @@ export default function SignUpPage() {
             },
             variables: {
               colorPrimary: "white",
-              colorBackground: "black",
-              colorTextOnPrimary: "black",
+              colorBackground: "#101010",
+              colorTextOnPrimary: "#101010",
               colorInputBackground: "#272727",
               colorInputText: "#ffffff",
               colorText: "#ffffff",
