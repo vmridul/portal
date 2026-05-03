@@ -1,17 +1,11 @@
 "use client";
-
-import { Galindo } from "next/font/google";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-
 import { useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-
-import { useUIStore } from "@/store/uiStore";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import PixelBlast from "@/components/PixelBlast";
-import { useColor } from "@/contexts/colorContext";
 import {
   Navbar,
   Hero,
@@ -28,11 +22,8 @@ import {
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setModal } = useUIStore();
   const { userId, isLoaded } = useAuth();
   const isAuthenticated = !!userId;
-  const [isDraggingIcon, setIsDraggingIcon] = useState(false);
-  const { color, setColor } = useColor();
   const [colorDialog, setColorDialog] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

@@ -41,7 +41,7 @@ const AvatarStack = ({
             <Image
               src={getAvatarUrl(user.avatar, user.username)}
               alt={user.username}
-              quality={40}
+              quality={25}
               width={size}
               height={size}
               className="rounded-full ring-1 ring-theme-base object-cover bg-theme-base"

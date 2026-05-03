@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallStore } from "@/store/callStore";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AvatarStack from "@/components/ui/AvatarStack";
+import { Skeleton } from "@/components/skeletons/Skeleton";
 
 interface Call {
   participants: string[];
@@ -47,7 +47,6 @@ interface RecentCallsListProps {
 }
 
 export default function RecentCallsList({ calls }: RecentCallsListProps) {
-  const callError = useCallStore((state) => state.error);
   const grouped = groupCallsByDate(calls);
 
   const allParticipantIds = Array.from(
@@ -78,15 +77,21 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
               <div className="flex items-center gap-3 px-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center">
-                    <AvatarStack
-                      users={participantProfiles.filter((p) =>
-                        (call.allParticipants || call.participants).includes(
-                          p.user_id,
-                        ),
-                      )}
-                      size={24}
-                      showCount
-                    />
+                    {
+                      participantProfiles.length > 0 ?
+
+                        <AvatarStack
+                          users={participantProfiles.filter((p) =>
+                            (call.allParticipants || call.participants).includes(
+                              p.user_id,
+                            ),
+                          )}
+                          size={24}
+                          showCount
+                        />
+                        :
+                        <Skeleton className="w-5 h-5 rounded-full flex -space-x-3 overflow-hidden mb-2" />
+                    }
                   </div>
                   <div className="text-xs text-gray-500 flex items-center gap-2">
                     {formatCallTime(call.startedAt)}

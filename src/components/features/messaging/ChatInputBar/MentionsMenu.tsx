@@ -244,15 +244,15 @@ export function MentionsDropdown({
           key={user.user_id}
           onClick={() => onSelect(user)}
           onMouseEnter={() => onHover(index)}
-          className={`w-full flex items-center gap-3 px-3 py-2 transition-colors text-left ${
-            index === selectedIndex ? "bg-theme-hover" : "hover:bg-theme-hover"
-          }`}
+          className={`w-full flex items-center gap-3 px-3 py-2 transition-colors text-left ${index === selectedIndex ? "bg-theme-hover" : "hover:bg-theme-hover"
+            }`}
         >
           <div className="relative w-8 h-8 flex-shrink-0">
             <Image
               src={getAvatarUrl(user.avatar, user.username)}
               alt={user.username}
               fill
+              quality={25}
               className="rounded-[12px] object-cover bg-theme-border"
             />
           </div>

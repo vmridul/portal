@@ -1,13 +1,15 @@
-import React from "react";
+import { DotmSquare19 } from "@/components/ui/dotm-square-19";
 
 export function LoadingDots() {
   return (
-    <div className="flex items-center justify-center py-4">
-      <div className="flex gap-1">
-        <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-        <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-        <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-bounce"></span>
-      </div>
+    <div className="flex items-center justify-center py-6">
+      <DotmSquare19
+        size={26}
+        dotSize={4}
+        speed={1.2}
+        color="#ffffff"
+        bloom
+      />
     </div>
   );
 }
