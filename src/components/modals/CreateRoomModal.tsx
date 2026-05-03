@@ -25,18 +25,20 @@ export function CreateRoomModal() {
       toast.error("Enter a valid room name!");
       return;
     }
-    try {
-      const generated_id = await generateRoomCode();
-      await createRoom({
-        room_name: data.roomName.trim(),
-        room_id: generated_id.toString(),
-      });
-      closeModal();
-      toast.success("Room created successfully");
-      router.push(`/portal/room/${generated_id}`);
-    } catch (e) {
-      toast.error((e as Error).message || "Failed to create room");
+    const generated_id = await generateRoomCode();
+    const result = await createRoom({
+      room_name: data.roomName.trim(),
+      room_id: generated_id.toString(),
+    });
+
+    if (result.error) {
+      toast.error(result.error);
+      return;
     }
+
+    closeModal();
+    toast.success("Room created successfully");
+    router.push(`/portal/room/${generated_id}`);
   };
 
   return (

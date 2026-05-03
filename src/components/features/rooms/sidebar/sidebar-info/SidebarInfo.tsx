@@ -73,10 +73,14 @@ export function SidebarInfo({
     if (!editedName.trim() || editedName === room?.room_name) return;
     try {
       setIsSubmitting(true);
-      await renameRoom({ room_id: id, new_name: editedName });
+      const result = await renameRoom({ room_id: id, new_name: editedName });
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Room name updated");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to rename room");
+      toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -84,12 +88,14 @@ export function SidebarInfo({
 
   const handleNotificationChange = async (preference: string) => {
     try {
-      await setNotificationPreference({ room_id: id, preference });
+      const result = await setNotificationPreference({ room_id: id, preference });
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
       setNotificationPref(preference);
     } catch (e) {
-      toast.error(
-        e instanceof Error ? e.message : "Failed to update preference",
-      );
+      toast.error("Failed to update preference");
     }
   };
 

@@ -64,20 +64,20 @@ export default function PendingRequestMenu({
   const { acceptRequest, rejectRequest } = useFriendActions();
 
   const handleAccept = async (req_id: string) => {
-    try {
-      await acceptRequest(req_id as Id<"friends">);
+    const result = await acceptRequest(req_id as Id<"friends">);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
       toast.success("Friend request accepted");
-    } catch (e) {
-      toast.error((e as Error).message || "Failed to accept");
     }
   };
 
   const handleReject = async (req_id: string, showToast: boolean) => {
-    try {
-      await rejectRequest(req_id as Id<"friends">);
+    const result = await rejectRequest(req_id as Id<"friends">);
+    if (result.error) {
+      if (showToast) toast.error(result.error);
+    } else {
       if (showToast) toast.success("Friend request rejected");
-    } catch (e) {
-      if (showToast) toast.error((e as Error).message || "Failed to reject");
     }
   };
 

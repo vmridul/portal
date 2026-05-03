@@ -27,14 +27,14 @@ export const toggleReaction = mutation({
 
     if (existing) {
       await ctx.db.delete(existing._id);
-      return { action: "removed" };
+      return { action: "removed", success: true };
     } else {
       await ctx.db.insert("reactions", {
         message_id: args.messageId,
         user_id: userId,
         emoji: args.emoji,
       });
-      return { action: "added" };
+      return { action: "added", success: true };
     }
   },
 });

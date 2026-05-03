@@ -17,19 +17,23 @@ export const LeaveDialog = () => {
   const { deleteRoom, leaveRoom } = useRoomActions();
 
   const onAction = async () => {
-    try {
-      if (isOwner) {
-        await deleteRoom({ room_id });
-        toast.success("Room deleted");
-      } else {
-        await leaveRoom({ room_id });
-        toast.success("Left room");
+    if (isOwner) {
+      const result = await deleteRoom({ room_id });
+      if (result.error) {
+        toast.error(result.error);
+        return;
       }
-      closeModal();
-      router.replace("/portal");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed action");
+      toast.success("Room deleted");
+    } else {
+      const result = await leaveRoom({ room_id });
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Left room");
     }
+    closeModal();
+    router.replace("/portal");
   };
 
   return (

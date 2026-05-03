@@ -62,16 +62,13 @@ export function UserProfilePopup({
   const handleSendRequest = useCallback(async () => {
     if (isLoading) return;
     setIsLoading(true);
-    try {
-      await sendRequest(user.id);
+    const result = await sendRequest(user.id);
+    if (result.error) {
+      toast.error(result.error);
+    } else {
       toast.success("Friend request sent");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to send request",
-      );
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, [sendRequest, user.id, isLoading]);
 
   const handleDM = useCallback(() => {

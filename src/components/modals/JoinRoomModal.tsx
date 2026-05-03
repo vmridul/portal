@@ -20,21 +20,22 @@ export function JoinRoomModal() {
       toast.error("Enter a Room ID!");
       return;
     }
-    try {
-      await joinRoom({ room_id: data.roomId.trim() });
-      closeModal();
-      toast.success("Room joined successfully");
-      router.replace(`/portal/room/${data.roomId.trim()}`);
-    } catch (e) {
-      const msg = (e as Error).message || "Failed to join room";
-      if (msg.includes("already in this room")) {
+    const result = await joinRoom({ room_id: data.roomId.trim() });
+    
+    if (result.error) {
+      if (result.error.includes("already in this room")) {
         toast.info("You are already in this room");
         closeModal();
         router.replace(`/portal/room/${data.roomId.trim()}`);
       } else {
-        toast.error("Failed to join room");
+        toast.error(result.error);
       }
+      return;
     }
+
+    closeModal();
+    toast.success("Room joined successfully");
+    router.replace(`/portal/room/${data.roomId.trim()}`);
   };
 
   return (

@@ -106,10 +106,13 @@ export function useChatInput({
       setMsg("");
 
       try {
-        await updateMessage({
+        const result = await updateMessage({
           msg_id: editId as Id<"messages">,
           content: content,
         });
+        if (result.error) {
+          toast.error(result.error);
+        }
       } catch (error) {
         console.error(error);
         toast.error("Failed to update message");
@@ -145,7 +148,7 @@ export function useChatInput({
     clearTyping();
 
     try {
-      await sendMessage({
+      const result = await sendMessage({
         conversation_id: room_id,
         conversation_type: type,
         msg: contentToSend || null,
@@ -154,6 +157,9 @@ export function useChatInput({
         file_name: fileToSend?.name || null,
         file_size: fileToSend?.size,
       });
+      if (result.error) {
+        toast.error(result.error);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to send message");

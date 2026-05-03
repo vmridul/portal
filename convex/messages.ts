@@ -240,6 +240,8 @@ export const sendMessage = mutation({
         })
       );
     }
+
+    return { success: true };
   },
 });
 
@@ -261,10 +263,10 @@ export const deleteMessage = mutation({
     if (!identity) throw new Error("Unauthenticated");
 
     const msg = await ctx.db.get(args.msg_id);
-    if (!msg) throw new Error("Message not found");
+    if (!msg) return { error: "Message not found" };
 
     if (msg.sender_id !== identity.subject) {
-      throw new Error("Unauthorized to delete message");
+      return { error: "Unauthorized to delete message" };
     }
 
     await ctx.db.delete(args.msg_id);
@@ -295,6 +297,8 @@ export const deleteMessage = mutation({
       preview,
       timestamp,
     );
+
+    return { success: true };
   },
 });
 
@@ -308,10 +312,10 @@ export const updateMessage = mutation({
     if (!identity) throw new Error("Unauthenticated");
 
     const msg = await ctx.db.get(args.msg_id);
-    if (!msg) throw new Error("Message not found");
+    if (!msg) return { error: "Message not found" };
 
     if (msg.sender_id !== identity.subject) {
-      throw new Error("Unauthorized to edit message");
+      return { error: "Unauthorized to edit message" };
     }
 
     await ctx.db.patch(args.msg_id, {
@@ -339,6 +343,8 @@ export const updateMessage = mutation({
         latestMsg._creationTime,
       );
     }
+
+    return { success: true };
   },
 });
 

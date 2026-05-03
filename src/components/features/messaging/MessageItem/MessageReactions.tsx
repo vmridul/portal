@@ -60,7 +60,10 @@ export const MessageReactions = ({
   if (!reactions || reactions.length === 0) return null;
 
   const handleReactionClick = async (emoji: string) => {
-    await toggleReaction(messageId, emoji);
+    const result = await toggleReaction(messageId, emoji);
+    if (result.error) {
+      toast.error(result.error);
+    }
   };
 
   return (

@@ -63,9 +63,10 @@ export const changeAvatar = mutation({
       .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
       .first();
 
-    if (!user) throw new Error("User not found");
+    if (!user) return { error: "User not found" };
 
     await ctx.db.patch(user._id, { avatar: args.avatarUrl });
+    return { success: true };
   },
 });
 
@@ -80,9 +81,10 @@ export const changeName = mutation({
       .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
       .first();
 
-    if (!user) throw new Error("User not found");
+    if (!user) return { error: "User not found" };
 
     await ctx.db.patch(user._id, { username: args.username });
+    return { success: true };
   },
 });
 
@@ -116,7 +118,7 @@ export const deleteUserAccount = mutation({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthenticated");
+    if (!identity) return { error: "Unauthenticated" };
 
     const userId = identity.subject;
 
@@ -125,7 +127,7 @@ export const deleteUserAccount = mutation({
       .withIndex("by_user_id", (q) => q.eq("user_id", userId))
       .first();
 
-    if (!user) throw new Error("User not found");
+    if (!user) return { error: "User not found" };
 
     const friendsAsUser = await ctx.db
       .query("friends")

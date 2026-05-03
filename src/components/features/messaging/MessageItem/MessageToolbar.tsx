@@ -40,7 +40,10 @@ export const MessageToolbar = ({
   };
 
   const onReactionSelect = async (emoji: string) => {
-    await toggleReaction(messageId, emoji);
+    const result = await toggleReaction(messageId, emoji);
+    if (result.error) {
+      toast.error(result.error);
+    }
     setHoverCardOpen(false);
   };
 

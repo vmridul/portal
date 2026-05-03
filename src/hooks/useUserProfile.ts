@@ -17,11 +17,11 @@ export function useCurrentUser() {
 }
 
 interface UseUserProfileActionsResult {
-  changeName: (username: string) => Promise<void>;
-  changeAvatar: (avatarUrl: string) => Promise<void>;
+  changeName: (username: string) => Promise<any>;
+  changeAvatar: (avatarUrl: string) => Promise<any>;
   generateUploadUrl: () => Promise<string>;
   getUrl: (storageId: string) => Promise<string | null>;
-  deleteUserAccount: () => Promise<void>;
+  deleteUserAccount: () => Promise<any>;
 }
 
 export function useUserProfileActions(): UseUserProfileActionsResult & { createUser: (args: { username: string; avatar?: string }) => Promise<any> } {
@@ -41,14 +41,14 @@ export function useUserProfileActions(): UseUserProfileActionsResult & { createU
 
   const changeName = useCallback(
     async (username: string) => {
-      await changeNameMutation({ username });
+      return await changeNameMutation({ username });
     },
     [changeNameMutation]
   );
 
   const changeAvatar = useCallback(
     async (avatarUrl: string) => {
-      await changeAvatarMutation({ avatarUrl });
+      return await changeAvatarMutation({ avatarUrl });
     },
     [changeAvatarMutation]
   );
@@ -68,7 +68,7 @@ export function useUserProfileActions(): UseUserProfileActionsResult & { createU
 
   const deleteUserAccount = useCallback(
     async () => {
-      await deleteUserAccountMutation();
+      return await deleteUserAccountMutation();
     },
     [deleteUserAccountMutation]
   );

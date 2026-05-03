@@ -32,7 +32,7 @@ export const LinkifiedText = React.memo(
             return (
               <span
                 key={index}
-                className="bg-theme-accent text-theme-text rounded px-0.5"
+                className="bg-theme-accent text-theme-text rounded px-0.5 mr-0.5"
               >
                 {part}
               </span>

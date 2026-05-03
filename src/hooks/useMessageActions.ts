@@ -20,10 +20,10 @@ interface DeleteMessageArgs {
 }
 
 interface UseMessageActionsResult {
-  sendMessage: (args: SendMessageArgs) => Promise<void>;
-  deleteMessage: (args: DeleteMessageArgs) => Promise<void>;
+  sendMessage: (args: SendMessageArgs) => Promise<any>;
+  deleteMessage: (args: DeleteMessageArgs) => Promise<any>;
   generateUploadUrl: () => Promise<string>;
-  updateMessage: (args: { msg_id: Id<"messages">; content: string }) => Promise<void>;
+  updateMessage: (args: { msg_id: Id<"messages">; content: string }) => Promise<any>;
 }
 
 export function useMessageActions(): UseMessageActionsResult {
@@ -38,14 +38,14 @@ export function useMessageActions(): UseMessageActionsResult {
         ...args,
         file_storage_id: args.file_storage_id as Id<"_storage"> | undefined,
       };
-      await sendMessageMutation(convexArgs);
+      return await sendMessageMutation(convexArgs);
     },
     [sendMessageMutation],
   );
 
   const deleteMessage = useCallback(
     async (args: DeleteMessageArgs) => {
-      await deleteMessageMutation(args);
+      return await deleteMessageMutation(args);
     },
     [deleteMessageMutation],
   );
@@ -55,7 +55,7 @@ export function useMessageActions(): UseMessageActionsResult {
   }, [generateUploadUrlMutation]);
 
   const updateMessage = useCallback(async (args: { msg_id: Id<"messages">; content: string }) => {
-    await updateMessageMutation(args);
+    return await updateMessageMutation(args);
   }, [updateMessageMutation]);
 
   return {

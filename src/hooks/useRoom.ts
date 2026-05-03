@@ -55,12 +55,12 @@ export function useUserRooms(userId: string | null): UseUserRoomsResult {
 }
 
 export interface UseRoomActionsResult {
-  joinRoom: (args: { room_id: string }) => Promise<void>;
-  createRoom: (args: { room_name: string; room_id: string }) => Promise<void>;
-  renameRoom: (args: { room_id: string; new_name: string }) => Promise<void>;
-  leaveRoom: (args: { room_id: string }) => Promise<void>;
-  deleteRoom: (args: { room_id: string }) => Promise<void>;
-  setNotificationPreference: (args: { room_id: string; preference: string }) => Promise<void>;
+  joinRoom: (args: { room_id: string }) => Promise<any>;
+  createRoom: (args: { room_name: string; room_id: string }) => Promise<any>;
+  renameRoom: (args: { room_id: string; new_name: string }) => Promise<any>;
+  leaveRoom: (args: { room_id: string }) => Promise<any>;
+  deleteRoom: (args: { room_id: string }) => Promise<any>;
+  setNotificationPreference: (args: { room_id: string; preference: string }) => Promise<any>;
 }
 
 export function useRoomActions(): UseRoomActionsResult {
@@ -72,35 +72,35 @@ export function useRoomActions(): UseRoomActionsResult {
 
   const joinRoom = useCallback(
     async ({ room_id }: { room_id: string }) => {
-      await joinRoomMutation({ room_id });
+      return await joinRoomMutation({ room_id });
     },
     [joinRoomMutation]
   );
 
   const createRoom = useCallback(
     async ({ room_name, room_id }: { room_name: string; room_id: string }) => {
-      await createRoomMutation({ room_name, room_id });
+      return await createRoomMutation({ room_name, room_id });
     },
     [createRoomMutation]
   );
 
   const renameRoom = useCallback(
     async ({ room_id, new_name }: { room_id: string; new_name: string }) => {
-      await renameRoomMutation({ room_id, new_name });
+      return await renameRoomMutation({ room_id, new_name });
     },
     [renameRoomMutation]
   );
 
   const leaveRoom = useCallback(
     async ({ room_id }: { room_id: string }) => {
-      await leaveRoomMutation({ room_id });
+      return await leaveRoomMutation({ room_id });
     },
     [leaveRoomMutation]
   );
 
   const deleteRoom = useCallback(
     async ({ room_id }: { room_id: string }) => {
-      await deleteRoomMutation({ room_id });
+      return await deleteRoomMutation({ room_id });
     },
     [deleteRoomMutation]
   );
@@ -109,7 +109,7 @@ export function useRoomActions(): UseRoomActionsResult {
 
   const setNotificationPreference = useCallback(
     async ({ room_id, preference }: { room_id: string; preference: string }) => {
-      await setNotificationPreferenceMutation({ room_id, preference });
+      return await setNotificationPreferenceMutation({ room_id, preference });
     },
     [setNotificationPreferenceMutation]
   );

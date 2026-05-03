@@ -17,7 +17,7 @@ export const joinRoom = mutation({
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
       .first();
 
-    if (!room) throw new Error("Room does not exist");
+    if (!room) return { error: "Room does not exist" };
 
     const existingMember = await ctx.db
       .query("roomMembers")
@@ -26,7 +26,7 @@ export const joinRoom = mutation({
       .first();
 
     if (existingMember) {
-      throw new Error("You are already in this room");
+      return { error: "You are already in this room" };
     }
 
     await ctx.db.insert("roomMembers", {
@@ -48,6 +48,8 @@ export const joinRoom = mutation({
       file_url: null,
       file_name: null,
     });
+
+    return { success: true };
   },
 });
 
@@ -76,7 +78,7 @@ export const createRoom = mutation({
       role: "owner",
     });
 
-    return roomId;
+    return { room_id: args.room_id };
   },
 });
 
@@ -91,7 +93,7 @@ export const renameRoom = mutation({
       .withIndex("by_room_id", (q) => q.eq("room_id", args.room_id))
       .first();
 
-    if (!room) throw new Error("Room not found");
+    if (!room) return { error: "Room not found" };
 
     const existingMember = await ctx.db
       .query("roomMembers")
@@ -100,10 +102,11 @@ export const renameRoom = mutation({
       .first();
 
     if (!existingMember || existingMember.role !== "owner") {
-      throw new Error("unauthorized");
+      return { error: "Unauthorized" };
     }
 
     await ctx.db.patch(room._id, { room_name: args.new_name });
+    return { success: true };
   },
 });
 
@@ -124,12 +127,10 @@ export const leaveRoom = mutation({
       .filter((q) => q.eq(q.field("user_id"), identity.subject))
       .first();
 
-    if (!membership) throw new Error("Not a member");
+    if (!membership) return { error: "Not a member" };
 
     if (membership.role === "owner") {
-      throw new Error(
-        "Owner cannot leave room, must delete or transfer ownership",
-      );
+      return { error: "Owner cannot leave room, must delete or transfer ownership" };
     }
 
     await ctx.db.delete(membership._id);
@@ -145,6 +146,8 @@ export const leaveRoom = mutation({
       file_url: null,
       file_name: null,
     });
+
+    return { success: true };
   },
 });
 
@@ -161,7 +164,7 @@ export const deleteRoom = mutation({
       .first();
 
     if (!membership || membership.role !== "owner") {
-      throw new Error("unauthorized");
+      return { error: "Unauthorized" };
     }
 
     const room = await ctx.db
@@ -181,6 +184,8 @@ export const deleteRoom = mutation({
     for (const m of allMembers) {
       await ctx.db.delete(m._id);
     }
+
+    return { success: true };
   },
 });
 
@@ -201,11 +206,13 @@ export const setNotificationPreference = mutation({
       .first();
 
     if (!membership) {
-      throw new Error("Not a member of this room");
+      return { error: "Not a member of this room" };
     }
 
     await ctx.db.patch(membership._id, {
       notificationPreference: args.preference,
     });
+
+    return { success: true };
   },
 });

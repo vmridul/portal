@@ -27,16 +27,18 @@ export default function FriendChatUI() {
   const onDelete = async () => {
     if (!messageToDelete) return;
 
-    try {
-      await deleteMessage({
-        msg_id: messageToDelete as Id<"messages">,
-      });
-      setDeleteDialogOpen(false);
-      setMessageToDelete(null);
-      toast.success("Message deleted");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete message");
+    const result = await deleteMessage({
+      msg_id: messageToDelete as Id<"messages">,
+    });
+    
+    if (result.error) {
+      toast.error(result.error);
+      return;
     }
+
+    setDeleteDialogOpen(false);
+    setMessageToDelete(null);
+    toast.success("Message deleted");
   };
 
   const handleDeleteRequest = (id: string) => {

@@ -74,11 +74,15 @@ export const UserInfoTab = () => {
     if (newUsername.length < 3 || newUsername.length > 16)
       return toast.error("Username must be between 3 and 16 characters");
     try {
-      await changeName(newUsername);
+      const result = await changeName(newUsername);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
       setUser({ ...user!, username: newUsername });
       toast.success("Name updated successfully");
     } catch (e) {
-      toast.error((e as Error).message || "Failed to change name");
+      toast.error("An unexpected error occurred");
     }
   };
 
@@ -98,13 +102,16 @@ export const UserInfoTab = () => {
 
       const newAvatarUrl = await getUrl(storageId);
 
-      if (newAvatarUrl) {
-        await changeAvatar(newAvatarUrl);
-        setUser({ ...user!, avatar: newAvatarUrl });
-        toast.success("Avatar updated successfully");
+      const res = await changeAvatar(newAvatarUrl || "");
+      if (res.error) {
+        toast.error(res.error);
+        return;
       }
+
+      setUser({ ...user!, avatar: newAvatarUrl || "" });
+      toast.success("Avatar updated successfully");
     } catch (e) {
-      toast.error((e as Error).message || "Failed to change avatar");
+      toast.error("Failed to change avatar");
     } finally {
       setIsUploading(false);
     }
@@ -120,12 +127,17 @@ export const UserInfoTab = () => {
     if (deleteDialog.input !== "DELETE") return;
     setDeleteDialog((prev) => ({ ...prev, isDeleting: true }));
     try {
-      await deleteUserAccount();
+      const result = await deleteUserAccount();
+      if (result.error) {
+        toast.error(result.error);
+        setDeleteDialog((prev) => ({ ...prev, isDeleting: false }));
+        return;
+      }
       sessionStorage.setItem("accountDeleted", "true");
       await signOut();
       router.push("/");
     } catch (e) {
-      toast.error((e as Error).message || "Failed to delete account");
+      toast.error("An unexpected error occurred");
       setDeleteDialog((prev) => ({ ...prev, isDeleting: false }));
     }
   };

@@ -67,11 +67,11 @@ export function useFriends(): UseFriendsResult {
 }
 
 export interface UseFriendActionsResult {
-  sendRequest: (receiverId: string) => Promise<void>;
-  acceptRequest: (requestId: Id<"friends">) => Promise<void>;
-  rejectRequest: (requestId: Id<"friends">) => Promise<void>;
-  removeFriend: (friendId: string) => Promise<void>;
-  setNotificationPreference: (args: { friend_id: string; preference: string }) => Promise<void>;
+  sendRequest: (receiverId: string) => Promise<any>;
+  acceptRequest: (requestId: Id<"friends">) => Promise<any>;
+  rejectRequest: (requestId: Id<"friends">) => Promise<any>;
+  removeFriend: (friendId: string) => Promise<any>;
+  setNotificationPreference: (args: { friend_id: string; preference: string }) => Promise<any>;
   isLoading: boolean;
 }
 
@@ -83,28 +83,28 @@ export function useFriendActions(): UseFriendActionsResult {
 
   const sendRequest = useCallback(
     async (receiverId: string) => {
-      await sendRequestMutation({ receiver_id: receiverId });
+      return await sendRequestMutation({ receiver_id: receiverId });
     },
     [sendRequestMutation]
   );
 
   const acceptRequest = useCallback(
     async (requestId: Id<"friends">) => {
-      await acceptRequestMutation({ requestId });
+      return await acceptRequestMutation({ requestId });
     },
     [acceptRequestMutation]
   );
 
   const rejectRequest = useCallback(
     async (requestId: Id<"friends">) => {
-      await rejectRequestMutation({ requestId });
+      return await rejectRequestMutation({ requestId });
     },
     [rejectRequestMutation]
   );
 
   const removeFriend = useCallback(
     async (friendId: string) => {
-      await removeFriendMutation({ friend_id: friendId });
+      return await removeFriendMutation({ friend_id: friendId });
     },
     [removeFriendMutation]
   );
@@ -113,7 +113,7 @@ export function useFriendActions(): UseFriendActionsResult {
 
   const setNotificationPreference = useCallback(
     async ({ friend_id, preference }: { friend_id: string; preference: string }) => {
-      await setNotificationPreferenceMutation({ friend_id, preference });
+      return await setNotificationPreferenceMutation({ friend_id, preference });
     },
     [setNotificationPreferenceMutation]
   );

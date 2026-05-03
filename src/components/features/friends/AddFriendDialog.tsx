@@ -19,15 +19,16 @@ export function AddFriendDialog() {
       return;
     }
 
-    try {
-      await sendRequest(data.friendId.trim());
-      toast.success("Friend request sent!");
-      reset();
-      closeModal();
-    } catch (e) {
-      const msg = (e as Error).message || "Failed to send request";
-      toast.error(msg);
+    const result = await sendRequest(data.friendId.trim());
+    
+    if (result.error) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Friend request sent!");
+    reset();
+    closeModal();
   };
 
   return (

@@ -136,7 +136,7 @@ export const startCall = mutation({
       initiatorId: identity.subject,
     });
 
-    return callId;
+    return { callId };
   },
 });
 
@@ -147,9 +147,9 @@ export const joinCall = mutation({
     if (!identity) throw new Error("Not authenticated");
 
     const call = await ctx.db.get(args.callId);
-    if (!call) throw new Error("Call not found");
+    if (!call) return { error: "Call not found" };
     if (!call.isActive) {
-      throw new Error("Call is no longer active");
+      return { error: "Call is no longer active" };
     }
 
     const isNewHistorical = !call.allParticipants.includes(identity.subject);
@@ -192,6 +192,8 @@ export const joinCall = mutation({
       activePeerIds,
       mediaStates,
     });
+
+    return { success: true };
   },
 });
 
@@ -229,6 +231,7 @@ export const updateMediaState = mutation({
     }
 
     await ctx.db.patch(args.callId, { mediaStates });
+    return { success: true };
   },
 });
 
@@ -267,6 +270,8 @@ export const leaveCall = mutation({
         mediaStates: newMediaStates,
       });
     }
+
+    return { success: true };
   },
 });
 
@@ -283,6 +288,8 @@ export const endCall = mutation({
       participants: [],
     });
     await markCallNotificationsEnded(ctx, args.callId);
+
+    return { success: true };
   },
 });
 

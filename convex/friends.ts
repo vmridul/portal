@@ -125,7 +125,7 @@ export const sendRequest = mutation({
     if (!identity) throw new Error("Unauthenticated");
 
     if (identity.subject === args.receiver_id) {
-      throw new Error("Cannot add yourself");
+      return { error: "Cannot add yourself" };
     }
 
     const receiver = await ctx.db
@@ -134,7 +134,7 @@ export const sendRequest = mutation({
       .first();
 
     if (!receiver) {
-      throw new Error("User does not exist");
+      return { error: "User does not exist" };
     }
 
     const existing1 = await ctx.db
@@ -150,7 +150,7 @@ export const sendRequest = mutation({
       .first();
 
     if (existing1 || existing2) {
-      throw new Error("Friend request already exists or already friends");
+      return { error: "Friend request already exists or already friends" };
     }
 
     await ctx.db.insert("friends", {
@@ -161,6 +161,8 @@ export const sendRequest = mutation({
       status: "pending",
       updated_at: Date.now(),
     });
+
+    return { success: true };
   },
 });
 
@@ -171,8 +173,8 @@ export const acceptRequest = mutation({
     if (!identity) throw new Error("Unauthenticated");
 
     const request = await ctx.db.get(args.requestId);
-    if (!request) throw new Error("Request not found");
-    if (request.friend_id !== identity.subject) throw new Error("Unauthorized");
+    if (!request) return { error: "Request not found" };
+    if (request.friend_id !== identity.subject) return { error: "Unauthorized" };
 
     const sender = await ctx.db
       .query("users")
@@ -192,6 +194,8 @@ export const acceptRequest = mutation({
       status: "accepted",
       updated_at: Date.now(),
     });
+
+    return { success: true };
   },
 });
 
@@ -207,10 +211,11 @@ export const rejectRequest = mutation({
       request.friend_id !== identity.subject &&
       request.user_id !== identity.subject
     ) {
-      throw new Error("Unauthorized");
+      return { error: "Unauthorized" };
     }
 
     await ctx.db.delete(args.requestId);
+    return { success: true };
   },
 });
 
@@ -234,6 +239,7 @@ export const removeFriend = mutation({
 
     if (link1) await ctx.db.delete(link1._id);
     if (link2) await ctx.db.delete(link2._id);
+    return { success: true };
   },
 });
 
@@ -255,11 +261,13 @@ export const setNotificationPreference = mutation({
       .first();
 
     if (!friendship) {
-      throw new Error("Not friends with this user");
+      return { error: "Not friends with this user" };
     }
 
     await ctx.db.patch(friendship._id, {
       notificationPreference: args.preference,
     });
+
+    return { success: true };
   },
 });

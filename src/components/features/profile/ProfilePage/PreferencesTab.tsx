@@ -9,13 +9,13 @@ export const PreferencesTab = () => {
   return (
     <div className="flex flex-col items-center pt-2 md:pt-10 w-[80%] md:w-[47%] mx-auto pb-10">
       <div className="w-full relative flex flex-col gap-3 mt-5">
-        <span className="text-xs text-gray-400 font-medium">Theme Accent</span>
+        <span className="text-xs text-gray-400 font-medium">Accent Color</span>
         <div
           onClick={() => setColorDialog((v) => !v)}
           className="flex items-center justify-between bg-theme-hover py-2.5 px-5 rounded-xl cursor-pointer transition-all group"
         >
           <span className="text-gray-200 text-sm select-none group-hover:text-white transition-colors">
-            Customize Theme Color
+            Open Color Picker
           </span>
           <div
             style={{ backgroundColor: color }}

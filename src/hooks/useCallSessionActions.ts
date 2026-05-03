@@ -44,7 +44,12 @@ export function useCallSessionActions() {
     useCallStore.getState().setUpdateMediaState(updateMediaState);
 
     // Create call in Convex first to get the real callId
-    const callId = await startCallMutation({ roomId, peerId: "" });
+    const result = await startCallMutation({ roomId, peerId: "" });
+    if (result.error) {
+      useCallStore.getState().setError(result.error);
+      throw new Error(result.error);
+    }
+    const callId = result.callId;
 
     const peerId = await joinCall({
       callId,
@@ -55,7 +60,11 @@ export function useCallSessionActions() {
     setCallOverlayOpen(true);
 
     // Update with the actual peerId now that PeerJS is connected
-    await joinCallMutation({ callId, peerId });
+    const joinResult = await joinCallMutation({ callId, peerId });
+    if (joinResult.error) {
+      useCallStore.getState().setError(joinResult.error);
+      throw new Error(joinResult.error);
+    }
 
     return callId;
   };
@@ -71,7 +80,10 @@ export function useCallSessionActions() {
     setCallOverlayOpen(true);
 
     try {
-      await joinCallMutation({ callId: target.callId, peerId });
+      const result = await joinCallMutation({ callId: target.callId, peerId });
+      if (result.error) {
+        throw new Error(result.error);
+      }
     } catch (error) {
       await leaveCall();
       throw error;
