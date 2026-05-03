@@ -213,10 +213,11 @@ export default function Page() {
           initial={{ y: 0, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${scrolled
-            ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
-            : "bg-transparent border-transparent py-2"
-            }`}
+          className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${
+            scrolled
+              ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
+              : "bg-transparent border-transparent py-2"
+          }`}
         >
           <div className="flex justify-between items-center px-6 py-4 max-w-6xl w-[90%] mx-auto">
             <div className="flex items-center gap-3">
@@ -227,10 +228,16 @@ export default function Page() {
               </span>
             </div>
             <Show when="signed-out">
-              <SignInButton mode="modal">
+              <SignInButton>
                 <button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg bg-white text-black hover:bg-gray-200">
                   Sign in with Google
-                  <Image className="ml-2" src="/assets/google-logo.png" alt="Google" width={18} height={18}></Image>
+                  <Image
+                    className="ml-2"
+                    src="/assets/google-logo.png"
+                    alt="Google"
+                    width={18}
+                    height={18}
+                  ></Image>
                 </button>
               </SignInButton>
             </Show>

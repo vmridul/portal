@@ -2,7 +2,13 @@
 import { createContext, useContext } from "react";
 import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 
-const PresenceContext = createContext<any>(null);
+interface PresenceContextValue {
+  onlineUsers: Set<string>;
+  awayUsers: Set<string>;
+  setStatus: (status: "online" | "away") => Promise<void>;
+}
+
+const PresenceContext = createContext<PresenceContextValue | null>(null);
 
 export function PresenceProvider({ children }: { children: React.ReactNode }) {
   const presence = useGlobalPresence();
@@ -13,4 +19,8 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const usePresence = () => useContext(PresenceContext);
+export function usePresence(): PresenceContextValue {
+  const ctx = useContext(PresenceContext);
+  if (!ctx) throw new Error("usePresence must be used within PresenceProvider");
+  return ctx;
+}

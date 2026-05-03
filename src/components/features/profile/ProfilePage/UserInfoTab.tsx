@@ -309,13 +309,13 @@ export const UserInfoTab = () => {
           <DialogHeader>
             <DialogTitle>Delete Account</DialogTitle>
           </DialogHeader>
-          <div className="text-[#a0a0a0] text-sm">
+          <div className="text-[#a0a0a0] text-sm mt-1">
             This will permanently delete your account and remove you from all
             rooms. Your messages will remain but will show as from a deleted
             user.
           </div>
           <div className="mt-4">
-            <label className="text-xs text-gray-400">
+            <label className="text-xs text-gray-400 ">
               Type <span className="text-red-400">DELETE</span> to confirm
             </label>
             <Input
@@ -324,6 +324,7 @@ export const UserInfoTab = () => {
               placeholder="DELETE"
             />
           </div>
+          <div className="py-2"></div>
           <DialogFooter>
             <Button variant="secondary" onClick={closeDeleteDialog}>
               Cancel
