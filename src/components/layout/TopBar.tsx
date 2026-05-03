@@ -11,7 +11,6 @@ import {
 import { formatToIST } from "@/lib/utils/date";
 import { useRoomMembers, useCalls } from "@/hooks";
 import { useSearchMessages } from "@/hooks";
-import { useOutsideClick } from "@/hooks/ui/useOutsideClick";
 
 import { useUIStore } from "@/store/uiStore";
 import { useCallStore } from "@/store/callStore";
@@ -48,10 +47,6 @@ export default function TopBar({ room_id }: { room_id: string }) {
   } = useUIStore();
 
   const [selectedResult, setSelectedResult] = useState(0);
-
-  useOutsideClick(searchRef, () => {
-    setQuery("");
-  });
 
   const owner = members?.find((m) => m.role === "owner");
 
@@ -167,8 +162,8 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 toggleSidebar("media");
               }}
               className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
                 }`}
             >
               <HugeiconsIcon
@@ -185,22 +180,22 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 toggleSidebar("calls");
               }}
               className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
                 }`}
             >
               <HugeiconsIcon
                 icon={CallIcon}
                 className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
-                    ? "text-white"
-                    : "text-gray-300"
+                  ? "text-white"
+                  : "text-gray-300"
                   }`}
               />
               {activeCalls.length > 0 && (
                 <span
                   className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
-                      ? "bg-red-500"
-                      : "bg-green-500"
+                    ? "bg-red-500"
+                    : "bg-green-500"
                     }`}
                 />
               )}
@@ -214,8 +209,8 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 toggleSidebar("info");
               }}
               className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
                 }`}
             >
               <HugeiconsIcon

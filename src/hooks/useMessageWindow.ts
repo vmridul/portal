@@ -27,13 +27,10 @@ interface ChannelAnchor {
   creationTime: number;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 export function useMessageWindow(
   conversationId: string,
   initialMessageId?: string,
 ) {
-  // ── Core state ──────────────────────────────────────────────────────────
   const [mode, setMode] = useState<WindowMode>("LIVE");
   const [historyMessages, setHistoryMessages] = useState<MessageWithSender[]>(
     [],
@@ -47,7 +44,7 @@ export function useMessageWindow(
   const [canLoadOlder, setCanLoadOlder] = useState(true);
   const [canLoadNewer, setCanLoadNewer] = useState(false);
 
-  // ── Refs (non-rendering state) ──────────────────────────────────────────
+  // ── Refs ──────────────────────────────────────────
   // Using refs for fetch guards prevents re-renders and avoids race conditions
   // where a state update hasn't propagated before the next scroll event fires
   const isFetchingRef = useRef(false);

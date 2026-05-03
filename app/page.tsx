@@ -3,7 +3,7 @@
 import { Galindo, Lexend } from "next/font/google";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { SignOutButton, Show, useAuth, SignInButton } from "@clerk/nextjs";
+import { SignOutButton, Show, useAuth, SignInButton, SignUp, SignUpButton } from "@clerk/nextjs";
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
@@ -159,8 +159,8 @@ export default function Page() {
       ),
     },
     {
-      title: "Calls",
-      desc: "Start individual or group audio & video calls and switch between them seamlessly.",
+      title: "Voice & Video Calls",
+      desc: "Make individual or group calls and switch between them seamlessly.",
       component: (
         <div className=" flex items-center justify-center">
           <ActiveCallMock className="w-[400px] h-[150px] pt-10 scale:150" />
@@ -226,22 +226,23 @@ export default function Page() {
               </span>
             </div>
             <Show when="signed-out">
-              <SignInButton forceRedirectUrl="/portal">
-                <button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg bg-white text-black hover:bg-gray-200">
-                  Sign in with Google
-                  <Image
-                    className="ml-2"
-                    src="/assets/google-logo.png"
-                    alt="Google"
-                    width={18}
-                    height={18}
-                  ></Image>
+              <div className="flex items-center gap-2">
+                <button onClick={() => window.open("https://github.com/vmridul/portal", "_blank")} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all bg-[#2f2d30] hover:bg-[#262427] border border-white/5 border-dashed text-gray-200 hover:text-white">
+                  <Image src="/assets/github-icon-white.webp" alt="Git" width={20} height={20} />
                 </button>
-              </SignInButton>
+
+                <SignUpButton><button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg border border-white/10 border-dashed text-white hover:bg-white/5 transition-colors duration-300">
+                  Sign up
+                </button></SignUpButton>
+                <SignInButton forceRedirectUrl="/portal">
+                  <button className="flex items-center justify-center px-4 py-2 text-sm rounded-lg bg-white text-black hover:bg-gray-200 transition-colors duration-300">
+                    Sign in
+                  </button>
+                </SignInButton></div>
             </Show>
             <Show when="signed-in">
               <div className="flex items-center gap-2">
-                <button onClick={() => window.open("https://github.com/vmridul/portal", "_blank")} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all border border-dashed border-white/5 text-gray-200 hover:text-white">
+                <button onClick={() => window.open("https://github.com/vmridul/portal", "_blank")} className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-all bg-[#2f2d30] hover:bg-[#262427] border border-white/5 border-dashed text-gray-200 hover:text-white">
                   <Image src="/assets/github-icon-white.webp" alt="Git" width={20} height={20} />
                 </button>
                 <SignOutButton>
@@ -580,7 +581,13 @@ export default function Page() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[500px]">
-            <div className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden justify-center items-end flex flex-col relative group">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+              className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden justify-center items-end flex flex-col relative cursor-default"
+            >
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -592,24 +599,44 @@ export default function Page() {
               />
 
               <div className="relative z-10">
-                <h3 className="text-xl font-medium text-white text-end">
+                <motion.h3
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="text-xl font-medium text-white text-end"
+                >
                   Flawless On
                   <br /> Mobile Too
-                </h3>
+                </motion.h3>
               </div>
 
-              <div className="absolute -bottom-[200px] left-6 rounded-xl">
+              <motion.div
+                initial={{ y: 80, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 120,
+                  damping: 20,
+                  delay: 0.3,
+                }}
+                className="absolute -bottom-[200px] left-6 rounded-xl transition-all duration-500"
+              >
                 <Image
                   src="/assets/m1.png"
                   alt="Mobile ss 1"
                   width={300}
                   height={200}
-                  className="object-contain rounded-lg border border-white/5"
+                  className="object-contain rounded-lg border border-white/5 shadow-2xl"
                 />
-              </div>
-
-            </div>
-            <div className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col group overflow-hidden relative">
+              </motion.div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.1 }}
+              className="md:col-span-2 row-span-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col overflow-hidden relative cursor-default"
+            >
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -624,22 +651,43 @@ export default function Page() {
               </div>
               <div className="flex flex-col items-center justify-start relative h-32">
                 <div className="flex items-center mb-4 text-sm gap-2">
-                  {" "}
-                  <span className="bg-[#ff9800] bg-opacity-50 text-gray-100 rounded-sm px-1">
-                    @Chip
-                  </span>
-                  <span className="bg-[#7ee0d3] bg-opacity-50 text-gray-100 rounded-sm px-1">
-                    @Squir
-                  </span>
-                  <span className="bg-[#eed606] bg-opacity-60 text-gray-100 rounded-sm px-1">
-                    @Pika
-                  </span>
+                  {[
+                    { name: "@Chip", color: "bg-[#ff9800]" },
+                    { name: "@Squir", color: "bg-[#7ee0d3]" },
+                    { name: "@Pika", color: "bg-[#eed606]" },
+                  ].map((tag, idx) => (
+                    <motion.span
+                      key={tag.name}
+                      initial={{ opacity: 0, scale: 0.5, y: 10 }}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{
+                        delay: 0.5 + idx * 0.1,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
+                      className={`${tag.color} bg-opacity-50 text-gray-100 rounded-sm px-1`}
+                    >
+                      {tag.name}
+                    </motion.span>
+                  ))}
                 </div>
-                <MentionsAutocompleteMock className="scale-110 z-20" />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                >
+                  <MentionsAutocompleteMock className="scale-110 z-20" />
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative ">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.2 }}
+              className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between relative cursor-default"
+            >
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -655,22 +703,41 @@ export default function Page() {
                 </h3>
               </div>
               <div className="flex flex-col items-center justify-start">
-                <ChatMessageMock
-                  message="pika pika!"
-                  name="Chip"
-                  avatar="/assets/ch.png"
-                  showDate={false}
-                  className="w-full pointer-events-none"
-                />
-                <TypingIndicatorMock
-                  name="Pika"
-                  avatar="/assets/pi.png"
-                  className="scale-110"
-                />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                  className="w-full"
+                >
+                  <ChatMessageMock
+                    message="pika pika!"
+                    name="Chip"
+                    avatar="/assets/ch.png"
+                    showDate={false}
+                    className="w-full pointer-events-none"
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.5 }}
+                >
+                  <TypingIndicatorMock
+                    name="Pika"
+                    avatar="/assets/pi.png"
+                    className="scale-110"
+                  />
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between group relative overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.3 }}
+              className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between relative overflow-hidden cursor-default"
+            >
               <div
                 className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
                 style={{
@@ -684,29 +751,41 @@ export default function Page() {
                 <h3 className="text-xl font-medium text-white">
                   Realtime Presence
                 </h3>
-                <div className="select-none absolute top-[61%] left-[6%] z-0 hidden md:block">
-                  <div className="mt-2"></div>
-                </div>
                 <div className="flex flex-col scale-110 items-center justify-center pt-4">
-                  <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.4 }}
+                    className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs"
+                  >
                     <StatusIndicator
                       className="relative w-2 h-2"
                       isOnline={true}
                       isAway={false}
                     />
-                    <span className="text-green-500">Online</span>
-                  </div>
-                  <div className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                    <span className="text-green-500 font-medium">Online</span>
+                    <motion.div
+                      animate={{ opacity: [0.2, 0.5, 0.2] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute inset-0 bg-green-500/5 rounded-lg pointer-events-none"
+                    />
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7, duration: 0.4 }}
+                    className="mt-2 flex py-2.5 px-6 justify-center w-[80%] bg-[#242424] relative items-center gap-2 rounded-lg text-xs"
+                  >
                     <StatusIndicator
                       className="relative w-2 h-2"
                       isOnline={false}
                       isAway={true}
                     />
-                    <span className="text-yellow-400">Away</span>
-                  </div>
+                    <span className="text-yellow-400 font-medium">Away</span>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -715,9 +794,15 @@ export default function Page() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center">
             <div className="max-w-3xl mb-6 flex flex-col ">
-              <h2 className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]">
+              <motion.h2
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+                className="text-5xl md:text-6xl text-white tracking-tight leading-[1.05]"
+              >
                 Theme As You Wish
-              </h2>
+              </motion.h2>
 
               <div className="mt-4 flex flex-col items-center">
                 <div
@@ -754,11 +839,17 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="w-full relative group">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 40 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full relative group"
+            >
               <div className="relative flex items-center justify-center">
                 <FullAppMock className="scale-[0.45] sm:scale-[0.6] md:scale-[0.75] lg:scale-[0.85] xl:scale-[1] origin-center" />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -782,8 +873,24 @@ export default function Page() {
                   Enter
                 </motion.button>
               </div>
-              <AsciiArt size="md" color="text-white/40" className="absolute top-12 right-20" />
-              <AsciiArt size="sm" color="text-white/30" inverted className="absolute top-12 left-48" />
+              <motion.div
+                initial={{ scale: 0.2, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+                className="absolute top-12 right-20"
+              >
+                <AsciiArt size="md" color="text-white/40" />
+              </motion.div>
+              <motion.div
+                initial={{ scale: 0.2, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.15 }}
+                className="absolute top-12 left-48"
+              >
+                <AsciiArt size="sm" color="text-white/30" inverted />
+              </motion.div>
             </div>
 
           </div>
