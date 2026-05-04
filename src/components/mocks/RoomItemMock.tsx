@@ -1,16 +1,24 @@
 "use client";
+import { RoomAvatar } from "@/components/ui/RoomAvatar";
 
-
-
-export const RoomItemMock = ({ name = "Portal", id = "4567", className, isActive = false }: { name?: string; id?: string; className?: string; isActive?: boolean }) => (
+export const RoomItemMock = ({
+  name = "Portal",
+  id = "4567",
+  className,
+  isActive = false,
+}: {
+  name?: string;
+  id?: string;
+  className?: string;
+  isActive?: boolean;
+}) => (
   <div
-    className={`cursor-default relative flex items-center gap-3 mt-2 rounded-[8px] py-2 px-2 bg-[#272727] ${isActive ? "bg-theme-hover" : ""
-      } ${className}`}
+    className={`cursor-default relative flex items-center gap-3 rounded-[8px] py-2 px-2 bg-[#272727] ${
+      isActive ? "bg-theme-hover" : ""
+    } ${className}`}
   >
     <div className="relative flex-shrink-0">
-      <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
-        {name.charAt(0).toUpperCase()}
-      </div>
+      <RoomAvatar name={name} className="w-10 h-10" />
     </div>
 
     <div className="flex items-center flex-1 min-w-0">

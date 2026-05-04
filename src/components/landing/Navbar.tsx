@@ -94,10 +94,11 @@ export function Navbar({ scrolled, handleEnter }: NavbarProps) {
       initial={{ y: 0, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${scrolled || isOpen
-        ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
-        : "bg-transparent border-transparent py-2"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-300 ${
+        scrolled || isOpen
+          ? "bg-[#0a080b] border-b border-white/10 py-0 shadow-2xl"
+          : "bg-transparent border-transparent py-2"
+      }`}
     >
       <div className="flex justify-between items-center px-6 py-4 max-w-6xl w-[90%] mx-auto">
         <div className="flex items-center gap-3">
@@ -109,9 +110,7 @@ export function Navbar({ scrolled, handleEnter }: NavbarProps) {
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-2">
-          {navItems}
-        </div>
+        <div className="hidden md:flex items-center gap-2">{navItems}</div>
 
         {/* Mobile Menu Toggle */}
         <button
@@ -132,14 +131,10 @@ export function Navbar({ scrolled, handleEnter }: NavbarProps) {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden bg-[#0a080b] overflow-hidden"
           >
-            <div className="px-6 py-8 flex flex-col gap-6">
-              {navItems}
-            </div>
+            <div className="px-6 pb-4 flex flex-col gap-6">{navItems}</div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
   );
 }
-
-

@@ -19,7 +19,7 @@ import { ProfileButtonMock } from "./ProfileButtonMock";
 
 export const FullAppMock = ({ className }: { className?: string }) => (
   <div
-    className={`flex w-[300px] md:w-[1200px] h-[600px] md:h-auto md:aspect-video overflow-hidden bg-[#0a080b] rounded-2xl border border-white/5 ${className}`}
+    className={`flex w-full max-w-[1200px] h-[640px] sm:h-[560px] md:aspect-video md:h-auto overflow-hidden bg-[#0a080b] rounded-2xl border border-white/5 ${className}`}
   >
     {/* Left Sidebar */}
     <div className="w-[240px] flex-none bg-theme-surface border-theme-border border-r select-none hidden md:flex flex-col py-2 px-1 md:px-1 text-white items-center font-sans">
@@ -78,21 +78,33 @@ export const FullAppMock = ({ className }: { className?: string }) => (
     </div>
 
     {/* Main Area (Matches production TopBar.tsx and ChatUI.tsx) */}
+
     <div className="flex-1 min-w-0 flex flex-col bg-theme-base overflow-hidden h-full">
       {/* Top Bar */}
+
       <div className="h-12 flex-none z-[60] relative text-white/60 text-sm px-3 md:px-2 w-full justify-between flex items-center gap-2 bg-theme-surface border-theme-border border-b">
-        {/* Mobile Hamburger Button */}
         <div className="md:hidden flex-none p-1">
           <HugeiconsIcon icon={Menu01Icon} className="w-5 h-5 text-gray-400" />
         </div>
 
-        <div className="relative flex-1 md:max-w-[50%] min-w-0">
+        <div className="relative w-full flex-1 md:max-w-[50%] min-w-0">
           <div className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden">
             <HugeiconsIcon
               icon={Search01Icon}
               className="flex-none w-4 h-4 text-gray-400"
             />
-            <div className="px-2 py-1 text-gray-400 truncate">Search messages</div>
+
+            <input
+              type="text"
+              disabled
+              placeholder="Search messages"
+              className="
+        px-2 py-1 bg-transparent outline-none w-full min-w-0
+        text-sm md:text-base
+        placeholder:text-gray-400
+        truncate
+      "
+            />
           </div>
         </div>
 
@@ -113,7 +125,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
               className="w-4 h-4 text-white"
             />
           </div>
-          {/* Mobile Members Button */}
+
           <div className="md:hidden w-8 h-8 p-2 cursor-default rounded-xl flex items-center justify-center hover:bg-theme-hover">
             <HugeiconsIcon
               icon={UserGroupIcon}

@@ -23,7 +23,7 @@ export function BasicsCovered() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden justify-center items-end flex flex-col relative cursor-default"
+            className="md:flex hidden md:col-span-2 row-span-2 bg-[#0f0f0f] rounded-[24px] p-8 md:p-12 overflow-hidden justify-center items-end flex-col relative cursor-default"
           >
             <div
               className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"

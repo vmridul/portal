@@ -33,7 +33,7 @@ export function BeautifullyCrafted({
   return (
     <section
       ref={beautifullyCraftedRef}
-      className="relative mt-36 h-screen text-white overflow-hidden flex items-center justify-center"
+      className="relative mt-12 md:mt-36 h-screen text-white overflow-hidden flex items-center justify-center"
     >
       <div
         className=" relative w-full max-w-5xl h-screen flex items-center justify-center"
@@ -59,7 +59,7 @@ export function BeautifullyCrafted({
           <div className="select-none absolute md:top-[17%] top-[58%] -left-[5%] z-0 md:block">
             <PendingRequestMock />
           </div>
-          <div className="select-none absolute md:top-[54%] bottom-[7%] -left-8 md:-left-[8%] z-0 md:block">
+          <div className="select-none absolute md:top-[56%] bottom-[7%] -left-8 md:-left-[8%] z-0 md:block">
             <CallWidgetMock />
           </div>
           <div className="select-none absolute md:top-[29%] top-[134px] -left-[40%] md:right-[11%] -translate-y-1/2 z-0  md:block">
@@ -69,13 +69,13 @@ export function BeautifullyCrafted({
           <div className="select-none absolute top-[24%] left-[18%] z-0 hidden md:block">
             <ProfileButtonMock />
           </div>
-          <div className="select-none absolute top-[41%] -left-[12%] z-0 hidden md:block">
+          <div className="select-none absolute top-[41%] -left-[18%] z-0 hidden md:block">
             <MessageNotificationMock />
           </div>
           <div className="select-none absolute top-[41%] -right-[12%] z-0 hidden md:block">
             <CallEndedNotificationMock />
           </div>
-          <div className="select-none absolute bottom-[25%] left-1/2 -translate-x-1/2 z-0 hidden md:block">
+          <div className="select-none absolute bottom-[25%] -right-[88px] z-0 hidden md:block w-[800px]">
             <ChatInputBarMock bg="bg-white" />
           </div>
 
@@ -86,7 +86,7 @@ export function BeautifullyCrafted({
             <RecentCallItemMock />
           </div>
 
-          <div className="select-none absolute top-16 md:top-[74%] left-[32%] md:-left-[2%] z-0 lg:block">
+          <div className="select-none absolute top-16 md:top-[76%] left-[32%] md:-left-[0%] z-0 lg:block">
             <CallControlsMock className="scale-90" />
           </div>
 
@@ -94,7 +94,7 @@ export function BeautifullyCrafted({
             <AvatarStatusMock />
           </div>
 
-          <div className="select-none absolute bottom-[11%] md:top-[61%] -right-[6%] md:left-[5%] z-0 md:block">
+          <div className="select-none absolute bottom-[11%] md:top-[63%] -right-[6%] md:left-[5%] z-0 md:block">
             <div className="mt-2">
               <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
                 <StatusIndicator

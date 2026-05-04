@@ -17,7 +17,7 @@ export const ChatInputBarMock = ({
   text?: string;
 }) => (
   <div
-    className={`flex flex-col z-[99] md:w-[50%] md:min-w-[400px] w-[95%] relative md:px-3 px-2 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out ${className}`}
+    className={`flex flex-col z-[99] w-full md:w-1/2 md:max-w-[720px] relative px-2 md:px-3 py-1 md:py-3 rounded-xl bg-theme-surface border border-theme-border transition-all duration-300 ease-in-out ${className}`}
   >
     <div className="flex flex-col gap-2">
       <div className="text-start text-gray-400 w-full rounded-[8px] text-sm bg-transparent py-[10px] md:py-2 px-3 placeholder-[#58565f] resize-none cursor-text">

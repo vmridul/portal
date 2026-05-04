@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon } from "@hugeicons/core-free-icons";
 import type { UserRoom } from "@/lib/types/room";
 import { useColor } from "@/contexts/colorContext";
+import { RoomAvatar } from "@/components/ui/RoomAvatar";
 
 interface RoomItemProps {
   room: UserRoom;
@@ -39,9 +40,7 @@ export const RoomItem = memo(function RoomItem({
       }`}
     >
       <div className="relative flex-shrink-0">
-        <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
-          {roomName?.charAt(0).toUpperCase()}
-        </div>
+        <RoomAvatar name={roomName} className="w-10 h-10" />
         {hasActiveCall && (
           <HugeiconsIcon
             icon={CallIcon}

@@ -18,7 +18,6 @@ import {
   Footer,
 } from "@/components/landing";
 
-
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -89,8 +88,6 @@ export default function Page() {
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-
-
   return (
     <div
       ref={containerRef}
@@ -131,14 +128,11 @@ export default function Page() {
 
       <BasicsCovered />
 
-
       <Theming colorDialog={colorDialog} setColorDialog={setColorDialog} />
 
       <CTA handleEnter={handleEnter} />
 
       <Footer />
-
-
     </div>
   );
 }

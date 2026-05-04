@@ -16,6 +16,7 @@ import { ListSkeleton } from "@/components/skeletons/ListSkeleton";
 import { useRooms } from "@/contexts/roomContext";
 import { useRoomMembers } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
+import { RoomAvatar } from "@/components/ui/RoomAvatar";
 
 function useRoomDetails(roomId: string) {
   const {
@@ -63,9 +64,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
         ) : (
           <div className="relative w-[268px] flex-none flex items-center justify-between mt-2 rounded-[8px] py-2 px-2">
             <div className="flex gap-3 items-center">
-              <div className="rounded-[12px] font-medium text-lg text-[#585858] flex items-center justify-center bg-white opacity-90 w-10 h-10">
-                {roomName?.charAt(0).toUpperCase()}
-              </div>
+              <RoomAvatar name={roomName} className="w-10 h-10" />
               <div className="flex flex-col rounded-[8px]">
                 <span className="truncate max-w-[120px]">{roomName}</span>
                 <span className="text-white/40 text-xs">ID: {room_id}</span>

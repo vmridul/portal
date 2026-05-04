@@ -13,28 +13,24 @@ const goodstuff = [
     title: "Rooms & Friends",
     desc: "Chat with friends or join a room to connect in one place.",
     component: (
-      <div className=" relative h-32 w-full flex items-center justify-center">
-        <RoomItemMock
-          name="Projects"
-          id="4567"
-          className="scale-110 w-[210px] absolute -top-3 left-[-3%] z-10"
-        />
+      <div className="mx-auto grid w-full max-w-[560px] grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-2 lg:max-w-[640px]">
+        <RoomItemMock name="Projects" id="4567" className="w-full" />
         <RoomItemMock
           name="Roooom"
           id="1345"
-          className="scale-110 w-[210px] absolute -top-3 right-[-3%] z-10"
+          className="md:flex hidden w-full"
         />
         <FriendItemMock
           name="Pika"
           avatar="/assets/pi.png"
           message="You: pika pika!"
-          className="scale-110 h-16 w-[210px] absolute top-24 left-1 z-20"
+          className="w-full"
         />
         <FriendItemMock
           name="Charm"
           avatar="/assets/ch.png"
           message="im burning"
-          className="scale-110 h-16 w-[210px] absolute top-24 right-1 z-20"
+          className="w-full"
         />
       </div>
     ),
@@ -43,8 +39,8 @@ const goodstuff = [
     title: "Voice & Video Calls",
     desc: "Make individual or group calls and switch between them seamlessly.",
     component: (
-      <div className=" flex items-center justify-center">
-        <ActiveCallMock className="w-[400px] h-[150px] pt-10 scale:150" />
+      <div className="flex mt-8 w-full items-center justify-center">
+        <ActiveCallMock className="origin-center " />
       </div>
     ),
   },
@@ -52,14 +48,14 @@ const goodstuff = [
     title: "Notifications",
     desc: "Stay updated with real-time notifications and never miss a beat.",
     component: (
-      <div className="flex flex-col scale-[1.2] items-center justify-center">
+      <div className="w-full max-w-[350px]">
         <MessageNotificationMock
           name="Bulb"
           avatar="/assets/bu.png"
           message="Hi, what's up?"
           room="pokemon"
           stacked={true}
-          className="w-96 mt-8"
+          className="mt-8"
         />
       </div>
     ),
@@ -68,20 +64,20 @@ const goodstuff = [
 
 export function GoodStuff() {
   return (
-    <section className=" text-white px-6 mt-[200px]">
-      <div className="max-w-6xl mx-auto flex">
-        <div className="w-1/2">
-          <div className="sticky top-48">
-            <h2 className="text-5xl md:text-6xl leading-tight">
+    <section className="mt-24 px-4 text-white sm:px-6 md:mt-32 lg:mt-[200px]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 lg:flex-row lg:gap-12">
+        <div className="md:text-start text-center w-full lg:w-1/2">
+          <div className="lg:sticky lg:top-48">
+            <h2 className="text-4xl leading-tight md:text-6xl">
               The Good <br /> Stuff
             </h2>
           </div>
         </div>
 
-        <div className="w-1/2 py-0">
-          <div className="relative rounded-[40px] bg-white/[0.01] p-3">
+        <div className="w-full lg:w-1/2 py-0">
+          <div className="relative rounded-[32px] bg-white/[0.01] p-2 sm:rounded-[40px] sm:p-3">
             <div
-              className="absolute inset-0 rounded-[40px] border border-white/10 pointer-events-none"
+              className="pointer-events-none absolute inset-0 rounded-[32px] border border-white/10 sm:rounded-[40px]"
               style={{
                 WebkitMaskImage:
                   "linear-gradient(to bottom, transparent, black, transparent)",
@@ -90,7 +86,7 @@ export function GoodStuff() {
               }}
             />
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 md:gap-4">
               {goodstuff.map((item, i) => (
                 <motion.div
                   key={i}
@@ -102,10 +98,10 @@ export function GoodStuff() {
                     delay: i * 0.1,
                   }}
                   viewport={{ once: true }}
-                  className="relative rounded-[32px] bg-[#0a0a0d]"
+                  className="relative rounded-[28px] bg-[#0a0a0d] sm:rounded-[32px]"
                 >
                   <div
-                    className="absolute inset-0 rounded-[32px] border border-white/10 pointer-events-none"
+                    className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/10 sm:rounded-[32px]"
                     style={{
                       WebkitMaskImage:
                         "linear-gradient(to bottom, transparent, black, transparent)",
@@ -114,16 +110,20 @@ export function GoodStuff() {
                     }}
                   />
 
-                  <div className="overflow-hidden relative p-12 min-h-[350px] flex flex-col">
+                  <div className="relative flex flex-col overflow-hidden  p-8 lg:p-12">
                     <div className="flex flex-col justify-start">
-                      <h3 className="text-2xl font-medium text-white tracking-tight">
+                      <h3 className="text-xl font-medium tracking-tight text-white sm:text-2xl">
                         {item.title}
                       </h3>
-                      <p className="mt-4 text-lg text-[#888] leading-relaxed">
+                      <p className="mt-3 text-base leading-relaxed text-[#888] sm:mt-4 sm:text-lg">
                         {item.desc}
                       </p>
                     </div>
-                    <div className="flex-1 flex items-center justify-center w-full">
+                    <div
+                      className={`flex w-full items-center justify-center ${
+                        item.title === "Rooms & Friends" ? "mt-4 sm:mt-6" : ""
+                      }`}
+                    >
                       {item.component}
                     </div>
                   </div>

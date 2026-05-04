@@ -18,6 +18,7 @@ import {
   Checkmark,
   CircleIcon,
 } from "@hugeicons/core-free-icons";
+import { RoomAvatar } from "@/components/ui/RoomAvatar";
 
 const NOTIFICATION_OPTIONS = [
   { value: "all", label: "All messages" },
@@ -88,7 +89,10 @@ export function SidebarInfo({
 
   const handleNotificationChange = async (preference: string) => {
     try {
-      const result = await setNotificationPreference({ room_id: id, preference });
+      const result = await setNotificationPreference({
+        room_id: id,
+        preference,
+      });
       if (result.error) {
         toast.error(result.error);
         return;
@@ -119,9 +123,10 @@ export function SidebarInfo({
       <div className="flex-1 overflow-y-auto no-scrollbar p-6 flex flex-col gap-8">
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="w-20 h-20">
-            <div className="w-full h-full rounded-[24px] bg-white text-theme-base flex items-center justify-center text-3xl font-bold shadow-xl">
-              {room?.room_name?.charAt(0).toUpperCase()}
-            </div>
+            <RoomAvatar
+              name={room?.room_name}
+              className="w-20 h-20 rounded-[24px] text-xl"
+            />
           </div>
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-bold text-white">{room?.room_name}</h2>

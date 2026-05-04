@@ -47,7 +47,7 @@ export function Theming({ colorDialog, setColorDialog }: ThemingProps) {
                       onClick={() => setColorDialog(false)}
                     />
                     <div
-                      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] p-4 bg-[#0a080b] border border-white/10 rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200"
+                      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] p-4 bg-[#101010] border border-white/10 rounded-xl shadow-2xl animate-in fade-in zoom-in duration-200"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <HexColorPicker color={color} onChange={setColor} />
@@ -71,8 +71,8 @@ export function Theming({ colorDialog, setColorDialog }: ThemingProps) {
             transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="w-full relative group"
           >
-            <div className="flex items-center justify-center">
-              <FullAppMock className="scale-[0.85] sm:scale-1 md:scale-[0.75] lg:scale-[0.85] xl:scale-[1] origin-center" />
+            <div className="flex items-center justify-center px-4 sm:px-6">
+              <FullAppMock className="mx-auto" />
             </div>
           </motion.div>
         </div>
