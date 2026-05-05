@@ -246,7 +246,7 @@ export const UserInfoTab = () => {
               minLength={3}
               maxLength={16}
               value={newUsername || ""}
-              autoComplete="off"
+              autoComplete="username"
               rightElement={
                 <Button
                   disabled={newUsername === user?.username}
