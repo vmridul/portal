@@ -10,10 +10,10 @@ import {
 
 const goodstuff = [
   {
-    title: "Rooms & Friends",
+    title: "Personal & Group Chats",
     desc: "Chat with friends or join a room to connect in one place.",
     component: (
-      <div className="mx-auto grid w-full max-w-[560px] grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-2 lg:max-w-[640px]">
+      <div className="mx-auto grid mt-4 w-full max-w-[560px] grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-2 lg:max-w-[640px]">
         <RoomItemMock name="Projects" id="4567" className="w-full" />
         <RoomItemMock
           name="Roooom"
@@ -119,11 +119,7 @@ export function GoodStuff() {
                         {item.desc}
                       </p>
                     </div>
-                    <div
-                      className={`flex w-full items-center justify-center ${
-                        item.title === "Rooms & Friends" ? "mt-4 sm:mt-6" : ""
-                      }`}
-                    >
+                    <div className={`flex w-full items-center justify-center`}>
                       {item.component}
                     </div>
                   </div>

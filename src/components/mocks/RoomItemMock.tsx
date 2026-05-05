@@ -13,7 +13,7 @@ export const RoomItemMock = ({
   isActive?: boolean;
 }) => (
   <div
-    className={`cursor-default relative flex items-center gap-3 rounded-[8px] py-2 px-2 bg-[#272727] ${
+    className={`cursor-default min-w-[190px] relative flex items-center gap-3 rounded-[8px] py-2 px-2 bg-[#272727] ${
       isActive ? "bg-theme-hover" : ""
     } ${className}`}
   >

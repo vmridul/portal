@@ -70,7 +70,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
           className="w-full bg-theme-hover border-none shadow-none mb-2"
         />
         <ProfileButtonMock
-          name="sq"
+          name="Squir"
           avatar="/assets/sq.png"
           className="w-full bg-theme-hover"
         />
@@ -136,7 +136,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
       </div>
 
       {/* Messages */}
-      <div className="flex-1 min-h-0 p-0 space-y-0 overflow-y-auto no-scrollbar">
+      <div className="flex-1 min-h-0 p-0 space-y-0 overflow-y-hidden no-scrollbar">
         <ChatMessageMock
           name="Pika"
           avatar="/assets/pi.png"
@@ -209,7 +209,10 @@ export const FullAppMock = ({ className }: { className?: string }) => (
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="px-3 ">
           <div className="flex justify-between items-center  text-white/40 px-1"></div>
-          <RoomMembersMock className="bg-transparent border-none p-0" />
+          <RoomMembersMock
+            memberCount={4}
+            className="bg-transparent border-none p-0"
+          />
         </div>
       </div>
     </div>

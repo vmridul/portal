@@ -4,8 +4,20 @@ import Image from "next/image";
 import { Message01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
-export const UserProfilePopupMock = ({ name = "sq", avatar = "/assets/sq.png", joinedDate = "Joined April 2024", className }: { name?: string; avatar?: string; joinedDate?: string; className?: string }) => (
-  <div className={`rounded-xl border border-[#242424] bg-[#0a0a0a] shadow-2xl backdrop-blur-md ${className || "w-64"}`}>
+export const UserProfilePopupMock = ({
+  name = "Squir",
+  avatar = "/assets/sq.png",
+  joinedDate = "Joined April 2024",
+  className,
+}: {
+  name?: string;
+  avatar?: string;
+  joinedDate?: string;
+  className?: string;
+}) => (
+  <div
+    className={`rounded-xl border border-[#242424] bg-[#0a0a0a] shadow-2xl backdrop-blur-md ${className || "w-64"}`}
+  >
     <div className="flex flex-col items-center p-4 gap-3">
       <div className="relative">
         <Image
@@ -17,7 +29,9 @@ export const UserProfilePopupMock = ({ name = "sq", avatar = "/assets/sq.png", j
         />
       </div>
       <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="text-base font-semibold text-white truncate max-w-[200px]">{name}</h3>
+        <h3 className="text-base font-semibold text-white truncate max-w-[200px]">
+          {name}
+        </h3>
         <span className="text-xs text-gray-400">{joinedDate}</span>
       </div>
       <div className="flex items-center gap-2 w-full mt-1">

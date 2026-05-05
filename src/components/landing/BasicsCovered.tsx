@@ -11,7 +11,7 @@ import { StatusIndicator } from "@/components/ui/StatusIndicator";
 
 export function BasicsCovered() {
   return (
-    <section className="relative py-24 text-white">
+    <section className="relative py-12 md:py-24 text-white">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl md:text-6xl text-center mb-6 tracking-tight">
           Basics Covered
@@ -117,7 +117,7 @@ export function BasicsCovered() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <MentionsAutocompleteMock className="md:scale-110 scale-[0.75] z-20" />
+                <MentionsAutocompleteMock className="md:scale-110 scale-[0.75] z-20 shadow-2xl" />
               </motion.div>
             </div>
           </motion.div>
@@ -131,7 +131,7 @@ export function BasicsCovered() {
               ease: [0.21, 0.47, 0.32, 0.98],
               delay: 0.2,
             }}
-            className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 flex flex-col justify-between relative cursor-default"
+            className="flex-1 bg-[#0f0f0f] rounded-[24px] p-8 px-2 flex flex-col justify-between relative cursor-default"
           >
             <div
               className="absolute inset-0 rounded-[24px] border border-white/10 pointer-events-none"
@@ -142,24 +142,23 @@ export function BasicsCovered() {
                   "linear-gradient(to bottom, black 0%, transparent 15%)",
               }}
             />
-            <div className="space-y-4 relative z-10">
+            <div className="space-y-0 px-6 relative z-10">
               <h3 className="text-xl font-medium text-white">
                 Typing Indicators
               </h3>
             </div>
-            <div className="flex flex-col items-center justify-start">
+            <div className="flex flex-col mr-4 items-center justify-start">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.5 }}
-                className="w-full"
               >
                 <ChatMessageMock
                   message="pika pika!"
-                  name="Chip"
+                  name="Charm"
                   avatar="/assets/ch.png"
                   showDate={false}
-                  className="w-full md:block hidden pointer-events-none"
+                  className="w-full md:flex hidden pointer-events-none"
                 />
               </motion.div>
               <motion.div

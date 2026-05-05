@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 
-export const MentionsAutocompleteMock = ({ className }: { className?: string }) => {
+export const MentionsAutocompleteMock = ({
+  className,
+}: {
+  className?: string;
+}) => {
   const users = [
     {
       user_id: "1",
@@ -11,7 +15,7 @@ export const MentionsAutocompleteMock = ({ className }: { className?: string }) 
     },
     {
       user_id: "2",
-      username: "chip",
+      username: "charm",
       avatar: "/assets/ch.png",
     },
     {
@@ -29,8 +33,9 @@ export const MentionsAutocompleteMock = ({ className }: { className?: string }) 
       {users.map((user, index) => (
         <div
           key={user.user_id}
-          className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-t-lg cursor-pointer ${index === 0 ? "bg-white/10" : ""
-            }`}
+          className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-t-lg cursor-pointer ${
+            index === 0 ? "bg-white/10" : ""
+          }`}
         >
           <div className="relative w-8 h-8 flex-shrink-0">
             <Image
@@ -40,7 +45,9 @@ export const MentionsAutocompleteMock = ({ className }: { className?: string }) 
               className="rounded-[12px] object-cover"
             />
           </div>
-          <span className="text-sm text-gray-200 font-medium">{user.username}</span>
+          <span className="text-sm text-gray-200 font-medium">
+            {user.username}
+          </span>
         </div>
       ))}
     </div>

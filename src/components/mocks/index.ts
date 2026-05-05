@@ -16,3 +16,4 @@ export * from "./TypingIndicatorMock";
 export * from "./FullAppMock";
 export * from "./MentionsAutocompleteMock";
 export * from "./CallControlsMock";
+export * from "./ParticipantCardMock";

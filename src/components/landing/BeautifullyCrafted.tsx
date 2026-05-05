@@ -2,13 +2,18 @@
 
 import { motion, MotionValue } from "framer-motion";
 import { RefObject } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { UserAdd01Icon, Upload01Icon } from "@hugeicons/core-free-icons";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
+import { Button } from "@/components/ui/button";
+import { TooltipWrapper } from "@/components/ui/tooltip";
 import {
   RoomItemMock,
   FriendItemMock,
   PendingRequestMock,
   CallWidgetMock,
   RoomMembersMock,
+  ParticipantCardMock,
   ProfileButtonMock,
   MessageNotificationMock,
   CallEndedNotificationMock,
@@ -33,101 +38,162 @@ export function BeautifullyCrafted({
   return (
     <section
       ref={beautifullyCraftedRef}
-      className="relative mt-12 md:mt-36 h-screen text-white overflow-hidden flex items-center justify-center"
+      className="relative mt-0 md:mt-36 h-screen text-white overflow-x-auto md:overflow-visible flex items-center justify-center"
+      style={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}
     >
+      {/* Hide scrollbars on webkit browsers */}
+      <style>{`
+        [data-scroll-hide]::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
       <div
-        className=" relative w-full max-w-5xl h-screen flex items-center justify-center"
+        className="relative w-full max-w-none sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl h-screen flex items-center justify-center overflow-x-auto md:overflow-visible px-2 md:px-4 lg:px-0"
         style={{
           WebkitMaskImage:
             "radial-gradient(circle, black 35%, transparent 85%)",
           maskImage: "radial-gradient(circle, black 35%, transparent 85%)",
         }}
       >
+        {/* Centered label — sits above the grid in z */}
+        <span className="selection:bg-white/10 text-2xl md:text-7xl text-white hidden font-semibold leading-tight text-center absolute z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)] pointer-events-none">
+          Beautifully Crafted
+          <br />
+          Interface
+        </span>
+
         <motion.div
           style={{
             opacity: beautifullyCraftedOpacity,
             filter: beautifullyCraftedBlur,
           }}
-          className="absolute inset-0 z-0 pointer-events-none"
+          className="select-none pointer-events-none z-0 w-full flex flex-col gap-2 md:gap-2 items-center justify-center px-2 md:px-0 relative"
         >
-          <div className="select-none w-[224px] absolute top-[32%] left-[18%] z-0 md:block">
-            <RoomItemMock />
-          </div>
-          <div className="select-none absolute md:top-[30%] top-36 -right-[12%] md:right-[11%] z-0  md:block">
-            <FriendItemMock />
-          </div>
-          <div className="select-none absolute md:top-[17%] top-[58%] -left-[5%] z-0 md:block">
-            <PendingRequestMock />
-          </div>
-          <div className="select-none absolute md:top-[56%] bottom-[7%] -left-8 md:-left-[8%] z-0 md:block">
-            <CallWidgetMock />
-          </div>
-          <div className="select-none absolute md:top-[29%] top-[134px] -left-[40%] md:right-[11%] -translate-y-1/2 z-0  md:block">
-            <RoomMembersMock />
-          </div>
+          {/* ROW 1: ParticipantCard, PendingRequest, RoomMembers, UserProfile, Status Indicators */}
+          <div
+            data-scroll-hide
+            className="absolute md:relative top-32 md:top-0 left-0 right-0 w-full flex flex-row overflow-x-auto md:overflow-visible md:flex-row justify-start md:justify-center items-end gap-2 md:gap-3 lg:gap-2 md:pt-0"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {/* Mobile only: PendingRequest + RoomMembers */}
+            <div className="-ml-[50px] flex md:hidden flex-row gap-2 flex-shrink-0">
+              <PendingRequestMock />
+              <RoomMembersMock />
+              <UserProfilePopupMock />
+            </div>
 
-          <div className="select-none absolute top-[24%] left-[18%] z-0 hidden md:block">
-            <ProfileButtonMock />
-          </div>
-          <div className="select-none absolute top-[41%] -left-[18%] z-0 hidden md:block">
-            <MessageNotificationMock />
-          </div>
-          <div className="select-none absolute top-[41%] -right-[12%] z-0 hidden md:block">
-            <CallEndedNotificationMock />
-          </div>
-          <div className="select-none absolute bottom-[25%] -right-[88px] z-0 hidden md:block w-[800px]">
-            <ChatInputBarMock bg="bg-white" />
-          </div>
-
-          <div className="select-none absolute top-[59%] right-[4%] z-0 hidden lg:block">
-            <UserProfilePopupMock />
-          </div>
-          <div className="select-none absolute top-[15%] left-[41%] z-0 hidden lg:block">
-            <RecentCallItemMock />
-          </div>
-
-          <div className="select-none absolute top-16 md:top-[76%] left-[32%] md:-left-[0%] z-0 lg:block">
-            <CallControlsMock className="scale-90" />
-          </div>
-
-          <div className="select-none absolute top-[53%] -right-[14%] md:left-[17%] z-0  md:block">
-            <AvatarStatusMock />
-          </div>
-
-          <div className="select-none absolute bottom-[11%] md:top-[63%] -right-[6%] md:left-[5%] z-0 md:block">
-            <div className="mt-2">
-              <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                <StatusIndicator
-                  className="relative w-2 h-2"
-                  isOnline={true}
-                  isAway={false}
-                />
-                <span className="text-green-500">Online</span>
-              </div>
-              <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
-                <StatusIndicator
-                  className="relative w-2 h-2"
-                  isOnline={false}
-                  isAway={true}
-                />
-                <span className="text-yellow-400">Away</span>
+            {/* Desktop only */}
+            <div className="hidden md:flex flex-row gap-2 items-end">
+              <ParticipantCardMock />
+              <PendingRequestMock />
+              <RoomMembersMock />
+              <UserProfilePopupMock />
+            </div>
+            <div className="select-none flex-shrink-0 hidden md:block">
+              <div className="mt-2">
+                <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                  <StatusIndicator
+                    className="relative w-2 h-2"
+                    isOnline={true}
+                    isAway={false}
+                  />
+                  <span className="text-green-500">Online</span>
+                </div>
+                <div className="mt-2 flex py-2.5 px-6 max-w-28 justify-center bg-[#242424] relative items-center gap-2 rounded-lg text-xs">
+                  <StatusIndicator
+                    className="relative w-2 h-2"
+                    isOnline={false}
+                    isAway={true}
+                  />
+                  <span className="text-yellow-400">Away</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="absolute top-[17%] left-[19%] z-0 text-4xl select-none hidden md:block">
-            👀
+          {/* ROW 2: div1 (notification + friend) | Heading | div2 (callended + widget) */}
+          <div className="hidden md:flex w-full flex-col md:flex-row justify-center items-center gap-2 md:gap-2">
+            {/* Left div: MessageNotification + FriendItem */}
+            <div className="hidden md:flex flex-col gap-2 md:gap-2 flex-shrink-0 items-end">
+              <MessageNotificationMock />
+              <FriendItemMock />
+            </div>
+
+            {/* Center Heading */}
+            <div className="text-center flex-shrink-0 mx-4">
+              <span className="text-3xl md:text-6xl text-white font-semibold leading-tight drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                Beautifully Crafted
+                <br />
+                Interface
+              </span>
+            </div>
+
+            {/* Right div: CallEnded + CallWidget */}
+            <div className="hidden md:flex flex-col gap-2 md:gap-2 flex-shrink-0">
+              <CallEndedNotificationMock />
+              <CallWidgetMock />
+            </div>
           </div>
-          <div className="absolute top-[17%] left-[23%] z-0 text-4xl select-none hidden md:block">
-            😁
+
+          {/* Mobile Only: Centered Heading */}
+          <div className="md:hidden text-center w-full py-8">
+            <span className="text-3xl text-white font-semibold leading-tight drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              Beautifully Crafted
+              <br />
+              Interface
+            </span>
+          </div>
+
+          {/* ROW 3: CallControls, ChatInputBar, AvatarStatus, Upload, AddFriend */}
+          <div
+            data-scroll-hide
+            className="absolute md:relative bottom-32 md:bottom-0 left-0 right-0 w-full flex flex-row overflow-x-auto md:overflow-visible md:flex-row justify-start md:justify-center items-start gap-2 md:gap-3 lg:gap-2 md:pb-0"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {/* Mobile only: CallEnded + MessageNotification */}
+            <div className="-ml-[50px] flex md:hidden flex-row gap-2 items-end">
+              <CallEndedNotificationMock className="min-w-[250px]" />
+              <MessageNotificationMock className="min-w-[300px]" />
+              <ChatInputBarMock bg="bg-white" className="w-72" />
+            </div>
+
+            {/* Desktop only */}
+            <div className="hidden md:flex flex-col gap-2 flex-shrink-0 items-end">
+              <CallControlsMock />
+              <ProfileButtonMock />
+            </div>
+            <div className="hidden md:flex flex-shrink-0">
+              <ChatInputBarMock bg="bg-white" className="w-[350px]" />
+            </div>
+            <div className="hidden md:flex flex-shrink-0">
+              <AvatarStatusMock />
+            </div>
+            <div className="hidden md:flex flex-col gap-2 flex-shrink-0 items-start">
+              <div className="flex flex-row gap-2 items-center">
+                <Button
+                  className="bg-[#212121] text-white/80"
+                  variant="other"
+                  size="iconLg"
+                >
+                  <HugeiconsIcon icon={Upload01Icon} className="w-7 h-7" />
+                </Button>
+                <div className="flex flex-col gap-2 flex-shrink-0 items-center">
+                  <button className="flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px] bg-white text-black">
+                    <HugeiconsIcon icon={UserAdd01Icon} className="w-4 h-4" />
+                    <span>Add friend</span>
+                  </button>
+                  <span className="px-5 py-1 rounded-full bg-theme-border text-xs text-gray-300">
+                    26 April 2026
+                  </span>
+                </div>
+              </div>
+              <RoomItemMock />
+            </div>
           </div>
         </motion.div>
-
-        <span className="selection:bg-white/10 text-2xl md:text-7xl font-semibold leading-tight text-center relative z-10 drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-          Beautifully Crafted
-          <br />
-          Interface
-        </span>
       </div>
     </section>
   );

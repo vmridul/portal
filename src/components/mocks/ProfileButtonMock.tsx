@@ -5,8 +5,18 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Logout01Icon } from "@hugeicons/core-free-icons";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 
-export const ProfileButtonMock = ({ name = "ch", avatar = "/assets/ch.png", className }: { name?: string; avatar?: string; className?: string }) => (
-  <div className={`flex justify-between items-center cursor-default bg-[#272727] ease-in-out rounded-xl w-56 px-2 py-2 ${className}`}>
+export const ProfileButtonMock = ({
+  name = "Charm",
+  avatar = "/assets/ch.png",
+  className,
+}: {
+  name?: string;
+  avatar?: string;
+  className?: string;
+}) => (
+  <div
+    className={`flex justify-between items-center cursor-default bg-[#272727] ease-in-out rounded-xl w-56 px-2 py-2 ${className}`}
+  >
     <div className="flex gap-4 items-center">
       <div className="relative">
         <Image
@@ -19,11 +29,9 @@ export const ProfileButtonMock = ({ name = "ch", avatar = "/assets/ch.png", clas
         <StatusIndicator isOnline={true} isAway={false} />
       </div>
       <div className="flex flex-col text-sm text-left">
-        <span className="truncate max-w-[120px] text-white">
-          {name}
-        </span>
+        <span className="truncate max-w-[120px] text-white">{name}</span>
         <span className="text-[#aaaaaa] font-extralight cursor-default text-xs">
-          user_2h7...
+          u8PoR_t4ALz1...
         </span>
       </div>
     </div>
