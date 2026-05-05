@@ -65,15 +65,10 @@ export default function FriendsList({
   return (
     <>
       <div className="h-screen flex flex-col">
-        <div className="flex mt-3 ml-3 mr-3 gap-0 items-center justify-between">
+        <div className="flex mt-3 ml-3 mr-3 gap-3 items-center justify-between">
           <div
-            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === "ArrowDown") e.preventDefault();
-              if (e.key === "ArrowUp") e.preventDefault();
-              if (e.key === "Enter") e.preventDefault();
-            }}
             onClick={(e) => e.stopPropagation()}
-            className="flex text-sm px-3 w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
+            className="flex text-sm px-3 w-full md:max-w-[50%] items-center text-white/60 rounded-[6px] bg-theme-hover"
           >
             <HugeiconsIcon
               icon={Search01Icon}
@@ -89,7 +84,7 @@ export default function FriendsList({
           <button
             onClick={() => setModal("ADD_FRIEND")}
             style={{ backgroundColor: color, color: textColor }}
-            className="flex text-sm items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px]"
+            className="flex text-sm min-w-fit items-center gap-1 ease-in-out hover:brightness-110 hover:opacity-90 px-4 py-1 rounded-[8px]"
           >
             <HugeiconsIcon icon={UserAdd01Icon} className="w-4 h-4" />
             <span>Add friend</span>
@@ -164,11 +159,10 @@ export default function FriendsList({
                         </span>
                         {unreadCount > 0 && (
                           <span
-                            className={`mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${
-                              hasUnreadMentions
-                                ? "bg-red-500"
-                                : "bg-theme-accent"
-                            }`}
+                            className={`mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${hasUnreadMentions
+                              ? "bg-red-500"
+                              : "bg-theme-accent"
+                              }`}
                             style={{
                               color: hasUnreadMentions ? "#ffffff" : textColor,
                             }}

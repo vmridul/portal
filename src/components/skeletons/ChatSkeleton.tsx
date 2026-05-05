@@ -2,7 +2,7 @@ import { Skeleton } from "./Skeleton";
 
 export const ChatSkeleton = () => {
   return (
-    <div className="flex flex-col gap-10 py-8 px-14 w-full h-full">
+    <div className="flex flex-col gap-10 py-8 md:px-10 px-6 w-full h-full">
       {[
         [500, 400, 600],
         [500, 400],

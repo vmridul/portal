@@ -35,7 +35,7 @@ export function FormDialog({
 }: FormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-96 max-w-[w-full]">
+      <DialogContent className="w-full sm:w-96">
         <form
           onSubmit={(e) => {
             e.preventDefault();

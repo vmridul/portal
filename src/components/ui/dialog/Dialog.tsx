@@ -19,7 +19,8 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 bg-black/35 z-[9998]",
+      "fixed inset-0 bg-black/40 z-[9998]",
+      "duration-300 ease-in-out",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
@@ -38,14 +39,21 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-[9999] w-full max-w-lg",
-        "translate-x-[-50%] translate-y-[-50%] gap-4",
-        "border border-theme-border bg-theme-surface p-6 text-white shadow-lg",
-        "rounded-xl",
+        "fixed z-[9999] grid w-full gap-4 border border-theme-border bg-theme-surface p-6 text-white shadow-lg",
+        "duration-300 ease-in-out",
+        // Bottom sheet for mobile
+        "inset-x-0 bottom-0 top-auto translate-y-0 rounded-t-[32px] border-b-0",
+        "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom",
+        "data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom",
+        // Centered dialog for desktop
+        "sm:left-[50%] sm:top-[50%] sm:bottom-auto sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-2xl sm:border-b",
+        "sm:data-[state=open]:zoom-in-95 sm:data-[state=open]:slide-in-from-left-1/2 sm:data-[state=open]:slide-in-from-top-[48%]",
+        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=closed]:slide-out-to-left-1/2 sm:data-[state=closed]:slide-out-to-top-[48%]",
         className,
       )}
       {...props}
     >
+      <div className="mx-auto h-1.5 w-12 rounded-full bg-white/10 sm:hidden -mt-2 mb-2" />
       {children}
     </DialogPrimitive.Content>
   </DialogPortal>
@@ -72,7 +80,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-0",
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 sm:gap-0",
       className,
     )}
     {...props}

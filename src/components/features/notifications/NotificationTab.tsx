@@ -37,7 +37,7 @@ export default function NotificationTab() {
     <>
       <button
         onClick={() => setMobileMenu(!mobileMenu)}
-        className={`z-[9999] ${isOnFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
+        className={`z-[1400] ${isOnFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
       >
         <HugeiconsIcon icon={Notification01Icon} className="text-white/90 ml-1 w-4 h-4" />
       </button>

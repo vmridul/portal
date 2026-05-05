@@ -76,7 +76,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
         <Popover.Root open={isSearchOpen} onOpenChange={setIsSearchOpen}>
           <Popover.Trigger asChild>
-            <div className="relative flex-1 md:max-w-[50%] min-w-0 outline-none">
+            <div className="relative flex-1 md:max-w-[50%] outline-none">
               <div className="flex px-3 py-1 items-center text-gray-400 rounded-[6px] bg-theme-base overflow-hidden outline-none">
                 <HugeiconsIcon
                   icon={Search01Icon}
@@ -122,7 +122,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
 
           {searchResults.length > 0 && (
             <Popover.Content
-              className="w-[var(--radix-popover-trigger-width)] max-h-[200px] overflow-scroll text-sm bg-theme-base rounded-[8px] p-2 z-[3000] border border-theme-border shadow-xl"
+              className="min-w-[280px] w-[var(--radix-popover-trigger-width)] max-h-[200px] overflow-scroll text-sm bg-theme-base rounded-[8px] p-2 z-[3000] border border-theme-border shadow-xl"
               side="bottom"
               align="start"
               sideOffset={4}
@@ -136,9 +136,8 @@ export default function TopBar({ room_id }: { room_id: string }) {
                     e.preventDefault();
                     handleSearchClick(index, result._id, result._creationTime);
                   }}
-                  className={`hover:bg-theme-hover ${
-                    selectedResult === index ? "bg-theme-hover" : ""
-                  } flex items-center justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
+                  className={`hover:bg-theme-hover ${selectedResult === index ? "bg-theme-hover" : ""
+                    } flex items-center justify-between rounded-[6px] px-4 p-2 cursor-pointer`}
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-white/40">
@@ -163,11 +162,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 e.stopPropagation();
                 toggleSidebar("media");
               }}
-              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
-                isSidebarOpen && sidebarTab === "media"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
-              }`}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "media"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+                }`}
             >
               <HugeiconsIcon
                 icon={Image01Icon}
@@ -182,27 +180,24 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 e.stopPropagation();
                 toggleSidebar("calls");
               }}
-              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${
-                isSidebarOpen && sidebarTab === "calls"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
-              }`}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors relative ${isSidebarOpen && sidebarTab === "calls"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+                }`}
             >
               <HugeiconsIcon
                 icon={CallIcon}
-                className={`w-4 h-4 transition-colors ${
-                  isSidebarOpen && sidebarTab === "calls"
-                    ? "text-white"
-                    : "text-gray-300"
-                }`}
+                className={`w-4 h-4 transition-colors ${isSidebarOpen && sidebarTab === "calls"
+                  ? "text-white"
+                  : "text-gray-300"
+                  }`}
               />
               {activeCalls.length > 0 && (
                 <span
-                  className={`absolute top-1 right-1 w-2 h-2 rounded-full ${
-                    isInCall && actualRoomId === room_id
-                      ? "bg-red-500"
-                      : "bg-green-500"
-                  }`}
+                  className={`absolute top-1 right-1 w-2 h-2 rounded-full ${isInCall && actualRoomId === room_id
+                    ? "bg-red-500"
+                    : "bg-green-500"
+                    }`}
                 />
               )}
             </div>
@@ -214,11 +209,10 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 e.stopPropagation();
                 toggleSidebar("info");
               }}
-              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${
-                isSidebarOpen && sidebarTab === "info"
-                  ? "bg-theme-hover"
-                  : "hover:bg-theme-hover"
-              }`}
+              className={`flex-none w-8 select-none h-8 p-2 cursor-pointer rounded-xl flex items-center justify-center transition-colors ${isSidebarOpen && sidebarTab === "info"
+                ? "bg-theme-hover"
+                : "hover:bg-theme-hover"
+                }`}
             >
               <HugeiconsIcon
                 icon={InformationCircleIcon}

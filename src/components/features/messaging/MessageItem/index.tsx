@@ -128,7 +128,7 @@ export const MessageItem = React.memo(
           </div>
         )}
         <div
-          className={`px-4 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${highlighted ? "bg-yellow-500/10" : ""}`}
+          className={`px-8 md:px-10 hover:bg-theme-border group/row relative transition-colors duration-200 ${highlighted ? "bg-yellow-500/10" : ""}`}
         >
           <div
             data-msg-id={message._id}

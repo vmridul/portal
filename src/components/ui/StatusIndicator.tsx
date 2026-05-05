@@ -28,6 +28,6 @@ export function StatusIndicator({ className,
   }
 
   return (
-    <div className={`z-[9999] absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full ${className ?? ''}`} />
+    <div className={`absolute right-0 bottom-0 w-2 h-2 bg-gray-500 rounded-full ${className ?? ''}`} />
   );
 }

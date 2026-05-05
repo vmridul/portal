@@ -322,7 +322,7 @@ export const UserInfoTab = () => {
         open={deleteDialog.isOpen}
         onOpenChange={(open) => !open && closeDeleteDialog()}
       >
-        <DialogContent className="w-96">
+        <DialogContent className="w-full sm:w-96">
           <DialogHeader>
             <DialogTitle>Delete Account</DialogTitle>
           </DialogHeader>
