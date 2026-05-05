@@ -17,7 +17,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const { isSidebarOpen } = useUIStore();
 
   return (
-    <section className="flex h-screen overflow-hidden">
+    <section className="flex h-[100dvh] overflow-hidden">
       <div className="flex-1 flex">
         <LeftSidebar
           className="w-64 flex-shrink-0"

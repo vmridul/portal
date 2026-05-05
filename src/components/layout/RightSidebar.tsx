@@ -54,7 +54,7 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     select-none
     transition-transform duration-300 ease-in-out
     fixed top-0 right-0 z-[99] w-70
-    md:translate-y-0 translate-y-10
+    md:translate-y-0 translate-y-12
     ${rightMobileMenu ? "translate-x-0" : "translate-x-full"}
 
     md:static md:translate-x-0`}

@@ -86,7 +86,7 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <RoomsProvider user_id={user.user_id}>
-      <section className="flex font-sans bg-theme-surface">
+      <section className="flex h-[100dvh] w-full overflow-hidden font-sans bg-theme-surface">
         <Suspense fallback={null}></Suspense>
         <NotificationListener />
         <CallCleanupListener />
