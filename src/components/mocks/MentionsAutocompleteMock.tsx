@@ -42,6 +42,7 @@ export const MentionsAutocompleteMock = ({
               src={user.avatar}
               alt={user.username}
               fill
+              sizes="32px"
               className="rounded-[12px] object-cover"
             />
           </div>

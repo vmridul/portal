@@ -105,6 +105,7 @@ export const ParticipantCard = ({
                   src={avatarUrl}
                   alt={name}
                   fill
+                  sizes="(max-width: 768px) 100%, (max-width: 1024px) 100%, 100%"
                   className="object-cover"
                 />
               </div>

@@ -22,7 +22,8 @@ export const PendingRequestMock = ({ className }: { className?: string }) => (
           width={32}
           height={32}
           alt=""
-          className="w-8 h-8 rounded-[6px]"
+          className="rounded-[6px]"
+          style={{ width: "auto", height: "auto" }}
         />
         <div className="flex-1 min-w-0 text-left">
           <div className="text-white text-sm truncate font-medium">Charm</div>
@@ -49,7 +50,8 @@ export const PendingRequestMock = ({ className }: { className?: string }) => (
           width={32}
           height={32}
           alt=""
-          className="w-8 h-8 rounded-[6px]"
+          className="rounded-[6px]"
+          style={{ width: "auto", height: "auto" }}
         />
         <div className="flex-1 min-w-0 text-left">
           <div className="text-white text-sm truncate font-medium">Pika</div>

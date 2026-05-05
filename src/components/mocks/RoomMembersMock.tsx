@@ -28,7 +28,7 @@ export const RoomMembersMock = ({
 
   return (
     <div
-      className={`p-3 bg-[#101010] border border-[#242424] rounded-[12px] shadow-2xl backdrop-blur-md ${className || "w-56"}`}
+      className={`p-3 bg-[#101010] border border-[#242424] rounded-[12px] shadow-2xl backdrop-blur-md ${className || "w-40"}`}
     >
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center w-full justify-between">
@@ -49,9 +49,9 @@ export const RoomMembersMock = ({
               <Image
                 src={user.img}
                 alt=""
-                width={40}
-                height={40}
-                className="w-10 h-10 rounded-[12px]"
+                width={32}
+                height={32}
+                className="rounded-[8px]"
               />
               <StatusIndicator isOnline={i !== 2} isAway={i === 2} />
             </div>

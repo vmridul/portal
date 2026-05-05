@@ -91,28 +91,51 @@ export function ChatInputBar(props: ChatInputBarProps) {
             <div className="relative w-12 h-12 flex-shrink-0">
               {file.previewUrl ? (
                 <div className="w-full h-full rounded-lg overflow-hidden relative border border-theme-hover">
-                  <Image src={file.previewUrl} alt="preview" fill className="object-cover" />
+                  <Image
+                    src={file.previewUrl}
+                    alt="preview"
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
                 </div>
               ) : (
                 <div className="w-full h-full rounded-lg bg-theme-base flex items-center justify-center border border-theme-hover">
-                  {FileIcon && <HugeiconsIcon icon={FileIcon} className="w-6 h-6 text-gray-400" />}
+                  {FileIcon && (
+                    <HugeiconsIcon
+                      icon={FileIcon}
+                      className="w-6 h-6 text-gray-400"
+                    />
+                  )}
                 </div>
               )}
 
               {file.upload.isUploading && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-lg z-10">
-                  <ProgressCircle progress={file.upload.progress} size={32} strokeWidth={2} color={"white"} />
+                  <ProgressCircle
+                    progress={file.upload.progress}
+                    size={32}
+                    strokeWidth={2}
+                    color={"white"}
+                  />
                 </div>
               )}
             </div>
 
             <div className="flex-1 min-w-0 pr-8">
-              <p className="text-sm text-gray-300 truncate font-medium">{file.upload.file.name}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">{formatFileSize(file.upload.file.size)}</p>
+              <p className="text-sm text-gray-300 truncate font-medium">
+                {file.upload.file.name}
+              </p>
+              <p className="text-[10px] text-gray-400 mt-0.5">
+                {formatFileSize(file.upload.file.size)}
+              </p>
             </div>
 
             <TooltipWrapper content="Cancel">
-              <button onClick={file.onCancel} className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all">
+              <button
+                onClick={file.onCancel}
+                className="absolute top-2 right-2 p-2 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
+              >
                 <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
               </button>
             </TooltipWrapper>
@@ -131,7 +154,10 @@ export function ChatInputBar(props: ChatInputBarProps) {
               <p className="text-sm">Editing</p>
             </div>
             <TooltipWrapper content="Cancel editing">
-              <button onClick={editing.onCancel} className="absolute top-2 right-2 p-1 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all">
+              <button
+                onClick={editing.onCancel}
+                className="absolute top-2 right-2 p-1 hover:bg-theme-hover rounded-lg text-gray-400 hover:text-white transition-all"
+              >
                 <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
               </button>
             </TooltipWrapper>
@@ -140,7 +166,13 @@ export function ChatInputBar(props: ChatInputBarProps) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <input {...getInputProps()} ref={file.ref} type="file" onChange={file.onSelect} className="hidden" />
+        <input
+          {...getInputProps()}
+          ref={file.ref}
+          type="file"
+          onChange={file.onSelect}
+          className="hidden"
+        />
 
         <TextareaAutosize
           ref={input.ref}
@@ -186,7 +218,10 @@ export function ChatInputBar(props: ChatInputBarProps) {
                 className="border border-theme-border py-2 px-2 rounded-[12px] text-white hover:bg-theme-border disabled:opacity-50"
                 disabled={file.upload.isUploading && !input.value.trim()}
               >
-                <HugeiconsIcon icon={Attachment01Icon} className="text-gray-400 w-4 h-4" />
+                <HugeiconsIcon
+                  icon={Attachment01Icon}
+                  className="text-gray-400 w-4 h-4"
+                />
               </button>
             </TooltipWrapper>
 
@@ -211,7 +246,9 @@ export function ChatInputBar(props: ChatInputBarProps) {
 
       {isDragActive && (
         <div className="z-[9999] flex justify-center border border-dashed border-white/50 items-center absolute top-0 left-0 rounded-2xl w-full h-full bg-[#1a1a1a] bg-opacity-90 backdrop-blur-sm">
-          <span className="text-white/50 tracking-wider text-xl font-bold">DROP TO ATTACH</span>
+          <span className="text-white/50 tracking-wider text-xl font-bold">
+            DROP TO ATTACH
+          </span>
         </div>
       )}
     </div>

@@ -16,6 +16,7 @@ export const ParticipantCardMock = ({ className }: { className?: string }) => (
             src="/assets/ch.png"
             alt="Participant"
             fill
+            sizes="(max-width: 768px) 96px, 96px"
             className="object-cover"
           />
         </div>
