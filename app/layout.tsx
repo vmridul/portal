@@ -9,6 +9,7 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import { cn } from "@/lib/utils";
 import { getThemeBootstrapScript } from "@/lib/theme";
 import { ColorProvider } from "@/contexts/colorContext";
+import { PreferencesProvider } from "@/contexts/PreferencesContext";
 import { GlobalModals } from "@/components/layout/GlobalModals";
 import {
   ClerkProvider,
@@ -116,18 +117,20 @@ export default function RootLayout({
                 <TooltipProvider>
                   <PresenceProvider>
                     <ColorProvider>
-                      <GlobalModals />
-                      <main className="flex-1 font-sans">{children}</main>
-                      <Toaster
-                        theme="dark"
-                        position="top-center"
-                        gap={12}
-                        toastOptions={{
-                          style: {
-                            background: "hsl(var(--theme-bg-surface))",
-                          },
-                        }}
-                      />
+                      <PreferencesProvider>
+                        <GlobalModals />
+                        <main className="flex-1 font-sans">{children}</main>
+                        <Toaster
+                          theme="dark"
+                          position="top-center"
+                          gap={12}
+                          toastOptions={{
+                            style: {
+                              background: "hsl(var(--theme-bg-surface))",
+                            },
+                          }}
+                        />
+                      </PreferencesProvider>
                     </ColorProvider>
                   </PresenceProvider>
                 </TooltipProvider>

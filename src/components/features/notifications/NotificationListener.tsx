@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { NotificationToast } from "./NotificationToast";
 import { useNewNotifications } from "./useNewNotifications";
 import { useActiveConversationId } from "@/hooks/useActiveConversationId";
+import { usePreferences } from "@/contexts/PreferencesContext";
 
 /**
  * NotificationListener handles incoming real-time notifications by showing toasts
@@ -17,6 +18,7 @@ export default function NotificationListener() {
   const { markConversationNotificationsRead } = useNotificationActions();
   const { updatePreviousIds, getNewNotifications } = useNewNotifications();
   const activeConversationId = useActiveConversationId();
+  const { mentionSound } = usePreferences();
   const isFirstRun = useRef(true);
 
   const notifications = useMemo(
@@ -114,6 +116,14 @@ export default function NotificationListener() {
             duration: 4000,
           },
         );
+
+        // Play mention sound if notification has mentions
+        // @ts-ignore - hasMentions is added in convex function
+        if (notification.hasMentions) {
+          const audio = new Audio(mentionSound);
+          audio.volume = 0.5;
+          audio.play().catch((err) => console.error("Error playing sound:", err));
+        }
       });
     }
   }, [

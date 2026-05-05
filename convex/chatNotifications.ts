@@ -208,6 +208,7 @@ export const getMessageNotifications = query({
         createdAt: notification._creationTime,
         readAt: notification.read_at,
         isRead: notification.read_at !== undefined,
+        hasMentions: notification.hasMentions ?? false,
       };
     });
   },

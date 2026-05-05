@@ -140,6 +140,20 @@ export const sendMessage = mutation({
     const mentions = extractMentions(args.msg);
     await ctx.db.patch(insertedMessageId, { mentions });
 
+    // Pre-resolve mentioned usernames to user IDs for efficient lookup
+    const mentionedUserIds = new Set<string>();
+    if (mentions.length > 0) {
+      await Promise.all(
+        mentions.map(async (username) => {
+          const user = await ctx.db
+            .query("users")
+            .withIndex("by_username", (q) => q.eq("username", username))
+            .first();
+          if (user) mentionedUserIds.add(user.user_id);
+        }),
+      );
+    }
+
     const now = Date.now();
     const preview = toPreview(args.msg, args.file_name);
 
@@ -169,6 +183,8 @@ export const sendMessage = mutation({
         );
 
         if (shouldNotify) {
+          const isMentioned = mentionedUserIds.has(friendId);
+
           await createChatNotification(ctx, {
             user_id: friendId,
             message_id: insertedMessageId,
@@ -181,6 +197,7 @@ export const sendMessage = mutation({
             sender_avatar: sender?.avatar || "",
             message: notificationMessage,
             notification_type: "message",
+            hasMentions: isMentioned,
           });
         }
       }
@@ -215,27 +232,27 @@ export const sendMessage = mutation({
           }),
       );
 
-      const recipientIds = validRecipients
-        .filter(({ shouldNotify }) => shouldNotify)
-        .map(({ member }) => member.user_id);
-
       await Promise.all(
-        recipientIds.map(async (recipientId) => {
-          await createChatNotification(ctx, {
-            user_id: recipientId,
-            message_id: insertedMessageId,
-            source_type: "room",
-            source_id: args.conversation_id,
-            conversation_id: args.conversation_id,
-            source_name: room?.room_name || args.conversation_id,
-            sender_id: identity.subject,
-            sender_name: sender?.username || "Unknown user",
-            sender_avatar: sender?.avatar || "",
-            message: notificationMessage,
-            notification_type: "message",
-            hasMentions,
-          });
-        }),
+        validRecipients
+          .filter(({ shouldNotify }) => shouldNotify)
+          .map(async ({ member }) => {
+            const isMentioned = mentionedUserIds.has(member.user_id);
+
+            await createChatNotification(ctx, {
+              user_id: member.user_id,
+              message_id: insertedMessageId,
+              source_type: "room",
+              source_id: args.conversation_id,
+              conversation_id: args.conversation_id,
+              source_name: room?.room_name || args.conversation_id,
+              sender_id: identity.subject,
+              sender_name: sender?.username || "Unknown user",
+              sender_avatar: sender?.avatar || "",
+              message: notificationMessage,
+              notification_type: "message",
+              hasMentions: isMentioned,
+            });
+          }),
       );
     }
 

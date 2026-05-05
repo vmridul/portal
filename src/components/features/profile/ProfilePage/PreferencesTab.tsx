@@ -1,11 +1,36 @@
 import { useColor } from "@/contexts/colorContext";
-import { useState } from "react";
+import { usePreferences } from "@/contexts/PreferencesContext";
+import { useState, useRef } from "react";
 import { HexColorPicker } from "react-colorful";
 import { createPortal } from "react-dom";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Add01Icon, PlayCircleIcon } from "@hugeicons/core-free-icons";
 
 export const PreferencesTab = () => {
   const { color, setColor, textColor } = useColor();
+  const { mentionSound, setMentionSound, mentionSoundName, setMentionSoundName } = usePreferences();
   const [colorDialog, setColorDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setMentionSoundName(file.name);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setMentionSound(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const playSound = () => {
+    const audio = new Audio(mentionSound);
+    audio.volume = 0.5;
+    audio.play().catch((err) => console.error("Error playing sound:", err));
+  };
+
   return (
     <div className="flex flex-col items-center pt-2 md:pt-10 w-[80%] md:w-[47%] mx-auto pb-10">
       <div className="w-full relative flex flex-col gap-3 mt-5">
@@ -23,6 +48,43 @@ export const PreferencesTab = () => {
           ></div>
         </div>
       </div>
+
+      <div className="w-full relative flex flex-col gap-3 mt-8">
+        <span className="text-xs text-gray-400 font-medium">Mention Sound</span>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 bg-theme-hover py-2.5 px-5 rounded-xl text-sm text-gray-200 truncate border border-transparent">
+            {mentionSoundName}
+          </div>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="p-2.5 bg-theme-hover rounded-xl hover:bg-theme-border transition-colors group"
+            title="Choose sound"
+          >
+            <HugeiconsIcon
+              icon={Add01Icon}
+              className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
+            />
+          </button>
+          <button
+            onClick={playSound}
+            className="p-2.5 bg-theme-hover rounded-xl hover:bg-theme-border transition-colors group"
+            title="Play sound"
+          >
+            <HugeiconsIcon
+              icon={PlayCircleIcon}
+              className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
+            />
+          </button>
+        </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="audio/*"
+          className="hidden"
+        />
+      </div>
+
       {colorDialog &&
         createPortal(
           <>
