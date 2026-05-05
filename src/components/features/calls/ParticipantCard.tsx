@@ -15,6 +15,7 @@ import { Button } from "@/components/ui";
 
 interface ParticipantCardProps {
   userId: string;
+  profile?: any;
   isSpeaking?: boolean;
   videoStream?: MediaStream | null;
   isLocal?: boolean;
@@ -25,6 +26,7 @@ interface ParticipantCardProps {
 
 export const ParticipantCard = ({
   userId,
+  profile,
   isSpeaking = false,
   videoStream = null,
   isLocal = false,
@@ -34,11 +36,6 @@ export const ParticipantCard = ({
 }: ParticipantCardProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  const profiles = useQuery(api.users.getUsersByExternalIds, {
-    user_ids: [userId],
-  });
-  const profile = profiles?.[0];
 
   const name = profile?.username || "Connecting...";
   const avatarUrl = profile?.avatar;

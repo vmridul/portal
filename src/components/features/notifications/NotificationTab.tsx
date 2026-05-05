@@ -8,6 +8,8 @@ import { usePathname } from "next/navigation";
 import { useNotifications, useNotificationActions, useFriends } from "@/hooks";
 import { useRooms } from "@/contexts/roomContext";
 import { Skeleton } from "@/components/skeletons/Skeleton";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 import { useNotificationHandlers } from "./useNotificationHandlers";
 import { NotificationCard } from "./NotificationCard";
@@ -33,6 +35,27 @@ export default function NotificationTab() {
   const isLoading = isNotificationsLoading && notifications.length === 0;
 
   const { openNotification, joinNotificationCall } = useNotificationHandlers();
+
+  const allParticipantIds = useMemo(() => {
+    const ids = new Set<string>();
+    notifications.forEach((n) => {
+      if (n.notificationType === "call" && n.participantIds) {
+        n.participantIds.forEach((id) => ids.add(id));
+      }
+    });
+    return Array.from(ids).sort();
+  }, [notifications]);
+
+  const participantProfiles = useQuery(api.users.getUsersByExternalIds, {
+    user_ids: allParticipantIds,
+  });
+
+  const profilesMap = useMemo(() => {
+    const map = new Map<string, any>();
+    participantProfiles?.forEach((p) => map.set(p.user_id, p));
+    return map;
+  }, [participantProfiles]);
+
   return (
     <>
       <button
@@ -94,11 +117,15 @@ export default function NotificationTab() {
             </div>
           ) : (
             notifications.map((notification) => {
+              const profiles = (notification.participantIds || [])
+                .map((id) => profilesMap.get(id))
+                .filter(Boolean);
 
               return (
                 <NotificationCard
                   key={notification.id}
                   notification={notification}
+                  participantProfiles={profiles}
                   onOpen={() => {
                     void openNotification(notification, () => setMobileMenu(false));
                   }}

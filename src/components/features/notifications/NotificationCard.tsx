@@ -19,23 +19,17 @@ type NotificationItem = ReturnType<
 
 export function NotificationCard({
   notification,
+  participantProfiles = [],
   onOpen,
   onJoin,
   onRemove,
 }: {
   notification: NotificationItem;
+  participantProfiles?: any[];
   onOpen: () => void;
   onJoin: () => Promise<void>;
   onRemove: () => Promise<void>;
 }) {
-  const participantProfiles =
-    useQuery(
-      api.users.getUsersByExternalIds,
-      notification.notificationType === "call" &&
-        notification.participantIds.length > 0
-        ? { user_ids: notification.participantIds }
-        : "skip",
-    ) || [];
 
   const isEndedCall =
     notification.notificationType === "call" &&

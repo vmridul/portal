@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useContext, useMemo } from "react";
 import { useUserRooms } from "@/hooks";
 import type { UserRoom } from "@/lib/types/room";
@@ -7,6 +9,7 @@ import { api } from "@/convex/_generated/api";
 interface RoomsContextType {
   rooms: UserRoom[];
   membersCount: Record<string, number>;
+  activeCallRoomIds: Set<string>;
   isLoading: boolean;
   refreshRooms: () => void;
 }
@@ -21,9 +24,15 @@ export function RoomsProvider({
   user_id: string | null;
 }) {
   const { rooms: userRooms, isLoading: roomsLoading } = useUserRooms(user_id);
+  const allActiveCalls = useQuery(api.calls.listAllActiveCalls, {});
 
-  const { rooms, membersCount, isLoading } = useMemo(() => {
-    if (!userRooms) return { rooms: [], membersCount: {}, isLoading: roomsLoading };
+  const { rooms, membersCount, activeCallRoomIds, isLoading } = useMemo(() => {
+    const activeIds = new Set<string>();
+    if (allActiveCalls) {
+      allActiveCalls.forEach((call) => activeIds.add(call.roomId));
+    }
+
+    if (!userRooms) return { rooms: [], membersCount: {}, activeCallRoomIds: activeIds, isLoading: roomsLoading || allActiveCalls === undefined };
 
     const countMap: Record<string, number> = {};
     const roomsList = userRooms
@@ -37,12 +46,17 @@ export function RoomsProvider({
         return timeB - timeA;
       });
 
-    return { rooms: roomsList, membersCount: countMap, isLoading: roomsLoading };
-  }, [userRooms, roomsLoading]);
+    return { 
+      rooms: roomsList, 
+      membersCount: countMap, 
+      activeCallRoomIds: activeIds,
+      isLoading: roomsLoading || allActiveCalls === undefined 
+    };
+  }, [userRooms, roomsLoading, allActiveCalls]);
 
   return (
     <RoomsContext.Provider
-      value={{ rooms, membersCount, isLoading, refreshRooms: () => { } }}
+      value={{ rooms, membersCount, activeCallRoomIds, isLoading, refreshRooms: () => { } }}
     >
       {children}
     </RoomsContext.Provider>

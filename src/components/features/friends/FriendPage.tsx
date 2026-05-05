@@ -12,6 +12,7 @@ import { DetailsSidebar } from "@/components/features/rooms/sidebar/DetailsSideb
 import FriendChatUI from "./FriendChatUI";
 import { FriendChatHeader } from "./FriendChatHeader";
 import { CallOverlay } from "@/components/features/calls/CallOverlay";
+import { RoomCallProvider } from "@/contexts/CallContext";
 
 export function FriendPage() {
   const params = useParams();
@@ -19,45 +20,49 @@ export function FriendPage() {
   const user = useUserStore((s) => s.user);
   const { friends } = useFriends();
   const { onlineUsers, awayUsers } = usePresence();
-  const { activeCalls } = useCalls("");
-  const { status: callStatus, actualRoomId } = useCallStore();
-  const isInCall = callStatus === "joined";
-  const { isSidebarOpen } = useUIStore();
-
-  const friend = friends.find((f) => f?.friend?.user_id === friendId);
+  
   const directConversationId =
     friendId && user?.user_id
       ? getDirectConversationId(friendId, user.user_id)
       : "";
 
+  const { activeCalls } = useCalls(directConversationId);
+  const { status: callStatus, actualRoomId } = useCallStore();
+  const isInCall = callStatus === "joined";
+  const { isSidebarOpen } = useUIStore();
+
+  const friend = friends.find((f) => f?.friend?.user_id === friendId);
+
   return (
-    <div className="flex-1 flex overflow-hidden">
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        <FriendChatHeader
-          friend={friend}
-          directConversationId={directConversationId}
-          onlineUsers={onlineUsers}
-          awayUsers={awayUsers}
-          activeCalls={activeCalls}
-          isInCall={isInCall}
-          actualRoomId={actualRoomId}
-        />
-        <div className="flex-1 flex overflow-hidden relative">
-          <div className="flex-1 overflow-hidden relative">
-            <Suspense fallback={<ChatSkeleton />}>
-              <FriendChatUI />
-            </Suspense>
+    <RoomCallProvider roomId={directConversationId}>
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          <FriendChatHeader
+            friend={friend}
+            directConversationId={directConversationId}
+            onlineUsers={onlineUsers}
+            awayUsers={awayUsers}
+            activeCalls={activeCalls}
+            isInCall={isInCall}
+            actualRoomId={actualRoomId}
+          />
+          <div className="flex-1 flex overflow-hidden relative">
+            <div className="flex-1 overflow-hidden relative">
+              <Suspense fallback={<ChatSkeleton />}>
+                <FriendChatUI />
+              </Suspense>
+            </div>
+            {isSidebarOpen && (
+              <DetailsSidebar
+                id={directConversationId}
+                type="direct"
+                title={friend?.friend?.username || "Direct Message"}
+              />
+            )}
           </div>
-          {isSidebarOpen && (
-            <DetailsSidebar
-              id={directConversationId}
-              type="direct"
-              title={friend?.friend?.username || "Direct Message"}
-            />
-          )}
+          <CallOverlay />
         </div>
-        <CallOverlay />
       </div>
-    </div>
+    </RoomCallProvider>
   );
 }

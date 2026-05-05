@@ -3,7 +3,6 @@ import { useRooms } from "@/contexts/roomContext";
 import { RoomItem } from "./RoomItem";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Home01Icon } from "@hugeicons/core-free-icons";
-import { useVisibleActiveCalls } from "@/hooks";
 import { useUIStore } from "@/store/uiStore";
 import type { UserRoom } from "@/lib/types/room";
 
@@ -18,9 +17,7 @@ export const RoomsList = ({
   unreadByRoomId = new Map(),
   roomHasUnreadMentions = new Map(),
 }: RoomListProps) => {
-  const { rooms } = useRooms();
-  const { activeCalls } = useVisibleActiveCalls();
-  const activeCallRoomIds = new Set(activeCalls.map((call) => call.roomId));
+  const { rooms, activeCallRoomIds } = useRooms();
   const { setLeftMobileMenu } = useUIStore();
   const router = useRouter();
 

@@ -13,10 +13,10 @@ import { useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
 import {
-  useVisibleActiveCalls,
   ConvexFriend,
   useUnreadCounters,
 } from "@/hooks";
+import { useRooms } from "@/contexts/roomContext";
 import { useRouter } from "next/navigation";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { useColor } from "@/contexts/colorContext";
@@ -35,11 +35,9 @@ export default function FriendsList({
   const [search, setSearch] = useState("");
   const { color, textColor } = useColor();
   const user = useUserStore((state) => state.user);
-  const { activeCalls } = useVisibleActiveCalls();
+  const { activeCallRoomIds } = useRooms();
   const { counters } = useUnreadCounters();
-  const activeCallConversationIds = new Set(
-    activeCalls.map((call) => call.roomId),
-  );
+
   const { unreadByFriendId, friendHasUnreadMentions } = useMemo(() => {
     const counts = new Map<string, number>();
     const hasMentions = new Map<string, boolean>();
@@ -101,7 +99,7 @@ export default function FriendsList({
                     : null;
                 const hasActiveCall =
                   !!directConversationId &&
-                  activeCallConversationIds.has(directConversationId);
+                  activeCallRoomIds.has(directConversationId);
                 const isUserOnline = friendId
                   ? onlineUsers.has(friendId)
                   : false;
@@ -160,9 +158,9 @@ export default function FriendsList({
                         {unreadCount > 0 && (
                           <span
                             className={`mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${hasUnreadMentions
-                              ? "bg-red-500"
-                              : "bg-theme-accent"
-                              }`}
+                               ? "bg-red-500"
+                               : "bg-theme-accent"
+                               }`}
                             style={{
                               color: hasUnreadMentions ? "#ffffff" : textColor,
                             }}

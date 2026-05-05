@@ -1,9 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import AvatarStack from "@/components/ui/AvatarStack";
 import { Skeleton } from "@/components/skeletons/Skeleton";
+import { useRoomCallContext } from "@/contexts/CallContext";
 
 interface Call {
   participants: string[];
@@ -48,22 +50,29 @@ interface RecentCallsListProps {
 
 export default function RecentCallsList({ calls }: RecentCallsListProps) {
   const grouped = groupCallsByDate(calls);
+  const roomCallContext = useRoomCallContext();
 
-  const allParticipantIds = Array.from(
-    new Set(calls.flatMap((c) => c.allParticipants || c.participants)),
-  );
+  const allParticipantIds = useMemo(() => {
+    return Array.from(
+      new Set(calls.flatMap((c) => c.allParticipants || c.participants)),
+    ).sort();
+  }, [calls]);
 
-  const participantProfiles =
-    useQuery(api.users.getUsersByExternalIds, {
-      user_ids: allParticipantIds,
-    }) || [];
+  const fetchedProfiles = useQuery(api.users.getUsersByExternalIds, {
+    user_ids: allParticipantIds,
+  });
+
+  const participantProfiles = useMemo(() => {
+    if (roomCallContext?.participantProfiles) {
+      return allParticipantIds.map(id => roomCallContext.participantProfiles[id]).filter(Boolean);
+    }
+    return fetchedProfiles || [];
+  }, [roomCallContext?.participantProfiles, allParticipantIds, fetchedProfiles]);
 
   if (calls.length === 0) return null;
 
   return (
     <div className="overflow-y-auto">
-
-
       {Object.entries(grouped).map(([date, dateCalls]) => (
         <div key={date} className="border-t border-theme-border/50">
           <div className="px-3 py-2 text-xs font-bold text-gray-500">
@@ -79,7 +88,6 @@ export default function RecentCallsList({ calls }: RecentCallsListProps) {
                   <div className="flex items-center">
                     {
                       participantProfiles.length > 0 ?
-
                         <AvatarStack
                           users={participantProfiles.filter((p) =>
                             (call.allParticipants || call.participants).includes(

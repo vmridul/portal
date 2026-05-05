@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   FullscreenIcon,
@@ -15,6 +15,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUIStore } from "@/store/uiStore";
 import { useRooms } from "@/contexts/roomContext";
+import { useRoomCallContext } from "@/contexts/CallContext";
 import AvatarStack from "@/components/ui/AvatarStack";
 import type { CallRecord } from "@/lib/types/call";
 import { Button } from "@/components/ui";
@@ -35,6 +36,7 @@ export default function ActiveCallPanel({
   const [isLeaving, setIsLeaving] = useState(false);
 
   const { rooms } = useRooms();
+  const roomCallContext = useRoomCallContext();
   const { setModal, setCallOverlayOpen } = useUIStore();
   const { joinExistingSession, leaveCurrentSession } = useCallSessionActions();
   const {
@@ -51,11 +53,19 @@ export default function ActiveCallPanel({
     !!activeCallId &&
     activeCallId !== call._id &&
     (status === "joined" || status === "joining");
+  
+  const participantIds = useMemo(() => call.participants, [call.participants]);
+  
+  const fetchedProfiles = useQuery(api.users.getUsersByExternalIds, { 
+    user_ids: participantIds 
+  });
 
-  const participantProfiles =
-    useQuery(api.users.getUsersByExternalIds, {
-      user_ids: call.participants,
-    }) || [];
+  const participantProfiles = useMemo(() => {
+    if (roomCallContext?.participantProfiles) {
+      return participantIds.map(id => roomCallContext.participantProfiles[id]).filter(Boolean);
+    }
+    return fetchedProfiles || [];
+  }, [roomCallContext?.participantProfiles, participantIds, fetchedProfiles]);
 
   // Synchronize participants with PeerJS client whenever the Convex list changes
   useEffect(() => {

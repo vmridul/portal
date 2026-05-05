@@ -4,6 +4,7 @@ import { useCallStore } from "@/store/callStore";
 import { useCalls } from "@/hooks";
 import { ParticipantCard } from "./ParticipantCard";
 import { useUserStore } from "@/store/useUserStore";
+import { useRoomCallContext } from "@/contexts/CallContext";
 
 export const ParticipantGrid = () => {
   const {
@@ -15,7 +16,8 @@ export const ParticipantGrid = () => {
     screenShareStream,
     screenShareStreams,
   } = useCallStore();
-  const { activeCalls } = useCalls(actualRoomId || "");
+  
+  const { activeCalls, participantProfiles } = useRoomCallContext() || useCalls(actualRoomId || "");
   const activeCall = activeCalls.find((call) => call._id === callId);
   const currentUserId = useUserStore((s) => s.user?.user_id);
 
@@ -70,10 +72,12 @@ export const ParticipantGrid = () => {
         <div className="flex-1 min-h-0 flex flex-col gap-3">
           {screenShares.map(({ userId, stream }) => {
             const mediaState = mediaStateByUserId.get(userId);
+            const profile = participantProfiles?.[userId];
             return (
               <div key={`screen-${userId}`} className="flex-1 min-h-0">
                 <ParticipantCard
                   userId={userId}
+                  profile={profile}
                   isSpeaking={activeSpeakers?.includes(userId) || false}
                   videoStream={stream}
                   isLocal={userId === currentUserId}
@@ -89,10 +93,12 @@ export const ParticipantGrid = () => {
             .filter((uid) => !screenShares.some((s) => s.userId === uid))
             .map((userId) => {
               const mediaState = mediaStateByUserId.get(userId);
+              const profile = participantProfiles?.[userId];
               return (
                 <div key={`screen-${userId}`} className="flex-1 min-h-0">
                   <ParticipantCard
                     userId={userId}
+                    profile={profile}
                     isSpeaking={false}
                     videoStream={null}
                     isLocal={userId === currentUserId}
@@ -111,6 +117,7 @@ export const ParticipantGrid = () => {
             const isLocal = userId === currentUserId;
             const stream = isLocal ? localStream : remoteStreams?.[userId];
             const mediaState = mediaStateByUserId.get(userId);
+            const profile = participantProfiles?.[userId];
 
             return (
               <div
@@ -119,6 +126,7 @@ export const ParticipantGrid = () => {
               >
                 <ParticipantCard
                   userId={userId}
+                  profile={profile}
                   isSpeaking={activeSpeakers?.includes(userId) || false}
                   videoStream={stream || null}
                   isLocal={isLocal}
@@ -149,11 +157,13 @@ export const ParticipantGrid = () => {
         const isLocal = userId === currentUserId;
         const stream = isLocal ? localStream : remoteStreams?.[userId];
         const mediaState = mediaStateByUserId.get(userId);
+        const profile = participantProfiles?.[userId];
 
         return (
           <ParticipantCard
             key={userId}
             userId={userId}
+            profile={profile}
             isSpeaking={activeSpeakers?.includes(userId) || false}
             videoStream={stream || null}
             isLocal={isLocal}
@@ -165,3 +175,4 @@ export const ParticipantGrid = () => {
     </div>
   );
 };
+

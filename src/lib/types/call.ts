@@ -42,9 +42,11 @@ export interface CallSessionSnapshot {
 export interface CallRecord {
   _id: Id<"calls">;
   participants: string[];
+  allParticipants: string[];
   activePeerIds?: { userId: string; peerId: string }[];
   mediaStates?: { userId: string; isMuted: boolean; isVideoOn: boolean; isScreenSharing?: boolean }[];
   startedAt: number;
+  endedAt?: number;
   roomId: string;
   isActive: boolean;
 }
