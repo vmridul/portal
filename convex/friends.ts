@@ -10,8 +10,9 @@ export const getFriends = query({
 
     const friendships = await ctx.db
       .query("friends")
-      .withIndex("by_user_id", (q) => q.eq("user_id", identity.subject))
-      .filter((q) => q.eq(q.field("status"), "accepted"))
+      .withIndex("by_user_id_status", (q) =>
+        q.eq("user_id", identity.subject).eq("status", "accepted"),
+      )
       .collect();
 
     const result = await Promise.all(

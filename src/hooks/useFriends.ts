@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useCallback } from "react";
 import type { Id } from "@/convex/_generated/dataModel";
+import { useFriendsContext } from "@/contexts/FriendsContext";
 
 export interface PendingRequest {
   id: Id<"friends">;
@@ -48,6 +49,10 @@ export interface UseFriendsResult {
 }
 
 export function useFriends(): UseFriendsResult {
+  return useFriendsContext();
+}
+
+export function useFriendsQuery(): UseFriendsResult {
   const friendsQuery = useQuery(api.friends.getFriends);
   const pendingRequestsQuery = useQuery(api.friends.getPendingRequests);
   const sentRequestsQuery = useQuery(api.friends.getSentRequests);

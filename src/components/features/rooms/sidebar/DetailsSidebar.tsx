@@ -23,37 +23,35 @@ export function DetailsSidebar({ id, type, title }: DetailsSidebarProps) {
   });
   const user = useUserStore((s) => s.user);
 
-  switch (sidebarTab) {
-    case "info":
-      if (type === "direct") return null;
-      return (
-        <SidebarInfo
-          id={id}
-          type={type}
-          room={room}
-          members={members || []}
-          currentUser={user}
-          isLoading={isRoomLoading}
-          onClose={handleClose}
-        />
-      );
-    case "media":
-      return (
+  return (
+    <div className="h-full flex flex-col">
+      {type === "room" && (
+        <div className={sidebarTab === "info" ? "contents" : "hidden"}>
+          <SidebarInfo
+            id={id}
+            type={type}
+            room={room}
+            members={members || []}
+            currentUser={user}
+            isLoading={isRoomLoading}
+            onClose={handleClose}
+          />
+        </div>
+      )}
+      <div className={sidebarTab === "media" ? "contents" : "hidden"}>
         <SidebarMedia
           mediaFiles={mediaFiles || []}
           isLoading={isMediaLoading}
           onClose={handleClose}
         />
-      );
-    case "calls":
-      return (
+      </div>
+      <div className={sidebarTab === "calls" ? "contents" : "hidden"}>
         <SidebarCalls
           roomId={id}
           conversationName={title}
           onClose={handleClose}
         />
-      );
-    default:
-      return null;
-  }
+      </div>
+    </div>
+  );
 }

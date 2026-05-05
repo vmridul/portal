@@ -23,7 +23,8 @@ export default defineSchema({
     notificationPreference: v.optional(v.string()),
   })
     .index("by_user_id", ["user_id"])
-    .index("by_friend_id", ["friend_id"]),
+    .index("by_friend_id", ["friend_id"])
+    .index("by_user_id_status", ["user_id", "status"]),
 
   rooms: defineTable({
     room_id: v.string(),

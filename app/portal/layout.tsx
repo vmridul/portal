@@ -11,6 +11,7 @@ import CallCleanupListener from "@/components/features/calls/CallCleanupListener
 import PortalShellSkeleton from "@/components/skeletons/PortalShellSkeleton";
 import { useCurrentUser } from "@/hooks";
 import { OnboardingDialog } from "@/components/features/auth/OnboardingDialog";
+import { FriendsProvider } from "@/contexts/FriendsContext";
 
 function PortalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -86,12 +87,14 @@ function PortalLayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <RoomsProvider user_id={user.user_id}>
-      <section className="flex h-[100dvh] w-full overflow-hidden font-sans bg-theme-surface">
-        <Suspense fallback={null}></Suspense>
-        <NotificationListener />
-        <CallCleanupListener />
-        <div className="flex-1">{children}</div>
-      </section>
+      <FriendsProvider>
+        <section className="flex h-[100dvh] w-full overflow-hidden font-sans bg-theme-surface">
+          <Suspense fallback={null}></Suspense>
+          <NotificationListener />
+          <CallCleanupListener />
+          <div className="flex-1">{children}</div>
+        </section>
+      </FriendsProvider>
     </RoomsProvider>
   );
 }
