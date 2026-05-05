@@ -50,6 +50,8 @@ export function AddFriendDialog() {
         label="User ID"
         placeholder="Enter User's ID"
         autoFocus
+        autoCorrect="off"
+        autoCapitalize="none"
       />
     </FormDialog>
   );

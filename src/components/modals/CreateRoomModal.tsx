@@ -56,6 +56,7 @@ export function CreateRoomModal() {
         placeholder="Room Name"
         inputSize="sm"
         autoFocus
+        autoComplete="off"
       />
     </FormDialog>
   );

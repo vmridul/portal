@@ -246,6 +246,7 @@ export const UserInfoTab = () => {
               minLength={3}
               maxLength={16}
               value={newUsername || ""}
+              autoComplete="off"
               rightElement={
                 <Button
                   disabled={newUsername === user?.username}
@@ -339,6 +340,9 @@ export const UserInfoTab = () => {
               value={deleteDialog.input}
               onChange={(e) => updateDeleteInput(e.target.value)}
               placeholder="DELETE"
+              autoComplete="one-time-code"
+              autoCorrect="off"
+              autoCapitalize="none"
             />
           </div>
           <div className="py-2"></div>

@@ -16,7 +16,7 @@ export default function Page() {
   }, [profile, setUser]);
 
   return (
-    <div className="text-white flex h-[100dvh] overflow-hidden">
+    <div className="text-white flex h-screen overflow-hidden">
       <LeftSidebar className="w-64" />
       <div className="flex-1 h-[100dvh]">
         <ProfilePage />

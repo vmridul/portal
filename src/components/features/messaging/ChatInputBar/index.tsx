@@ -198,6 +198,7 @@ export function ChatInputBar(props: ChatInputBarProps) {
           placeholder={"Press / to focus"}
           minRows={1}
           maxRows={6}
+          autoComplete="off"
           className="w-full rounded-[8px] text-sm bg-transparent text-gray-200 outline-none py-[10px] md:py-2 px-3 placeholder-[#58565f] resize-none overflow-y-auto break-words whitespace-pre-wrap"
         />
 

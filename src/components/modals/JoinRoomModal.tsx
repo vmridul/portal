@@ -52,6 +52,8 @@ export function JoinRoomModal() {
         label="Room ID"
         placeholder="Room ID"
         autoFocus
+        autoCorrect="off"
+        autoCapitalize="none"
       />
     </FormDialog>
   );

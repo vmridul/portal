@@ -141,6 +141,7 @@ export function SidebarInfo({
             onChange={(e) => setEditedName(e.target.value)}
             disabled={!isOwner || isSubmitting}
             placeholder="Room Name"
+            autoComplete="off"
           />
           <Input label="Room Owner" value={ownerName} disabled />
           <Input
