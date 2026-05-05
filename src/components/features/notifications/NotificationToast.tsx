@@ -5,7 +5,9 @@ import { Notification01Icon, HashtagIcon } from "@hugeicons/core-free-icons";
 
 import type { useNotifications } from "@/hooks";
 
-type NotificationItem = ReturnType<typeof useNotifications>["notifications"][number];
+type NotificationItem = ReturnType<
+  typeof useNotifications
+>["notifications"][number];
 
 export interface NotificationToastProps {
   item: NotificationItem;

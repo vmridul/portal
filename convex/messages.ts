@@ -159,15 +159,13 @@ export const sendMessage = mutation({
         // Check friend's notification preference
         const friendPreference = await ctx.db
           .query("friends")
-          .withIndex("by_friend_id", (q) =>
-            q.eq("friend_id", identity.subject)
-          )
+          .withIndex("by_friend_id", (q) => q.eq("friend_id", identity.subject))
           .filter((q) => q.eq(q.field("user_id"), friendId))
           .first();
 
         const shouldNotify = shouldCreateNotification(
           friendPreference?.notificationPreference ?? "all",
-          mentions.length > 0
+          mentions.length > 0,
         );
 
         if (shouldNotify) {
@@ -186,7 +184,7 @@ export const sendMessage = mutation({
           });
         }
       }
-      return;
+      return { success: true };
     }
 
     if (args.conversation_type === "room") {
@@ -211,10 +209,10 @@ export const sendMessage = mutation({
             const shouldNotify = shouldCreateNotification(
               member.notificationPreference,
               hasMentions,
-              member.user_id
+              member.user_id,
             );
             return { member, shouldNotify };
-          })
+          }),
       );
 
       const recipientIds = validRecipients
@@ -237,7 +235,7 @@ export const sendMessage = mutation({
             notification_type: "message",
             hasMentions,
           });
-        })
+        }),
       );
     }
 
@@ -248,7 +246,7 @@ export const sendMessage = mutation({
 function shouldCreateNotification(
   preference: string | undefined,
   hasMentions: boolean,
-  recipientId?: string
+  recipientId?: string,
 ): boolean {
   if (!preference || preference === "all") return true;
   if (preference === "none") return false;

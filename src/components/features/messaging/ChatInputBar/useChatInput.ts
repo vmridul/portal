@@ -157,7 +157,7 @@ export function useChatInput({
         file_name: fileToSend?.name || null,
         file_size: fileToSend?.size,
       });
-      if (result.error) {
+      if (result && result.error) {
         toast.error(result.error);
       }
     } catch (error) {
