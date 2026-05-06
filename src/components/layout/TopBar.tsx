@@ -155,7 +155,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
             </Popover.Content>
           )}
         </Popover.Root>
-        <div className="flex items-center flex-none md:gap-2 gap-0 ml-2">
+        <div className="flex items-center flex-none md:gap-1 gap-0 ml-2">
           <TooltipWrapper content="Media Gallery">
             <div
               onClick={(e) => {
@@ -227,7 +227,7 @@ export default function TopBar({ room_id }: { room_id: string }) {
                 e.stopPropagation();
                 setRightMobileMenu(!rightMobileMenu);
               }}
-              className={`flex-none p-2 md:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
+              className={`flex-none p-2 lg:hidden rounded-xl ${rightMobileMenu ? "bg-theme-hover" : ""} transition-colors`}
             >
               <HugeiconsIcon
                 icon={UserGroupIcon}

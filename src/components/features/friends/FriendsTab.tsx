@@ -1,21 +1,22 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   UserGroupIcon,
-  Clock01Icon,
   Menu01Icon,
+  Notification01Icon,
 } from "@hugeicons/core-free-icons";
 import { useUIStore } from "@/store/uiStore";
 
 import PendingRequestMenu from "@/components/features/friends/PendingRequestMenu";
 import FriendsList from "@/components/features/friends/FriendsList";
 import { useFriends } from "@/hooks";
+import { TooltipWrapper } from "@/components/ui/tooltip";
 
 export default function FriendsTab() {
   const {
-    pendingRequestMenu,
-    setPendingRequestMenu,
     setLeftMobileMenu,
     leftMobileMenu,
+    notificationMenu,
+    setNotificationMenu,
   } = useUIStore();
   const {
     friends,
@@ -47,11 +48,19 @@ export default function FriendsTab() {
             </button>
             <h1 className="text-md font-semibold">Portal</h1>
           </div>
-          <div>
+          <div className="flex items-center gap-0">
             <PendingRequestMenu
               pendingRequests={pendingRequests}
               sentRequests={sentRequests}
             />
+            <TooltipWrapper content="Notifications">
+              <button
+                onClick={() => setNotificationMenu(!notificationMenu)}
+                className={`lg:hidden relative select-none p-2 cursor-pointer rounded-xl flex items-center justify-center hover:bg-theme-hover`}
+              >
+                <HugeiconsIcon icon={Notification01Icon} className="w-4 h-4" />
+              </button>
+            </TooltipWrapper>
           </div>
         </div>
 

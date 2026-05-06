@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Notification01Icon } from "@hugeicons/core-free-icons";
+import { useUIStore } from "@/store/uiStore";
 
 import { usePathname } from "next/navigation";
 
@@ -15,7 +16,7 @@ import { useNotificationHandlers } from "./useNotificationHandlers";
 import { NotificationCard } from "./NotificationCard";
 
 export default function NotificationTab() {
-  const [mobileMenu, setMobileMenu] = useState(false);
+  const { notificationMenu, setNotificationMenu } = useUIStore();
 
   const pathname = usePathname();
 
@@ -30,7 +31,6 @@ export default function NotificationTab() {
   const { rooms } = useRooms();
   const { friends } = useFriends();
 
-  const isOnFriendPage = pathname.startsWith("/portal/friend");
 
   const isLoading = isNotificationsLoading && notifications.length === 0;
 
@@ -58,21 +58,15 @@ export default function NotificationTab() {
 
   return (
     <>
-      <button
-        onClick={() => setMobileMenu(!mobileMenu)}
-        className={`z-[1400] ${isOnFriendPage ? "hidden" : "block"} w-6 h-6 absolute top-3 right-2 text-white md:hidden`}
-      >
-        <HugeiconsIcon icon={Notification01Icon} className="text-white/90 ml-1 w-4 h-4" />
-      </button>
       <div
         className={`md:w-[360px] w-[300px] select-none
     transition-transform duration-300 ease-in-out
     h-screen
     fixed top-0 right-0 z-[9000]
-    md:translate-y-0 translate-y-12
-    ${mobileMenu ? "translate-x-0" : "translate-x-full"}
+    lg:translate-y-0 translate-y-12
+    ${notificationMenu ? "translate-x-0" : "translate-x-full"}
 
-    md:static md:translate-x-0 border-theme-border border-l bg-theme-surface`}
+    lg:static lg:translate-x-0 border-theme-border border-l bg-theme-surface`}
       >
         <div className="flex justify-between px-2 items-center bg-theme-surface border-b border-theme-border py-1 h-12">
           <div className="ml-3 md:flex hidden items-center gap-2 text-white/90">
@@ -127,7 +121,7 @@ export default function NotificationTab() {
                   notification={notification}
                   participantProfiles={profiles}
                   onOpen={() => {
-                    void openNotification(notification, () => setMobileMenu(false));
+                    void openNotification(notification, () => setNotificationMenu(false));
                   }}
                   onJoin={() => joinNotificationCall(notification)}
                   onRemove={async () => {

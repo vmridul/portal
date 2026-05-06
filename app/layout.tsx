@@ -89,6 +89,9 @@ export default function RootLayout({
               headerTitle: `text-white text-3xl font-semibold ${galindo.className}`,
               headerSubtitle: "text-gray-400",
             },
+            layout: {
+              unsafe_disableDevelopmentModeWarnings: true,
+            },
             variables: {
               fontFamily: lexend.style.fontFamily,
             },

@@ -92,7 +92,7 @@ export default function PendingRequestMenu({
             onClick={() => {
               setPendingRequestMenu(!pendingRequestMenu);
             }}
-            className={`relative select-none p-2 cursor-pointer md:pr-2 pr-4 rounded-xl flex items-center justify-center hover:bg-theme-hover`}
+            className={`relative select-none p-2 cursor-pointer rounded-xl flex items-center justify-center hover:bg-theme-hover`}
           >
             <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
             <div

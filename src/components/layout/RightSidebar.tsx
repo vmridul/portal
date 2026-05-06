@@ -54,10 +54,10 @@ export default function RightSidebar({ room_id }: { room_id: string }) {
     select-none
     transition-transform duration-300 ease-in-out
     fixed top-0 right-0 z-[99] w-70
-    md:translate-y-0 translate-y-12
+    lg:translate-y-0 translate-y-12
     ${rightMobileMenu ? "translate-x-0" : "translate-x-full"}
 
-    md:static md:translate-x-0`}
+    lg:static lg:translate-x-0`}
       >
         {!user?.user_id || isRoomsLoading || !roomName ? (
           <Skeleton className="h-[56px] mt-2 w-[268px]  rounded-[8px]" />
