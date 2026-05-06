@@ -20,7 +20,7 @@ export const MessageNotificationMock = ({
   className?: string;
 }) => {
   const content = (
-    <div className="group flex max-w-[280px] items-start gap-3 min-h-[72px]">
+    <div className="group flex  items-start gap-3 min-h-[72px]">
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-[12px] border border-[#242424] bg-[#101010]">
         <Image
           src={avatar}

@@ -157,7 +157,7 @@ export function BeautifullyCrafted({
             <div className="-ml-[50px] flex md:hidden flex-row gap-2 items-end">
               <CallEndedNotificationMock className="min-w-[250px]" />
               <MessageNotificationMock className="min-w-[300px]" />
-              <ChatInputBarMock bg="bg-white" className="w-72" />
+              <ChatInputBarMock accent={false} className="w-72" />
             </div>
 
             {/* Desktop only */}
@@ -166,7 +166,7 @@ export function BeautifullyCrafted({
               <ProfileButtonMock />
             </div>
             <div className="hidden md:flex flex-shrink-0">
-              <ChatInputBarMock bg="bg-white" className="w-[350px]" />
+              <ChatInputBarMock accent={false} className="w-[350px]" />
             </div>
             <div className="hidden md:flex flex-shrink-0">
               <AvatarStatusMock />

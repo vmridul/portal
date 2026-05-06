@@ -185,7 +185,7 @@ export const FullAppMock = ({ className }: { className?: string }) => (
 
       {/* Input Bar */}
       <div className="flex-none w-full flex justify-center pb-4 pt-2 px-4">
-        <ChatInputBarMock bg="bg-theme-accent" text="text-theme-text" />
+        <ChatInputBarMock accent={true} />
       </div>
     </div>
 

@@ -17,10 +17,9 @@ export const AvatarStatusMock = ({
       <Image
         src={avatar}
         alt="Profile"
-        width={55}
-        height={55}
-        className="rounded-[12px] w-20 h-20"
-        style={{ width: "auto", height: "auto" }}
+        width={60}
+        height={60}
+        className="rounded-[12px] w-16 h-16"
       />
     </div>
   </div>

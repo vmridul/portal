@@ -23,40 +23,40 @@ export const CallControlsMock = ({ className }: CallControlsMockProps) => {
       <Button
         variant="other"
         size={"iconLg"}
-        className="rounded-2xl"
+        className="rounded-2xl bg-[#1d1d1d]"
       >
         <HugeiconsIcon
           icon={Mic02Icon}
-          className="w-5 h-5"
+          className="w-5 h-5 bg-[#1d1d1d]"
         />
       </Button>
 
       <Button
         variant="other"
         size="iconLg"
-        className="rounded-2xl"
+        className="rounded-2xl bg-[#1d1d1d]"
       >
         <HugeiconsIcon
           icon={Video01Icon}
-          className="w-5 h-5"
+          className="w-5 h-5 bg-[#1d1d1d]"
         />
       </Button>
 
       <Button
         variant="other"
         size="iconLg"
-        className="rounded-2xl"
+        className="rounded-2xl bg-[#1d1d1d]"
       >
         <HugeiconsIcon
           icon={ComputerScreenShareIcon}
-          className="w-5 h-5"
+          className="w-5 h-5 bg-[#1d1d1d]"
         />
       </Button>
 
       <Button
         variant="other"
         size="iconLg"
-        className="rounded-2xl"
+        className="rounded-2xl bg-[#1d1d1d]"
       >
         <HugeiconsIcon icon={Settings02Icon} className="w-5 h-5" />
       </Button>
