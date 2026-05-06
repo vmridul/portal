@@ -30,8 +30,12 @@ export function useGlobalPresence() {
   );
 
   useEffect(() => {
-    // Set online on mount
-    setStatus("online");
+    // Set online on mount - use async IIFE to ensure initial presence is set before settling
+    const initializePresence = async () => {
+      await setStatus("online");
+    };
+
+    initializePresence();
 
     // Layer 2: Fallback heartbeat (every 3 min)
     const hbInterval = setInterval(() => {
