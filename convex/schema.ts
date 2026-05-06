@@ -105,7 +105,12 @@ export default defineSchema({
     user_id: v.string(),
     status: v.union(v.literal("online"), v.literal("away")),
     updated_at: v.number(),
-  }).index("by_user_id", ["user_id"]),
+  }).index("by_user_id", ["user_id"])
+    .index("by_updated_at", ["updated_at"]),
+
+  presenceCleanupScheduler: defineTable({
+    jobId: v.string(),
+  }),
 
   typingIndicators: defineTable({
     room_id: v.string(),

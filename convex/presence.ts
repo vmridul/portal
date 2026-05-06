@@ -1,5 +1,6 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 
 const STALE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
 
@@ -26,6 +27,15 @@ export const update = mutation({
         updated_at: Date.now(),
       });
     }
+
+    // Schedule cleanup on presence activity
+    const existingScheduler = await ctx.db.query("presenceCleanupScheduler").first();
+    if (existingScheduler) {
+      await ctx.scheduler.cancel(existingScheduler.jobId);
+      await ctx.db.delete(existingScheduler._id);
+    }
+    const jobId = await ctx.scheduler.runAfter(STALE_THRESHOLD, internal.presence.cleanupStalePresence);
+    await ctx.db.insert("presenceCleanupScheduler", { jobId });
   },
 });
 
@@ -44,6 +54,15 @@ export const heartbeat = mutation({
     if (existing) {
       await ctx.db.patch(existing._id, { updated_at: Date.now() });
     }
+
+    // Schedule cleanup on presence activity
+    const existingScheduler = await ctx.db.query("presenceCleanupScheduler").first();
+    if (existingScheduler) {
+      await ctx.scheduler.cancel(existingScheduler.jobId);
+      await ctx.db.delete(existingScheduler._id);
+    }
+    const jobId = await ctx.scheduler.runAfter(STALE_THRESHOLD, internal.presence.cleanupStalePresence);
+    await ctx.db.insert("presenceCleanupScheduler", { jobId });
   },
 });
 
@@ -62,6 +81,16 @@ export const goOffline = mutation({
     if (existing) {
       await ctx.db.delete(existing._id);
     }
+
+    // Cancel cleanup if no presence remains
+    const remaining = await ctx.db.query("presence").first();
+    if (!remaining) {
+      const existingScheduler = await ctx.db.query("presenceCleanupScheduler").first();
+      if (existingScheduler) {
+        await ctx.scheduler.cancel(existingScheduler.jobId);
+        await ctx.db.delete(existingScheduler._id);
+      }
+    }
   },
 });
 
@@ -69,12 +98,27 @@ export const goOffline = mutation({
 export const cleanupStalePresence = internalMutation({
   args: {},
   handler: async (ctx) => {
-    const now = Date.now();
-    const allPresence = await ctx.db.query("presence").collect();
-    for (const record of allPresence) {
-      if (!record.updated_at || now - record.updated_at > STALE_THRESHOLD) {
-        await ctx.db.delete(record._id);
-      }
+    // Remove current job from tracker (it's now running)
+    const existingScheduler = await ctx.db.query("presenceCleanupScheduler").first();
+    if (existingScheduler) {
+      await ctx.db.delete(existingScheduler._id);
+    }
+
+    // Delete stale records using indexed query
+    const cutoff = Date.now() - STALE_THRESHOLD;
+    const staleRecords = await ctx.db
+      .query("presence")
+      .withIndex("by_updated_at", (q) => q.lt("updated_at", cutoff))
+      .collect();
+    for (const record of staleRecords) {
+      await ctx.db.delete(record._id);
+    }
+
+    // Reschedule if presence records remain
+    const remaining = await ctx.db.query("presence").first();
+    if (remaining) {
+      const jobId = await ctx.scheduler.runAfter(STALE_THRESHOLD, internal.presence.cleanupStalePresence);
+      await ctx.db.insert("presenceCleanupScheduler", { jobId });
     }
   },
 });
