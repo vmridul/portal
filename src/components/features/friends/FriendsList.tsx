@@ -12,10 +12,7 @@ import { timeAgo } from "@/lib/utils/date";
 import { useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
 import { getDirectConversationId } from "@/lib/utils/message";
-import {
-  ConvexFriend,
-  useUnreadCounters,
-} from "@/hooks";
+import { ConvexFriend, useUnreadCounters } from "@/hooks";
 import { useRooms } from "@/contexts/roomContext";
 import { useRouter } from "next/navigation";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
@@ -157,10 +154,11 @@ export default function FriendsList({
                         </span>
                         {unreadCount > 0 && (
                           <span
-                            className={`mr-1 inline-flex w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${hasUnreadMentions
-                               ? "bg-red-500"
-                               : "bg-theme-accent"
-                               }`}
+                            className={`mr-1 inline-flex font-medium w-4 h-4 justify-center items-center rounded-full p-2 text-[8px] ${
+                              hasUnreadMentions
+                                ? "bg-red-500"
+                                : "bg-theme-accent"
+                            }`}
                             style={{
                               color: hasUnreadMentions ? "#ffffff" : textColor,
                             }}

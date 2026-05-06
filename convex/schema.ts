@@ -109,7 +109,7 @@ export default defineSchema({
     .index("by_updated_at", ["updated_at"]),
 
   presenceCleanupScheduler: defineTable({
-    jobId: v.string(),
+    jobId: v.id("_scheduled_functions"),
   }),
 
   typingIndicators: defineTable({

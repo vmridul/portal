@@ -65,7 +65,7 @@ export const RoomItem = memo(function RoomItem({
         {unreadCount > 0 && (
           <span
             style={{ color: hasUnreadMentions ? "#ffffff" : textColor }}
-            className={`mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-2 text-[8px] ${
+            className={`mr-2 inline-flex font-medium h-4 w-4 items-center justify-center rounded-full p-2 text-[8px] ${
               hasUnreadMentions ? "bg-red-500" : "bg-theme-accent"
             }`}
           >
