@@ -39,7 +39,7 @@ export const ChatMessageMock = ({
         <div className="flex flex-col min-w-0 overflow-hidden">
           <div className="flex items-center gap-1">
             <span className="text-xs font-medium text-gray-400">{name}</span>
-            <span className="text-[10px] text-gray-500">10:00 AM</span>
+            <span className="text-[10px] text-gray-500">10:05 AM</span>
           </div>
           <div className="text-sm text-white mt-0.5">{message}</div>
         </div>
