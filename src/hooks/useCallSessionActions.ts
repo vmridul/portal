@@ -1,4 +1,4 @@
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { CallSessionTarget } from "@/lib/types/call";
@@ -12,6 +12,7 @@ interface StartCallInput {
 }
 
 export function useCallSessionActions() {
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
   const leaveCallMutation = useMutation(api.calls.leaveCall);
   const startCallMutation = useMutation(api.calls.startCall);
   const joinCallMutation = useMutation(api.calls.joinCall);
@@ -28,6 +29,20 @@ export function useCallSessionActions() {
   const isJoined = status === "joined";
   const isConnecting = status === "joining";
 
+  const assertCanUseCalls = () => {
+    if (isAuthLoading) {
+      useCallStore
+        .getState()
+        .setError("Still signing you in. Please try again in a moment.");
+      throw new Error("Authentication is still loading");
+    }
+
+    if (!isAuthenticated) {
+      useCallStore.getState().setError("Please sign in to join calls.");
+      throw new Error("Not authenticated");
+    }
+  };
+
   /**
    * Start a new call: create the Convex record first, then join PeerJS
    * with the real callId. No more "temp" workaround.
@@ -37,6 +52,7 @@ export function useCallSessionActions() {
     roomName,
     userId,
   }: StartCallInput): Promise<Id<"calls">> => {
+    assertCanUseCalls();
     if (!navigator.onLine) {
       useCallStore.getState().setError("No internet connection.");
       throw new Error("Offline");
@@ -75,6 +91,7 @@ export function useCallSessionActions() {
 
   /** Join an existing call that was started by someone else. */
   const joinExistingSession = async (target: CallSessionTarget) => {
+    assertCanUseCalls();
     if (!navigator.onLine) {
       useCallStore.getState().setError("No internet connection.");
       return;
@@ -97,6 +114,7 @@ export function useCallSessionActions() {
   /** Leave the current call. */
   const leaveCurrentSession = async (callId: Id<"calls">) => {
     await leaveCall();
+    if (isAuthLoading || !isAuthenticated) return;
     await leaveCallMutation({ callId });
   };
 
@@ -105,6 +123,7 @@ export function useCallSessionActions() {
     nextTarget: CallSessionTarget,
     currentCallId: Id<"calls">,
   ) => {
+    assertCanUseCalls();
     await leaveCall();
     await leaveCallMutation({ callId: currentCallId });
 

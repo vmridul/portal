@@ -144,7 +144,7 @@ export const joinCall = mutation({
   args: { callId: v.id("calls"), peerId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    if (!identity) return { error: "Not authenticated" };
 
     const call = await ctx.db.get(args.callId);
     if (!call) return { error: "Call not found" };
